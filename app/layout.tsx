@@ -1,35 +1,30 @@
-import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
+import type { Metadata } from 'next'
+import { Barlow_Condensed } from 'next/font/google'
+import './globals.css'
+import ReduxWrapper from './redux-wrapper'
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+const barlowCondensed = Barlow_Condensed({
+  variable: '--font-barlow-condensed',
+  subsets: ['latin'],
+  weight: ['100', '200', '300', '400', '500', '600', '700', '800', '900']
+})
 
 export const metadata: Metadata = {
-  title: "Rosie Paws",
+  title: 'Rosie Paws',
   description:
-    "Rosie Paws is an app designed to help pet owners track important end of life care stats for their dogs and cats, like meals, medications, mood, and mobility. Share updates directly with your vet, stay organized, and feel supported during a difficult time",
-};
+    'Rosie Paws is an app designed to help pet owners track important end of life care stats for their dogs and cats, like meals, medications, mood, and mobility. Share updates directly with your vet, stay organized, and feel supported during a difficult time'
+}
 
 export default function RootLayout({
-  children,
+  children
 }: Readonly<{
-  children: React.ReactNode;
+  children: React.ReactNode
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        {children}
+      <body className={`${barlowCondensed.variable} antialiased`}>
+        <ReduxWrapper>{children}</ReduxWrapper>
       </body>
     </html>
-  );
+  )
 }
