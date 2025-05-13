@@ -13,25 +13,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id                 String   @id @default(cuid())
-  firstName          String   @db.VarChar(255)
-  lastName           String   @db.VarChar(255)
-  password           String   @db.VarChar(255)
-  email              String   @unique @db.VarChar(255)
-  isAdmin            Boolean  @default(false)
-  isClient           Boolean  @default(false)
-  isSuperUser        Boolean  @default(false)
-  role               String   @db.VarChar(255)
-  securityQuestion   String   @db.VarChar(255)
-  securityAnswerHash String   @db.VarChar(255)
-  createdAt          DateTime @default(now())
-  updatedAt          DateTime @updatedAt
-
-  stripeCustomerId   String?             @unique @db.VarChar(255) // Make this optional if you want to add it later
-  stripeSubscription StripeSubscription?
-}
-
 model StripeSubscription {
   id              String    @id @default(uuid())
   userId          String    @unique
@@ -47,38 +28,91 @@ model StripeSubscription {
   user User @relation(fields: [userId], references: [id])
 }
 
-model Log {
-  id        String   @id @default(cuid())
-  level     String // e.g., 'info', 'error', 'debug'
-  message   String
-  metadata  Json? // Optional, store additional context
+model User {
+  id                 String  @id @default(cuid())
+  firstName          String  @db.VarChar(255)
+  lastName           String  @db.VarChar(255)
+  password           String  @db.VarChar(255)
+  email              String  @unique @db.VarChar(255)
+  isAdmin            Boolean @default(false)
+  isClient           Boolean @default(false)
+  isSuperUser        Boolean @default(false)
+  role               String  @db.VarChar(255)
+  securityQuestion   String  @db.VarChar(255)
+  securityAnswerHash String  @db.VarChar(255)
+
+  stripeCustomerId   String?             @unique @db.VarChar(255)
+  stripeSubscription StripeSubscription?
+  pets               Pet[]
+  blogs              Blog[]
+  journals           Journal[]
+
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
-model Newsletter {
-  id                       String   @id @default(cuid())
-  firstName                String   @db.VarChar(255)
-  lastName                 String   @db.VarChar(255)
-  email                    String   @unique @db.VarChar(255)
-  agreedToPrivacyStatement Boolean  @default(false)
-  createdAt                DateTime @default(now())
-  updatedAt                DateTime @updatedAt
+enum PetType {
+  DOG
+  CAT
 }
 
-model Address {
-  id            String  @id @default(cuid())
-  addressLine1  String? @db.VarChar(255)
-  addressLine2  String? @db.VarChar(255)
-  city          String? @db.VarChar(255)
-  state         String? @db.VarChar(255)
-  zipPostalCode String? @db.VarChar(255)
+model Pet {
+  id      String  @id @default(cuid())
+  name    String
+  type    PetType
+  breed   String?
+  age     Int?
+  gender  String?
+  weight  Float?
+  owner   User    @relation(fields: [ownerId], references: [id])
+  ownerId String
+  notes   String?
+
+  appointments      Appointment[]
+  medications       Medication[]
+  feedings          Feeding[]
+  seizureActivities SeizureActivity[]
+  walks             Walk[]
+  waterIntakes      WaterIntake[]
+  bloodSugars       BloodSugar[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
-model Blog {
-  id        String   @id @default(uuid())
-  title     String
-  content   String
-  author    String
+model Appointment {
+  id       String   @id @default(cuid())
+  date     DateTime
+  reason   String
+  location String?
+  notes    String?
+
+  pet   Pet    @relation(fields: [petId], references: [id])
+  petId String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model BloodSugar {
+  id    String  @id @default(uuid())
+  value Int // 0–500 range expected
+  notes String?
+  pet   Pet     @relation(fields: [petId], references: [id])
+  petId String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Feeding {
+  id       String   @id @default(uuid())
+  timeFed  DateTime
+  foodType String
+  notes    String?
+  pet      Pet      @relation(fields: [petId], references: [id])
+  petId    String
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -88,54 +122,89 @@ model Medication {
   name      String
   dosage    String
   timeGiven DateTime
+  notes     String?
+
+  pet   Pet    @relation(fields: [petId], references: [id])
+  petId String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model SeizureActivity {
+  id         String   @id @default(cuid())
+  occurredAt DateTime
+  duration   Int? // Duration in seconds (optional)
+  notes      String? // Optional observations or details
+
+  pet   Pet    @relation(fields: [petId], references: [id])
+  petId String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Walk {
+  id         String   @id @default(uuid())
+  duration   Int // in minutes
+  timeWalked DateTime
+  notes      String?
+  pet        Pet      @relation(fields: [petId], references: [id])
+  petId      String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model WaterIntake {
+  id        String   @id @default(uuid())
+  amount    Float // in mL or ounces
+  timeGiven DateTime
+  notes     String?
+  pet       Pet      @relation(fields: [petId], references: [id])
   petId     String
-  userId    String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Blog {
+  id       String @id @default(uuid())
+  title    String
+  content  String
+  authorId String
+  author   User   @relation(fields: [authorId], references: [id])
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
 model Journal {
-  id        String   @id @default(uuid())
-  userId    String
-  title     String
-  content   String
+  id      String @id @default(uuid())
+  title   String
+  content String
+  userId  String
+  user    User   @relation(fields: [userId], references: [id])
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
-model Feeding {
-  id        String   @id @default(uuid())
-  petId     String
-  timeFed   DateTime
-  foodType  String
-  notes     String?
-  userId    String
+model Newsletter {
+  id                       String  @id @default(cuid())
+  firstName                String  @db.VarChar(255)
+  lastName                 String  @db.VarChar(255)
+  email                    String  @unique @db.VarChar(255)
+  agreedToPrivacyStatement Boolean @default(false)
+
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
-model Walk {
-  id         String   @id @default(uuid())
-  petId      String
-  duration   Int // in minutes
-  timeWalked DateTime
-  notes      String?
-  userId     String
-  createdAt  DateTime @default(now())
-}
-
-model WaterIntake {
-  id        String   @id @default(uuid())
-  petId     String
-  amount    Float // in mL or ounces
-  timeGiven DateTime
-  userId    String
-  createdAt DateTime @default(now())
-}
-
-model Ebook {
-  id        String   @id @default(uuid())
-  title     String
-  url       String
-  metadata  String?
+model Log {
+  id        String   @id @default(cuid())
+  level     String // e.g., 'info', 'error', 'debug'
+  message   String
+  metadata  Json? // Optional, store additional context
   createdAt DateTime @default(now())
 }

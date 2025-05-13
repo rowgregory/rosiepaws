@@ -1,0 +1,5 @@
+export const dashboardLink = '/admin/dashboard'
+export const subscriptionsLink = '/admin/subscriptions'
+export const petsLink = '/admin/pets/list'
+export const blogLink = '/admin/blog'
+export const journalLink = '/admin/journal'
