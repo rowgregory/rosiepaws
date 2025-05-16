@@ -7,9 +7,7 @@ const HomeHero = () => {
         <div className="bg-homeherosunrays aspect-square bg-cover bg-center bg-no-repeat w-[4000px] h-[4000px] animate-slowspin" />
         <div className="bg-homeherotexture2 bg-repeat bg-center absolute inset-0 z-10 w-full h-full" />
         <div className="bg-homeherotexture2" />
-        <div className="bg-homeherotexture2 bg-roseblush/10 bg-center absolute z-20 rounded-full w-[400px] h-[400px] flex items-center justify-center">
-          {/* <div className="bg-homeherocenterimage2 bg-center bg-contain bg-no-repeat h-[400px] w-full animate-logoFloat" /> */}
-        </div>
+        <div className="bg-herologo3 bg-center bg-contain bg-no-repeat absolute z-20 w-full h-full max-w-[850px] max-h-[850px] flex items-center justify-center animate-floatCloud"></div>
       </div>
     </>
   )

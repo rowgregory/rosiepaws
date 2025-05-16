@@ -23,12 +23,16 @@ export default {
         homeherotexture2: "url('/images/homeherotexture2.png')",
         logonobg: "url('/images/rosie-paws-logo-nobg.png')",
         homeherocenterimage: "url('/images/homeherocenterimage.png')",
-        homeherocenterimage2: "url('/images/homeherocenterimage2.png')"
+        homeherocenterimage2: "url('/images/homeherocenterimage2.png')",
+        headerlogo: "url('/images/header-logo.png')",
+        herologo: "url('/images/hero-logo.png')",
+        herologo2: "url('/images/hero-logo-2.png')",
+        herologo3: "url('/images/hero-logo-3.png')"
       },
       animation: {
         rotateToTwoOClock: 'rotateToTwoOClock 375ms ease-in-out forwards',
         slowspin: 'slowspin 200s linear infinite',
-        logoFloat: 'logoFloat 8s ease-in-out infinite'
+        floatCloud: 'floatCloud 6s ease-in-out infinite'
       },
       keyframes: {
         rotateToTwoOClock: {
@@ -36,26 +40,12 @@ export default {
           '40%': { transform: 'rotate(30deg)' },
           '100%': { transform: 'rotate(0deg)' }
         },
-        logoFloat: {
-          '0%': {
-            transform: 'translate(0, 0)', // Start position
-            animationTimingFunction: 'cubic-bezier(0.1, 0.3, 0.3, 1)'
-          },
-          '25%': {
-            transform: 'translate(10px, -10px)', // Move right and up, with slight scale for depth
-            animationTimingFunction: 'cubic-bezier(0.7, 0.0, 0.9, 0.7)'
-          },
-          '50%': {
-            transform: 'translate(0, 0)', // Back to starting point, with normal scale
-            animationTimingFunction: 'cubic-bezier(0.1, 0.3, 0.3, 1)'
-          },
-          '75%': {
-            transform: 'translate(-10px, 10px)', // Move left and down, with slight scale for depth
-            animationTimingFunction: 'cubic-bezier(0.7, 0.0, 0.9, 0.7)'
-          },
-          '100%': {
-            transform: 'translate(0, 0)' // Back to start
-          }
+        floatCloud: {
+          '0%': { transform: 'translateY(0px) translateX(0px)' },
+          '25%': { transform: 'translateY(-12px) translateX(5px)' },
+          '50%': { transform: 'translateY(-20px) translateX(0px)' },
+          '75%': { transform: 'translateY(-12px) translateX(-5px)' },
+          '100%': { transform: 'translateY(0px) translateX(0px)' }
         },
         slowspin: {
           '0%': { transform: 'rotate(0deg)' },
