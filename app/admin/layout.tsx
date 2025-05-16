@@ -13,9 +13,10 @@ import {
   pawIcon,
   penIcon,
   plusIcon,
-  starIcon
+  starIcon,
+  usersIcon
 } from '../lib/icons'
-import { blogLink, dashboardLink, journalLink, petsLink, subscriptionsLink } from '@/public/admin.data'
+import { blogLink, dashboardLink, journalLink, petsLink, subscriptionsLink, usersLink } from '@/public/admin.data'
 import useCustomPathname from '../hooks/useCustomPathname'
 import Link from 'next/link'
 
@@ -49,6 +50,12 @@ const adminLinkData = (path: string) => [
     textKey: 'Journal',
     linkKey: journalLink,
     isActive: path === journalLink
+  },
+  {
+    icon: usersIcon,
+    textKey: 'Users',
+    linkKey: usersLink,
+    isActive: path === usersLink
   }
 ]
 
@@ -59,7 +66,7 @@ const AdminSidebar = ({ toggleSidebar, setToggleSidebar }: any) => {
     <div
       className={`${
         toggleSidebar ? 'w-16' : 'w-60'
-      } fixed top-0 left-0 min-h-screen border-r-1 border-r-zinc-200/60 z-20`}
+      } hidden lg:block fixed top-0 left-0 min-h-screen border-r-1 border-r-zinc-200/60 z-20`}
     >
       <div className={`px-3.5 h-[60px] flex items-center cursor-pointer ${toggleSidebar ? 'justify-center' : ''}`}>
         <div
@@ -120,7 +127,7 @@ const AdminSidebar = ({ toggleSidebar, setToggleSidebar }: any) => {
 const TopToolBar = () => {
   const path = useCustomPathname()
   return (
-    <div className="sticky top-0 w-full h-[60px] bg-white z-30">
+    <div className="sticky top-0 w-full h-[60px] bg-white z-30 px-10">
       <div className="max-w-screen-xl w-full mx-auto flex items-center justify-between h-full">
         <div className="flex items-center gap-x-2 bg-[#f6f5f7] rounded-md max-w-lg w-full h-9 py-2.5 pl-3 pr-7">
           <AwesomeIcon icon={magnifyingGlassIcon} className="w-3 h-3" />
@@ -155,9 +162,9 @@ const AdminLayout: FC<ChildrenProps> = ({ children }) => {
   return (
     <div className="flex">
       <AdminSidebar toggleSidebar={toggleSidebar} setToggleSidebar={setToggleSidebar} />
-      <div className={`flex flex-col w-full ${toggleSidebar ? 'ml-16' : 'ml-60'}`}>
+      <div className={`flex flex-col w-full ${toggleSidebar ? 'ml-0 lg:ml-16' : 'ml-0 lg:ml-60'}`}>
         <TopToolBar />
-        <div className="px-4 pt-2">
+        <div className="px-10 pt-2">
           <div className="max-w-screen-xl w-full mx-auto">{children}</div>
         </div>
       </div>
