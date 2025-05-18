@@ -72,8 +72,10 @@ import {
   faPaw,
   faCat,
   faBlog,
-  faPen
+  faPen,
+  faBookOpen
 } from '@fortawesome/free-solid-svg-icons'
+import { faFacebook } from '@fortawesome/free-brands-svg-icons'
 
 export const clockIcon = faClock
 export const barsIcon = faBars
@@ -149,3 +151,5 @@ export const pawIcon = faPaw
 export const catIcon = faCat
 export const blogIcon = faBlog
 export const penIcon = faPen
+export const bookOpenIcon = faBookOpen
+export const facebookIcon = faFacebook

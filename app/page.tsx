@@ -1,10 +1,14 @@
+import AboutBlock from './components/blocks/AboutBlock'
+import SubscriptionsBlock from './components/blocks/SubscriptionsBlock'
 import HomeHero from './components/common/HomeHero'
 
 const Home = () => {
   return (
-    <div className="">
+    <>
       <HomeHero />
-    </div>
+      <AboutBlock />
+      <SubscriptionsBlock />
+    </>
   )
 }
 

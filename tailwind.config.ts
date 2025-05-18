@@ -21,13 +21,21 @@ export default {
       backgroundImage: {
         homeherosunrays: "url('/images/banner-sun-rays.png')",
         homeherotexture2: "url('/images/homeherotexture2.png')",
-        logonobg: "url('/images/rosie-paws-logo-nobg.png')",
         homeherocenterimage: "url('/images/homeherocenterimage.png')",
         homeherocenterimage2: "url('/images/homeherocenterimage2.png')",
         headerlogo: "url('/images/header-logo.png')",
         herologo: "url('/images/hero-logo.png')",
-        herologo2: "url('/images/hero-logo-2.png')",
-        herologo3: "url('/images/hero-logo-3.png')"
+        herologo3: "url('/images/hero-logo-3.png')",
+        herologo4: "url('/images/hero-logo-4.png')",
+        darkstripeslight: "url('/images/dark-stripes-light.png')",
+        climpek: "url('/images/climpek.png')",
+        hourglass: "url('/images/hourglass.png')",
+        dust: "url('/images/dust.png')",
+        about: "url('/images/about.png')",
+        portfoliopattern: "url('/images/portfolio-pattern.png')",
+        star: "url('/images/star.png')",
+        footertexture: "url('/images/footer-texture.png')",
+        rosielogo: "url('/images/rosie-logo.png')"
       },
       animation: {
         rotateToTwoOClock: 'rotateToTwoOClock 375ms ease-in-out forwards',
@@ -85,7 +93,9 @@ export default {
       maxHeight: {},
       fontFamily: {
         inter: ['var(--font-inter)'],
-        barlowcondensed: ['var(--barlow-condensed)']
+        barlowcondensed: ['var(--font-barlow-condensed)'],
+        satisfy: ['var(--font-satisfy)'],
+        merrieweather: ['var(--font-merrieweather)']
       }
     }
   },
