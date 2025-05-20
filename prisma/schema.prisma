@@ -34,9 +34,11 @@ model User {
   lastName           String  @db.VarChar(255)
   password           String  @db.VarChar(255)
   email              String  @unique @db.VarChar(255)
-  isAdmin            Boolean @default(false)
-  isClient           Boolean @default(false)
   isSuperUser        Boolean @default(false)
+  isAdmin            Boolean @default(false)
+  isGuardian         Boolean @default(false)
+  isBasicUser        Boolean @default(false)
+  isPremiumUser      Boolean @default(false)
   role               String  @db.VarChar(255)
   securityQuestion   String  @db.VarChar(255)
   securityAnswerHash String  @db.VarChar(255)
@@ -60,14 +62,15 @@ model Pet {
   id      String  @id @default(cuid())
   name    String
   type    PetType
-  breed   String?
-  age     Int?
-  gender  String?
-  weight  Float?
+  breed   String
+  age     String
+  gender  String
+  weight  String
   owner   User    @relation(fields: [ownerId], references: [id])
   ownerId String
   notes   String?
 
+  painScore         PainScore[]
   appointments      Appointment[]
   medications       Medication[]
   feedings          Feeding[]
@@ -75,6 +78,16 @@ model Pet {
   walks             Walk[]
   waterIntakes      WaterIntake[]
   bloodSugars       BloodSugar[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model PainScore {
+  id    String @id @default(cuid())
+  score Int
+  pet   Pet    @relation(fields: [petId], references: [id])
+  petId String
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

@@ -27,6 +27,7 @@ export default {
         herologo: "url('/images/hero-logo.png')",
         herologo3: "url('/images/hero-logo-3.png')",
         herologo4: "url('/images/hero-logo-4.png')",
+        herologo5: "url('/images/hero-logo-5.png')",
         darkstripeslight: "url('/images/dark-stripes-light.png')",
         climpek: "url('/images/climpek.png')",
         hourglass: "url('/images/hourglass.png')",
@@ -65,7 +66,8 @@ export default {
         768: '768px',
         980: '980px',
         1200: '1200px',
-        1315: '1315px'
+        1315: '1315px',
+        short: { raw: '(max-height: 750px)' }
       },
       borderWidth: {
         1: '1px',

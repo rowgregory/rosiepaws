@@ -5,11 +5,11 @@ import Footer from './components/footer/Footer'
 
 const PageWrapper: FC<ClientPageProps> = ({ children }) => {
   return (
-    <div>
+    <>
       <Header />
       {children}
       <Footer />
-    </div>
+    </>
   )
 }
 

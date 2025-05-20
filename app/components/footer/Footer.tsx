@@ -8,7 +8,11 @@ const Footer = () => {
   const path = useCustomPathname()
 
   return (
-    <div className={`${['/admin', '/guardian'].some((p) => path.startsWith(p)) ? 'hidden' : 'block'} overflow-hidden`}>
+    <div
+      className={`${
+        ['/admin', '/guardian', '/auth'].some((p) => path.startsWith(p)) ? 'hidden' : 'block'
+      } overflow-hidden`}
+    >
       <div className="footer footer-texture">
         <div className="px-4 h-full">
           <div className="max-w-screen-1200 mx-auto w-full gap-y-7 md:gap-y-auto grid-cols-[1fr] grid md:grid-cols-[1fr_2fr_1fr] items-center">

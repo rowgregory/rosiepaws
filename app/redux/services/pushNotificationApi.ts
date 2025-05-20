@@ -6,8 +6,7 @@ export const pushNotificationApi = api.injectEndpoints({
   overrideExisting: true,
   endpoints: (build) => ({
     sendPushNotification: build.mutation({
-      query: (body: any) => ({ url: `${BASE_URL}/send-push-notification`, method: 'POST', body }),
-      invalidatesTags: ['Push-Notification']
+      query: (body: any) => ({ url: `${BASE_URL}/send-push-notification`, method: 'POST', body })
     })
   })
 })

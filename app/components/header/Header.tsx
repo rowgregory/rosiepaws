@@ -10,7 +10,7 @@ const Header = () => {
   return (
     <header
       className={`${
-        ['/admin', '/guardian'].some((p) => path.startsWith(p)) ? 'hidden' : 'block'
+        ['/admin', '/guardian', '/auth'].some((p) => path.startsWith(p)) ? 'hidden' : 'block'
       } relative bg-[#fffdf8] bg-homeherotexture2 bg-repeat bg-contain bg-center h-[92px] w-full flex items-center justify-center after:absolute after:content-[''] after:w-11/12 after:h-2 after:bg-roseblush after:top-0 after:rounded-br-3xl after:rounded-bl-3xl after:bg-homeherotexture2`}
     >
       {/* Side links closer to the logo */}

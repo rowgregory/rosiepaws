@@ -37,7 +37,7 @@ const AboutBlock = () => {
           >
             Rosie Paws
           </h2>
-          <div className="relative bg-peachblossum text-white font-satisfy w-fit text-[27px] 1200:text-[32px] py-2 px-5 1200:mt-[-30px] ribbon-corner">
+          <div className="relative bg-peachblossum text-white font-satisfy w-fit text-[27px] 1200:text-[32px] py-2 px-5 1200:mt-[-30px] ribbon-corner bg-dust bg-center bg-repeat">
             <svg width={78} height={52} className="absolute right-[calc(100%-29px)] z-[-1] -top-4">
               <defs>
                 <pattern

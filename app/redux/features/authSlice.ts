@@ -1,16 +1,11 @@
 import { Reducer, createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { authApi } from '../services/authApi'
 
-// Define interfaces for the payloads
-interface AuthResponsePayload {
-  isAuthenticated: boolean
-  id: string
-}
-
-interface AuthSystemStatusPayload {
-  status: string
-  message: string
-}
+// interface AuthResponsePayload {
+//   isAuthenticated: boolean
+//   id: string
+//   role: string
+// }
 
 interface ErrorPayload {
   data: {
@@ -25,8 +20,7 @@ export interface AuthStatePayload {
   message: string | null
   isAuthenticated: boolean | null
   userId: string
-  status: string
-
+  role: string
   passwordReset: boolean
 }
 
@@ -37,8 +31,7 @@ export const initialAuthState: AuthStatePayload = {
   message: '',
   isAuthenticated: false,
   userId: '',
-  status: '',
-
+  role: '',
   passwordReset: false
 }
 
@@ -46,9 +39,10 @@ export const authSlice = createSlice({
   name: 'auth',
   initialState: initialAuthState,
   reducers: {
-    setAuthState: (state, { payload }: PayloadAction<{ isAuthenticated: boolean; id: string }>) => {
+    setAuthState: (state, { payload }: PayloadAction<{ isAuthenticated: boolean; id: string; role: string }>) => {
       state.isAuthenticated = payload.isAuthenticated
       state.userId = payload.id
+      state.role = payload.role
     },
     resetAuth: (state) => {
       state.success = false
@@ -71,10 +65,12 @@ export const authSlice = createSlice({
         state.loading = false
         state.success = true
       })
-      .addMatcher(authApi.endpoints.login.matchFulfilled, (state, { payload }: PayloadAction<AuthResponsePayload>) => {
+      .addMatcher(authApi.endpoints.login.matchFulfilled, (state, { payload }: any) => {
+        console.log(payload)
         state.loading = false
-        state.isAuthenticated = payload.isAuthenticated
-        state.userId = payload.id
+        state.isAuthenticated = payload.payload.isAuthenticated
+        state.userId = payload.payload.id
+        state.role = payload.payload.role
       })
       .addMatcher(authApi.endpoints.logout.matchFulfilled, (state) => {
         state.loading = false
@@ -94,13 +90,6 @@ export const authSlice = createSlice({
         (state, { payload }: PayloadAction<{ passwordReset: boolean }>) => {
           state.loading = false
           state.passwordReset = payload.passwordReset
-        }
-      )
-      .addMatcher(
-        authApi.endpoints.authSystemStatus.matchFulfilled,
-        (state, { payload }: PayloadAction<AuthSystemStatusPayload>) => {
-          state.status = payload.status
-          state.message = payload.message
         }
       )
       .addMatcher(

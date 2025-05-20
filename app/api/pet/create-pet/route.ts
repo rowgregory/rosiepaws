@@ -2,14 +2,13 @@ import prisma from '@/prisma/client'
 import { NextRequest, NextResponse } from 'next/server'
 import { createLog } from '@/app/utils/logHelper'
 import { parseStack } from 'error-stack-parser-es/lite'
-import { sliceAuth } from '@/public/data/api.data'
+import { slicePet } from '@/public/data/api.data'
 
 export async function POST(req: NextRequest) {
   try {
-    // Get logged-in user from header
-    const userHeader = req.headers.get('x-user')
+    const userHeader = req.headers.get('x-user')!
     if (!userHeader) {
-      return NextResponse.json({ message: 'Unauthorized: Missing user header', sliceName: sliceAuth }, { status: 401 })
+      return NextResponse.json({ message: 'Unauthorized: Missing user header', sliceName: slicePet }, { status: 401 })
     }
     const parsedUser = JSON.parse(userHeader)
     const ownerId = parsedUser.id
@@ -19,7 +18,7 @@ export async function POST(req: NextRequest) {
     // Validate required fields
     if (!name || !type) {
       return NextResponse.json(
-        { message: 'Missing required fields: name and type are required', sliceName: sliceAuth },
+        { message: 'Missing required fields: name and type are required', sliceName: slicePet },
         { status: 400 }
       )
     }
@@ -35,7 +34,7 @@ export async function POST(req: NextRequest) {
         method: req.method,
         ownerId
       })
-      return NextResponse.json({ message: 'Owner not found', sliceName: sliceAuth }, { status: 404 })
+      return NextResponse.json({ message: 'Owner not found', sliceName: slicePet }, { status: 404 })
     }
 
     // Create the pet
@@ -62,7 +61,7 @@ export async function POST(req: NextRequest) {
       ownerId
     })
 
-    return NextResponse.json({ pet: newPet, sliceName: sliceAuth }, { status: 201 })
+    return NextResponse.json({ pet: newPet, sliceName: slicePet }, { status: 201 })
   } catch (error: any) {
     await createLog('error', `Pet creation failed: ${error.message}`, {
       errorLocation: parseStack(JSON.stringify(error)),
@@ -72,6 +71,6 @@ export async function POST(req: NextRequest) {
       url: req.url,
       method: req.method
     })
-    return NextResponse.json({ message: 'Pet creation failed', error, sliceName: sliceAuth }, { status: 500 })
+    return NextResponse.json({ message: 'Pet creation failed', error, sliceName: slicePet }, { status: 500 })
   }
 }

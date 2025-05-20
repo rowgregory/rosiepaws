@@ -73,7 +73,11 @@ import {
   faCat,
   faBlog,
   faPen,
-  faBookOpen
+  faBookOpen,
+  faUserCheck,
+  faReceipt,
+  faCircleUser,
+  faHeartbeat
 } from '@fortawesome/free-solid-svg-icons'
 import { faFacebook } from '@fortawesome/free-brands-svg-icons'
 
@@ -153,3 +157,7 @@ export const blogIcon = faBlog
 export const penIcon = faPen
 export const bookOpenIcon = faBookOpen
 export const facebookIcon = faFacebook
+export const userCheckIcon = faUserCheck
+export const receiptIcon = faReceipt
+export const circleUserIcon = faCircleUser
+export const heartBeatIcon = faHeartbeat

@@ -12,6 +12,8 @@ import { photoGalleryImageReducer } from './features/photoGalleryImageSlice'
 import { userReducer } from './features/userSlice'
 import { pushNotificationReducer } from './features/pushNotificationSlice'
 import { logReducer } from './features/logSlice'
+import { petReducer } from './features/petSlice'
+import { formReducer } from './features/formSlice'
 
 const rootReducer = combineReducers({
   app: appReducer,
@@ -22,6 +24,8 @@ const rootReducer = combineReducers({
   user: userReducer,
   pushNotification: pushNotificationReducer,
   log: logReducer,
+  pet: petReducer,
+  form: formReducer,
   [api.reducerPath]: api.reducer
 })
 

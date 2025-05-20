@@ -4,6 +4,7 @@ import argon2 from 'argon2'
 import { SignJWT } from 'jose'
 import { createLog } from '@/app/utils/logHelper'
 import { parseStack } from 'error-stack-parser-es/lite'
+import { sliceAuth } from '@/public/data/api.data'
 
 export async function POST(req: NextRequest) {
   const { email, password } = await req.json()
@@ -18,7 +19,7 @@ export async function POST(req: NextRequest) {
       email
     })
 
-    return NextResponse.json({ message: 'Missing required fields', sliceName: 'authApi' }, { status: 404 })
+    return NextResponse.json({ message: 'Missing required fields', sliceName: sliceAuth }, { status: 404 })
   }
 
   try {
@@ -38,7 +39,7 @@ export async function POST(req: NextRequest) {
         email
       })
 
-      return NextResponse.json({ message: 'User not found', sliceName: 'authApi' }, { status: 404 })
+      return NextResponse.json({ message: 'User not found', sliceName: sliceAuth }, { status: 404 })
     }
 
     const isPasswordValid = await argon2.verify(existingUser.password, password)
@@ -53,12 +54,14 @@ export async function POST(req: NextRequest) {
         email
       })
 
-      return NextResponse.json({ message: 'Invalid password', sliceName: 'authApi' }, { status: 401 })
+      return NextResponse.json({ message: 'Invalid password', sliceName: sliceAuth }, { status: 401 })
     }
 
     const payload = {
       isAuthenticated: true,
-      id: existingUser.id
+      id: existingUser.id,
+      role: existingUser.role,
+      isAdmin: existingUser.isAdmin
     }
 
     const token = await new SignJWT(payload)
@@ -66,7 +69,7 @@ export async function POST(req: NextRequest) {
       .setExpirationTime('1d')
       .sign(new TextEncoder().encode(process.env.JWT_SECRET))
 
-    const response = NextResponse.json(payload, { status: 200 })
+    const response = NextResponse.json({ payload, sliceName: sliceAuth }, { status: 200 })
 
     response.cookies.set('authToken', token, {
       httpOnly: true,
@@ -97,6 +100,6 @@ export async function POST(req: NextRequest) {
       email
     })
 
-    return NextResponse.json({ message: 'Something went wrong', sliceName: 'authApi' }, { status: 500 })
+    return NextResponse.json({ message: 'Something went wrong', sliceName: sliceAuth }, { status: 500 })
   }
 }

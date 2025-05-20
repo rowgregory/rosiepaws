@@ -13,12 +13,26 @@ import {
   pawIcon,
   penIcon,
   plusIcon,
+  signOutAltIcon,
   starIcon,
   usersIcon
 } from '../lib/icons'
-import { blogLink, dashboardLink, journalLink, petsLink, subscriptionsLink, usersLink } from '@/public/admin.data'
+import {
+  authLoginLink,
+  blogLink,
+  dashboardLink,
+  journalLink,
+  petsLink,
+  subscriptionsLink,
+  usersLink
+} from '@/public/admin.data'
 import useCustomPathname from '../hooks/useCustomPathname'
 import Link from 'next/link'
+import { useAppDispatch } from '../redux/store'
+import { useLogoutMutation } from '../redux/services/authApi'
+import { useRouter } from 'next/navigation'
+import { setAuthState } from '../redux/features/authSlice'
+import Spinner from '../components/common/Spinner'
 
 const adminLinkData = (path: string) => [
   {
@@ -56,11 +70,31 @@ const adminLinkData = (path: string) => [
     textKey: 'Users',
     linkKey: usersLink,
     isActive: path === usersLink
+  },
+  {
+    icon: signOutAltIcon,
+    textKey: 'Logout',
+    linkKey: authLoginLink,
+    isActive: path === authLoginLink
   }
 ]
 
 const AdminSidebar = ({ toggleSidebar, setToggleSidebar }: any) => {
   const path = useCustomPathname()
+  const dispatch = useAppDispatch()
+  const [logout, { isLoading }] = useLogoutMutation()
+  const { push } = useRouter()
+
+  const handleLogout = async (e: MouseEvent) => {
+    e.preventDefault()
+    await logout({})
+      .unwrap()
+      .then(() => {
+        dispatch(setAuthState({ isAuthenticated: false, id: '', role: '' }))
+        push('/auth/login')
+      })
+      .catch(() => {})
+  }
 
   return (
     <div
@@ -99,16 +133,21 @@ const AdminSidebar = ({ toggleSidebar, setToggleSidebar }: any) => {
         {adminLinkData(path).map((link, i) => (
           <Link
             key={i}
+            onClick={(e: any) => (link.textKey === 'Logout' ? handleLogout(e) : {})}
             href={link.linkKey}
             className={`rounded-lg w-full px-2.5 py-2 hover:bg-zinc-100 flex items-center ${
               toggleSidebar ? 'w-[34px] h-[34px] justify-center' : 'justify-between'
             } ${toggleSidebar && link.isActive && 'bg-[#f4f5fb]'}`}
           >
             <div className="flex gap-x-2 items-center">
-              <AwesomeIcon
-                icon={link.icon}
-                className={`${link.isActive ? 'text-indigo-500' : 'text-[#484954]'} w-3.5 h-3.5`}
-              />
+              {isLoading && link.textKey === 'Logout' ? (
+                <Spinner fill="fill-indigo-500" track="text-white" wAndH="w-3 h-3" />
+              ) : (
+                <AwesomeIcon
+                  icon={link.icon}
+                  className={`${link.isActive ? 'text-indigo-500' : 'text-[#484954]'} w-3.5 h-3.5`}
+                />
+              )}
               <h1
                 className={`${toggleSidebar ? 'hidden' : 'block'} ${
                   link.isActive ? 'text-indigo-500' : 'text-[#484954]'
