@@ -14,7 +14,7 @@ export interface Pet {
   // Related entities - you can type these more precisely if needed
   appointments: Appointment[]
   medications: Medication[]
-  feedings: Feeding[]
+  feedings: IFeeding[]
   seizureActivities: SeizureActivity[]
   walks: Walk[]
   waterIntakes: WaterIntake[]
@@ -32,8 +32,6 @@ export interface Appointment {
   location?: string
   notes?: string
   petId: string
-  createdAt: Date
-  updatedAt: Date
 }
 
 export interface Medication {
@@ -47,14 +45,18 @@ export interface Medication {
   updatedAt: Date
 }
 
-export interface Feeding {
+export interface IFeeding {
   id: string
-  timeFed: Date
+  timeFed: Date | string
   foodType: string
+  foodAmount: string
+  moodRating: string
   notes?: string
   petId: string
   createdAt: Date
   updatedAt: Date
+
+  pet: Pet
 }
 
 export interface SeizureActivity {

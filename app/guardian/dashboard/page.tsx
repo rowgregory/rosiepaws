@@ -1,10 +1,11 @@
 'use client'
 
+import React from 'react'
 import Title from '@/app/components/admin/Title'
 import Spinner from '@/app/components/common/Spinner'
+import GuardianFeedingGraph from '@/app/components/guardian/GuardianFeedingGraph'
 import GuardianPainScoreGraph from '@/app/components/guardian/GuardianPainScoreGraph'
 import { RootState, useAppSelector } from '@/app/redux/store'
-import React from 'react'
 
 const GuardianDashboard = () => {
   const { pet, loading } = useAppSelector((state: RootState) => state.pet)
@@ -20,8 +21,11 @@ const GuardianDashboard = () => {
     </div>
   ) : (
     <>
-      <Title title={pet?.name} />
-      <GuardianPainScoreGraph chartData={chartData} />
+      <div className="space-y-10">
+        <Title title={pet?.name} />
+        <GuardianPainScoreGraph chartData={chartData} />
+        <GuardianFeedingGraph feedingData={pet.feedings} />
+      </div>
     </>
   )
 }

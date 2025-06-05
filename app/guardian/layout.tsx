@@ -8,6 +8,7 @@ import GuardianToolbar from '../components/guardian/GuardianToolbar'
 import { useFetchMyPetsQuery } from '../redux/services/petApi'
 import CreatePainScoreDrawer from '../drawers/CreatePainScoreDrawer'
 import GuardianActionMenu from '../components/guardian/GuardianActionMenu'
+import CreateFeedingDrawer from '../drawers/CreateFeedingDrawer'
 
 const GuardianLayout: FC<ChildrenProps> = ({ children }) => {
   const [toggleSidebar, setToggleSidebar] = useState(false)
@@ -17,6 +18,7 @@ const GuardianLayout: FC<ChildrenProps> = ({ children }) => {
     <>
       <CreatePetDrawer />
       <CreatePainScoreDrawer />
+      <CreateFeedingDrawer />
       <GuardianActionMenu />
       <div className="flex">
         <GuardianNavigation toggleSidebar={toggleSidebar} setToggleSidebar={setToggleSidebar} />

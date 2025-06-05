@@ -66,7 +66,6 @@ export const authSlice = createSlice({
         state.success = true
       })
       .addMatcher(authApi.endpoints.login.matchFulfilled, (state, { payload }: any) => {
-        console.log(payload)
         state.loading = false
         state.isAuthenticated = payload.payload.isAuthenticated
         state.userId = payload.payload.id

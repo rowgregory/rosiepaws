@@ -5,6 +5,7 @@ import Title from '@/app/components/admin/Title'
 import { ChildrenProps } from '@/app/types/common.types'
 import Link from 'next/link'
 import useCustomPathname from '@/app/hooks/useCustomPathname'
+import { useFetchAllPetsQuery } from '@/app/redux/services/petApi'
 
 const petLinks = (path: string) => [
   {
@@ -16,6 +17,7 @@ const petLinks = (path: string) => [
 
 const PetsLayout: FC<ChildrenProps> = ({ children }) => {
   const path = useCustomPathname()
+  useFetchAllPetsQuery({})
 
   return (
     <div>

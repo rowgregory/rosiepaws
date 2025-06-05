@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { RootState, useAppDispatch, useAppSelector } from '@/app/redux/store'
 import {
   setCloseGuardianActionMenu,
-  setOpenFoodDrawer,
+  setOpenFeedingDrawer,
   setOpenMedicationDrawer,
   setOpenPainScoreDrawer,
   setOpenPetDrawer,
@@ -21,7 +21,7 @@ const actions = [
   { label: 'Pet', linkKey: '/guardian/pets/list', func: setOpenPetDrawer, icon: catIcon },
   { label: 'Pain Score', linkKey: '/guardian/pets/pain', func: setOpenPainScoreDrawer, icon: heartBeatIcon },
   { label: 'Water Intake', linkKey: '/guardian/pets/water', func: setOpenWaterDrawer, icon: faWater },
-  { label: 'Food Intake', linkKey: '/guardian/pets/food', func: setOpenFoodDrawer, icon: faBowlFood },
+  { label: 'Feedings', linkKey: '/guardian/pets/feedings', func: setOpenFeedingDrawer, icon: faBowlFood },
   { label: 'Medication', linkKey: '/guardian/pets/medication', func: setOpenMedicationDrawer, icon: faKitMedical }
 ]
 

@@ -1,4 +1,6 @@
 import {
+  addFeedingToPet,
+  addFeedingToState,
   addPainScoreToPet,
   addPainScoreToState,
   addPetToState,
@@ -47,6 +49,16 @@ export const petApi = api.injectEndpoints({
         await queryFulfilled
         dispatch(removePetFromState(arg.id))
       }
+    }),
+
+    createFeeding: build.mutation({
+      query: (body: any) => ({ url: `${BASE_URL}/create-feeding`, method: 'POST', body }),
+      onQueryStarted: async (_: any, { dispatch, queryFulfilled }: any) => {
+        const { data } = await queryFulfilled
+        const newFeeding = data.feeding
+        dispatch(addFeedingToState(newFeeding))
+        dispatch(addFeedingToPet(newFeeding))
+      }
     })
   })
 })
@@ -57,5 +69,6 @@ export const {
   useCreatePetMutation,
   useCreatePainScoreMutation,
   useUpdatePetMutation,
-  useDeletePetMutation
+  useDeletePetMutation,
+  useCreateFeedingMutation
 } = petApi

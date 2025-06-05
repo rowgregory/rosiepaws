@@ -1,8 +1,9 @@
 import { petInitialState } from '@/app/lib/initial-states/pet'
-import { PainScore, Pet } from '@/app/types/model.types'
+import { IFeeding, PainScore, Pet } from '@/app/types/model.types'
 import { Reducer, createSlice } from '@reduxjs/toolkit'
 import { petApi } from '../services/petApi'
 import { painScoreInitialState } from '@/app/lib/initial-states/pain-score'
+import { feedingInitialState } from '@/app/lib/initial-states/feeding'
 
 export interface PetStatePayload {
   loading: boolean
@@ -24,8 +25,13 @@ export interface PetStatePayload {
 
   guardianActionMenu: boolean
 
+  feedings: IFeeding[]
+  feeding: IFeeding
+  zeroFeedings: boolean
+  feedingDrawer: boolean
+  feedingCount: number
+
   waterDrawer: boolean
-  foodDrawer: boolean
   medicationDrawer: boolean
 }
 
@@ -34,6 +40,7 @@ export const initialPetState: PetStatePayload = {
   success: false,
   error: '',
   message: '',
+  guardianActionMenu: false,
 
   pets: [],
   pet: petInitialState,
@@ -47,10 +54,13 @@ export const initialPetState: PetStatePayload = {
   painScoreDrawer: false,
   painScoreCount: 0,
 
-  guardianActionMenu: false,
+  feedings: [],
+  feeding: feedingInitialState,
+  zeroFeedings: true,
+  feedingDrawer: false,
+  feedingCount: 0,
 
   waterDrawer: false,
-  foodDrawer: false,
   medicationDrawer: false
 }
 
@@ -89,11 +99,11 @@ export const petSlice = createSlice({
     setCloseWaterDrawer: (state) => {
       state.waterDrawer = false
     },
-    setOpenFoodDrawer: (state) => {
-      state.foodDrawer = true
+    setOpenFeedingDrawer: (state) => {
+      state.feedingDrawer = true
     },
-    setCloseFoodDrawer: (state) => {
-      state.foodDrawer = false
+    setCloseFeedingDrawer: (state) => {
+      state.feedingDrawer = false
     },
     setOpenMedicationDrawer: (state) => {
       state.medicationDrawer = true
@@ -107,6 +117,7 @@ export const petSlice = createSlice({
     setCloseGuardianActionMenu: (state) => {
       state.guardianActionMenu = false
     },
+
     addPetToState: (state, action) => {
       state.pets.push(action.payload)
       state.petCount = state.petCount + 1
@@ -124,6 +135,7 @@ export const petSlice = createSlice({
       state.petCount = state.petCount - 1
       state.zeroPets = state.pets.length === 0
     },
+
     addPainScoreToState: (state, action) => {
       state.painScores.unshift(action.payload)
       state.painScoreCount = state.painScoreCount + 1
@@ -132,6 +144,29 @@ export const petSlice = createSlice({
     addPainScoreToPet: (state, action) => {
       if (state.pet && Array.isArray(state.pet.painScore)) {
         state.pet.painScore.unshift(action.payload)
+      }
+    },
+
+    updateFeedingInState: (state, action) => {
+      const updatedFeeding = action.payload
+      const index = state.feedings.findIndex((feeding: { id: string }) => feeding.id === updatedFeeding.id)
+      if (index !== -1) {
+        state.feedings[index] = updatedFeeding
+      }
+    },
+    removeFeedingFromState: (state, action) => {
+      state.feedings = state.feedings.filter((feeding: { id: string }) => feeding.id !== action.payload)
+      state.feedingCount = state.feedingCount - 1
+      state.zeroFeedings = state.feedings.length === 0
+    },
+    addFeedingToState: (state, action) => {
+      state.feedings.unshift(action.payload)
+      state.feedingCount = state.feedingCount + 1
+      state.zeroFeedings = state.feedings.length === 0
+    },
+    addFeedingToPet: (state, action) => {
+      if (state.pet && Array.isArray(state.pet.feedings)) {
+        state.pet.feedings.unshift(action.payload)
       }
     }
   },
@@ -155,6 +190,11 @@ export const petSlice = createSlice({
         state.painScore = payload.painScores[0]
         state.zeroPainScores = payload.painScores.length === 0
         state.painScoreCount = payload.painScores.length
+
+        state.feedings = payload.feedings
+        state.feeding = payload.feedings[0]
+        state.zeroFeedings = payload.feedings.length === 0
+        state.feedingCount = payload.feedings.length
       })
       .addMatcher(petApi.endpoints.createPet.matchFulfilled, (state) => {
         state.loading = false
@@ -164,6 +204,12 @@ export const petSlice = createSlice({
       })
       .addMatcher(petApi.endpoints.deletePet.matchFulfilled, (state) => {
         state.success = true
+        state.loading = false
+      })
+      .addMatcher(petApi.endpoints.createPainScore.matchFulfilled, (state) => {
+        state.loading = false
+      })
+      .addMatcher(petApi.endpoints.createFeeding.matchFulfilled, (state) => {
         state.loading = false
       })
       .addMatcher(
@@ -194,9 +240,13 @@ export const {
   setCloseGuardianActionMenu,
   setOpenWaterDrawer,
   setCloseWaterDrawer,
-  setOpenFoodDrawer,
-  setCloseFoodDrawer,
+  setOpenFeedingDrawer,
+  setCloseFeedingDrawer,
   setOpenMedicationDrawer,
   setCloseMedicationDrawer,
-  addPainScoreToPet
+  addPainScoreToPet,
+  updateFeedingInState,
+  removeFeedingFromState,
+  addFeedingToState,
+  addFeedingToPet
 } = petSlice.actions

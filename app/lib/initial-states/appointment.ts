@@ -6,7 +6,5 @@ export const appointmentInitialState: Appointment = {
   reason: '',
   location: '',
   notes: '',
-  petId: '',
-  createdAt: new Date(),
-  updatedAt: new Date()
+  petId: ''
 }

@@ -19,9 +19,9 @@ const petLinks = (path: string, role: string): { linkKey?: string; textKey?: str
     isActive: path === '/guardian/pets/pain'
   },
   {
-    linkKey: '/guardian/pets/food',
-    textKey: 'Food Intake',
-    isActive: path === '/guardian/pets/food'
+    linkKey: '/guardian/pets/feedings',
+    textKey: 'Feedings',
+    isActive: path === '/guardian/pets/feedings'
   },
   {
     linkKey: '/guardian/pets/water',
@@ -52,7 +52,6 @@ const petLinks = (path: string, role: string): { linkKey?: string; textKey?: str
 const GuardianPetsLayout: FC<ChildrenProps> = ({ children }) => {
   const path = useCustomPathname()
   const { role } = useAppSelector((state: RootState) => state.auth)
-  console.log(role)
 
   return (
     <>

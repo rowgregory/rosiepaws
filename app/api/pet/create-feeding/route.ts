@@ -13,11 +13,14 @@ export async function POST(req: NextRequest) {
     const parsedUser = JSON.parse(userHeader)
     const ownerId = parsedUser.id
 
-    const { petId, score } = await req.json()
+    const { petId, foodAmount, foodType, notes, timeFed, moodRating } = await req.json()
 
-    if (!petId || score === undefined || score === null) {
+    if (!petId || !foodAmount || !foodType || !timeFed) {
       return NextResponse.json(
-        { message: `Missing required fields: petId: ${petId} and score: ${score} are required`, sliceName: slicePet },
+        {
+          message: `Missing required fields: petId: ${petId}, foodAmount: ${foodAmount}, foodType: ${foodType}, timeFed: ${timeFed} are required`,
+          sliceName: slicePet
+        },
         { status: 400 }
       )
     }
@@ -25,8 +28,8 @@ export async function POST(req: NextRequest) {
     // Confirm pet exists
     const pet = await prisma.pet.findUnique({ where: { id: petId } })
     if (!pet) {
-      await createLog('warning', 'Pet not found when creating pain score', {
-        location: ['api route - POST /api/pet/create-pain-score'],
+      await createLog('warning', 'Pet not found when creating feedomg', {
+        location: ['api route - POST /api/pet/create-feeding'],
         name: 'PetNotFound',
         timestamp: new Date().toISOString(),
         url: req.url,
@@ -38,30 +41,34 @@ export async function POST(req: NextRequest) {
     }
 
     // Create PainScore entry
-    const painScore = await prisma.painScore.create({
+    const feeding = await prisma.feeding.create({
       data: {
         petId,
-        score
+        foodAmount,
+        foodType,
+        notes,
+        timeFed,
+        moodRating
       },
       include: {
         pet: true // Optional: attach pet info like name
       }
     })
 
-    await createLog('info', 'Pain score created successfully', {
-      location: ['api route - POST /api/pet/create-pain-score'],
-      name: 'PainScoreCreated',
+    await createLog('info', 'Feeding created successfully', {
+      location: ['api route - POST /api/pet/create-feeding'],
+      name: 'FeedingCreated',
       timestamp: new Date().toISOString(),
       url: req.url,
       method: req.method,
       petId,
-      painScoreId: painScore.id,
+      painScoreId: feeding.id,
       ownerId
     })
 
-    return NextResponse.json({ painScore, sliceName: slicePet }, { status: 201 })
+    return NextResponse.json({ feeding, sliceName: slicePet }, { status: 201 })
   } catch (error: any) {
-    await createLog('error', `Pain score creation failed: ${error.message}`, {
+    await createLog('error', `Feeding creation failed: ${error.message}`, {
       errorLocation: parseStack(JSON.stringify(error)),
       errorMessage: error.message,
       errorName: error.name || 'UnknownError',
@@ -69,6 +76,6 @@ export async function POST(req: NextRequest) {
       url: req.url,
       method: req.method
     })
-    return NextResponse.json({ message: 'Pain score creation failed', error, sliceName: slicePet }, { status: 500 })
+    return NextResponse.json({ message: 'Feeding creation failed', error, sliceName: slicePet }, { status: 500 })
   }
 }

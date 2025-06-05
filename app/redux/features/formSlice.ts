@@ -4,6 +4,7 @@ import { UserProps } from './userSlice'
 import { petInitialState } from '@/app/lib/initial-states/pet'
 import { registerInitialState } from '@/app/lib/initial-states/register'
 import { painScoreInitialState } from '@/app/lib/initial-states/pain-score'
+import { feedingInitialState } from '@/app/lib/initial-states/feeding'
 
 export type Inputs = {
   [key: string]: string | number | boolean | undefined | unknown
@@ -44,6 +45,10 @@ const formInitialState = {
   painScoreForm: {
     inputs: painScoreInitialState,
     errors: painScoreInitialState
+  },
+  feedingForm: {
+    inputs: feedingInitialState,
+    errors: feedingInitialState
   }
 } as any
 

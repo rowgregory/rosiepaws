@@ -1,11 +1,15 @@
-import { Feeding } from '@/app/types/model.types'
+import { IFeeding } from '@/app/types/model.types'
+import { petInitialState } from './pet'
 
-export const feedingInitialState: Feeding = {
+export const feedingInitialState: IFeeding = {
   id: '',
-  timeFed: new Date(),
+  timeFed: '',
   foodType: '',
+  foodAmount: '',
   notes: '',
+  moodRating: '0',
   petId: '',
   createdAt: new Date(),
-  updatedAt: new Date()
+  updatedAt: new Date(),
+  pet: petInitialState
 }

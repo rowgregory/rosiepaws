@@ -16,7 +16,8 @@ export async function GET(req: NextRequest) {
     const pets = await prisma.pet.findMany({
       where: { ownerId },
       include: {
-        painScore: true // This includes the associated PainScore(s)
+        painScore: true, // This includes the associated PainScore(s)
+        feedings: true
       }
     })
 
@@ -33,8 +34,21 @@ export async function GET(req: NextRequest) {
         createdAt: 'desc'
       }
     })
+    const feedings = await prisma.feeding.findMany({
+      where: {
+        pet: {
+          ownerId: ownerId
+        }
+      },
+      include: {
+        pet: true // Optional: attach pet info like name
+      },
+      orderBy: {
+        createdAt: 'desc'
+      }
+    })
 
-    return NextResponse.json({ pets, painScores, sliceName: slicePet }, { status: 200 })
+    return NextResponse.json({ pets, painScores, feedings, sliceName: slicePet }, { status: 200 })
   } catch (error: any) {
     await createLog('error', `Fetch pets failed: ${error.message}`, {
       errorLocation: parseStack(JSON.stringify(error)),
