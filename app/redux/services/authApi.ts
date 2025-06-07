@@ -1,3 +1,4 @@
+import { setAuthState } from '../features/authSlice'
 import { api } from './api'
 
 const BASE_URL = '/auth'
@@ -24,7 +25,14 @@ export const authApi = api.injectEndpoints({
         url: `${BASE_URL}/login`,
         method: 'POST',
         body
-      })
+      }),
+      async onQueryStarted(arg, { dispatch, queryFulfilled }) {
+        try {
+          // Wait for the mutation to succeed
+          const { data } = await queryFulfilled
+          dispatch(setAuthState(data.payload))
+        } catch {}
+      }
     }),
     forgotPassword: build.mutation({
       query: (body) => ({

@@ -9,7 +9,7 @@ import { clearInputs, createFormActions } from '@/app/redux/features/formSlice'
 import ResetPasswordForm from '@/app/forms/ResetPasswordForm'
 import validateResetPasswordForm from '@/app/validations/validateResetPasswordForm'
 import Link from 'next/link'
-import { getErrorMessage } from '@/app/utils/logHelper'
+import { getErrorMessage } from '@/app/lib/utils/logHelper'
 import { resetAuthPasswordReset, resetAuthSuccess } from '@/app/redux/features/authSlice'
 
 const ForgotPassword = () => {

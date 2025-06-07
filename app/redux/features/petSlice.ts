@@ -1,9 +1,11 @@
 import { petInitialState } from '@/app/lib/initial-states/pet'
-import { IFeeding, PainScore, Pet } from '@/app/types/model.types'
+import { BloodSugar, IFeeding, PainScore, Pet, ISeizure } from '@/app/types/model.types'
 import { Reducer, createSlice } from '@reduxjs/toolkit'
 import { petApi } from '../services/petApi'
 import { painScoreInitialState } from '@/app/lib/initial-states/pain-score'
 import { feedingInitialState } from '@/app/lib/initial-states/feeding'
+import { bloodSugarInitialState } from '@/app/lib/initial-states/bloodSugar'
+import { seizureInitialState } from '@/app/lib/initial-states/seizure'
 
 export interface PetStatePayload {
   loading: boolean
@@ -31,8 +33,20 @@ export interface PetStatePayload {
   feedingDrawer: boolean
   feedingCount: number
 
+  bloodSugars: BloodSugar[]
+  bloodSugar: BloodSugar
+  zeroBloodSugars: boolean
+  bloodSugarDrawer: boolean
+  bloodSugarCount: number
+
   waterDrawer: boolean
   medicationDrawer: boolean
+
+  seizures: ISeizure[]
+  seizure: ISeizure
+  zeroSeizures: boolean
+  seizureDrawer: boolean
+  seizureCount: number
 }
 
 export const initialPetState: PetStatePayload = {
@@ -60,8 +74,20 @@ export const initialPetState: PetStatePayload = {
   feedingDrawer: false,
   feedingCount: 0,
 
+  bloodSugars: [],
+  bloodSugar: bloodSugarInitialState,
+  zeroBloodSugars: true,
+  bloodSugarDrawer: false,
+  bloodSugarCount: 0,
+
   waterDrawer: false,
-  medicationDrawer: false
+  medicationDrawer: false,
+
+  seizures: [],
+  seizure: seizureInitialState,
+  zeroSeizures: true,
+  seizureDrawer: false,
+  seizureCount: 0
 }
 
 interface ErrorPayload {
@@ -105,6 +131,12 @@ export const petSlice = createSlice({
     setCloseFeedingDrawer: (state) => {
       state.feedingDrawer = false
     },
+    setOpenBloodSugarDrawer: (state) => {
+      state.bloodSugarDrawer = true
+    },
+    setCloseBloodSugarDrawer: (state) => {
+      state.bloodSugarDrawer = false
+    },
     setOpenMedicationDrawer: (state) => {
       state.medicationDrawer = true
     },
@@ -142,8 +174,8 @@ export const petSlice = createSlice({
       state.zeroPainScores = state.painScores.length === 0
     },
     addPainScoreToPet: (state, action) => {
-      if (state.pet && Array.isArray(state.pet.painScore)) {
-        state.pet.painScore.unshift(action.payload)
+      if (state.pet && Array.isArray(state.pet.painScores)) {
+        state.pet.painScores.unshift(action.payload)
       }
     },
 
@@ -167,6 +199,17 @@ export const petSlice = createSlice({
     addFeedingToPet: (state, action) => {
       if (state.pet && Array.isArray(state.pet.feedings)) {
         state.pet.feedings.unshift(action.payload)
+      }
+    },
+
+    addBloodSugarToState: (state, action) => {
+      state.bloodSugars.unshift(action.payload)
+      state.bloodSugarCount = state.bloodSugarCount + 1
+      state.zeroBloodSugars = state.bloodSugars.length === 0
+    },
+    addBloodSugarToPet: (state, action) => {
+      if (state.pet && Array.isArray(state.pet.bloodSugars)) {
+        state.pet.bloodSugars.unshift(action.payload)
       }
     }
   },
@@ -195,6 +238,16 @@ export const petSlice = createSlice({
         state.feeding = payload.feedings[0]
         state.zeroFeedings = payload.feedings.length === 0
         state.feedingCount = payload.feedings.length
+
+        state.bloodSugars = payload.bloodSugars
+        state.bloodSugar = payload.bloodSugars[0]
+        state.zeroFeedings = payload.bloodSugars.length === 0
+        state.bloodSugarCount = payload.bloodSugars.length
+
+        state.seizures = payload.seizures
+        state.seizure = payload.seizures[0]
+        state.zeroSeizures = payload.seizures.length === 0
+        state.seizureCount = payload.seizures.length
       })
       .addMatcher(petApi.endpoints.createPet.matchFulfilled, (state) => {
         state.loading = false
@@ -210,6 +263,9 @@ export const petSlice = createSlice({
         state.loading = false
       })
       .addMatcher(petApi.endpoints.createFeeding.matchFulfilled, (state) => {
+        state.loading = false
+      })
+      .addMatcher(petApi.endpoints.createBloodSugar.matchFulfilled, (state) => {
         state.loading = false
       })
       .addMatcher(
@@ -242,11 +298,15 @@ export const {
   setCloseWaterDrawer,
   setOpenFeedingDrawer,
   setCloseFeedingDrawer,
+  setOpenBloodSugarDrawer,
+  setCloseBloodSugarDrawer,
   setOpenMedicationDrawer,
   setCloseMedicationDrawer,
   addPainScoreToPet,
   updateFeedingInState,
   removeFeedingFromState,
   addFeedingToState,
-  addFeedingToPet
+  addFeedingToPet,
+  addBloodSugarToState,
+  addBloodSugarToPet
 } = petSlice.actions

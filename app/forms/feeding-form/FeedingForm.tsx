@@ -1,74 +1,11 @@
 import React, { FC } from 'react'
-import { RootState, useAppSelector } from '../redux/store'
+import { RootState, useAppSelector } from '../../redux/store'
 import { CheckCircle2 } from 'lucide-react'
+import { AMOUNTS, FOOD_TYPES, getMoodDescription, MOOD_EMOJIS } from './constants'
+import { QUICK_TIMES } from '@/app/lib/utils/date'
+import { IForm } from '@/app/types/common.types'
 
-interface FeedingFormProps {
-  inputs: any
-  errors: any
-  handleInput: any
-  close: any
-  handleSubmit: any
-  loading: boolean
-}
-
-const foodTypes = [
-  { id: 'dry', name: 'Dry Food', icon: '🥘', color: 'bg-amber-50 border-amber-300 text-amber-700' },
-  { id: 'wet', name: 'Wet Food', icon: '🥫', color: 'bg-blue-50 border-blue-300 text-blue-700' },
-  { id: 'wet_dry', name: 'Wet + Dry', icon: '🍽️', color: 'bg-green-50 border-green-300 text-green-700' }
-]
-
-const amounts = [
-  { id: '1/4', label: '1/4 Cup', visual: '▪' },
-  { id: '1/2', label: '1/2 Cup', visual: '▪▪' },
-  { id: '3/4', label: '3/4 Cup', visual: '▪▪▪' },
-  { id: '1', label: '1 Cup', visual: '▪▪▪▪' },
-  { id: '1.25', label: '1 1/4 Cups', visual: '▪▪▪▪▪' },
-  { id: '1.5', label: '1 1/2 Cups', visual: '▪▪▪▪▪▪' },
-  { id: '1.75', label: '1 3/4 Cups', visual: '▪▪▪▪▪▪▪' },
-  { id: '2', label: '2 Cups', visual: '▪▪▪▪▪▪▪▪' }
-]
-
-const formatLocalDateTime = (date: Date) => {
-  const pad = (n: number) => n.toString().padStart(2, '0')
-  const yyyy = date.getFullYear()
-  const MM = pad(date.getMonth() + 1)
-  const dd = pad(date.getDate())
-  const hh = pad(date.getHours())
-  const mm = pad(date.getMinutes())
-  return `${yyyy}-${MM}-${dd}T${hh}:${mm}`
-}
-
-const now = new Date()
-const quickTimes = [
-  { label: 'Now', value: formatLocalDateTime(now) },
-  { label: '1 hour ago', value: formatLocalDateTime(new Date(now.getTime() - 60 * 60 * 1000)) },
-  { label: 'This morning', value: formatLocalDateTime(new Date(now.setHours(8, 0, 0, 0))) },
-  { label: 'This evening', value: formatLocalDateTime(new Date(new Date().setHours(18, 0, 0, 0))) }
-]
-
-const moodEmojis = ['😴', '😐', '🙂', '😋', '🤤']
-const getMoodDescription = (rating: number) => {
-  switch (rating) {
-    case 0:
-    case undefined:
-    case null:
-      return 'How was their appetite?'
-    case 1:
-      return 'Not very interested'
-    case 2:
-      return 'Ate normally'
-    case 3:
-      return 'Happy to eat'
-    case 4:
-      return 'Very excited!'
-    case 5:
-      return 'Absolutely thrilled!'
-    default:
-      return 'How was their appetite?'
-  }
-}
-
-const FeedingForm: FC<FeedingFormProps> = ({ inputs, handleInput, close, handleSubmit, loading }) => {
+const FeedingForm: FC<IForm> = ({ inputs, handleInput, close, handleSubmit, loading }) => {
   const { pets } = useAppSelector((state: RootState) => state.pet)
 
   return (
@@ -105,7 +42,7 @@ const FeedingForm: FC<FeedingFormProps> = ({ inputs, handleInput, close, handleS
           <div className="space-y-3">
             <label className="text-sm font-medium text-gray-700">Food Type</label>
             <div className="grid grid-cols-3 gap-2">
-              {foodTypes.map((food) => (
+              {FOOD_TYPES.map((food) => (
                 <label
                   key={food.id}
                   className={`p-3 rounded-lg border cursor-pointer transition-all text-center ${
@@ -127,7 +64,7 @@ const FeedingForm: FC<FeedingFormProps> = ({ inputs, handleInput, close, handleS
           <div className="space-y-3">
             <label className="text-sm font-medium text-gray-700">Amount</label>
             <div className="grid grid-cols-4 gap-2">
-              {amounts.map((amount) => (
+              {AMOUNTS.map((amount) => (
                 <label
                   key={amount.id}
                   className={`p-3 rounded-lg border cursor-pointer transition-all text-center ${
@@ -149,7 +86,7 @@ const FeedingForm: FC<FeedingFormProps> = ({ inputs, handleInput, close, handleS
           <div className="space-y-3">
             <label className="text-sm font-medium text-gray-700">Time Fed</label>
             <div className="grid grid-cols-2 gap-2 mb-3">
-              {quickTimes.map((time, index) => (
+              {QUICK_TIMES.map((time, index) => (
                 <label
                   key={index}
                   className={`p-2 rounded-lg border cursor-pointer text-sm transition-all text-center ${
@@ -179,7 +116,7 @@ const FeedingForm: FC<FeedingFormProps> = ({ inputs, handleInput, close, handleS
               How excited were they?
             </h3>
             <div className="flex justify-center space-x-2">
-              {moodEmojis.map((emoji, index) => (
+              {MOOD_EMOJIS.map((emoji, index) => (
                 <label
                   key={index}
                   className={`p-3 rounded-full transition-all transform hover:scale-110 cursor-pointer text-2xl ${
@@ -232,7 +169,7 @@ const FeedingForm: FC<FeedingFormProps> = ({ inputs, handleInput, close, handleS
           disabled={
             !inputs?.petId || !inputs?.foodType || !inputs?.foodAmount || !inputs?.timeFed || !inputs?.moodRating
           }
-          className="bg-indigo-500 disabled:bg-[#b7b2ff] text-white text-sm px-2 py-1 rounded-md font-medium flex items-center justify-center gap-x-1 min-w-[67.8px]"
+          className="bg-gradient-to-r from-purple-500 to-pink-500 disabled:from-gray-300 disabled:to-gray-400 text-white text-sm px-6 py-2 rounded-xl font-medium flex items-center justify-center gap-x-2 min-w-[100px] hover:from-purple-600 hover:to-pink-600 transition-all disabled:hover:from-gray-300 disabled:hover:to-gray-400"
         >
           Add{loading && 'ing'} feeding
         </button>

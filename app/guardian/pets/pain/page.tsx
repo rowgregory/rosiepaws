@@ -5,7 +5,7 @@ import { heartBeatIcon, plusIcon } from '@/app/lib/icons'
 import { setOpenPainScoreDrawer } from '@/app/redux/features/petSlice'
 import { RootState, useAppDispatch, useAppSelector } from '@/app/redux/store'
 import { PainScore } from '@/app/types/model.types'
-import { formatDate } from '@/app/utils/date.functions'
+import { formatDate } from '@/app/lib/utils/date'
 import React from 'react'
 
 const PainScoring = () => {

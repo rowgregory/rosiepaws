@@ -1,4 +1,6 @@
 import {
+  addBloodSugarToPet,
+  addBloodSugarToState,
   addFeedingToPet,
   addFeedingToState,
   addPainScoreToPet,
@@ -59,6 +61,16 @@ export const petApi = api.injectEndpoints({
         dispatch(addFeedingToState(newFeeding))
         dispatch(addFeedingToPet(newFeeding))
       }
+    }),
+
+    createBloodSugar: build.mutation({
+      query: (body: any) => ({ url: `${BASE_URL}/create-blood-sugar`, method: 'POST', body }),
+      onQueryStarted: async (_: any, { dispatch, queryFulfilled }: any) => {
+        const { data } = await queryFulfilled
+        const newBloodSugar = data.bloodSugar
+        dispatch(addBloodSugarToState(newBloodSugar))
+        dispatch(addBloodSugarToPet(newBloodSugar))
+      }
     })
   })
 })
@@ -70,5 +82,6 @@ export const {
   useCreatePainScoreMutation,
   useUpdatePetMutation,
   useDeletePetMutation,
-  useCreateFeedingMutation
+  useCreateFeedingMutation,
+  useCreateBloodSugarMutation
 } = petApi

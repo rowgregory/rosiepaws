@@ -1,39 +1,13 @@
 'use client'
 
+import { getFoodTypeColor, getTodaysFeedings } from '@/app/forms/feeding-form/constants'
+import { formatTimeAgo } from '@/app/lib/utils/date'
 import { RootState, useAppSelector } from '@/app/redux/store'
 import { Calendar, Clock, Plus, TrendingUp, Utensils } from 'lucide-react'
 import React from 'react'
 
 const Feedings = () => {
   const { zeroFeedings, feedings } = useAppSelector((state: RootState) => state.pet)
-  const formatTimeAgo = (dateString: string | Date) => {
-    const now: any = new Date()
-    const feedingTime: any = new Date(dateString)
-    const diffInMinutes = Math.floor((now - feedingTime) / (1000 * 60))
-
-    if (diffInMinutes < 1) return 'Just now'
-    if (diffInMinutes < 60) return `${diffInMinutes}m ago`
-    if (diffInMinutes < 1440) return `${Math.floor(diffInMinutes / 60)}h ago`
-    return `${Math.floor(diffInMinutes / 1440)}d ago`
-  }
-
-  const getFoodTypeColor = (foodType: string) => {
-    switch (foodType) {
-      case 'Dry Food':
-        return 'bg-amber-100 text-amber-800 border-amber-200'
-      case 'Wet Food':
-        return 'bg-blue-100 text-blue-800 border-blue-200'
-      case 'Wet + Dry':
-        return 'bg-green-100 text-green-800 border-green-200'
-      default:
-        return 'bg-gray-100 text-gray-800 border-gray-200'
-    }
-  }
-
-  const getTodaysFeedings = () => {
-    const today = new Date().toDateString()
-    return feedings.filter((feeding) => new Date(feeding.createdAt).toDateString() === today).length
-  }
 
   if (zeroFeedings) {
     return (
@@ -63,7 +37,7 @@ const Feedings = () => {
               <Calendar className="w-4 h-4 text-white" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-green-700">{getTodaysFeedings()}</p>
+              <p className="text-2xl font-bold text-green-700">{getTodaysFeedings(feedings)}</p>
               <p className="text-sm text-green-600">Today&apos;s feedings</p>
             </div>
           </div>

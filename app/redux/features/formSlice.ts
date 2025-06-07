@@ -5,6 +5,7 @@ import { petInitialState } from '@/app/lib/initial-states/pet'
 import { registerInitialState } from '@/app/lib/initial-states/register'
 import { painScoreInitialState } from '@/app/lib/initial-states/pain-score'
 import { feedingInitialState } from '@/app/lib/initial-states/feeding'
+import { bloodSugarInitialState } from '@/app/lib/initial-states/bloodSugar'
 
 export type Inputs = {
   [key: string]: string | number | boolean | undefined | unknown
@@ -49,6 +50,10 @@ const formInitialState = {
   feedingForm: {
     inputs: feedingInitialState,
     errors: feedingInitialState
+  },
+  bloodSugarForm: {
+    inputs: bloodSugarInitialState,
+    errors: bloodSugarInitialState
   }
 } as any
 
@@ -76,6 +81,7 @@ const formSlice = createSlice({
     clearInputs: (state, { payload }: PayloadAction<{ formName: string }>) => {
       const { formName } = payload
       state[formName].inputs = {}
+      state[formName].errors = {}
     },
     clearErrors: (state, { payload }: PayloadAction<{ formName: string }>) => {
       const { formName } = payload

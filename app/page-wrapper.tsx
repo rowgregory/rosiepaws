@@ -1,9 +1,13 @@
+'use client'
+
 import React, { FC } from 'react'
-import { ClientPageProps } from './types/common.types'
+import { IPage } from './types/common.types'
 import Header from './components/header/Header'
 import Footer from './components/footer/Footer'
+import useSyncUserToRedux from './hooks/useSyncUserToRedux'
 
-const PageWrapper: FC<ClientPageProps> = ({ children }) => {
+const PageWrapper: FC<IPage> = ({ children, user }) => {
+  useSyncUserToRedux(user)
   return (
     <>
       <Header />

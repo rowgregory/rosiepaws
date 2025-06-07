@@ -11,6 +11,7 @@ export interface DashboardStatePayload {
   bottomOverlayDrawer: boolean
   isUpdating: boolean
   type: string
+  notificationDrawer: boolean
 }
 
 const initialDashboardState: DashboardStatePayload = {
@@ -23,7 +24,8 @@ const initialDashboardState: DashboardStatePayload = {
   error: '',
   bottomOverlayDrawer: false,
   isUpdating: false,
-  type: ''
+  type: '',
+  notificationDrawer: false
 }
 
 export const dashboardSlice = createSlice({
@@ -74,6 +76,12 @@ export const dashboardSlice = createSlice({
     },
     setDashboardError: (state, { payload }) => {
       state.error = payload
+    },
+    setOpenNotificationDrawer: (state) => {
+      state.notificationDrawer = true
+    },
+    setCloseNotificationDrawer: (state) => {
+      state.notificationDrawer = false
     }
   }
 })
@@ -93,5 +101,7 @@ export const {
   openBottomOverlayDrawer,
   closeBottomOverlayDrawer,
   openViewDrawer,
-  setDashboardError
+  setDashboardError,
+  setOpenNotificationDrawer,
+  setCloseNotificationDrawer
 } = dashboardSlice.actions

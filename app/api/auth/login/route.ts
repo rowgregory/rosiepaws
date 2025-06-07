@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import prisma from '@/prisma/client'
 import argon2 from 'argon2'
 import { SignJWT } from 'jose'
-import { createLog } from '@/app/utils/logHelper'
+import { createLog } from '@/app/lib/utils/logHelper'
 import { parseStack } from 'error-stack-parser-es/lite'
 import { sliceAuth } from '@/public/data/api.data'
 

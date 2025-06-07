@@ -21,3 +21,24 @@ export interface DrawerProps {
   height?: string
   bgColor?: string
 }
+
+export type User = {
+  isAuthenticated: boolean
+  role: string
+  isAdmin: boolean
+  id: string
+  exp: number
+}
+
+export interface IPage {
+  user: User | null
+  children: ReactNode
+}
+export interface IForm {
+  inputs: any
+  errors: any
+  handleInput: any
+  close: any
+  handleSubmit: any
+  loading: boolean
+}

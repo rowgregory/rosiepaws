@@ -15,11 +15,11 @@ export interface Pet {
   appointments: Appointment[]
   medications: Medication[]
   feedings: IFeeding[]
-  seizureActivities: SeizureActivity[]
+  seizures: ISeizure[]
   walks: Walk[]
   waterIntakes: WaterIntake[]
   bloodSugars: BloodSugar[]
-  painScore: PainScore[]
+  painScores: PainScore[]
 
   createdAt: Date
   updatedAt: Date
@@ -59,7 +59,7 @@ export interface IFeeding {
   pet: Pet
 }
 
-export interface SeizureActivity {
+export interface ISeizure {
   id: string
   occurredAt: Date
   duration?: number // in seconds
@@ -69,6 +69,8 @@ export interface SeizureActivity {
   videoFilename?: string
   createdAt: Date
   updatedAt: Date
+
+  pet: Pet
 }
 
 export interface Walk {
@@ -93,11 +95,14 @@ export interface WaterIntake {
 
 export interface BloodSugar {
   id: string
-  value: number // expected 0–500
+  value: string
   notes?: string
   petId: string
+  timeTaken: string
   createdAt: Date
   updatedAt: Date
+
+  pet: Pet
 }
 
 export interface Blog {

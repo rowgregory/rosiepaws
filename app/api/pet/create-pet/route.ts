@@ -1,6 +1,6 @@
 import prisma from '@/prisma/client'
 import { NextRequest, NextResponse } from 'next/server'
-import { createLog } from '@/app/utils/logHelper'
+import { createLog } from '@/app/lib/utils/logHelper'
 import { parseStack } from 'error-stack-parser-es/lite'
 import { slicePet } from '@/public/data/api.data'
 

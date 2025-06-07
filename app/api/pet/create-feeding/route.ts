@@ -1,6 +1,6 @@
 import prisma from '@/prisma/client'
 import { NextRequest, NextResponse } from 'next/server'
-import { createLog } from '@/app/utils/logHelper'
+import { createLog } from '@/app/lib/utils/logHelper'
 import { parseStack } from 'error-stack-parser-es/lite'
 import { slicePet } from '@/public/data/api.data'
 
@@ -28,7 +28,7 @@ export async function POST(req: NextRequest) {
     // Confirm pet exists
     const pet = await prisma.pet.findUnique({ where: { id: petId } })
     if (!pet) {
-      await createLog('warning', 'Pet not found when creating feedomg', {
+      await createLog('warning', 'Pet not found when creating feeding', {
         location: ['api route - POST /api/pet/create-feeding'],
         name: 'PetNotFound',
         timestamp: new Date().toISOString(),
@@ -62,7 +62,7 @@ export async function POST(req: NextRequest) {
       url: req.url,
       method: req.method,
       petId,
-      painScoreId: feeding.id,
+      feedingId: feeding.id,
       ownerId
     })
 

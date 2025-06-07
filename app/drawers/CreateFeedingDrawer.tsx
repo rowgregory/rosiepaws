@@ -5,7 +5,7 @@ import AwesomeIcon from '../components/common/AwesomeIcon'
 import { timesIcon } from '../lib/icons'
 import { useCreateFeedingMutation } from '../redux/services/petApi'
 import { setCloseFeedingDrawer } from '../redux/features/petSlice'
-import FeedingForm from '../forms/FeedingForm'
+import FeedingForm from '../forms/feeding-form/FeedingForm'
 import validateFeedingForm from '../validations/validateFeedingForm'
 import GuardianFeedingChart from '../components/guardian/GuardianFeedingChart'
 

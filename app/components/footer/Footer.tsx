@@ -23,11 +23,8 @@ const Footer = () => {
               Rosie Paws
             </h2>
             <div className="flex items-center gap-x-7 md:justify-center">
-              <Link href="/admin/dashboard" className="text-[22px] uppercase font-bold text-articdaisy">
-                Admin
-              </Link>
-              <Link href="/guardian/dashboard" className="text-[22px] uppercase font-bold text-articdaisy">
-                Guardian
+              <Link href="/auth/login" className="text-[22px] uppercase font-bold text-articdaisy">
+                Login
               </Link>
             </div>
             <div className="flex md:justify-end">

@@ -1,9 +1,8 @@
 'use client'
 
-import AwesomeIcon from '@/app/components/common/AwesomeIcon'
-import { pawIcon, plusIcon } from '@/app/lib/icons'
 import { setOpenPetDrawer, setPet } from '@/app/redux/features/petSlice'
 import { RootState, useAppDispatch, useAppSelector } from '@/app/redux/store'
+import { ArrowRight, Heart, PawPrint, Plus, Sparkles } from 'lucide-react'
 import Link from 'next/link'
 import React from 'react'
 
@@ -14,37 +13,86 @@ const GuardianPetsList = () => {
   return (
     <>
       {zeroPets ? (
-        <div className="mt-24">
-          <div className="max-w-80 mx-auto w-full">
-            <div className="w-12 h-12 flex items-center justify-center bg-zinc-100 rounded-md">
-              <AwesomeIcon icon={pawIcon} className="w-5 h-5 text-zinc-400" />
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="max-w-md mx-auto text-center">
+            {/* Animated Icon Container */}
+            <div className="relative mb-6">
+              <div className="w-20 h-20 mx-auto bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center shadow-lg shadow-purple-500/25">
+                <PawPrint className="w-10 h-10 text-white" />
+              </div>
+              {/* Floating sparkles */}
+              <div className="absolute -top-2 -right-2">
+                <Sparkles className="w-6 h-6 text-yellow-400 animate-pulse" />
+              </div>
+              <div className="absolute -bottom-2 -left-2">
+                <Heart className="w-5 h-5 text-pink-400 animate-bounce" />
+              </div>
             </div>
-            <h1 className="text-xl text-[#21252c] font-bold my-3">Start by adding a pet</h1>
+
+            {/* Content */}
+            <h1 className="text-2xl font-bold text-gray-900 mb-3">Welcome to Your Pet Care Journey!</h1>
+            <p className="text-gray-600 mb-8 leading-relaxed">
+              Start tracking your furry friend&apos;s health, happiness, and daily activities. Every great pet care
+              story begins with a single step.
+            </p>
+
+            {/* CTA Button */}
             <button
               onClick={() => dispatch(setOpenPetDrawer())}
-              className="bg-indigo-500 text-white text-sm px-2 py-1 rounded-md font-medium flex items-center gap-x-1"
+              className="group bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white px-8 py-4 rounded-xl font-semibold flex items-center gap-3 mx-auto transition-all duration-300 hover:scale-105 hover:shadow-lg shadow-purple-500/25"
             >
-              <AwesomeIcon icon={plusIcon} className="text-white w-3 h-3" />
-              Add pet
+              <div className="w-5 h-5 bg-white/20 rounded-lg flex items-center justify-center">
+                <Plus className="w-3 h-3" />
+              </div>
+              Add Your First Pet
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
             </button>
           </div>
         </div>
       ) : (
-        <div className="pt-4 flex flex-col gap-y-5">
-          {pets?.map((pet) => (
-            <div key={pet.id} className="p-4 border-1 border-zinc-200 rounded-md flex items-center justify-between">
-              <h1 className="text-sm font-semibold">
-                {pet?.name} - <span className="font-normal">{pet?.breed}</span>
-              </h1>
-              <Link
-                href="/guardian/dashboard"
-                onClick={() => dispatch(setPet(pet))}
-                className="text-sm shadow-md py-1 px-2 rounded-md active:shadow-none duration-200 active:translate-y-1 hover:bg-zinc-50"
+        <div className="pt-6">
+          {/* Pets List */}
+          <div className="space-y-3">
+            {pets?.map((pet) => (
+              <div
+                key={pet.id}
+                className="group relative bg-white border border-gray-200 rounded-2xl p-5 hover:shadow-lg hover:border-gray-300 transition-all duration-300 flex items-center justify-between"
               >
-                Set Dashboard
-              </Link>
-            </div>
-          ))}
+                {/* Left Side - Pet Info */}
+                <div className="flex items-center gap-4">
+                  {/* Pet Avatar */}
+                  <div className="w-14 h-14 bg-gradient-to-br from-blue-400 to-purple-500 rounded-2xl flex items-center justify-center shadow-md group-hover:shadow-lg transition-shadow duration-300">
+                    <PawPrint className="w-7 h-7 text-white" />
+                  </div>
+
+                  {/* Pet Details */}
+                  <div>
+                    <h3 className="font-bold text-gray-900 text-lg mb-1">{pet?.name}</h3>
+                    <div className="flex items-center gap-3">
+                      <p className="text-gray-600 text-sm">{pet?.breed}</p>
+                      <div className="flex items-center gap-1.5 text-xs text-green-600 bg-green-50 px-2 py-1 rounded-full">
+                        <Heart className="w-3 h-3" />
+                        <span>Tracking Active</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Right Side - Action */}
+                <Link
+                  href="/guardian/dashboard"
+                  onClick={() => dispatch(setPet(pet))}
+                  className="group/button flex items-center gap-2 bg-gray-50 hover:bg-purple-500 text-gray-700 hover:text-white border border-gray-200 hover:border-purple-500 rounded-xl py-2.5 px-4 font-medium transition-all duration-300 hover:shadow-md"
+                >
+                  <span className="text-sm">Dashboard</span>
+                  <ArrowRight className="w-4 h-4 group-hover/button:translate-x-1 transition-transform duration-300" />
+                </Link>
+
+                {/* Subtle gradient accent on hover */}
+                <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-purple-500 to-pink-500 rounded-l-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              </div>
+            ))}
+          </div>
         </div>
       )}
     </>

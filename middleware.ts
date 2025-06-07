@@ -13,6 +13,8 @@ const adminPagePaths = [
   '/admin/users'
 ]
 
+const guardianPagePaths = ['/guardian']
+
 const adminApiPaths = [
   '/api/pet/fetch-pets',
   '/api/user/fetch-users',
@@ -35,12 +37,13 @@ export async function middleware(req: NextRequest) {
   const token = req.cookies.get('authToken')?.value
 
   if (!token) {
-    // Not logged in users are sent to login for admin pages or admin API
+    // Redirect to login for admin pages, guardian pages, or admin API
     if (
       adminPagePaths.some((path) => pathname.startsWith(path)) ||
+      guardianPagePaths.some((path) => pathname.startsWith(path)) ||
       adminApiPaths.some((path) => pathname.startsWith(path))
     ) {
-      //   url.pathname = '/auth/login'
+      url.pathname = '/auth/login'
       return NextResponse.redirect(url)
     }
     return NextResponse.next()
@@ -65,7 +68,6 @@ export async function middleware(req: NextRequest) {
     // Authenticated but non-admin user
     if (adminPagePaths.some((path) => pathname.startsWith(path))) {
       url.pathname = '/guardian/dashboard'
-
       return NextResponse.redirect(url)
     }
 
@@ -78,6 +80,7 @@ export async function middleware(req: NextRequest) {
     // Token invalid or expired — treat as unauthenticated
     if (
       adminPagePaths.some((path) => pathname.startsWith(path)) ||
+      guardianPagePaths.some((path) => pathname.startsWith(path)) ||
       adminApiPaths.some((path) => pathname.startsWith(path))
     ) {
       url.pathname = '/auth/login'

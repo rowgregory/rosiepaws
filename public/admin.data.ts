@@ -9,5 +9,6 @@ export const guardianPetsLink = '/guardian/pets/list'
 export const guardianDashboardLink = '/guardian/dashboard'
 export const guardianSubscriptionLink = '/guardian/subscription'
 export const guardianProfileLink = '/guardian/profile'
+export const guardianSettingsLink = '/guardian/settings'
 
 export const authLoginLink = '/auth/login'

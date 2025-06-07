@@ -3,7 +3,7 @@ import prisma from '@/prisma/client'
 import Stripe from 'stripe'
 import { parseStack } from 'error-stack-parser-es/lite'
 import { sliceAuth } from '@/public/data/api.data'
-import { createLog } from '@/app/utils/logHelper'
+import { createLog } from '@/app/lib/utils/logHelper'
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2025-04-30.basil'

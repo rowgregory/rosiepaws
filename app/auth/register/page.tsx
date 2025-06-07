@@ -7,7 +7,7 @@ import RegisterForm from '@/app/forms/RegisterForm'
 import { useRegisterMutation } from '@/app/redux/services/authApi'
 import validateRegisterForm from '@/app/validations/validateRegisterForm'
 import { createFormActions } from '@/app/redux/features/formSlice'
-import { getErrorMessage } from '@/app/utils/logHelper'
+import { getErrorMessage } from '@/app/lib/utils/logHelper'
 import { resetAuth } from '@/app/redux/features/authSlice'
 import { increaseUsersCount } from '@/app/redux/features/appSlice'
 

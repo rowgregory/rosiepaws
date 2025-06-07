@@ -7,7 +7,7 @@ import LoginForm from '@/app/forms/LoginForm'
 import { useRouter } from 'next/navigation'
 import validateLoginForm from '@/app/validations/validateLoginForm'
 import { createFormActions } from '@/app/redux/features/formSlice'
-import { getErrorMessage } from '@/app/utils/logHelper'
+import { getErrorMessage } from '@/app/lib/utils/logHelper'
 
 const Login = () => {
   const { push } = useRouter()

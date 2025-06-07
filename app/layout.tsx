@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { Barlow_Condensed, Merriweather, Satisfy } from 'next/font/google'
 import './globals.css'
 import ReduxWrapper from './redux-wrapper'
+import { getUserFromServerCookie } from './lib/auth'
 
 const barlowCondensed = Barlow_Condensed({
   variable: '--font-barlow-condensed',
@@ -27,15 +28,16 @@ export const metadata: Metadata = {
     'Rosie Paws is an app designed to help pet owners track important end of life care stats for their dogs and cats, like meals, medications, mood, and mobility. Share updates directly with your vet, stay organized, and feel supported during a difficult time'
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  const user = await getUserFromServerCookie()
   return (
     <html lang="en">
       <body className={`${barlowCondensed.variable} ${satisfy.variable} ${merrieweather.variable} antialiased`}>
-        <ReduxWrapper>{children}</ReduxWrapper>
+        <ReduxWrapper user={user}>{children}</ReduxWrapper>
       </body>
     </html>
   )

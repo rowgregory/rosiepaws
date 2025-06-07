@@ -14,11 +14,11 @@ export const petInitialState: Pet = {
   appointments: [],
   medications: [],
   feedings: [],
-  seizureActivities: [],
+  seizures: [],
   walks: [],
   waterIntakes: [],
   bloodSugars: [],
-  painScore: [],
+  painScores: [],
 
   createdAt: new Date(),
   updatedAt: new Date()

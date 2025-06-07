@@ -70,14 +70,14 @@ model Pet {
   ownerId String
   notes   String?
 
-  painScore         PainScore[]
-  appointments      Appointment[]
-  medications       Medication[]
-  feedings          Feeding[]
-  seizureActivities SeizureActivity[]
-  walks             Walk[]
-  waterIntakes      WaterIntake[]
-  bloodSugars       BloodSugar[]
+  painScores   PainScore[]
+  appointments Appointment[]
+  medications  Medication[]
+  feedings     Feeding[]
+  seizures     SeizureActivity[]
+  walks        Walk[]
+  waterIntakes WaterIntake[]
+  bloodSugars  BloodSugar[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -108,11 +108,12 @@ model Appointment {
 }
 
 model BloodSugar {
-  id    String  @id @default(uuid())
-  value Int // 0–500 range expected
-  notes String?
-  pet   Pet     @relation(fields: [petId], references: [id])
-  petId String
+  id        String   @id @default(uuid())
+  value     String
+  notes     String?
+  timeTaken DateTime
+  pet       Pet      @relation(fields: [petId], references: [id])
+  petId     String
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -147,13 +148,14 @@ model Medication {
 }
 
 model SeizureActivity {
-  id         String   @id @default(cuid())
-  occurredAt DateTime
-  duration   Int? // Duration in seconds (optional)
-  notes      String? // Optional observations or details
-
-  pet   Pet    @relation(fields: [petId], references: [id])
-  petId String
+  id            String   @id @default(cuid())
+  occurredAt    DateTime
+  duration      Int? // Duration in seconds (optional)
+  notes         String? // Optional observations or details
+  videoUrl      String?
+  videoFilename String?
+  pet           Pet      @relation(fields: [petId], references: [id])
+  petId         String
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
