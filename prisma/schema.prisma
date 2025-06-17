@@ -75,8 +75,7 @@ model Pet {
   medications  Medication[]
   feedings     Feeding[]
   seizures     SeizureActivity[]
-  walks        Walk[]
-  waterIntakes WaterIntake[]
+  waters       Water[]
   bloodSugars  BloodSugar[]
 
   createdAt DateTime @default(now())
@@ -84,10 +83,12 @@ model Pet {
 }
 
 model PainScore {
-  id    String @id @default(cuid())
-  score Int
-  pet   Pet    @relation(fields: [petId], references: [id])
-  petId String
+  id           String  @id @default(cuid())
+  score        Int
+  timeRecorded String  @default("")
+  notes        String?
+  pet          Pet     @relation(fields: [petId], references: [id])
+  petId        String
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -161,25 +162,16 @@ model SeizureActivity {
   updatedAt DateTime @updatedAt
 }
 
-model Walk {
-  id         String   @id @default(uuid())
-  duration   Int // in minutes
-  timeWalked DateTime
-  notes      String?
-  pet        Pet      @relation(fields: [petId], references: [id])
-  petId      String
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-model WaterIntake {
-  id        String   @id @default(uuid())
-  amount    Float // in mL or ounces
-  timeGiven DateTime
-  notes     String?
-  pet       Pet      @relation(fields: [petId], references: [id])
-  petId     String
+model Water {
+  id             String  @id @default(uuid())
+  intakeType     String
+  milliliters    String
+  relativeIntake String
+  timeRecorded   String
+  moodRating     String
+  notes          String?
+  pet            Pet     @relation(fields: [petId], references: [id])
+  petId          String
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

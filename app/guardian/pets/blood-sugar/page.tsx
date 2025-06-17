@@ -34,7 +34,7 @@ const BloodSugar = () => {
 
   return (
     <>
-      <div className="min-h-screen bg-gradient-to-br">
+      <div className="min-h-dvh">
         <div className="max-w-7xl mx-auto p-6 space-y-8">
           {/* Modern Header */}
           <motion.div

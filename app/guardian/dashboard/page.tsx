@@ -12,11 +12,11 @@ import {
   ReferenceLine,
   AreaChart,
   Area,
-  BarChart,
-  Bar,
   PieChart,
   Pie,
-  Cell
+  Cell,
+  BarChart,
+  Bar
 } from 'recharts'
 import { Activity, Droplets, Utensils, Pill, CheckCircle, Clock, Zap, PawPrint } from 'lucide-react'
 import Title from '@/app/components/admin/Title'
@@ -25,6 +25,7 @@ import GuardianFeedingGraph from '@/app/components/guardian/GuardianFeedingGraph
 import GuardianPainScoreGraph from '@/app/components/guardian/GuardianPainScoreGraph'
 import { RootState, useAppSelector } from '@/app/redux/store'
 import GuardianMetricCard from '@/app/components/guardian/GuardianMetricCard'
+import GuardianWaterGraph from '@/app/components/guardian/GuardianWaterGraph'
 
 const GuardianDashboard = () => {
   const { pet, loading } = useAppSelector((state: RootState) => state.pet)
@@ -60,11 +61,11 @@ const GuardianDashboard = () => {
           type: obj.foodType
         })) || [],
 
-      waterIntake:
-        pet?.waterIntakes?.map((obj: any) => ({
-          date: new Date(obj.timeTaken).toLocaleDateString(),
-          time: new Date(obj.timeTaken).toLocaleTimeString(),
-          amount: obj.amount
+      waters:
+        pet?.waters?.map((obj: any) => ({
+          date: new Date(obj.timeRecorded).toLocaleDateString(),
+          time: new Date(obj.timeRecorded).toLocaleTimeString(),
+          amount: obj.milliliters
         })) || [],
 
       medications:
@@ -103,7 +104,7 @@ const GuardianDashboard = () => {
     const weekPain = chartData.painScores?.filter((item) => new Date(item.date) >= weekAgo) || []
 
     const todayMedications = chartData.medications?.filter((item) => item.date === today) || []
-    const todayWater = chartData.waterIntake?.filter((item) => item.date === today) || []
+    const todayWater = chartData.waters?.filter((item) => item.date === today) || []
     const todayFeedings = chartData.feedings?.filter((item) => item.date === today) || []
 
     return {
@@ -137,7 +138,10 @@ const GuardianDashboard = () => {
             : 100
       },
       water: {
-        todayTotal: todayWater.reduce((sum, item) => sum + (item.amount || 0), 0),
+        todayTotal: todayWater.reduce((sum, item) => {
+          const amount = parseInt(item.amount) || 0
+          return sum + amount
+        }, 0),
         todayCount: todayWater.length
       },
       feedings: {
@@ -185,24 +189,8 @@ const GuardianDashboard = () => {
       case 'feedings':
         return <GuardianFeedingGraph feedingData={chartData.feedings} />
 
-      case 'water-intake':
-        return (
-          <ResponsiveContainer width="100%" height={400}>
-            <BarChart data={chartData.waterIntake}>
-              <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
-              <XAxis dataKey="time" />
-              <YAxis />
-              <Tooltip />
-              <Bar dataKey="amount" fill="url(#waterGradient)" radius={[4, 4, 0, 0]} />
-              <defs>
-                <linearGradient id="waterGradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.8} />
-                  <stop offset="95%" stopColor="#3b82f6" stopOpacity={0.3} />
-                </linearGradient>
-              </defs>
-            </BarChart>
-          </ResponsiveContainer>
-        )
+      case 'water':
+        return <GuardianWaterGraph waterData={pet.waters} petWeight={pet?.weight || 20} />
 
       case 'medications':
         return (
@@ -288,6 +276,7 @@ const GuardianDashboard = () => {
                 </LineChart>
               </ResponsiveContainer>
             </div>
+
             <div className="bg-white p-6 rounded-xl">
               <h3 className="text-lg font-semibold mb-4">Pain Trends</h3>
               <ResponsiveContainer width="100%" height={200}>
@@ -299,6 +288,7 @@ const GuardianDashboard = () => {
                 </AreaChart>
               </ResponsiveContainer>
             </div>
+
             <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
               <h3 className="text-lg font-semibold mb-4 text-gray-900">Food Type Distribution</h3>
               <div className="flex items-center justify-center">
@@ -332,6 +322,142 @@ const GuardianDashboard = () => {
                   </div>
                 ))}
               </div>
+            </div>
+
+            {/* NEW WATER CHART */}
+            <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+              <h3 className="text-lg font-semibold mb-4 text-gray-900">Water Intake Trend</h3>
+              {(() => {
+                // Process water data for mini chart
+                const waterChartData =
+                  pet.waters?.slice(-7)?.map((entry: any) => {
+                    const date = new Date(entry.timeRecorded)
+                    return {
+                      day: date.toLocaleDateString('en-US', { weekday: 'short' }),
+                      amount: entry.intakeType === 'milliliters' ? parseInt(entry.milliliters) || 0 : 0,
+                      hasRelative: entry.intakeType === 'relative',
+                      relativeType: entry.relativeIntake
+                    }
+                  }) || []
+
+                // Group by day and sum amounts
+                const dailyWater = waterChartData.reduce((acc: any, entry: any) => {
+                  const existing = acc.find((item: any) => item.day === entry.day)
+                  if (existing) {
+                    existing.amount += entry.amount
+                    existing.relativeCount += entry.hasRelative ? 1 : 0
+                  } else {
+                    acc.push({
+                      day: entry.day,
+                      amount: entry.amount,
+                      relativeCount: entry.hasRelative ? 1 : 0
+                    })
+                  }
+                  return acc
+                }, [])
+
+                const hasExactData = dailyWater.some((day: any) => day.amount > 0)
+                const hasRelativeData = dailyWater.some((day: any) => day.relativeCount > 0)
+
+                if (!hasExactData && !hasRelativeData) {
+                  return (
+                    <div className="flex items-center justify-center h-48 text-gray-400">
+                      <div className="text-center">
+                        <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-2">
+                          <svg className="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 9.172V5L8 4z"
+                            />
+                          </svg>
+                        </div>
+                        <p className="text-sm">No water data</p>
+                      </div>
+                    </div>
+                  )
+                }
+
+                if (hasExactData) {
+                  // Show bar chart for exact measurements
+                  return (
+                    <>
+                      <ResponsiveContainer width="100%" height={200}>
+                        <BarChart data={dailyWater}>
+                          <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
+                          <XAxis dataKey="day" tick={{ fontSize: 10 }} />
+                          <YAxis tick={{ fontSize: 10 }} />
+                          <Tooltip
+                            formatter={(value: any) => [`${value}ml`, 'Water Intake']}
+                            labelFormatter={(label) => `${label}`}
+                          />
+                          <Bar dataKey="amount" fill="#3b82f6" radius={[2, 2, 0, 0]} opacity={0.8} />
+                        </BarChart>
+                      </ResponsiveContainer>
+                      {hasRelativeData && (
+                        <div className="text-center mt-2">
+                          <span className="text-xs text-gray-500">
+                            + {dailyWater.reduce((sum: number, day: any) => sum + day.relativeCount, 0)} relative
+                            measurements
+                          </span>
+                        </div>
+                      )}
+                    </>
+                  )
+                } else {
+                  // Show relative measurements summary
+                  const relativeStats =
+                    chartData.waters?.reduce((acc: any, entry: any) => {
+                      if (entry.intakeType === 'relative') {
+                        acc[entry.relativeIntake] = (acc[entry.relativeIntake] || 0) + 1
+                      }
+                      return acc
+                    }, {}) || {}
+
+                  const relativeData = [
+                    { type: 'More', count: relativeStats.more || 0, color: '#3b82f6' },
+                    { type: 'Same', count: relativeStats.same || 0, color: '#10b981' },
+                    { type: 'Less', count: relativeStats.less || 0, color: '#f59e0b' }
+                  ].filter((item) => item.count > 0)
+
+                  return (
+                    <>
+                      <div className="flex items-center justify-center">
+                        <ResponsiveContainer width="100%" height={160}>
+                          <PieChart>
+                            <Pie
+                              data={relativeData}
+                              cx="50%"
+                              cy="50%"
+                              innerRadius={30}
+                              outerRadius={60}
+                              paddingAngle={5}
+                              dataKey="count"
+                            >
+                              {relativeData.map((entry: any, index: number) => (
+                                <Cell key={`cell-${index}`} fill={entry.color} />
+                              ))}
+                            </Pie>
+                            <Tooltip
+                              formatter={(value: any) => [`${value} times`, 'Count']}
+                              labelFormatter={(label) => `${label} than usual`}
+                            />
+                          </PieChart>
+                        </ResponsiveContainer>
+                      </div>
+                      <div className="flex justify-center space-x-3 mt-2">
+                        {relativeData.map((item: any) => (
+                          <div key={item.type} className="flex items-center space-x-1 text-xs">
+                            <div className="w-2 h-2 rounded-full" style={{ backgroundColor: item.color }}></div>
+                            <span>{item.type}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </>
+                  )
+                }
+              })()}
             </div>
           </div>
         )
@@ -410,14 +536,14 @@ const GuardianDashboard = () => {
           />
 
           <GuardianMetricCard
-            id="water-intake"
+            id="water"
             title="Water Intake"
-            value={`${stats.water?.todayTotal || 0}ml`}
-            subtitle={`${stats.water?.todayCount || 0} drinks today`}
+            value={`${stats.water?.todayTotal}ml`}
+            subtitle={`${stats.water?.todayCount} drinks today`}
             icon={Droplets}
             color="blue"
-            onClick={() => setSelectedMetric('water-intake')}
-            isActive={selectedMetric === 'water-intake'}
+            onClick={() => setSelectedMetric('water')}
+            isActive={selectedMetric === 'water'}
             expandedCards={expandedCards}
             toggleCard={toggleCard}
           />
@@ -460,7 +586,7 @@ const GuardianDashboard = () => {
                   ? 'Pain Score Tracking'
                   : selectedMetric === 'feedings'
                   ? 'Feeding History'
-                  : selectedMetric === 'water-intake'
+                  : selectedMetric === 'water'
                   ? 'Water Intake Logs'
                   : selectedMetric === 'medications'
                   ? 'Medication Schedule'

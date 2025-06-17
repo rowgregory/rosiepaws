@@ -1,11 +1,13 @@
 import { petInitialState } from '@/app/lib/initial-states/pet'
-import { BloodSugar, IFeeding, PainScore, Pet, ISeizure } from '@/app/types/model.types'
+import { BloodSugar, IFeeding, PainScore, Pet, ISeizure, Water, Medication } from '@/app/types/model.types'
 import { Reducer, createSlice } from '@reduxjs/toolkit'
 import { petApi } from '../services/petApi'
 import { painScoreInitialState } from '@/app/lib/initial-states/pain-score'
 import { feedingInitialState } from '@/app/lib/initial-states/feeding'
 import { bloodSugarInitialState } from '@/app/lib/initial-states/bloodSugar'
 import { seizureInitialState } from '@/app/lib/initial-states/seizure'
+import { waterInitialState } from '@/app/lib/initial-states/water'
+import { medicationInitialState } from '@/app/lib/initial-states/medication'
 
 export interface PetStatePayload {
   loading: boolean
@@ -39,8 +41,17 @@ export interface PetStatePayload {
   bloodSugarDrawer: boolean
   bloodSugarCount: number
 
+  waters: Water[]
+  water: Water
+  zeroWaters: boolean
   waterDrawer: boolean
+  waterCount: number
+
+  medications: Medication[]
+  medication: Medication
+  zeroMedications: boolean
   medicationDrawer: boolean
+  medicationCount: number
 
   seizures: ISeizure[]
   seizure: ISeizure
@@ -80,8 +91,17 @@ export const initialPetState: PetStatePayload = {
   bloodSugarDrawer: false,
   bloodSugarCount: 0,
 
+  waters: [],
+  water: waterInitialState,
+  zeroWaters: false,
   waterDrawer: false,
+  waterCount: 0,
+
+  medications: [],
+  medication: medicationInitialState,
+  zeroMedications: false,
   medicationDrawer: false,
+  medicationCount: 0,
 
   seizures: [],
   seizure: seizureInitialState,
@@ -142,6 +162,12 @@ export const petSlice = createSlice({
     },
     setCloseMedicationDrawer: (state) => {
       state.medicationDrawer = false
+    },
+    setOpenSeizureDrawer: (state) => {
+      state.seizureDrawer = true
+    },
+    setCloseSeizureDrawer: (state) => {
+      state.seizureDrawer = false
     },
     setOpenGuardianActionMenu: (state) => {
       state.guardianActionMenu = true
@@ -211,6 +237,26 @@ export const petSlice = createSlice({
       if (state.pet && Array.isArray(state.pet.bloodSugars)) {
         state.pet.bloodSugars.unshift(action.payload)
       }
+    },
+    addWaterToState: (state, action) => {
+      state.waters.unshift(action.payload)
+      state.waterCount = state.waterCount + 1
+      state.zeroWaters = state.waters.length === 0
+    },
+    addWaterToPet: (state, action) => {
+      if (state.pet && Array.isArray(state.pet.waters)) {
+        state.pet.waters.unshift(action.payload)
+      }
+    },
+    addMedicationToState: (state, action) => {
+      state.medications.unshift(action.payload)
+      state.medicationCount = state.medicationCount + 1
+      state.zeroMedications = state.medications.length === 0
+    },
+    addMedicationToPet: (state, action) => {
+      if (state.pet && Array.isArray(state.pet.medications)) {
+        state.pet.medications.unshift(action.payload)
+      }
     }
   },
   extraReducers: (builder) => {
@@ -248,6 +294,11 @@ export const petSlice = createSlice({
         state.seizure = payload.seizures[0]
         state.zeroSeizures = payload.seizures.length === 0
         state.seizureCount = payload.seizures.length
+
+        state.waters = payload.waters
+        state.water = payload.waters[0]
+        state.zeroWaters = payload.waters.length === 0
+        state.waterCount = payload.waters.length
       })
       .addMatcher(petApi.endpoints.createPet.matchFulfilled, (state) => {
         state.loading = false
@@ -308,5 +359,11 @@ export const {
   addFeedingToState,
   addFeedingToPet,
   addBloodSugarToState,
-  addBloodSugarToPet
+  addBloodSugarToPet,
+  addWaterToState,
+  addWaterToPet,
+  setOpenSeizureDrawer,
+  setCloseSeizureDrawer,
+  addMedicationToPet,
+  addMedicationToState
 } = petSlice.actions

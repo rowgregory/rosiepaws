@@ -17,7 +17,7 @@ export interface Pet {
   feedings: IFeeding[]
   seizures: ISeizure[]
   walks: Walk[]
-  waterIntakes: WaterIntake[]
+  waters: Water[]
   bloodSugars: BloodSugar[]
   painScores: PainScore[]
 
@@ -36,13 +36,22 @@ export interface Appointment {
 
 export interface Medication {
   id: string
-  name: string
+  drugName: string
   dosage: string
-  timeGiven: Date
-  notes?: string
+  dosageUnit: string
+  frequency: string
+  customFrequency?: string
+  startDate: string
+  endDate?: string
+  reminderEnabled: boolean
+  reminderTimes: string[]
+  instructions?: string
+  prescribedBy?: string
   petId: string
   createdAt: Date
   updatedAt: Date
+
+  pet: Pet
 }
 
 export interface IFeeding {
@@ -83,14 +92,19 @@ export interface Walk {
   updatedAt: Date
 }
 
-export interface WaterIntake {
+export interface Water {
   id: string
-  amount: number // in mL or oz
-  timeGiven: Date
+  intakeType: string
+  milliliters: string
+  relativeIntake: string
+  timeRecorded: string
+  moodRating: string
   notes?: string
   petId: string
   createdAt: Date
   updatedAt: Date
+
+  pet: Pet
 }
 
 export interface BloodSugar {
@@ -118,6 +132,8 @@ export interface PainScore {
   id: string
   petId: string
   score: number // Should be constrained between 1 and 5
+  timeRecorded: string
+  notes?: string
   createdAt: Date
   updatedAt: Date
 

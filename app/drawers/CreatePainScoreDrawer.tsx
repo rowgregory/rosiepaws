@@ -8,7 +8,7 @@ import { clearInputs, createFormActions } from '../redux/features/formSlice'
 import { useCreatePainScoreMutation } from '../redux/services/petApi'
 import { setClosePainScoreDrawer } from '../redux/features/petSlice'
 import { validatePainScoreForm } from '../validations/validatePainScoreForm'
-import PainScoreForm from '../forms/PainScoreForm'
+import PainScoreForm from '../forms/pain-score-form/PainScoreForm'
 import GuardianPainAssessmentChart from '../components/guardian/GuardianPassAssessmentChart'
 
 const CreatePainScoreDrawer = () => {
@@ -28,7 +28,9 @@ const CreatePainScoreDrawer = () => {
     try {
       await createPainScore({
         petId: painScoreForm.inputs.petId,
-        score: painScoreForm.inputs.score
+        score: painScoreForm.inputs.score,
+        timeRecorded: painScoreForm.inputs.timeRecorded,
+        notes: painScoreForm.inputs.notes
       }).unwrap()
 
       closePainScoreDrawer()
@@ -48,7 +50,7 @@ const CreatePainScoreDrawer = () => {
         className="w-4 h-4 hover:text-indigo-500 duration-300 absolute top-5 right-5 cursor-pointer"
       />
       <h1 className="text-xl px-5 pt-4 text-[#21252c] font-bold pb-5 border-b border-zinc-150">Add Pain Score</h1>
-      <div className="flex">
+      <div className="flex flex-col lg:flex-row">
         <PainScoreForm
           inputs={painScoreForm.inputs}
           errors={painScoreForm.errors}

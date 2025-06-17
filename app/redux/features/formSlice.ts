@@ -78,6 +78,11 @@ const formSlice = createSlice({
       if (!state[formName]) state[formName] = { inputs: {}, errors: {}, submitted: false }
       state[formName].inputs = { ...state[formName].inputs, ...data }
     },
+    setErrors: (state, { payload }: PayloadAction<SetErrorsProps>) => {
+      const { formName, errors } = payload
+      if (!state[formName]) state[formName] = { inputs: {}, errors: {}, submitted: false }
+      state[formName].errors = { ...state[formName].errors, ...errors }
+    },
     clearInputs: (state, { payload }: PayloadAction<{ formName: string }>) => {
       const { formName } = payload
       state[formName].inputs = {}
@@ -87,15 +92,6 @@ const formSlice = createSlice({
       const { formName } = payload
       state[formName].errors = {}
     },
-    setErrors: (state, { payload }: PayloadAction<SetErrorsProps>) => {
-      const { formName, errors } = payload
-      if (!state[formName]) {
-        return
-      }
-
-      state[formName].errors = errors
-    },
-
     setSubmitted: (state, { payload }: PayloadAction<SetSubmitttedProps>) => {
       const { formName, submitted } = payload
       if (!state[formName]) return
@@ -229,5 +225,6 @@ export const createFormActions = (formName: string, dispatch: any) => ({
   handleUploadProgress: (progress: any) => dispatch(formSlice.actions.setUploadProgress(progress))
 })
 
-export const { resetForm, setIsCreating, setIsNotCreating, setInputs, clearInputs, clearErrors } = formSlice.actions
+export const { resetForm, setIsCreating, setIsNotCreating, setInputs, setErrors, clearInputs, clearErrors } =
+  formSlice.actions
 export const formReducer = formSlice.reducer

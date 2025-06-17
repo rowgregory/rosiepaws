@@ -3,9 +3,13 @@ import {
   addBloodSugarToState,
   addFeedingToPet,
   addFeedingToState,
+  addMedicationToPet,
+  addMedicationToState,
   addPainScoreToPet,
   addPainScoreToState,
   addPetToState,
+  addWaterToPet,
+  addWaterToState,
   removePetFromState,
   updatePetInState
 } from '../features/petSlice'
@@ -52,7 +56,6 @@ export const petApi = api.injectEndpoints({
         dispatch(removePetFromState(arg.id))
       }
     }),
-
     createFeeding: build.mutation({
       query: (body: any) => ({ url: `${BASE_URL}/create-feeding`, method: 'POST', body }),
       onQueryStarted: async (_: any, { dispatch, queryFulfilled }: any) => {
@@ -62,7 +65,6 @@ export const petApi = api.injectEndpoints({
         dispatch(addFeedingToPet(newFeeding))
       }
     }),
-
     createBloodSugar: build.mutation({
       query: (body: any) => ({ url: `${BASE_URL}/create-blood-sugar`, method: 'POST', body }),
       onQueryStarted: async (_: any, { dispatch, queryFulfilled }: any) => {
@@ -70,6 +72,24 @@ export const petApi = api.injectEndpoints({
         const newBloodSugar = data.bloodSugar
         dispatch(addBloodSugarToState(newBloodSugar))
         dispatch(addBloodSugarToPet(newBloodSugar))
+      }
+    }),
+    createWater: build.mutation({
+      query: (body: any) => ({ url: `${BASE_URL}/create-water`, method: 'POST', body }),
+      onQueryStarted: async (_: any, { dispatch, queryFulfilled }: any) => {
+        const { data } = await queryFulfilled
+        const newWater = data.water
+        dispatch(addWaterToState(newWater))
+        dispatch(addWaterToPet(newWater))
+      }
+    }),
+    createMedication: build.mutation({
+      query: (body: any) => ({ url: `${BASE_URL}/create-medication`, method: 'POST', body }),
+      onQueryStarted: async (_: any, { dispatch, queryFulfilled }: any) => {
+        const { data } = await queryFulfilled
+        const newMedication = data.medication
+        dispatch(addMedicationToState(newMedication))
+        dispatch(addMedicationToPet(newMedication))
       }
     })
   })
@@ -83,5 +103,7 @@ export const {
   useUpdatePetMutation,
   useDeletePetMutation,
   useCreateFeedingMutation,
-  useCreateBloodSugarMutation
+  useCreateBloodSugarMutation,
+  useCreateWaterMutation,
+  useCreateMedicationMutation
 } = petApi

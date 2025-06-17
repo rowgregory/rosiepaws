@@ -16,9 +16,10 @@ export async function GET(req: NextRequest) {
     const pets = await prisma.pet.findMany({
       where: { ownerId },
       include: {
-        painScores: true, // This includes the associated PainScore(s)
+        painScores: true,
         feedings: true,
-        bloodSugars: true
+        bloodSugars: true,
+        waters: true
       }
     })
 
@@ -29,7 +30,7 @@ export async function GET(req: NextRequest) {
         }
       },
       include: {
-        pet: true // Optional: attach pet info like name
+        pet: true
       },
       orderBy: {
         createdAt: 'desc'
@@ -42,7 +43,7 @@ export async function GET(req: NextRequest) {
         }
       },
       include: {
-        pet: true // Optional: attach pet info like name
+        pet: true
       },
       orderBy: {
         createdAt: 'desc'
@@ -55,7 +56,7 @@ export async function GET(req: NextRequest) {
         }
       },
       include: {
-        pet: true // Optional: attach pet info like name
+        pet: true
       },
       orderBy: {
         createdAt: 'desc'
@@ -68,7 +69,21 @@ export async function GET(req: NextRequest) {
         }
       },
       include: {
-        pet: true // Optional: attach pet info like name
+        pet: true
+      },
+      orderBy: {
+        createdAt: 'desc'
+      }
+    })
+
+    const waters = await prisma.water.findMany({
+      where: {
+        pet: {
+          ownerId: ownerId
+        }
+      },
+      include: {
+        pet: true
       },
       orderBy: {
         createdAt: 'desc'
@@ -76,7 +91,7 @@ export async function GET(req: NextRequest) {
     })
 
     return NextResponse.json(
-      { pets, painScores, feedings, bloodSugars, seizures, sliceName: slicePet },
+      { pets, painScores, feedings, bloodSugars, seizures, waters, sliceName: slicePet },
       { status: 200 }
     )
   } catch (error: any) {

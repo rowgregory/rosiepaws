@@ -10,6 +10,8 @@ import CreatePainScoreDrawer from '../drawers/CreatePainScoreDrawer'
 import GuardianActionMenu from '../components/guardian/GuardianActionMenu'
 import CreateFeedingDrawer from '../drawers/CreateFeedingDrawer'
 import CreateBloodSugarDrawer from '../drawers/CreateBloodSugarDrawer'
+import CreateWaterDrawer from '../drawers/CreateWaterDrawer'
+import CreateMedicationDrawer from '../drawers/CreateMedicationDrawer'
 
 const GuardianLayout: FC<ChildrenProps> = ({ children }) => {
   const [toggleSidebar, setToggleSidebar] = useState(false)
@@ -21,6 +23,8 @@ const GuardianLayout: FC<ChildrenProps> = ({ children }) => {
       <CreatePainScoreDrawer />
       <CreateFeedingDrawer />
       <CreateBloodSugarDrawer />
+      <CreateWaterDrawer />
+      <CreateMedicationDrawer />
       <GuardianActionMenu />
       <div className="flex">
         <GuardianNavigation toggleSidebar={toggleSidebar} setToggleSidebar={setToggleSidebar} />

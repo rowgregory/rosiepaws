@@ -9,6 +9,7 @@ import {
   setOpenMedicationDrawer,
   setOpenPainScoreDrawer,
   setOpenPetDrawer,
+  setOpenSeizureDrawer,
   setOpenWaterDrawer
 } from '@/app/redux/features/petSlice'
 import { useCallback, useRef } from 'react'
@@ -79,7 +80,7 @@ const actions = (hasReachedBloodSugarLimit: boolean, todaysBloodSugarLogs: any) 
   {
     label: 'Seizure Tracking',
     linkKey: '/guardian/pets/seizure',
-    func: setOpenBloodSugarDrawer,
+    func: setOpenSeizureDrawer,
     icon: HeartPulse,
     color: 'from-violet-500 to-purple-500',
     bgHover: 'hover:bg-violet-50',

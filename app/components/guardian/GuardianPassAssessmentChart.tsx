@@ -4,7 +4,7 @@ import { painAssessmentData } from '@/public/data/guardian.data'
 
 const GuardianPainAssessmentChart = () => {
   return (
-    <div className="overflow-y-auto h-[calc(100dvh-65px)] mx-auto p-5 bg-[#f6f5f7] flex-1">
+    <div className="w-80 overflow-y-auto h-[calc(100dvh-65px)] mx-auto p-5 bg-[#f6f5f7] flex-1">
       <h1 className="text-3xl font-bold text-center mb-8">Pain Assessment Chart</h1>
       <div className="grid grid-cols-3 gap-4 mb-6 font-bold text-center border-b-2 pb-2 text-sm">
         <div>Psychological & Behavioral</div>
