@@ -54,6 +54,14 @@ const formInitialState = {
   bloodSugarForm: {
     inputs: bloodSugarInitialState,
     errors: bloodSugarInitialState
+  },
+  waterForm: {
+    inputs: bloodSugarInitialState,
+    errors: bloodSugarInitialState
+  },
+  medicationForm: {
+    inputs: bloodSugarInitialState,
+    errors: bloodSugarInitialState
   }
 } as any
 

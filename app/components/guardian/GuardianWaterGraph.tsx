@@ -13,12 +13,12 @@ import {
 } from 'recharts'
 import { Droplets } from 'lucide-react'
 
-interface SimpleWaterGraphProps {
+interface GuardianWaterGraphProps {
   waterData: any[]
   petWeight?: any
 }
 
-const SimpleWaterGraph: React.FC<SimpleWaterGraphProps> = ({ waterData = [], petWeight = 20 }) => {
+const GuardianWaterGraph: React.FC<GuardianWaterGraphProps> = ({ waterData = [], petWeight = 20 }) => {
   // Process data for chart
   const chartData = useMemo(() => {
     if (!waterData.length) return { daily: [], relative: [] }
@@ -90,12 +90,13 @@ const SimpleWaterGraph: React.FC<SimpleWaterGraphProps> = ({ waterData = [], pet
     return { daily: dailyArray, relative: relativeArray }
   }, [waterData])
 
-  const recommendedDaily = petWeight * 50 // 50ml per kg
+  const recommendedDaily = parseFloat(petWeight?.toString().replace(/[^0-9.]/g, '') || '20') * 50
 
   // Custom tooltip for daily chart
   const DailyTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
       const data = payload[0].payload
+
       const percentage = data.exactAmount > 0 ? Math.round((data.exactAmount / recommendedDaily) * 100) : 0
 
       return (
@@ -144,7 +145,6 @@ const SimpleWaterGraph: React.FC<SimpleWaterGraphProps> = ({ waterData = [], pet
   }
 
   const hasExactMeasurements = chartData.daily.some((day) => day.exactAmount > 0)
-  //   const hasRelativeMeasurements = chartData.relative.length > 0
 
   return (
     <div className="space-y-6">
@@ -209,81 +209,8 @@ const SimpleWaterGraph: React.FC<SimpleWaterGraphProps> = ({ waterData = [], pet
           </ResponsiveContainer>
         </div>
       )}
-
-      {/* Relative Intake Summary */}
-      {/* {hasRelativeMeasurements && (
-        <div className="bg-gray-50 p-6 rounded-lg">
-          <h3 className="text-lg font-semibold mb-4 text-gray-800">Relative Intake Summary</h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {chartData.relative.map((item, index) => (
-              <div
-                key={index}
-                className="bg-white p-4 rounded-lg border"
-                style={{ borderLeftColor: item.color, borderLeftWidth: '4px' }}
-              >
-                <div className="flex items-center justify-between">
-                  <span className="font-medium text-gray-800">{item.type}</span>
-                  <span className="text-2xl font-bold" style={{ color: item.color }}>
-                    {item.count}
-                  </span>
-                </div>
-                <p className="text-sm text-gray-600 mt-1">
-                  {Math.round((item.count / chartData.relative.reduce((sum, r) => sum + r.count, 0)) * 100)}% of
-                  relative logs
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      )} */}
-
-      {/* Daily Breakdown */}
-      {/* <div className="bg-gray-50 p-4 rounded-lg">
-        <h3 className="text-lg font-semibold mb-4 text-gray-800">Recent Daily Activity</h3>
-        <div className="space-y-2">
-          {chartData.daily.slice(-7).map((day, index) => {
-            const percentage = day.exactAmount > 0 ? Math.round((day.exactAmount / recommendedDaily) * 100) : 0
-            const hasExact = day.exactAmount > 0
-            const hasRelative = day.relativeMore + day.relativeSame + day.relativeLess > 0
-
-            return (
-              <div key={index} className="flex items-center justify-between p-3 bg-white rounded-lg border">
-                <div className="flex items-center space-x-3">
-                  <span className="font-medium text-gray-800 w-16">{day.date}</span>
-                  {hasExact && (
-                    <div className="flex-1 bg-gray-200 rounded-full h-2 w-32">
-                      <div
-                        className={`h-2 rounded-full transition-all ${
-                          percentage >= 100 ? 'bg-green-500' : 'bg-blue-500'
-                        }`}
-                        style={{ width: `${Math.min(percentage, 100)}%` }}
-                      />
-                    </div>
-                  )}
-                  {!hasExact && hasRelative && (
-                    <span className="text-sm text-gray-500 italic">Relative measurements only</span>
-                  )}
-                </div>
-                <div className="text-right">
-                  {hasExact && (
-                    <>
-                      <span className="font-bold text-gray-900">{day.exactAmount}ml</span>
-                      <span className={`text-sm ml-2 ${percentage >= 100 ? 'text-green-600' : 'text-gray-500'}`}>
-                        ({percentage}%)
-                      </span>
-                    </>
-                  )}
-                  <div className="text-xs text-gray-500 mt-1">
-                    {day.totalEntries} log{day.totalEntries > 1 ? 's' : ''}
-                  </div>
-                </div>
-              </div>
-            )
-          })}
-        </div>
-      </div> */}
     </div>
   )
 }
 
-export default SimpleWaterGraph
+export default GuardianWaterGraph
