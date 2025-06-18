@@ -1,17 +1,25 @@
 'use client'
 
-import { clearInputs, createFormActions, setInputs } from '@/app/redux/features/formSlice'
-import { COMMON_MEDICATIONS, DOSAGE_UNITS, FREQUENCIES } from './constants'
-import { useState } from 'react'
+import { clearInputs, setInputs } from '@/app/redux/features/formSlice'
+import {
+  COMMON_MEDICATIONS,
+  DOSAGE_UNITS,
+  FREQUENCIES,
+  getDefaultReminderTimes,
+  isMedicationFormValid,
+  TIME_ZONE_OPTIONS
+} from './constants'
+import { ChangeEvent, useMemo, useState } from 'react'
 import { RootState, useAppDispatch, useAppSelector } from '@/app/redux/store'
-import { CheckCircle2, Pill, Search } from 'lucide-react'
+import { Bell, CheckCircle2, Pill, Plus, Search, X } from 'lucide-react'
 
-const MedicationForm = ({ inputs, handleSubmit, close, errors, loading }: any) => {
+const MedicationForm = ({ inputs, handleSubmit, close, errors, loading, isUpdating }: any) => {
   const [drugSearchResults, setDrugSearchResults] = useState<string[]>([])
   const [showDrugSearch, setShowDrugSearch] = useState(false)
   const dispatch = useAppDispatch()
-  const { handleInput } = createFormActions('medicationForm', dispatch)
   const { pets } = useAppSelector((state: RootState) => state.pet)
+  const { medicationForm } = useAppSelector((state: RootState) => state.form)
+  const isFormValid = useMemo(() => isMedicationFormValid(inputs), [inputs])
 
   const handleDrugSearch = (searchTerm: string) => {
     if (searchTerm.length > 0) {
@@ -28,47 +36,77 @@ const MedicationForm = ({ inputs, handleSubmit, close, errors, loading }: any) =
     setShowDrugSearch(false)
   }
 
-  //   const getDefaultReminderTimes = (frequency: string) => {
-  //     switch (frequency) {
-  //       case 'once_daily':
-  //         return ['08:00']
-  //       case 'twice_daily':
-  //       case 'every_12_hours':
-  //         return ['08:00', '20:00']
-  //       case 'three_times_daily':
-  //         return ['08:00', '14:00', '20:00']
-  //       case 'four_times_daily':
-  //       case 'every_8_hours':
-  //         return ['08:00', '14:00', '20:00', '02:00']
-  //       default:
-  //         return []
-  //     }
-  //   }
+  const handleInput = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+    const { name, value, type } = e.target
 
-  //   const handleSubmit = async (e) => {
-  //     e.preventDefault()
+    if (type === 'checkbox') {
+      const checked = (e.target as HTMLInputElement).checked
+      dispatch(
+        setInputs({
+          formName: 'medicationForm',
+          data: {
+            [name]: checked,
+            // Auto-populate reminder times when enabled
+            ...(name === 'reminderEnabled' &&
+              checked &&
+              medicationForm?.inputs?.reminderTimes?.length === 0 && {
+                reminderTimes: getDefaultReminderTimes(medicationForm?.inputs?.frequency)
+              })
+          }
+        })
+      )
+    } else {
+      dispatch(
+        setInputs({
+          formName: 'medicationForm',
+          data: {
+            [name]: value,
+            // Reset drug name when switching input types
+            ...(name === 'drugInputType' && { drugName: '' }),
+            // Update reminder times when frequency changes
+            ...(name === 'frequency' &&
+              medicationForm?.inputs?.reminderEnabled && {
+                reminderTimes: getDefaultReminderTimes(value)
+              })
+          }
+        })
+      )
+    }
+  }
 
-  //     // Reset form
-  //     setInputs({
-  //       formName: 'medicationForm',
-  //       data: {
-  //         petId: '',
-  //         drugInputType: 'search',
-  //         drugName: '',
-  //         dosage: '',
-  //         dosageUnit: '',
-  //         frequency: '',
-  //         customFrequency: '',
-  //         startDate: '',
-  //         endDate: '',
-  //         reminderEnabled: false,
-  //         reminderTimes: [],
-  //         instructions: '',
-  //         prescribedBy: ''
-  //       }
-  //     })
-  //     setErrors({})
-  //   }
+  const addReminderTime = () => {
+    const newTime = '08:00'
+    dispatch(
+      setInputs({
+        formName: 'medicationForm',
+        data: {
+          reminderTimes: [...medicationForm?.inputs?.reminderTimes, newTime]
+        }
+      })
+    )
+  }
+
+  const updateReminderTime = (index: number, time: string) => {
+    dispatch(
+      setInputs({
+        formName: 'medicationForm',
+        data: {
+          reminderTimes: medicationForm?.inputs?.reminderTimes.map((t: any, i: number) => (i === index ? time : t))
+        }
+      })
+    )
+  }
+
+  const removeReminderTime = (index: number) => {
+    dispatch(
+      setInputs({
+        formName: 'medicationForm',
+        data: {
+          reminderTimes: medicationForm?.inputs?.reminderTimes.filter((_: any, i: number) => i !== index)
+        }
+      })
+    )
+  }
 
   return (
     <form onSubmit={handleSubmit} className="mx-auto bg-white min-h-screen">
@@ -83,21 +121,23 @@ const MedicationForm = ({ inputs, handleSubmit, close, errors, loading }: any) =
                   <label
                     key={pet.id}
                     className={`p-3 rounded-lg border transition-all text-left cursor-pointer ${
-                      inputs?.petId === pet.id
+                      medicationForm?.inputs?.petId === pet.id
                         ? 'border-blue-500 bg-blue-50'
                         : errors?.petId
-                        ? 'border-red-500 bg-red-50'
-                        : 'border-gray-300 bg-white hover:border-blue-300'
+                          ? 'border-red-500 bg-red-50'
+                          : 'border-gray-300 bg-white hover:border-blue-300'
                     }`}
                   >
-                    <input type="radio" name="petId" value={pet.id} onChange={handleInput} className="hidden" />
+                    <input type="radio" name="petId" value={pet.id || ''} onChange={handleInput} className="hidden" />
                     <div className="flex items-center space-x-3">
                       <span className="text-xl">{pet.type === 'DOG' ? '🐶' : '🐱'}</span>
                       <div>
                         <p className="font-medium text-gray-900">{pet.name}</p>
                         <p className="text-xs text-gray-500">{pet.type}</p>
                       </div>
-                      {inputs?.petId === pet.id && <CheckCircle2 className="text-blue-500 ml-auto" size={20} />}
+                      {medicationForm?.inputs?.petId === pet.id && (
+                        <CheckCircle2 className="text-blue-500 ml-auto" size={20} />
+                      )}
                     </div>
                   </label>
                 ))}
@@ -110,7 +150,7 @@ const MedicationForm = ({ inputs, handleSubmit, close, errors, loading }: any) =
               <div className="grid grid-cols-2 gap-2">
                 <label
                   className={`p-3 rounded-lg border cursor-pointer transition-all text-center ${
-                    inputs?.drugInputType === 'search'
+                    medicationForm?.inputs?.drugInputType === 'search'
                       ? 'border-blue-500 bg-blue-50'
                       : 'border-gray-300 bg-white hover:border-blue-300'
                   }`}
@@ -121,7 +161,7 @@ const MedicationForm = ({ inputs, handleSubmit, close, errors, loading }: any) =
                 </label>
                 <label
                   className={`p-3 rounded-lg border cursor-pointer transition-all text-center ${
-                    inputs?.drugInputType === 'manual'
+                    medicationForm?.inputs?.drugInputType === 'manual'
                       ? 'border-blue-500 bg-blue-50'
                       : 'border-gray-300 bg-white hover:border-blue-300'
                   }`}
@@ -136,12 +176,12 @@ const MedicationForm = ({ inputs, handleSubmit, close, errors, loading }: any) =
             {/* Drug Name Input */}
             <div className="space-y-3">
               <label className="text-sm font-medium text-gray-700">Medication Name</label>
-              {inputs?.drugInputType === 'search' ? (
+              {medicationForm?.inputs?.drugInputType === 'search' ? (
                 <div className="relative">
                   <input
                     type="text"
                     name="drugName"
-                    value={inputs?.drugName || ''}
+                    value={medicationForm?.inputs?.drugName || ''}
                     onChange={(e) => {
                       handleInput(e)
                       handleDrugSearch(e.target.value)
@@ -173,7 +213,7 @@ const MedicationForm = ({ inputs, handleSubmit, close, errors, loading }: any) =
                 <input
                   type="text"
                   name="drugName"
-                  value={inputs?.drugName}
+                  value={inputs?.drugName || ''}
                   onChange={handleInput}
                   placeholder="Enter medication name..."
                   className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
@@ -191,7 +231,7 @@ const MedicationForm = ({ inputs, handleSubmit, close, errors, loading }: any) =
                 <input
                   type="number"
                   name="dosage"
-                  value={inputs?.dosage}
+                  value={medicationForm?.inputs?.dosage || 0}
                   onChange={handleInput}
                   placeholder="Amount"
                   step="0.1"
@@ -202,7 +242,7 @@ const MedicationForm = ({ inputs, handleSubmit, close, errors, loading }: any) =
                 />
                 <select
                   name="dosageUnit"
-                  value={inputs?.dosageUnit}
+                  value={medicationForm?.inputs?.dosageUnit || ''}
                   onChange={handleInput}
                   className={`p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
                     errors?.dosageUnit ? 'border-red-500 bg-red-50' : 'border-gray-300'
@@ -210,7 +250,7 @@ const MedicationForm = ({ inputs, handleSubmit, close, errors, loading }: any) =
                 >
                   <option value="">Unit</option>
                   {DOSAGE_UNITS.map((unit) => (
-                    <option key={unit} value={unit}>
+                    <option key={unit} value={unit || ''}>
                       {unit}
                     </option>
                   ))}
@@ -226,7 +266,7 @@ const MedicationForm = ({ inputs, handleSubmit, close, errors, loading }: any) =
               <label className="text-sm font-medium text-gray-700">Frequency</label>
               <select
                 name="frequency"
-                value={inputs?.frequency}
+                value={medicationForm?.inputs?.frequency || ''}
                 onChange={handleInput}
                 className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
                   errors?.frequency ? 'border-red-500 bg-red-50' : 'border-gray-300'
@@ -240,11 +280,11 @@ const MedicationForm = ({ inputs, handleSubmit, close, errors, loading }: any) =
                 ))}
               </select>
 
-              {inputs?.frequency === 'custom' && (
+              {medicationForm?.inputs?.frequency === 'custom' && (
                 <input
                   type="text"
                   name="customFrequency"
-                  value={inputs?.customFrequency}
+                  value={medicationForm?.inputs?.customFrequency || ''}
                   onChange={handleInput}
                   placeholder="e.g., Every other day, Twice weekly"
                   className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
@@ -264,7 +304,11 @@ const MedicationForm = ({ inputs, handleSubmit, close, errors, loading }: any) =
                 <input
                   type="date"
                   name="startDate"
-                  value={inputs?.startDate}
+                  value={
+                    medicationForm?.inputs?.startDate
+                      ? new Date(medicationForm?.inputs?.startDate).toISOString().split('T')[0]
+                      : ''
+                  }
                   onChange={handleInput}
                   className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
                     errors?.startDate ? 'border-red-500 bg-red-50' : 'border-gray-300'
@@ -278,7 +322,7 @@ const MedicationForm = ({ inputs, handleSubmit, close, errors, loading }: any) =
                 <input
                   type="date"
                   name="endDate"
-                  value={inputs?.endDate}
+                  value={medicationForm?.inputs?.endDate || ''}
                   onChange={handleInput}
                   className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 />
@@ -287,11 +331,11 @@ const MedicationForm = ({ inputs, handleSubmit, close, errors, loading }: any) =
 
             {/* Reminder Settings */}
             <div className="space-y-4">
-              {/* <div className="flex items-center space-x-3">
+              <div className="flex items-center space-x-3">
                 <input
                   type="checkbox"
                   name="reminderEnabled"
-                  checked={inputs?.reminderEnabled}
+                  checked={medicationForm?.inputs?.reminderEnabled || false}
                   onChange={handleInput}
                   className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
                 />
@@ -299,10 +343,24 @@ const MedicationForm = ({ inputs, handleSubmit, close, errors, loading }: any) =
                   <Bell className="w-4 h-4 mr-1" />
                   Enable medication reminders
                 </label>
-              </div> */}
+              </div>
 
-              {/* {inputs?.reminderEnabled && (
+              {medicationForm?.inputs?.reminderEnabled && (
                 <div className="space-y-3 bg-blue-50 p-4 rounded-lg border border-blue-200">
+                  <div>
+                    <label>Timezone:</label>
+                    <select
+                      value={medicationForm?.inputs?.timezoneOffset || ''}
+                      onChange={handleInput}
+                      name="timezoneOffset"
+                    >
+                      {TIME_ZONE_OPTIONS.map((option) => (
+                        <option key={option.value} value={option.value || 0}>
+                          {option.label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
                   <div className="flex items-center justify-between">
                     <label className="text-sm font-medium text-blue-700">Reminder Times</label>
                     <button
@@ -316,27 +374,23 @@ const MedicationForm = ({ inputs, handleSubmit, close, errors, loading }: any) =
                   </div>
 
                   <div className="space-y-2">
-                    {inputs?.reminderTimes.map((time, index) => (
+                    {medicationForm?.inputs?.reminderTimes.map((time: any, index: number) => (
                       <div key={index} className="flex items-center space-x-2">
                         <input
                           type="time"
-                          value={time}
+                          value={time || ''}
                           onChange={(e) => updateReminderTime(index, e.target.value)}
                           className="flex-1 p-2 border border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                         />
-                        <button
-                          type="button"
-                          onClick={() => removeReminderTime(index)}
-                          className="text-red-600 hover:text-red-700 p-2"
-                        >
-                          ×
-                        </button>
+                        <X onClick={() => removeReminderTime(index)} className="text-red-600 hover:text-red-700 p-2" />
                       </div>
                     ))}
                   </div>
-                  {errors?.reminderTimes && <p className="text-red-500 text-sm mt-1">{errors?.reminderTimes}</p>}
+                  {medicationForm?.errors?.reminderTimes && (
+                    <p className="text-red-500 text-sm mt-1">{errors?.reminderTimes}</p>
+                  )}
                 </div>
-              )} */}
+              )}
             </div>
 
             {/* Additional Fields */}
@@ -345,7 +399,7 @@ const MedicationForm = ({ inputs, handleSubmit, close, errors, loading }: any) =
               <input
                 type="text"
                 name="prescribedBy"
-                value={inputs?.prescribedBy}
+                value={medicationForm?.inputs?.prescribedBy || ''}
                 onChange={handleInput}
                 placeholder="Veterinarian name"
                 className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -356,7 +410,7 @@ const MedicationForm = ({ inputs, handleSubmit, close, errors, loading }: any) =
               <label className="text-sm font-medium text-gray-700">Special Instructions (Optional)</label>
               <textarea
                 name="instructions"
-                value={inputs?.instructions}
+                value={medicationForm?.inputs?.instructions || ''}
                 onChange={handleInput}
                 placeholder="Give with food, avoid dairy, etc."
                 rows={3}
@@ -380,18 +434,17 @@ const MedicationForm = ({ inputs, handleSubmit, close, errors, loading }: any) =
             Close
           </button>
           <button
-            type="button"
-            onClick={handleSubmit}
-            disabled={loading}
+            type="submit"
+            disabled={loading || !isFormValid}
             className="bg-gradient-to-r from-blue-500 to-indigo-500 disabled:from-gray-300 disabled:to-gray-400 text-white text-sm px-6 py-2 rounded-xl font-medium flex items-center justify-center gap-x-2 min-w-[120px] hover:from-blue-600 hover:to-indigo-600 transition-all disabled:hover:from-gray-300 disabled:hover:to-gray-400"
           >
             {loading ? (
               <>
                 <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
-                Creating...
+                {isUpdating ? 'Updating...' : 'Creating...'}
               </>
             ) : (
-              'Create Schedule'
+              `${isUpdating ? 'Update' : 'Add'} Medication`
             )}
           </button>
         </div>

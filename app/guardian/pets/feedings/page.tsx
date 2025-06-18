@@ -39,7 +39,7 @@ const Feedings = () => {
           title="Feedings"
           subtitle="Track meals and nutrition habits"
           setOpenDrawer={setOpenFeedingDrawer}
-          btnText="Add Feeding"
+          btnText="Feeding"
           overlayGradient="bg-gradient-to-r from-green-500/10 to-emerald-500/10"
           iconGradient="bg-gradient-to-br from-green-500 to-emerald-500"
           buttonGradient="bg-gradient-to-br from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600"
@@ -57,13 +57,13 @@ const Feedings = () => {
                 <div className="flex items-start space-x-3 flex-1">
                   {/* Pet Avatar */}
                   <div className="bg-gray-100 rounded-full p-2 flex-shrink-0">
-                    <span className="text-13">{feeding.pet.type === 'DOG' ? '🐶' : '🐈'}</span>
+                    <span className="text-13">{feeding?.pet?.type === 'DOG' ? '🐶' : '🐈'}</span>
                   </div>
 
                   {/* Feeding Details */}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center space-x-2 mb-2">
-                      <h4 className="font-semibold text-gray-900">{feeding.pet.name}</h4>
+                      <h4 className="font-semibold text-gray-900">{feeding?.pet?.name}</h4>
                       <span
                         className={`px-2 py-1 rounded-full text-xs font-medium border ${getFoodTypeColor(
                           feeding.foodType

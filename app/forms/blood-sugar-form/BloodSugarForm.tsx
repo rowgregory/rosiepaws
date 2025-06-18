@@ -13,7 +13,7 @@ const BloodSugarForm: FC<IForm> = ({ inputs, handleInput, close, handleSubmit, l
   const currentRange = getBloodSugarRange2(value)
 
   return (
-    <div onSubmit={handleSubmit} className="flex-1 flex flex-col min-h-full">
+    <form onSubmit={handleSubmit} className="flex-1 flex flex-col min-h-full">
       <div className="overflow-y-auto px-5 pt-9 pb-12 h-[calc(100dvh-132px)]">
         <div className="space-y-6">
           {/* Pet Selection */}
@@ -97,10 +97,10 @@ const BloodSugarForm: FC<IForm> = ({ inputs, handleInput, close, handleSubmit, l
                     {currentRange.min === 301
                       ? 'Consider contacting your vet immediately'
                       : currentRange.min < 80
-                      ? 'Monitor closely and contact vet if symptoms occur'
-                      : currentRange.min > 180
-                      ? 'May need dietary or medication adjustments'
-                      : 'Within normal range'}
+                        ? 'Monitor closely and contact vet if symptoms occur'
+                        : currentRange.min > 180
+                          ? 'May need dietary or medication adjustments'
+                          : 'Within normal range'}
                   </p>
                 </div>
               </motion.div>
@@ -180,13 +180,12 @@ const BloodSugarForm: FC<IForm> = ({ inputs, handleInput, close, handleSubmit, l
         <button
           type="submit"
           disabled={!inputs?.petId || !inputs?.value || !inputs?.timeTaken}
-          onClick={handleSubmit}
           className="bg-gradient-to-r from-purple-500 to-pink-500 disabled:from-gray-300 disabled:to-gray-400 text-white text-sm px-6 py-2 rounded-xl font-medium flex items-center justify-center gap-x-2 min-w-[100px] hover:from-purple-600 hover:to-pink-600 transition-all disabled:hover:from-gray-300 disabled:hover:to-gray-400"
         >
           Add{loading && 'ing'} reading
         </button>
       </div>
-    </div>
+    </form>
   )
 }
 

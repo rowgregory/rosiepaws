@@ -1,9 +1,9 @@
 'use client'
 
-import React, { FC } from 'react'
+import React, { FC, useMemo } from 'react'
 import { RootState, useAppDispatch, useAppSelector } from '../../redux/store'
 import { CheckCircle2 } from 'lucide-react'
-import { PAIN_LEVELS, QUICK_TIMES } from './constants'
+import { isPainScoreFormValid, PAIN_LEVELS, QUICK_TIMES } from './constants'
 import { clearInputs, setErrors } from '@/app/redux/features/formSlice'
 
 interface PainScoreFormProps {
@@ -18,6 +18,7 @@ interface PainScoreFormProps {
 const PainScoreForm: FC<PainScoreFormProps> = ({ inputs, errors, handleInput, close, handleSubmit, loading }) => {
   const { pets } = useAppSelector((state: RootState) => state.pet)
   const dispatch = useAppDispatch()
+  const isFormValid = useMemo(() => isPainScoreFormValid(inputs), [inputs])
 
   return (
     <form onSubmit={handleSubmit} className="flex-1 flex flex-col min-h-full">
@@ -35,8 +36,8 @@ const PainScoreForm: FC<PainScoreFormProps> = ({ inputs, errors, handleInput, cl
                       inputs.petId === pet.id
                         ? 'border-indigo-500 bg-indigo-50'
                         : errors.petId
-                        ? 'border-red-500 bg-red-50'
-                        : 'border-gray-300 bg-white hover:border-indigo-300'
+                          ? 'border-red-500 bg-red-50'
+                          : 'border-gray-300 bg-white hover:border-indigo-300'
                     }`}
                   >
                     <input type="radio" name="petId" value={pet.id} onChange={handleInput} className="hidden" />
@@ -65,8 +66,8 @@ const PainScoreForm: FC<PainScoreFormProps> = ({ inputs, errors, handleInput, cl
                       parseInt(inputs.score) === level.score
                         ? `${level.borderColor} ${level.bgColor}`
                         : errors.score
-                        ? 'border-red-500 bg-red-50'
-                        : 'border-gray-200 bg-white hover:border-gray-300'
+                          ? 'border-red-500 bg-red-50'
+                          : 'border-gray-200 bg-white hover:border-gray-300'
                     }`}
                   >
                     <input type="radio" name="score" value={level.score} onChange={handleInput} className="hidden" />
@@ -102,8 +103,8 @@ const PainScoreForm: FC<PainScoreFormProps> = ({ inputs, errors, handleInput, cl
                       inputs.timeRecorded === time.value
                         ? 'border-indigo-500 bg-indigo-50'
                         : errors.timeRecorded
-                        ? 'border-red-500 bg-red-50'
-                        : 'border-gray-300 bg-white hover:border-indigo-300'
+                          ? 'border-red-500 bg-red-50'
+                          : 'border-gray-300 bg-white hover:border-indigo-300'
                     }`}
                   >
                     <input
@@ -163,8 +164,8 @@ const PainScoreForm: FC<PainScoreFormProps> = ({ inputs, errors, handleInput, cl
           </button>
           <button
             type="submit"
-            disabled={loading}
-            className="bg-gradient-to-r from-red-500 to-pink-500 disabled:from-gray-300 disabled:to-gray-400 text-white text-sm px-6 py-2 rounded-xl font-medium flex items-center justify-center gap-x-2 min-w-[100px] hover:from-red-600 hover:to-pink-600 transition-all disabled:hover:from-gray-300 disabled:hover:to-gray-400"
+            disabled={loading || !isFormValid}
+            className="bg-gradient-to-r from-red-500 to-orange-500 disabled:from-gray-300 disabled:to-gray-400 text-white text-sm px-6 py-2 rounded-xl font-medium flex items-center justify-center gap-x-2 min-w-[100px] hover:from-red-600 hover:to-orange-600 transition-all disabled:hover:from-gray-300 disabled:hover:to-gray-400"
           >
             {loading ? (
               <>

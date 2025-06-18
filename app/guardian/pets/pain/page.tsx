@@ -125,7 +125,7 @@ const PainScoring = () => {
           title="Pain Scores"
           subtitle="Monitor your pets' comfort levels"
           setOpenDrawer={setOpenPainScoreDrawer}
-          btnText="Add Pain Scsore"
+          btnText="Pain Scsore"
           overlayGradient="bg-gradient-to-r from-red-500/10 to-orange-500/10"
           iconGradient="bg-gradient-to-br from-red-500 to-orange-500"
           buttonGradient="bg-gradient-to-br from-red-500 to-orange-500 hover:from-red-600 hover:to-orange-600"
@@ -150,12 +150,12 @@ const PainScoring = () => {
           <motion.div className="pt-4" variants={containerVariants} initial="hidden" animate="visible">
             <div className="space-y-4">
               {painScores?.map((painScore: PainScore) => {
-                const config = getPainConfig(painScore.score)
+                const config = getPainConfig(painScore?.score)
                 const IconComponent = config.icon
 
                 return (
                   <motion.div
-                    key={painScore.id}
+                    key={painScore?.id}
                     variants={itemVariants}
                     whileHover={{
                       scale: 1.02,
@@ -204,32 +204,32 @@ const PainScoring = () => {
                           whileHover={{ rotate: 5 }}
                           transition={{ type: 'spring', stiffness: 300 }}
                         >
-                          <span className="text-lg">{painScore.pet.type === 'DOG' ? '🐶' : '🐱'}</span>
+                          <span className="text-lg">{painScore?.pet?.type === 'DOG' ? '🐶' : '🐱'}</span>
                         </motion.div>
 
                         {/* Pet name and pain info */}
                         <div>
                           <div className="flex items-center space-x-3 mb-1">
-                            <h3 className="font-bold text-gray-900 text-lg">{painScore.pet.name}</h3>
+                            <h3 className="font-bold text-gray-900 text-lg">{painScore?.pet?.name}</h3>
                             <motion.div
                               className={`flex items-center space-x-2 px-3 py-1 ${config.badgeBg} rounded-full border ${config.borderColor}`}
                               whileHover={{ scale: 1.05 }}
                             >
                               <IconComponent className={`w-4 h-4 ${config.iconColor}`} />
                               <span className={`font-bold text-sm ${config.color}`}>
-                                {painScore.score} - {config.label}
+                                {painScore?.score} - {config.label}
                               </span>
                             </motion.div>
                           </div>
 
-                          {painScore.notes && (
+                          {painScore?.notes && (
                             <motion.p
                               className="text-sm text-gray-600 italic max-w-md"
                               initial={{ opacity: 0 }}
                               animate={{ opacity: 1 }}
                               transition={{ delay: 0.3 }}
                             >
-                              &quot;{painScore.notes}&quot;
+                              &quot;{painScore?.notes}&quot;
                             </motion.p>
                           )}
                         </div>
@@ -243,9 +243,9 @@ const PainScoring = () => {
                         >
                           <div className="flex items-center space-x-2 mb-1">
                             <Clock className="w-4 h-4 text-gray-500" />
-                            <span className="font-bold text-gray-900 text-sm">{formatDate(painScore.createdAt)}</span>
+                            <span className="font-bold text-gray-900 text-sm">{formatDate(painScore?.createdAt)}</span>
                           </div>
-                          <p className="text-xs text-gray-500">{formatDateFull(painScore.createdAt)}</p>
+                          <p className="text-xs text-gray-500">{formatDateFull(painScore?.createdAt)}</p>
                         </motion.div>
                       </div>
                     </div>
@@ -257,7 +257,7 @@ const PainScoring = () => {
                     />
 
                     {/* Pulse indicator for high pain scores */}
-                    {painScore.score >= 3 && (
+                    {painScore?.score >= 3 && (
                       <motion.div
                         className={`absolute top-3 right-3 w-3 h-3 ${config.iconColor.replace(
                           'text-',

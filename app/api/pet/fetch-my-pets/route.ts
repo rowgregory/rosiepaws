@@ -19,79 +19,30 @@ export async function GET(req: NextRequest) {
         painScores: true,
         feedings: true,
         bloodSugars: true,
-        waters: true
+        seizures: true,
+        waters: true,
+        medications: {
+          include: {
+            pet: {
+              select: {
+                id: true,
+                name: true
+              }
+            }
+          }
+        }
       }
     })
 
-    const painScores = await prisma.painScore.findMany({
-      where: {
-        pet: {
-          ownerId: ownerId
-        }
-      },
-      include: {
-        pet: true
-      },
-      orderBy: {
-        createdAt: 'desc'
-      }
-    })
-    const feedings = await prisma.feeding.findMany({
-      where: {
-        pet: {
-          ownerId: ownerId
-        }
-      },
-      include: {
-        pet: true
-      },
-      orderBy: {
-        createdAt: 'desc'
-      }
-    })
-    const bloodSugars = await prisma.bloodSugar.findMany({
-      where: {
-        pet: {
-          ownerId: ownerId
-        }
-      },
-      include: {
-        pet: true
-      },
-      orderBy: {
-        createdAt: 'desc'
-      }
-    })
-    const seizures = await prisma.seizureActivity.findMany({
-      where: {
-        pet: {
-          ownerId: ownerId
-        }
-      },
-      include: {
-        pet: true
-      },
-      orderBy: {
-        createdAt: 'desc'
-      }
-    })
-
-    const waters = await prisma.water.findMany({
-      where: {
-        pet: {
-          ownerId: ownerId
-        }
-      },
-      include: {
-        pet: true
-      },
-      orderBy: {
-        createdAt: 'desc'
-      }
-    })
+    const painScores = pets.flatMap((pet) => pet.painScores || [])
+    const feedings = pets.flatMap((pet) => pet.feedings || [])
+    const bloodSugars = pets.flatMap((pet) => pet.bloodSugars || [])
+    const seizures = pets.flatMap((pet) => pet.seizures || [])
+    const waters = pets.flatMap((pet) => pet.waters || [])
+    const medications = pets.flatMap((pet) => pet.medications || [])
 
     return NextResponse.json(
-      { pets, painScores, feedings, bloodSugars, seizures, waters, sliceName: slicePet },
+      { pets, painScores, feedings, bloodSugars, seizures, waters, medications, sliceName: slicePet },
       { status: 200 }
     )
   } catch (error: any) {

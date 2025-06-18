@@ -6,6 +6,8 @@ import { registerInitialState } from '@/app/lib/initial-states/register'
 import { painScoreInitialState } from '@/app/lib/initial-states/pain-score'
 import { feedingInitialState } from '@/app/lib/initial-states/feeding'
 import { bloodSugarInitialState } from '@/app/lib/initial-states/bloodSugar'
+import { waterInitialState } from '@/app/lib/initial-states/water'
+import { medicationInitialState } from '@/app/lib/initial-states/medication'
 
 export type Inputs = {
   [key: string]: string | number | boolean | undefined | unknown
@@ -56,12 +58,12 @@ const formInitialState = {
     errors: bloodSugarInitialState
   },
   waterForm: {
-    inputs: bloodSugarInitialState,
-    errors: bloodSugarInitialState
+    inputs: waterInitialState,
+    errors: waterInitialState
   },
   medicationForm: {
-    inputs: bloodSugarInitialState,
-    errors: bloodSugarInitialState
+    inputs: medicationInitialState,
+    errors: medicationInitialState
   }
 } as any
 

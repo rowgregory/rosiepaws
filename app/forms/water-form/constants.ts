@@ -178,3 +178,7 @@ export const waterTipsData = {
     'Watch for seasonal changes in drinking patterns'
   ]
 }
+
+export const isWaterFormValid = (inputs: any) => {
+  return inputs?.petId && inputs?.timeRecorded && (inputs.milliliters || inputs.relativeIntake)
+}

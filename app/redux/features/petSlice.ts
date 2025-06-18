@@ -51,6 +51,7 @@ export interface PetStatePayload {
   medication: Medication
   zeroMedications: boolean
   medicationDrawer: boolean
+  updateMedicationDrawer: boolean
   medicationCount: number
 
   seizures: ISeizure[]
@@ -101,6 +102,7 @@ export const initialPetState: PetStatePayload = {
   medication: medicationInitialState,
   zeroMedications: false,
   medicationDrawer: false,
+  updateMedicationDrawer: false,
   medicationCount: 0,
 
   seizures: [],
@@ -162,6 +164,12 @@ export const petSlice = createSlice({
     },
     setCloseMedicationDrawer: (state) => {
       state.medicationDrawer = false
+    },
+    setOpenUpdateMedicationDrawer: (state) => {
+      state.updateMedicationDrawer = true
+    },
+    setCloseUpdateMedicationDrawer: (state) => {
+      state.updateMedicationDrawer = false
     },
     setOpenSeizureDrawer: (state) => {
       state.seizureDrawer = true
@@ -257,6 +265,22 @@ export const petSlice = createSlice({
       if (state.pet && Array.isArray(state.pet.medications)) {
         state.pet.medications.unshift(action.payload)
       }
+    },
+    updateMedicationInState: (state, action) => {
+      const updatedMedication = action.payload
+      const index = state.medications.findIndex((medication: { id: string }) => medication.id === updatedMedication.id)
+      if (index !== -1) {
+        state.medications[index] = updatedMedication
+      }
+    },
+    updateMedicationInPet: (state, action) => {
+      const updatedMedication = action.payload
+      const index = state.pet.medications.findIndex(
+        (medication: { id: string }) => medication.id === updatedMedication.id
+      )
+      if (index !== -1) {
+        state.pet.medications[index] = updatedMedication
+      }
     }
   },
   extraReducers: (builder) => {
@@ -269,7 +293,6 @@ export const petSlice = createSlice({
       })
       .addMatcher(petApi.endpoints.fetchMyPets.matchFulfilled, (state, { payload }: any) => {
         state.loading = false
-
         state.pets = payload.pets
         state.pet = payload.pets[0]
         state.zeroPets = payload.pets.length === 0
@@ -299,6 +322,11 @@ export const petSlice = createSlice({
         state.water = payload.waters[0]
         state.zeroWaters = payload.waters.length === 0
         state.waterCount = payload.waters.length
+
+        state.medications = payload.medications
+        state.medication = payload.medications[0]
+        state.zeroMedications = payload.medications.length === 0
+        state.medicationCount = payload.medications.length
       })
       .addMatcher(petApi.endpoints.createPet.matchFulfilled, (state) => {
         state.loading = false
@@ -317,6 +345,12 @@ export const petSlice = createSlice({
         state.loading = false
       })
       .addMatcher(petApi.endpoints.createBloodSugar.matchFulfilled, (state) => {
+        state.loading = false
+      })
+      .addMatcher(petApi.endpoints.createMedication.matchFulfilled, (state) => {
+        state.loading = false
+      })
+      .addMatcher(petApi.endpoints.updateMedication.matchFulfilled, (state) => {
         state.loading = false
       })
       .addMatcher(
@@ -365,5 +399,9 @@ export const {
   setOpenSeizureDrawer,
   setCloseSeizureDrawer,
   addMedicationToPet,
-  addMedicationToState
+  addMedicationToState,
+  updateMedicationInState,
+  updateMedicationInPet,
+  setCloseUpdateMedicationDrawer,
+  setOpenUpdateMedicationDrawer
 } = petSlice.actions

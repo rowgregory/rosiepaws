@@ -1,58 +1,22 @@
 'use client'
 
 import React from 'react'
-import { Droplets, TrendingUp, TrendingDown, Minus, Plus, Clock } from 'lucide-react'
+import { Droplets, Plus, Clock } from 'lucide-react'
 import { RootState, useAppDispatch, useAppSelector } from '@/app/redux/store'
 import { motion } from 'framer-motion'
 import { setOpenWaterDrawer } from '@/app/redux/features/petSlice'
 import GuardianPageHeader from '@/app/components/guardian/GuardianPageHeader'
+import {
+  formatTimeAgo,
+  getIntakeTypeColor,
+  getMoodEmoji,
+  getRelativeIcon,
+  getTodaysLogs
+} from '@/app/utils/water-helpers'
 
 const WaterLogsPage = () => {
   const { waters, zeroWaters } = useAppSelector((state: RootState) => state.pet)
   const dispatch = useAppDispatch()
-
-  const formatTimeAgo = (dateStr: any) => {
-    const now = new Date()
-    const date = new Date(dateStr)
-    const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60))
-
-    if (diffInHours < 1) return 'Just now'
-    if (diffInHours < 24) return `${diffInHours}h ago`
-
-    const diffInDays = Math.floor(diffInHours / 24)
-    if (diffInDays < 7) return `${diffInDays}d ago`
-
-    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
-  }
-
-  const getMoodEmoji = (rating: string) => {
-    const emojis = ['😫', '😕', '😐', '😊', '😄']
-    return emojis[parseInt(rating)] || '😐'
-  }
-
-  const getRelativeIcon = (relative: string) => {
-    switch (relative) {
-      case 'more':
-        return <TrendingUp className="text-blue-500" size={16} />
-      case 'less':
-        return <TrendingDown className="text-orange-500" size={16} />
-      case 'same':
-        return <Minus className="text-green-500" size={16} />
-      default:
-        return null
-    }
-  }
-
-  const getIntakeTypeColor = (type: string) => {
-    return type === 'milliliters'
-      ? 'bg-blue-50 text-blue-700 border-blue-200'
-      : 'bg-purple-50 text-purple-700 border-purple-200'
-  }
-
-  const getTodaysLogs = () => {
-    const today = new Date().toDateString()
-    return waters?.filter((log) => new Date(log.createdAt).toDateString() === today).length
-  }
 
   return (
     <div className="min-h-dvh">
@@ -64,7 +28,7 @@ const WaterLogsPage = () => {
           title="Water Intake Logs"
           subtitle="Track your pets' hydration levels"
           setOpenDrawer={setOpenWaterDrawer}
-          btnText="Add Water Intake"
+          btnText="Water Intake"
           overlayGradient="bg-gradient-to-r from-blue-500/10 to-cyan-500/10"
           iconGradient="bg-gradient-to-br from-blue-500 to-cyan-500"
           buttonGradient="bg-gradient-to-br from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600"
@@ -114,10 +78,10 @@ const WaterLogsPage = () => {
                         <div className="flex items-center justify-between">
                           <div className="flex items-center space-x-4">
                             <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center">
-                              <span className="text-lg">{latest?.pet.type === 'DOG' ? '🐶' : '🐈'}</span>
+                              <span className="text-lg">{latest?.pet?.type === 'DOG' ? '🐶' : '🐈'}</span>
                             </div>
                             <div>
-                              <h3 className="text-lg font-semibold text-gray-900">{latest?.pet.name}</h3>
+                              <h3 className="text-lg font-semibold text-gray-900">{latest?.pet?.name}</h3>
                               <p className="text-sm text-gray-500">{formatTimeAgo(latest?.createdAt)}</p>
                             </div>
                           </div>
@@ -152,47 +116,47 @@ const WaterLogsPage = () => {
               {/* All logs grid */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {waters?.map((log) => {
-                  const moodEmoji = getMoodEmoji(log.moodRating)
+                  const moodEmoji = getMoodEmoji(log?.moodRating)
 
                   return (
                     <div
-                      key={log.id}
+                      key={log?.id}
                       className="bg-white rounded-xl shadow-sm border border-gray-100 p-5 hover:shadow-md transition-all hover:scale-105"
                     >
                       {/* Pet Info */}
                       <div className="flex items-center justify-between mb-4">
                         <div className="flex items-center space-x-3">
                           <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
-                            <span className="text-xs">{log.pet.type === 'DOG' ? '🐶' : '🐈'}</span>
+                            <span className="text-xs">{log?.pet?.type === 'DOG' ? '🐶' : '🐈'}</span>
                           </div>
-                          <span className="font-medium text-gray-900">{log.pet.name}</span>
+                          <span className="font-medium text-gray-900">{log?.pet?.name}</span>
                         </div>
                         <span
                           className={`px-2 py-1 rounded-full text-xs font-medium border ${getIntakeTypeColor(
-                            log.intakeType
+                            log?.intakeType
                           )}`}
                         >
-                          {log.intakeType === 'milliliters' ? 'Exact' : 'Relative'}
+                          {log?.intakeType === 'milliliters' ? 'Exact' : 'Relative'}
                         </span>
                       </div>
 
                       {/* Water Intake Value */}
                       <div className="text-center mb-4">
-                        {log.intakeType === 'milliliters' ? (
+                        {log?.intakeType === 'milliliters' ? (
                           <div className="text-3xl font-bold text-gray-900">
-                            {log.milliliters}
+                            {log?.milliliters}
                             <span className="text-sm text-gray-500 ml-1">mL</span>
                           </div>
                         ) : (
                           <div className="flex items-center justify-center space-x-2">
-                            {getRelativeIcon(log.relativeIntake)}
-                            <div className="text-2xl font-bold text-gray-900 capitalize">{log.relativeIntake}</div>
+                            {getRelativeIcon(log?.relativeIntake)}
+                            <div className="text-2xl font-bold text-gray-900 capitalize">{log?.relativeIntake}</div>
                           </div>
                         )}
 
                         <div className="flex items-center justify-center space-x-1 px-3 py-1 rounded-full text-xs font-medium mt-2 bg-blue-50 text-blue-700">
                           <span>{moodEmoji}</span>
-                          <span>{log.moodRating}/4 willingness</span>
+                          <span>{log?.moodRating}/4 willingness</span>
                         </div>
                       </div>
 
@@ -200,15 +164,15 @@ const WaterLogsPage = () => {
                       <div className="flex items-center justify-center space-x-2 text-xs text-gray-500">
                         <Clock className="w-3 h-3" />
                         <span>
-                          {new Date(log.createdAt).toLocaleDateString([], { month: 'short', day: 'numeric' })} •{' '}
-                          {new Date(log.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                          {new Date(log?.createdAt).toLocaleDateString([], { month: 'short', day: 'numeric' })} •{' '}
+                          {new Date(log?.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                         </span>
                       </div>
 
                       {/* Notes */}
-                      {log.notes && (
+                      {log?.notes && (
                         <div className="mt-3 p-2 bg-gray-50 rounded-md">
-                          <p className="text-xs text-gray-600 italic">&quot;{log.notes}&quot;</p>
+                          <p className="text-xs text-gray-600 italic">&quot;{log?.notes}&quot;</p>
                         </div>
                       )}
                     </div>
@@ -226,25 +190,25 @@ const WaterLogsPage = () => {
                 <h3 className="text-lg font-semibold text-gray-800 mb-4">Overview</h3>
                 <div className="space-y-4">
                   {/* Today's Stats Section */}
-                  {getTodaysLogs() > 0 && (
+                  {getTodaysLogs(waters) > 0 && (
                     <div className="bg-blue-50 rounded-lg p-3 border border-blue-200">
                       <h4 className="text-sm font-semibold text-blue-900 mb-2">Today&apos;s Activity</h4>
                       <div className="space-y-2">
                         <div className="flex justify-between">
                           <span className="text-sm text-blue-700">Logs Today</span>
-                          <span className="font-semibold text-blue-900">{getTodaysLogs()}</span>
+                          <span className="font-semibold text-blue-900">{getTodaysLogs(waters)}</span>
                         </div>
                         {/* Progress visualization */}
                         <div className="w-full bg-blue-200 rounded-full h-2 mt-2">
                           <div
                             className="h-2 rounded-full bg-blue-500 transition-all duration-300"
-                            style={{ width: `${Math.min((getTodaysLogs() / 6) * 100, 100)}%` }}
+                            style={{ width: `${Math.min((getTodaysLogs(waters) / 6) * 100, 100)}%` }}
                           />
                         </div>
                         <p className="text-xs text-blue-600 mt-1">
-                          {getTodaysLogs() >= 6
+                          {getTodaysLogs(waters) >= 6
                             ? 'Great tracking today!'
-                            : `${6 - getTodaysLogs()} more logs recommended`}
+                            : `${6 - getTodaysLogs(waters)} more logs recommended`}
                         </p>
                       </div>
                     </div>
@@ -259,13 +223,13 @@ const WaterLogsPage = () => {
                     <div className="flex justify-between">
                       <span className="text-sm text-gray-600">Exact Measurements</span>
                       <span className="font-semibold text-gray-900">
-                        {waters?.filter((log) => log.intakeType === 'milliliters').length}
+                        {waters?.filter((log) => log?.intakeType === 'milliliters').length}
                       </span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-sm text-gray-600">Relative Measurements</span>
                       <span className="font-semibold text-gray-900">
-                        {waters?.filter((log) => log.intakeType === 'relative').length}
+                        {waters?.filter((log) => log?.intakeType === 'relative').length}
                       </span>
                     </div>
                     {waters?.length > 0 && (
@@ -289,26 +253,26 @@ const WaterLogsPage = () => {
                 </div>
                 <div className="divide-y divide-gray-100 max-h-80 overflow-y-auto">
                   {waters?.slice(0, 8).map((log) => {
-                    const moodEmoji = getMoodEmoji(log.moodRating)
+                    const moodEmoji = getMoodEmoji(log?.moodRating)
 
                     return (
-                      <div key={log.id} className="p-4 hover:bg-gray-50 transition-colors">
+                      <div key={log?.id} className="p-4 hover:bg-gray-50 transition-colors">
                         <div className="flex items-center justify-between">
                           <div>
-                            <div className="font-medium text-gray-900 text-sm">{log.pet.name}</div>
-                            <div className="text-xs text-gray-500">{formatTimeAgo(log.createdAt)}</div>
+                            <div className="font-medium text-gray-900 text-sm">{log?.pet?.name}</div>
+                            <div className="text-xs text-gray-500">{formatTimeAgo(log?.createdAt)}</div>
                           </div>
                           <div className="text-right">
-                            {log.intakeType === 'milliliters' ? (
-                              <div className="font-bold text-gray-900">{log.milliliters} mL</div>
+                            {log?.intakeType === 'milliliters' ? (
+                              <div className="font-bold text-gray-900">{log?.milliliters} mL</div>
                             ) : (
                               <div className="flex items-center space-x-1">
-                                {getRelativeIcon(log.relativeIntake)}
-                                <span className="font-bold text-gray-900 capitalize">{log.relativeIntake}</span>
+                                {getRelativeIcon(log?.relativeIntake)}
+                                <span className="font-bold text-gray-900 capitalize">{log?.relativeIntake}</span>
                               </div>
                             )}
                             <div className="text-xs text-blue-600">
-                              {moodEmoji} {log.moodRating}/4
+                              {moodEmoji} {log?.moodRating}/4
                             </div>
                           </div>
                         </div>

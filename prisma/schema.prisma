@@ -135,11 +135,21 @@ model Feeding {
 }
 
 model Medication {
-  id        String   @id @default(uuid())
-  name      String
-  dosage    String
-  timeGiven DateTime
-  notes     String?
+  id                 String    @id @default(uuid())
+  drugName           String
+  dosage             String
+  dosageUnit         String
+  frequency          String
+  customFrequency    String?
+  startDate          DateTime
+  endDate            DateTime?
+  reminderEnabled    Boolean   @default(false)
+  reminderTimes      String[] // Changed from Json to String[]
+  lastReminderDate   String?
+  sentRemindersToday String[]
+  instructions       String?
+  prescribedBy       String?
+  timezoneOffset     Int       @default(-5)
 
   pet   Pet    @relation(fields: [petId], references: [id])
   petId String

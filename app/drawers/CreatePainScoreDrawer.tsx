@@ -2,14 +2,15 @@
 
 import React, { MouseEvent } from 'react'
 import { RootState, useAppDispatch, useAppSelector } from '../redux/store'
-import AwesomeIcon from '../components/common/AwesomeIcon'
-import { timesIcon } from '../lib/icons'
 import { clearInputs, createFormActions } from '../redux/features/formSlice'
 import { useCreatePainScoreMutation } from '../redux/services/petApi'
 import { setClosePainScoreDrawer } from '../redux/features/petSlice'
 import { validatePainScoreForm } from '../validations/validatePainScoreForm'
 import PainScoreForm from '../forms/pain-score-form/PainScoreForm'
 import GuardianPainAssessmentChart from '../components/guardian/GuardianPassAssessmentChart'
+import { AnimatePresence, motion } from 'framer-motion'
+import { Activity } from 'lucide-react'
+import AnimatedDrawerHeader from '../components/guardian/AnimatedDrawerHeader'
 
 const CreatePainScoreDrawer = () => {
   const { painScoreDrawer } = useAppSelector((state: RootState) => state.pet)
@@ -39,30 +40,56 @@ const CreatePainScoreDrawer = () => {
   }
 
   return (
-    <div
-      className={`${
-        painScoreDrawer ? 'translate-x-0' : 'translate-x-full'
-      } duration-500 min-h-dvh w-[930px] fixed top-0 right-0 z-50 bg-white shadow-[-10px_0_30px_-5px_rgba(0,0,0,0.2)] flex flex-col`}
-    >
-      <AwesomeIcon
-        onClick={() => closePainScoreDrawer()}
-        icon={timesIcon}
-        className="w-4 h-4 hover:text-indigo-500 duration-300 absolute top-5 right-5 cursor-pointer"
-      />
-      <h1 className="text-xl px-5 pt-4 text-[#21252c] font-bold pb-5 border-b border-zinc-150">Add Pain Score</h1>
-      <div className="flex flex-col lg:flex-row">
-        <PainScoreForm
-          inputs={painScoreForm.inputs}
-          errors={painScoreForm.errors}
-          handleInput={handleInput}
-          close={closePainScoreDrawer}
-          handleSubmit={handleAddPainScore}
-          loading={isLoading}
-        />
+    <AnimatePresence>
+      {painScoreDrawer && (
+        <>
+          {/* Backdrop */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40"
+            onClick={closePainScoreDrawer}
+          />
 
-        <GuardianPainAssessmentChart />
-      </div>
-    </div>
+          {/* Drawer */}
+          <motion.div
+            initial={{ x: '100%' }}
+            animate={{ x: 0 }}
+            exit={{ x: '100%' }}
+            transition={{
+              type: 'tween',
+              duration: 0.3,
+              ease: 'easeInOut'
+            }}
+            className="min-h-dvh w-[930px] fixed top-0 right-0 z-50 bg-white shadow-[-10px_0_30px_-5px_rgba(0,0,0,0.2)] flex flex-col"
+          >
+            {/* Header */}
+            <AnimatedDrawerHeader
+              title="Pain Score Assesment"
+              subtitle="Asses your pet's pain level"
+              Icon={Activity}
+              closeDrawer={closePainScoreDrawer}
+              color="text-red-500"
+              iconGradient="from-red-500 to-orange-500"
+            />
+
+            <div className="flex flex-col lg:flex-row">
+              <PainScoreForm
+                inputs={painScoreForm.inputs}
+                errors={painScoreForm.errors}
+                handleInput={handleInput}
+                close={closePainScoreDrawer}
+                handleSubmit={handleAddPainScore}
+                loading={isLoading}
+              />
+
+              <GuardianPainAssessmentChart />
+            </div>
+          </motion.div>
+        </>
+      )}
+    </AnimatePresence>
   )
 }
 

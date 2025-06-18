@@ -1,13 +1,12 @@
-import React, { useCallback, useRef } from 'react'
+import React from 'react'
 import { RootState, useAppDispatch, useAppSelector } from '../redux/store'
 import { clearInputs, createFormActions } from '../redux/features/formSlice'
 import validateBloodSugarForm from '../validations/validateBloodSugarForm'
 import { setCloseBloodSugarDrawer } from '../redux/features/petSlice'
 import { useCreateBloodSugarMutation } from '../redux/services/petApi'
-import { Activity, Droplets } from 'lucide-react'
+import { Heart } from 'lucide-react'
 import GuardianBloodSugarGuide from '../components/guardian/GuardianBloodSugarGuide'
 import { AnimatePresence, motion } from 'framer-motion'
-import useOutsideDetect from '../hooks/useOutsideDetect'
 import BloodSugarForm from '../forms/blood-sugar-form/BloodSugarForm'
 
 const CreateBloodSugarDrawer = () => {
@@ -15,14 +14,8 @@ const CreateBloodSugarDrawer = () => {
   const { bloodSugarForm } = useAppSelector((state: RootState) => state.form)
   const dispatch = useAppDispatch()
   const { handleInput, setErrors } = createFormActions('bloodSugarForm', dispatch)
-  const closeBoodSugarDrawer = () => dispatch(setCloseBloodSugarDrawer())
+  const closeBloodSugarDrawer = () => dispatch(setCloseBloodSugarDrawer())
   const [createBoodSugar, { isLoading }] = useCreateBloodSugarMutation()
-  const drawerRef = useRef<HTMLDivElement | null>(null)
-
-  const onClose = useCallback(() => dispatch(setCloseBloodSugarDrawer()), [dispatch])
-
-  const handleClose = useCallback(() => onClose(), [onClose])
-  useOutsideDetect(drawerRef, handleClose)
 
   const handleAddBoodSugar = async (e: MouseEvent) => {
     e.preventDefault()
@@ -38,7 +31,7 @@ const CreateBloodSugarDrawer = () => {
         timeTaken: new Date(bloodSugarForm.inputs.timeTaken)
       }).unwrap()
 
-      closeBoodSugarDrawer()
+      closeBloodSugarDrawer()
       dispatch(clearInputs({ formName: 'bloodSugarForm' }))
     } catch {}
   }
@@ -54,12 +47,11 @@ const CreateBloodSugarDrawer = () => {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
             className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40"
-            onClick={closeBoodSugarDrawer}
+            onClick={closeBloodSugarDrawer}
           />
 
           {/* Drawer */}
           <motion.div
-            ref={drawerRef}
             initial={{ x: '100%' }}
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
@@ -74,15 +66,15 @@ const CreateBloodSugarDrawer = () => {
             <div className="px-5 pt-6 pb-4 border-b border-gray-100">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-3">
-                  <div className="p-2 bg-gradient-to-br from-red-500 to-orange-500 rounded-xl">
-                    <Droplets className="w-5 h-5 text-white" />
+                  <div className="p-2 bg-gradient-to-br from-pink-500 to-rose-500 rounded-xl">
+                    <Heart className="w-5 h-5 text-white" />
                   </div>
                   <div>
                     <h2 className="text-xl font-bold text-gray-900">Blood Sugar Reading</h2>
                     <p className="text-sm text-gray-500">Track your pet&apos;s glucose levels</p>
                   </div>
                 </div>
-                <Activity className="w-6 h-6 text-red-400" />
+                <Heart className="w-6 h-6 text-pink-400" />
               </div>
             </div>
 
@@ -92,7 +84,7 @@ const CreateBloodSugarDrawer = () => {
                 inputs={bloodSugarForm.inputs}
                 errors={bloodSugarForm.errors}
                 handleInput={handleInput}
-                close={closeBoodSugarDrawer}
+                close={closeBloodSugarDrawer}
                 handleSubmit={handleAddBoodSugar}
                 loading={isLoading}
               />

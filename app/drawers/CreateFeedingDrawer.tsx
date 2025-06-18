@@ -1,13 +1,14 @@
 import React from 'react'
 import { RootState, useAppDispatch, useAppSelector } from '../redux/store'
 import { clearInputs, createFormActions } from '../redux/features/formSlice'
-import AwesomeIcon from '../components/common/AwesomeIcon'
-import { timesIcon } from '../lib/icons'
 import { useCreateFeedingMutation } from '../redux/services/petApi'
 import { setCloseFeedingDrawer } from '../redux/features/petSlice'
 import FeedingForm from '../forms/feeding-form/FeedingForm'
 import validateFeedingForm from '../validations/validateFeedingForm'
 import GuardianFeedingChart from '../components/guardian/GuardianFeedingChart'
+import { AnimatePresence, motion } from 'framer-motion'
+import { Utensils } from 'lucide-react'
+import AnimatedDrawerHeader from '../components/guardian/AnimatedDrawerHeader'
 
 const CreateFeedingDrawer = () => {
   const { feedingDrawer } = useAppSelector((state: RootState) => state.pet)
@@ -39,30 +40,55 @@ const CreateFeedingDrawer = () => {
   }
 
   return (
-    <div
-      className={`${
-        feedingDrawer ? 'translate-x-0' : 'translate-x-full'
-      } duration-500 min-h-dvh w-[930px] fixed top-0 right-0 z-50 bg-white shadow-[-10px_0_30px_-5px_rgba(0,0,0,0.2)] flex flex-col`}
-    >
-      <AwesomeIcon
-        onClick={() => closeFeedingDrawer()}
-        icon={timesIcon}
-        className="w-4 h-4 hover:text-indigo-500 duration-300 absolute top-5 right-5 cursor-pointer"
-      />
-      <h1 className="text-xl px-5 pt-4 text-[#21252c] font-bold pb-5 border-b border-zinc-150">Add Feeding</h1>
-      <div className="flex flex-col lg:flex-row">
-        <FeedingForm
-          inputs={feedingForm.inputs}
-          errors={feedingForm.errors}
-          handleInput={handleInput}
-          close={closeFeedingDrawer}
-          handleSubmit={handleAddFeeding}
-          loading={isLoading}
-        />
+    <AnimatePresence>
+      {feedingDrawer && (
+        <>
+          {/* Backdrop */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40"
+            onClick={closeFeedingDrawer}
+          />
 
-        <GuardianFeedingChart />
-      </div>
-    </div>
+          {/* Drawer */}
+          <motion.div
+            initial={{ x: '100%' }}
+            animate={{ x: 0 }}
+            exit={{ x: '100%' }}
+            transition={{
+              type: 'tween',
+              duration: 0.3,
+              ease: 'easeInOut'
+            }}
+            className="min-h-dvh w-[930px] fixed top-0 right-0 z-50 bg-white shadow-[-10px_0_30px_-5px_rgba(0,0,0,0.2)] flex flex-col"
+          >
+            {/* Header */}
+            <AnimatedDrawerHeader
+              title="Add Feeding"
+              subtitle="Track your pets diet"
+              Icon={Utensils}
+              closeDrawer={closeFeedingDrawer}
+              color="text-green-500"
+              iconGradient="from-green-500 to-emerald-500"
+            />
+            <div className="flex flex-col lg:flex-row">
+              <FeedingForm
+                inputs={feedingForm.inputs}
+                errors={feedingForm.errors}
+                handleInput={handleInput}
+                close={closeFeedingDrawer}
+                handleSubmit={handleAddFeeding}
+                loading={isLoading}
+              />
+
+              <GuardianFeedingChart />
+            </div>
+          </motion.div>
+        </>
+      )}
+    </AnimatePresence>
   )
 }
 

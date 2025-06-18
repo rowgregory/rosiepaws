@@ -58,3 +58,7 @@ export const QUICK_TIMES = [
   { label: '2 hours ago', value: getLocalISOString(new Date(Date.now() - 2 * 60 * 60 * 1000)) },
   { label: '3 hours ago', value: getLocalISOString(new Date(Date.now() - 3 * 60 * 60 * 1000)) }
 ]
+
+export const isPainScoreFormValid = (inputs: any) => {
+  return inputs?.petId && inputs?.score && inputs?.timeRecorded
+}

@@ -5,8 +5,10 @@ import validateWaterIntakeForm from '@/app/validations/validateWaterForm'
 import { RootState, useAppDispatch, useAppSelector } from '@/app/redux/store'
 import { clearInputs, createFormActions, setInputs } from '../redux/features/formSlice'
 import WaterForm from '../forms/water-form/WaterForm'
-import { X } from 'lucide-react'
 import GuardianWaterChart from '../forms/water-form/GuardianWaterChart'
+import { AnimatePresence, motion } from 'framer-motion'
+import AnimatedDrawerHeader from '../components/guardian/AnimatedDrawerHeader'
+import { Droplets } from 'lucide-react'
 
 const CreateWaterDrawer = () => {
   const dispatch = useAppDispatch()
@@ -56,30 +58,56 @@ const CreateWaterDrawer = () => {
   }
 
   return (
-    <div
-      className={`${
-        waterDrawer ? 'translate-x-0' : 'translate-x-full'
-      } duration-500 min-h-dvh w-[930px] fixed top-0 right-0 z-50 bg-white shadow-[-10px_0_30px_-5px_rgba(0,0,0,0.2)] flex flex-col`}
-    >
-      <X
-        onClick={closeWaterDrawer}
-        className="w-4 h-4 hover:text-indigo-500 duration-300 absolute top-5 right-5 cursor-pointer"
-      />
-      <h1 className="text-xl px-5 pt-4 text-[#21252c] font-bold pb-5 border-b border-zinc-150">Add Water</h1>
-      <div className="flex flex-col lg:flex-row">
-        <WaterForm
-          inputs={waterForm?.inputs}
-          errors={waterForm?.errors}
-          handleInput={handleInput}
-          close={closeWaterDrawer}
-          handleSubmit={handleSubmit}
-          loading={isLoading}
-          pets={pets}
-        />
+    <AnimatePresence>
+      {waterDrawer && (
+        <>
+          {/* Backdrop */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40"
+            onClick={closeWaterDrawer}
+          />
 
-        <GuardianWaterChart />
-      </div>
-    </div>
+          {/* Drawer */}
+          <motion.div
+            initial={{ x: '100%' }}
+            animate={{ x: 0 }}
+            exit={{ x: '100%' }}
+            transition={{
+              type: 'tween',
+              duration: 0.3,
+              ease: 'easeInOut'
+            }}
+            className="min-h-dvh w-[930px] fixed top-0 right-0 z-50 bg-white shadow-[-10px_0_30px_-5px_rgba(0,0,0,0.2)] flex flex-col"
+          >
+            {/* Header */}
+            <AnimatedDrawerHeader
+              title="Add Water Intake"
+              subtitle="Track your pet’s daily hydration"
+              Icon={Droplets}
+              closeDrawer={closeWaterDrawer}
+              color="text-blue-500"
+              iconGradient="from-blue-500 to-cyan-500"
+            />
+            <div className="flex flex-col lg:flex-row">
+              <WaterForm
+                inputs={waterForm?.inputs}
+                errors={waterForm?.errors}
+                handleInput={handleInput}
+                close={closeWaterDrawer}
+                handleSubmit={handleSubmit}
+                loading={isLoading}
+                pets={pets}
+              />
+
+              <GuardianWaterChart />
+            </div>
+          </motion.div>
+        </>
+      )}
+    </AnimatePresence>
   )
 }
 

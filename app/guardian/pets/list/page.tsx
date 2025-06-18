@@ -20,7 +20,7 @@ const GuardianPetsList = () => {
           title="My Pets"
           subtitle="Manage your furry family"
           setOpenDrawer={setOpenPetDrawer}
-          btnText="Add Pet"
+          btnText="Pet"
           overlayGradient="bg-gradient-to-r from-purple-500/10 to-pink-500/10"
           iconGradient="bg-gradient-to-br from-purple-500 to-pink-500"
           buttonGradient="bg-gradient-to-br from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"

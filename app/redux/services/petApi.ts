@@ -11,6 +11,8 @@ import {
   addWaterToPet,
   addWaterToState,
   removePetFromState,
+  updateMedicationInPet,
+  updateMedicationInState,
   updatePetInState
 } from '../features/petSlice'
 import { api } from './api'
@@ -91,6 +93,15 @@ export const petApi = api.injectEndpoints({
         dispatch(addMedicationToState(newMedication))
         dispatch(addMedicationToPet(newMedication))
       }
+    }),
+    updateMedication: build.mutation({
+      query: (body: any) => ({ url: `${BASE_URL}/update-medication`, method: 'PATCH', body }),
+      onQueryStarted: async (_: any, { dispatch, queryFulfilled }: any) => {
+        const { data } = await queryFulfilled
+        const updatedMedication = data.medication
+        dispatch(updateMedicationInState(updatedMedication))
+        dispatch(updateMedicationInPet(updatedMedication))
+      }
     })
   })
 })
@@ -105,5 +116,6 @@ export const {
   useCreateFeedingMutation,
   useCreateBloodSugarMutation,
   useCreateWaterMutation,
-  useCreateMedicationMutation
+  useCreateMedicationMutation,
+  useUpdateMedicationMutation
 } = petApi

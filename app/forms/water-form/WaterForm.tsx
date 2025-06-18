@@ -1,6 +1,6 @@
-import React, { FC } from 'react'
+import React, { FC, useMemo } from 'react'
 import { CheckCircle2 } from 'lucide-react'
-import { getMoodDescription, INTAKE_TYPES, MOOD_EMOJIS, RELATIVE_AMOUNTS } from './constants'
+import { getMoodDescription, INTAKE_TYPES, isWaterFormValid, MOOD_EMOJIS, RELATIVE_AMOUNTS } from './constants'
 import { IForm } from '@/app/types/common.types'
 import { Pet } from '@/app/types/model.types'
 import { QUICK_TIMES } from '../pain-score-form/constants'
@@ -11,6 +11,7 @@ interface IWaterForm extends IForm {
 }
 
 const WaterForm: FC<IWaterForm> = ({ inputs, handleInput, close, handleSubmit, loading, pets }) => {
+  const isFormValid = useMemo(() => isWaterFormValid(inputs), [inputs])
   return (
     <form onSubmit={handleSubmit} className="flex-1 flex flex-col min-h-full">
       <div className="overflow-y-auto px-5 pt-9 pb-12 h-[calc(100dvh-132px)]">
@@ -213,17 +214,10 @@ const WaterForm: FC<IWaterForm> = ({ inputs, handleInput, close, handleSubmit, l
         </button>
         <button
           type="submit"
-          disabled={loading}
+          disabled={loading || !isFormValid}
           className="bg-gradient-to-r from-blue-500 to-cyan-500 disabled:from-gray-300 disabled:to-gray-400 text-white text-sm px-6 py-2 rounded-xl font-medium flex items-center justify-center gap-x-2 min-w-[100px] hover:from-blue-600 hover:to-cyan-600 transition-all disabled:hover:from-gray-300 disabled:hover:to-gray-400"
         >
-          {loading ? (
-            <>
-              <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
-              Recording...
-            </>
-          ) : (
-            'Record Intake'
-          )}
+          Record{loading && 'ing'} Intake
         </button>
       </div>
     </form>
