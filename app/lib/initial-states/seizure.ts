@@ -3,10 +3,12 @@ import { petInitialState } from './pet'
 
 export const seizureInitialState: ISeizure = {
   id: '',
-  occurredAt: new Date(),
-  duration: undefined,
+  timeTaken: '',
+  duration: 0,
   notes: '',
   petId: '',
+  videoFilename: '',
+  videoUrl: '',
   createdAt: new Date(),
   updatedAt: new Date(),
 

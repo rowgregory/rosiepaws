@@ -281,6 +281,16 @@ export const petSlice = createSlice({
       if (index !== -1) {
         state.pet.medications[index] = updatedMedication
       }
+    },
+    addSeizureToState: (state, action) => {
+      state.seizures.unshift(action.payload)
+      state.seizureCount = state.seizureCount + 1
+      state.zeroSeizures = state.seizures.length === 0
+    },
+    addSeizureToPet: (state, action) => {
+      if (state.pet && Array.isArray(state.pet.seizures)) {
+        state.pet.seizures.unshift(action.payload)
+      }
     }
   },
   extraReducers: (builder) => {
@@ -353,6 +363,9 @@ export const petSlice = createSlice({
       .addMatcher(petApi.endpoints.updateMedication.matchFulfilled, (state) => {
         state.loading = false
       })
+      .addMatcher(petApi.endpoints.createSeizure.matchFulfilled, (state) => {
+        state.loading = false
+      })
       .addMatcher(
         (action): action is { type: string; payload: ErrorPayload } =>
           action.type.endsWith('/rejected') && action.payload?.data?.sliceName === 'petApi',
@@ -403,5 +416,7 @@ export const {
   updateMedicationInState,
   updateMedicationInPet,
   setCloseUpdateMedicationDrawer,
-  setOpenUpdateMedicationDrawer
+  setOpenUpdateMedicationDrawer,
+  addSeizureToState,
+  addSeizureToPet
 } = petSlice.actions

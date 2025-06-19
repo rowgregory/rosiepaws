@@ -7,7 +7,7 @@ import { setCloseUpdateMedicationDrawer } from '../redux/features/petSlice'
 import MedicationForm from '../forms/medication-form/MedicationForm'
 import validateMedicationForm from '../validations/validateMedicationForm'
 import { X } from 'lucide-react'
-import GuardianMedicationChart from '../components/guardian/GuardianMedicationChart'
+import GuardianMedicationChart from '../components/guardian/GuardianMedicationGuildlines'
 import { useUpdateMedicationMutation } from '../redux/services/petApi'
 
 const UpdateMedicationDrawer = () => {
@@ -57,7 +57,7 @@ const UpdateMedicationDrawer = () => {
         onClick={closeMedicationDrawer}
         className="w-4 h-4 hover:text-indigo-500 duration-300 absolute top-5 right-5 cursor-pointer"
       />
-      <h1 className="text-xl px-5 pt-4 text-[#21252c] font-bold pb-5 border-b border-zinc-150">Add Medication</h1>
+      <h1 className="text-xl px-5 pt-4 text-[#21252c] font-bold pb-5 border-b border-zinc-150">Update Medication</h1>
       <div className="flex flex-col lg:flex-row">
         <MedicationForm
           inputs={medicationForm?.inputs}

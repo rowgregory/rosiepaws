@@ -74,7 +74,7 @@ model Pet {
   appointments Appointment[]
   medications  Medication[]
   feedings     Feeding[]
-  seizures     SeizureActivity[]
+  seizures     Seizure[]
   waters       Water[]
   bloodSugars  BloodSugar[]
 
@@ -158,10 +158,10 @@ model Medication {
   updatedAt DateTime @updatedAt
 }
 
-model SeizureActivity {
+model Seizure {
   id            String   @id @default(cuid())
-  occurredAt    DateTime
-  duration      Int? // Duration in seconds (optional)
+  timeTaken     DateTime
+  duration      Int // Duration in seconds (optional)
   notes         String? // Optional observations or details
   videoUrl      String?
   videoFilename String?

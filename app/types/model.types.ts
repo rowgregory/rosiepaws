@@ -70,12 +70,13 @@ export interface IFeeding {
 
 export interface ISeizure {
   id: string
-  occurredAt: Date
-  duration?: number // in seconds
+  timeTaken: string
+  duration: number // in seconds
   notes?: string
   petId: string
   videoUrl?: string
   videoFilename?: string
+  videoFile?: File | null // for form handling before upload
   createdAt: Date
   updatedAt: Date
 

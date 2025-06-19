@@ -13,6 +13,7 @@ import CreateBloodSugarDrawer from '../drawers/CreateBloodSugarDrawer'
 import CreateWaterDrawer from '../drawers/CreateWaterDrawer'
 import CreateMedicationDrawer from '../drawers/CreateMedicationDrawer'
 import UpdateMedicationDrawer from '../drawers/UpdateMedicationDrawer'
+import CreateSeizureDrawer from '../drawers/CreateSeizureDrawer'
 
 const GuardianLayout: FC<ChildrenProps> = ({ children }) => {
   const [toggleSidebar, setToggleSidebar] = useState(false)
@@ -26,6 +27,7 @@ const GuardianLayout: FC<ChildrenProps> = ({ children }) => {
       <CreateBloodSugarDrawer />
       <CreateWaterDrawer />
       <CreateMedicationDrawer />
+      <CreateSeizureDrawer />
       <UpdateMedicationDrawer />
       <GuardianActionMenu />
       <div className="flex">

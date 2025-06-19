@@ -27,7 +27,7 @@ export async function POST(req: NextRequest) {
     const owner = await prisma.user.findUnique({ where: { id: ownerId } })
     if (!owner) {
       await createLog('warning', 'Owner user not found when creating pet', {
-        location: ['api route - POST /api/pets'],
+        location: ['api route - POST /api/pet/create-pet'],
         name: 'OwnerNotFound',
         timestamp: new Date().toISOString(),
         url: req.url,
@@ -52,7 +52,7 @@ export async function POST(req: NextRequest) {
     })
 
     await createLog('info', 'Pet created successfully', {
-      location: ['api route - POST /api/pets'],
+      location: ['api route - POST /api/pet/create-pet'],
       name: 'PetCreated',
       timestamp: new Date().toISOString(),
       url: req.url,

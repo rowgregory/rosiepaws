@@ -19,7 +19,17 @@ export async function GET(req: NextRequest) {
         painScores: true,
         feedings: true,
         bloodSugars: true,
-        seizures: true,
+        seizures: {
+          include: {
+            pet: {
+              select: {
+                id: true,
+                name: true,
+                breed: true
+              }
+            }
+          }
+        },
         waters: true,
         medications: {
           include: {

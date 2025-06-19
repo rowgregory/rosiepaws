@@ -15,7 +15,7 @@ import {
 import { useCallback, useRef } from 'react'
 import useOutsideDetect from '@/app/hooks/useOutsideDetect'
 import Link from 'next/link'
-import { Droplet, Utensils, HeartPulse, Pill, Heart, Sparkles, Crown } from 'lucide-react'
+import { Utensils, Pill, Heart, Sparkles, Crown, Zap, Activity, Droplets } from 'lucide-react'
 import { getTodaysBloodSugarLogs } from '@/app/forms/blood-sugar-form/constants'
 
 const actions = (hasReachedBloodSugarLimit: boolean, todaysBloodSugarLogs: any) => [
@@ -32,19 +32,10 @@ const actions = (hasReachedBloodSugarLimit: boolean, todaysBloodSugarLogs: any) 
     label: 'Pain Score',
     linkKey: '/guardian/pets/pain',
     func: setOpenPainScoreDrawer,
-    icon: HeartPulse,
-    color: 'from-red-500 to-pink-500',
+    icon: Activity,
+    color: 'from-red-500 to-orange-500',
     bgHover: 'hover:bg-red-50',
     description: 'Track pain levels'
-  },
-  {
-    label: 'Water Intake',
-    linkKey: '/guardian/pets/water',
-    func: setOpenWaterDrawer,
-    icon: Droplet,
-    color: 'from-blue-500 to-cyan-500',
-    bgHover: 'hover:bg-blue-50',
-    description: 'Monitor hydration'
   },
   {
     label: 'Feedings',
@@ -56,12 +47,21 @@ const actions = (hasReachedBloodSugarLimit: boolean, todaysBloodSugarLogs: any) 
     description: 'Log meals & treats'
   },
   {
+    label: 'Water Intake',
+    linkKey: '/guardian/pets/water',
+    func: setOpenWaterDrawer,
+    icon: Droplets,
+    color: 'from-blue-500 to-cyan-500',
+    bgHover: 'hover:bg-blue-50',
+    description: 'Monitor hydration'
+  },
+  {
     label: 'Medication',
     linkKey: '/guardian/pets/medication',
     func: setOpenMedicationDrawer,
     icon: Pill,
-    color: 'from-orange-500 to-amber-500',
-    bgHover: 'hover:bg-orange-50',
+    color: 'from-indigo-500 to-purple-500',
+    bgHover: 'hover:bg-purple-50',
     description: 'Medicine schedule'
   },
   {
@@ -81,9 +81,9 @@ const actions = (hasReachedBloodSugarLimit: boolean, todaysBloodSugarLogs: any) 
     label: 'Seizure Tracking',
     linkKey: '/guardian/pets/seizure',
     func: setOpenSeizureDrawer,
-    icon: HeartPulse,
-    color: 'from-violet-500 to-purple-500',
-    bgHover: 'hover:bg-violet-50',
+    icon: Zap,
+    color: 'from-yellow-500 to-orange-500',
+    bgHover: 'hover:bg-yellow-50',
     description: 'Track seizure activity',
     isPremium: true
   }

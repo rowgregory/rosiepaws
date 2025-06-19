@@ -1,5 +1,6 @@
 import React from 'react'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts'
+import { Droplets } from 'lucide-react'
 
 interface MiniWaterChartProps {
   waterData: any[]
@@ -11,19 +12,28 @@ const MiniWaterChart: React.FC<MiniWaterChartProps> = ({ waterData = [] }) => {
 
   if (!recentWaterData.length) {
     return (
-      <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-        <h3 className="text-lg font-semibold mb-4 text-gray-900">Water Intake Trend</h3>
+      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center space-x-3">
+            <div className="p-2 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-lg">
+              <Droplets className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <h3 className="font-semibold text-gray-900">Water Intake Trend</h3>
+              <p className="text-sm text-gray-500">Last 7 days</p>
+            </div>
+          </div>
+          <div className="text-right">
+            <div className="text-2xl font-bold text-blue-600">--</div>
+            <div className="text-sm text-gray-500">No Data</div>
+          </div>
+        </div>
+
         <div className="flex items-center justify-center h-48 text-gray-400">
           <div className="text-center">
             <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-2">
-              <svg className="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 9.172V5L8 4z"
-                />
-              </svg>
+              <Droplets className="w-6 h-6 text-blue-500" />
             </div>
             <p className="text-sm">No water data</p>
           </div>
@@ -66,6 +76,10 @@ const MiniWaterChart: React.FC<MiniWaterChartProps> = ({ waterData = [] }) => {
   const hasExactData = processedData.some((day: any) => day.amount > 0)
   const hasRelativeData = processedData.some((day: any) => day.relativeCount > 0)
 
+  // Calculate latest/total values for header
+  const totalRelative = processedData.reduce((sum: number, day: any) => sum + day.relativeCount, 0)
+  const latestAmount = processedData.slice(-1)[0]?.amount || 0
+
   const renderChart = () => {
     if (hasExactData) {
       // Show bar chart for exact measurements
@@ -74,13 +88,19 @@ const MiniWaterChart: React.FC<MiniWaterChartProps> = ({ waterData = [] }) => {
           <ResponsiveContainer width="100%" height={200}>
             <BarChart data={processedData}>
               <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
-              <XAxis dataKey="day" tick={{ fontSize: 10 }} />
-              <YAxis tick={{ fontSize: 10 }} />
+              <XAxis dataKey="day" tick={{ fontSize: 10 }} axisLine={false} tickLine={false} />
+              <YAxis tick={{ fontSize: 10 }} axisLine={false} tickLine={false} />
               <Tooltip
+                contentStyle={{
+                  backgroundColor: 'white',
+                  border: '1px solid #e5e7eb',
+                  borderRadius: '8px',
+                  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                }}
                 formatter={(value: any) => [`${value}ml`, 'Water Intake']}
                 labelFormatter={(label) => `${label}`}
               />
-              <Bar dataKey="amount" fill="#3b82f6" radius={[2, 2, 0, 0]} opacity={0.8} />
+              <Bar dataKey="amount" fill="#0ea5e9" radius={[2, 2, 0, 0]} opacity={0.8} />
             </BarChart>
           </ResponsiveContainer>
           {hasRelativeData && (
@@ -93,7 +113,7 @@ const MiniWaterChart: React.FC<MiniWaterChartProps> = ({ waterData = [] }) => {
         </>
       )
     } else if (hasRelativeData) {
-      // Show relative measurements summary as pie chart
+      // Show relative measurements summary as pie chart with blue/cyan theme
       const totalRelative = processedData.reduce(
         (acc: any, day: any) => {
           acc.more += day.relativeMore
@@ -105,9 +125,9 @@ const MiniWaterChart: React.FC<MiniWaterChartProps> = ({ waterData = [] }) => {
       )
 
       const relativeData = [
-        { type: 'More', count: totalRelative.more, color: '#3b82f6' },
-        { type: 'Same', count: totalRelative.same, color: '#10b981' },
-        { type: 'Less', count: totalRelative.less, color: '#f59e0b' }
+        { type: 'More', count: totalRelative.more, color: '#0ea5e9' }, // sky-500
+        { type: 'Same', count: totalRelative.same, color: '#06b6d4' }, // cyan-500
+        { type: 'Less', count: totalRelative.less, color: '#0284c7' } // sky-600
       ].filter((item) => item.count > 0)
 
       return (
@@ -129,6 +149,12 @@ const MiniWaterChart: React.FC<MiniWaterChartProps> = ({ waterData = [] }) => {
                   ))}
                 </Pie>
                 <Tooltip
+                  contentStyle={{
+                    backgroundColor: 'white',
+                    border: '1px solid #e5e7eb',
+                    borderRadius: '8px',
+                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                  }}
                   formatter={(value: any) => [`${value} times`, 'Count']}
                   labelFormatter={(label) => `${label} than usual`}
                 />
@@ -150,14 +176,7 @@ const MiniWaterChart: React.FC<MiniWaterChartProps> = ({ waterData = [] }) => {
         <div className="flex items-center justify-center h-48 text-gray-400">
           <div className="text-center">
             <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-2">
-              <svg className="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 9.172V5L8 4z"
-                />
-              </svg>
+              <Droplets className="w-6 h-6 text-blue-500" />
             </div>
             <p className="text-sm">No water data</p>
           </div>
@@ -167,8 +186,26 @@ const MiniWaterChart: React.FC<MiniWaterChartProps> = ({ waterData = [] }) => {
   }
 
   return (
-    <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-      <h3 className="text-lg font-semibold mb-4 text-gray-900">Water Intake Trend</h3>
+    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center space-x-3">
+          <div className="p-2 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-lg">
+            <Droplets className="w-5 h-5 text-white" />
+          </div>
+          <div>
+            <h3 className="font-semibold text-gray-900">Water Intake Trend</h3>
+            <p className="text-sm text-gray-500">Last 7 days</p>
+          </div>
+        </div>
+        <div className="text-right">
+          <div className="text-2xl font-bold text-blue-600">
+            {hasExactData ? `${latestAmount}ml` : `${totalRelative}`}
+          </div>
+          <div className="text-sm text-gray-500">{hasExactData ? 'Latest' : 'Entries'}</div>
+        </div>
+      </div>
+
       {renderChart()}
     </div>
   )

@@ -8,6 +8,7 @@ import { feedingInitialState } from '@/app/lib/initial-states/feeding'
 import { bloodSugarInitialState } from '@/app/lib/initial-states/bloodSugar'
 import { waterInitialState } from '@/app/lib/initial-states/water'
 import { medicationInitialState } from '@/app/lib/initial-states/medication'
+import { seizureInitialState } from '@/app/lib/initial-states/seizure'
 
 export type Inputs = {
   [key: string]: string | number | boolean | undefined | unknown
@@ -64,6 +65,10 @@ const formInitialState = {
   medicationForm: {
     inputs: medicationInitialState,
     errors: medicationInitialState
+  },
+  seizureForm: {
+    inputs: seizureInitialState,
+    errors: seizureInitialState
   }
 } as any
 

@@ -2,7 +2,6 @@ interface BloodSugarFormInputs {
   petId: string
   value: string // string to match form input, will parse to int
   timeTaken: string
-  notes?: string
 }
 
 // Pass existingEntriesCount to check how many readings for this pet today

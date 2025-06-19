@@ -29,14 +29,14 @@ const GuardianMetricCard = ({
             color === 'red'
               ? 'from-red-500 to-pink-500'
               : color === 'blue'
-              ? 'from-blue-500 to-cyan-500'
-              : color === 'green'
-              ? 'from-green-500 to-emerald-500'
-              : color === 'purple'
-              ? 'from-purple-500 to-pink-500'
-              : color === 'yellow'
-              ? 'from-yellow-500 to-orange-500'
-              : 'from-orange-500 to-amber-500'
+                ? 'from-blue-500 to-cyan-500'
+                : color === 'green'
+                  ? 'from-green-500 to-emerald-500'
+                  : color === 'purple'
+                    ? 'from-indigo-500 to-purple-500'
+                    : color === 'yellow'
+                      ? 'from-yellow-500 to-orange-500'
+                      : 'from-red-500 to-orange-500'
           } shadow-lg`}
         >
           <Icon className="w-6 h-6 text-white" />

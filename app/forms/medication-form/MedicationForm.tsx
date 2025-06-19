@@ -374,7 +374,7 @@ const MedicationForm = ({ inputs, handleSubmit, close, errors, loading, isUpdati
                   </div>
 
                   <div className="space-y-2">
-                    {medicationForm?.inputs?.reminderTimes.map((time: any, index: number) => (
+                    {medicationForm?.inputs?.reminderTimes?.map((time: any, index: number) => (
                       <div key={index} className="flex items-center space-x-2">
                         <input
                           type="time"

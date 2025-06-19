@@ -1,6 +1,6 @@
 {
   "name": "rosiepaws",
-  "version": "0.3.1",
+  "version": "0.4.1",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -18,7 +18,7 @@
     "@reduxjs/toolkit": "^2.2.4",
     "argon2": "^0.41.1",
     "error-stack-parser-es": "^1.0.5",
-    "firebase": "^11.1.0",
+    "firebase": "^11.9.1",
     "framer-motion": "^12.4.3",
     "jose": "^5.9.6",
     "lucide-react": "^0.511.0",

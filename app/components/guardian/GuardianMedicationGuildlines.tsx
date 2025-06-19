@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { ChevronDown, ChevronRight, Pill, Scale, AlertTriangle, Lightbulb, Shield } from 'lucide-react'
 
-const GuardianMedicationChart = () => {
+const GuardianMedicationGuildlines = () => {
   const [expandedCategory, setExpandedCategory] = useState<number | null>(null)
   const [activeTab, setActiveTab] = useState('guidelines')
 
@@ -15,7 +15,8 @@ const GuardianMedicationChart = () => {
         'Start with lowest effective dose',
         'Monitor for limping improvement within 3-7 days',
         'Watch for decreased appetite or vomiting',
-        'Never combine multiple NSAIDs'
+        'Never combine multiple NSAIDs',
+        'Never give if your pet is receiving a steroid medication'
       ],
       tips: [
         'Keep a pain diary to track effectiveness',
@@ -30,6 +31,30 @@ const GuardianMedicationChart = () => {
         'Increased lethargy or weakness',
         'Excessive panting or restlessness',
         'Signs of liver toxicity (yellowing of gums/eyes)'
+      ]
+    },
+    {
+      category: 'Steroids',
+      frequency: 'Prednisone, Prednisolone, Methylprednisone',
+      color: '#F59E0B',
+      portions: [
+        'Do not give with any NSAIDs',
+        'May cause increased thirst and increased urination',
+        'May me more susceptible to infection, may have increased panting.'
+      ],
+      tips: [
+        'Give with food to reduce stomach upset',
+        'Administer at the same time each day for consistency',
+        'Never stop steroids abruptly - always taper the dose gradually',
+        "Monitor your pet's weight as steroids can cause weight gain",
+        'Keep a log of side effects to discuss with your veterinarian'
+      ],
+      watchFor: [
+        'Excessive panting or difficulty breathing',
+        'Vomiting or diarrhea, especially if blood is present',
+        'Signs of infection (fever, lethargy, loss of appetite)',
+        'Increased aggression or behavioral changes',
+        'Swelling in the face, legs, or abdomen'
       ]
     },
     {
@@ -349,4 +374,4 @@ const GuardianMedicationChart = () => {
   )
 }
 
-export default GuardianMedicationChart
+export default GuardianMedicationGuildlines

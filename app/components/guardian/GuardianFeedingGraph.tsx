@@ -1,5 +1,6 @@
 import { FC } from 'react'
 import { ResponsiveContainer, Tooltip, AreaChart, CartesianGrid, XAxis, YAxis, Area } from 'recharts'
+import { Utensils } from 'lucide-react'
 
 // Helper function to convert food amounts to numeric values (in cups)
 const convertToNumeric = (amount: string): number => {
@@ -77,21 +78,48 @@ const GuardianFeedingGraph: FC<{ feedingData: any; showIndividualFeedings?: bool
   // Choose between daily totals or individual feedings
   const chartData = showIndividualFeedings ? processFeedingDataByTime(feedingData) : processFeedingData(feedingData)
 
+  const latestAmount = chartData?.slice(-1)[0]?.amount || 0
+  const totalAmount = chartData.reduce((sum, item) => sum + item.amount, 0)
+  const averageAmount = chartData.length > 0 ? (totalAmount / chartData.length).toFixed(1) : '--'
+
   return (
-    <div className="bg-white p-4 rounded-lg border border-gray-200">
-      <div className="mb-6">
-        <h3 className="text-lg font-semibold text-gray-900">Feeding</h3>
-        <p className="text-sm text-gray-600">
-          {showIndividualFeedings ? 'Individual feeding amounts over time' : 'Smooth trend of daily consumption'}
-        </p>
+    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center space-x-3">
+          <div className="p-2 bg-gradient-to-br from-green-500 to-emerald-500 rounded-lg">
+            <Utensils className="w-5 h-5 text-white" />
+          </div>
+          <div>
+            <h3 className="text-lg font-semibold text-gray-900">Feeding Tracking</h3>
+            <p className="text-sm text-gray-600">
+              {showIndividualFeedings ? 'Individual feeding amounts over time' : 'Daily consumption trends'}
+            </p>
+          </div>
+        </div>
+        <div className="text-right">
+          <div className="text-2xl font-bold text-green-600">
+            {showIndividualFeedings ? `${latestAmount}` : `${latestAmount}`}
+          </div>
+          <div className="text-sm text-gray-500">{showIndividualFeedings ? 'Latest (cups)' : 'Latest Day (cups)'}</div>
+        </div>
       </div>
-      <ResponsiveContainer width="100%" height={250}>
+
+      {/* Chart */}
+      <ResponsiveContainer width="100%" height={300}>
         <AreaChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+          <defs>
+            <linearGradient id="feedingGradient" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="5%" stopColor="#10b981" stopOpacity={0.3} />
+              <stop offset="95%" stopColor="#50ad86" stopOpacity={0.05} />
+            </linearGradient>
+          </defs>
+          <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" opacity={0.6} />
           <XAxis
             dataKey={showIndividualFeedings ? 'displayTime' : 'date'}
             tick={{ fontSize: 12 }}
             tickLine={false}
+            axisLine={false}
             angle={showIndividualFeedings ? -45 : 0}
             textAnchor={showIndividualFeedings ? 'end' : 'middle'}
             height={showIndividualFeedings ? 60 : 30}
@@ -99,6 +127,7 @@ const GuardianFeedingGraph: FC<{ feedingData: any; showIndividualFeedings?: bool
           <YAxis
             tick={{ fontSize: 12 }}
             tickLine={false}
+            axisLine={false}
             label={{ value: 'Cups', angle: -90, position: 'insideLeft' }}
           />
           <Tooltip
@@ -106,7 +135,8 @@ const GuardianFeedingGraph: FC<{ feedingData: any; showIndividualFeedings?: bool
               backgroundColor: '#fff',
               border: '1px solid #e5e7eb',
               borderRadius: '8px',
-              fontSize: '12px'
+              fontSize: '12px',
+              boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
             }}
             formatter={(value: number, name, props) => {
               const data = props.payload
@@ -118,19 +148,33 @@ const GuardianFeedingGraph: FC<{ feedingData: any; showIndividualFeedings?: bool
             }}
             labelFormatter={(label) => (showIndividualFeedings ? `Time: ${label}` : `Date: ${label}`)}
           />
-          <Area type="monotone" dataKey="amount" stroke="#10b981" fill="#10b981" fillOpacity={0.2} strokeWidth={2} />
+          <Area
+            type="monotone"
+            dataKey="amount"
+            stroke="#10b981"
+            fill="url(#feedingGradient)"
+            strokeWidth={3}
+            dot={{ fill: '#10b981', strokeWidth: 2, r: 4 }}
+            activeDot={{ r: 6, stroke: '#10b981', strokeWidth: 2 }}
+          />
         </AreaChart>
       </ResponsiveContainer>
 
-      {/* Optional: Show feeding summary */}
-      {chartData.length > 0 && (
-        <div className="mt-4 text-xs text-gray-500 flex justify-between">
-          <span>Total feedings: {feedingData?.length || 0}</span>
-          <span>
-            Total amount: {Math.round(chartData.reduce((sum, item) => sum + item.amount, 0) * 100) / 100} cups
-          </span>
+      {/* Stats Footer */}
+      <div className="grid grid-cols-3 gap-4 mt-6 pt-6 border-t border-gray-100">
+        <div className="text-center p-3 bg-green-50 rounded-lg">
+          <div className="text-lg font-bold text-green-600">{feedingData?.length || 0}</div>
+          <div className="text-xs text-gray-600">Total Feedings</div>
         </div>
-      )}
+        <div className="text-center p-3 bg-emerald-50 rounded-lg">
+          <div className="text-lg font-bold text-emerald-600">{averageAmount}</div>
+          <div className="text-xs text-gray-600">Avg per Day</div>
+        </div>
+        <div className="text-center p-3 bg-gray-50 rounded-lg">
+          <div className="text-lg font-bold text-gray-600">{Math.round(totalAmount * 100) / 100}</div>
+          <div className="text-xs text-gray-600">Total Cups</div>
+        </div>
+      </div>
     </div>
   )
 }

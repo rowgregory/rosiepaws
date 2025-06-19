@@ -6,7 +6,6 @@ import React from 'react'
 const GuardianSettings = () => {
   const handleResetSettings = (e: any) => {
     e.preventDefault()
-    console.log('Are you sure you want to reset all settings to default? This cannot be undone.')
   }
 
   return (

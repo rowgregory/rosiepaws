@@ -8,6 +8,8 @@ import {
   addPainScoreToPet,
   addPainScoreToState,
   addPetToState,
+  addSeizureToPet,
+  addSeizureToState,
   addWaterToPet,
   addWaterToState,
   removePetFromState,
@@ -102,6 +104,15 @@ export const petApi = api.injectEndpoints({
         dispatch(updateMedicationInState(updatedMedication))
         dispatch(updateMedicationInPet(updatedMedication))
       }
+    }),
+    createSeizure: build.mutation({
+      query: (body: any) => ({ url: `${BASE_URL}/create-seizure`, method: 'POST', body }),
+      onQueryStarted: async (_: any, { dispatch, queryFulfilled }: any) => {
+        const { data } = await queryFulfilled
+        const newSeizure = data.seizure
+        dispatch(addSeizureToState(newSeizure))
+        dispatch(addSeizureToPet(newSeizure))
+      }
     })
   })
 })
@@ -117,5 +128,6 @@ export const {
   useCreateBloodSugarMutation,
   useCreateWaterMutation,
   useCreateMedicationMutation,
-  useUpdateMedicationMutation
+  useUpdateMedicationMutation,
+  useCreateSeizureMutation
 } = petApi
