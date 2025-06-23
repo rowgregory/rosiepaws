@@ -12,6 +12,7 @@ import { logReducer } from './features/logSlice'
 import { petReducer } from './features/petSlice'
 import { formReducer } from './features/formSlice'
 import { stripeReducer } from './features/stripeSlice'
+import { adminReducer } from './features/adminSlice'
 
 const rootReducer = combineReducers({
   app: appReducer,
@@ -22,6 +23,7 @@ const rootReducer = combineReducers({
   pet: petReducer,
   form: formReducer,
   stripe: stripeReducer,
+  admin: adminReducer,
   [api.reducerPath]: api.reducer
 })
 

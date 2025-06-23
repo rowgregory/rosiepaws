@@ -21,6 +21,7 @@ model StripeSubscription {
   subscriptionId    String? // optional: track active subscription
   status            String    @default("inactive")
   plan              String    @default("free")
+  planPrice         Int       @default(0)
   trialEndsAt       DateTime?
   cancelAtPeriodEnd Boolean
   canceledAt        DateTime?
