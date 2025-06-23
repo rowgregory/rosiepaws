@@ -5,7 +5,7 @@ import {
   guardianProfileLink,
   guardianSettingsLink,
   guardianSubscriptionLink
-} from '@/public/admin.data'
+} from '@/public/data/admin.data'
 import { LayoutDashboard, Cat, CreditCard, User, LogOut, Settings } from 'lucide-react'
 
 export const guardianLinkData = (path: string) => [

@@ -12,8 +12,6 @@ import {
   setOpenSeizureDrawer,
   setOpenWaterDrawer
 } from '@/app/redux/features/petSlice'
-import { useCallback, useRef } from 'react'
-import useOutsideDetect from '@/app/hooks/useOutsideDetect'
 import Link from 'next/link'
 import { Utensils, Pill, Heart, Sparkles, Crown, Zap, Activity, Droplets } from 'lucide-react'
 import { getTodaysBloodSugarLogs } from '@/app/forms/blood-sugar-form/constants'
@@ -92,12 +90,8 @@ const actions = (hasReachedBloodSugarLimit: boolean, todaysBloodSugarLogs: any) 
 const GuardianActionMenu = () => {
   const { guardianActionMenu, bloodSugars } = useAppSelector((state: RootState) => state.pet)
   const dispatch = useAppDispatch()
-  const menuRef = useRef<HTMLDivElement | null>(null)
 
-  const onClose = useCallback(() => dispatch(setCloseGuardianActionMenu()), [dispatch])
-
-  const handleClose = useCallback(() => onClose(), [onClose])
-  useOutsideDetect(menuRef, handleClose)
+  const onClose = () => dispatch(setCloseGuardianActionMenu())
 
   // Calculate today's blood sugar logs
   const todaysBloodSugarLogs = getTodaysBloodSugarLogs(bloodSugars || [])
@@ -118,7 +112,6 @@ const GuardianActionMenu = () => {
 
           {/* Menu */}
           <motion.div
-            ref={menuRef}
             initial={{ opacity: 0, scale: 0.9, y: -20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: -20 }}

@@ -33,11 +33,16 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
-  const user = await getUserFromServerCookie()
+  let user
+  try {
+    user = await getUserFromServerCookie()
+  } catch (error) {
+    console.error('ERROR: ', error)
+  }
   return (
     <html lang="en">
       <body className={`${barlowCondensed.variable} ${satisfy.variable} ${merrieweather.variable} antialiased`}>
-        <ReduxWrapper user={user}>{children}</ReduxWrapper>
+        <ReduxWrapper user={user || null}>{children}</ReduxWrapper>
       </body>
     </html>
   )

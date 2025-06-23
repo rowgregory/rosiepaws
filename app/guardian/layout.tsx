@@ -14,6 +14,7 @@ import CreateWaterDrawer from '../drawers/CreateWaterDrawer'
 import CreateMedicationDrawer from '../drawers/CreateMedicationDrawer'
 import UpdateMedicationDrawer from '../drawers/UpdateMedicationDrawer'
 import CreateSeizureDrawer from '../drawers/CreateSeizureDrawer'
+import NotificationDrawer from '../drawers/NotificationDrawer'
 
 const GuardianLayout: FC<ChildrenProps> = ({ children }) => {
   const [toggleSidebar, setToggleSidebar] = useState(false)
@@ -30,6 +31,7 @@ const GuardianLayout: FC<ChildrenProps> = ({ children }) => {
       <CreateSeizureDrawer />
       <UpdateMedicationDrawer />
       <GuardianActionMenu />
+      <NotificationDrawer />
       <div className="flex">
         <GuardianNavigation toggleSidebar={toggleSidebar} setToggleSidebar={setToggleSidebar} />
         <div className={`flex flex-col w-full ${toggleSidebar ? 'ml-0 lg:ml-16' : 'ml-0 lg:ml-64'}`}>

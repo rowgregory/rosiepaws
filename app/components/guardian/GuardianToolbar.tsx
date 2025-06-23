@@ -5,6 +5,7 @@ import { RootState, useAppDispatch, useAppSelector } from '@/app/redux/store'
 import GuardianActionMenuButton from './GuardianActionMenuButton'
 import { Bell, PawPrint, Settings, User } from 'lucide-react'
 import Link from 'next/link'
+import { setOpenNotificationDrawer } from '@/app/redux/features/dashboardSlice'
 
 const GuardianToolbar = () => {
   const dispatch = useAppDispatch()
@@ -27,7 +28,10 @@ const GuardianToolbar = () => {
             onClick={() => (zeroPets ? dispatch(setOpenPetDrawer()) : dispatch(setOpenGuardianActionMenu()))}
           />
           {/* Notifications */}
-          <button className="relative p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded-lg transition-colors duration-200">
+          <button
+            onClick={() => dispatch(setOpenNotificationDrawer())}
+            className="relative p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded-lg transition-colors duration-200"
+          >
             <Bell className="w-5 h-5" />
             <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></div>
           </button>

@@ -13,6 +13,8 @@ import {
   Activity,
   Trash2
 } from 'lucide-react'
+import { RootState, useAppDispatch, useAppSelector } from '../redux/store'
+import { setCloseNotificationDrawer } from '../redux/features/dashboardSlice'
 
 // Notification types for pet care
 type NotificationType =
@@ -138,14 +140,10 @@ const formatTimeAgo = (timestamp: Date) => {
   return `${Math.floor(diffInMinutes / 1440)}d ago`
 }
 
-interface NotificationDrawerProps {
-  isOpen: boolean
-  onClose: () => void
-}
-
-const NotificationDrawer: React.FC<NotificationDrawerProps> = ({ isOpen, onClose }) => {
+const NotificationDrawer = () => {
   const [notifications, setNotifications] = useState<Notification[]>(sampleNotifications)
-
+  const { notificationDrawer } = useAppSelector((state: RootState) => state.dashboard)
+  const dispatch = useAppDispatch()
   const unreadCount = notifications.filter((n) => !n.isRead).length
   const priorityNotifications = notifications.filter((n) => n.priority === 'high' && !n.isRead)
 
@@ -161,9 +159,11 @@ const NotificationDrawer: React.FC<NotificationDrawerProps> = ({ isOpen, onClose
     setNotifications((prev) => prev.filter((n) => n.id !== id))
   }
 
+  const onClose = () => dispatch(setCloseNotificationDrawer())
+
   return (
     <AnimatePresence>
-      {isOpen && (
+      {notificationDrawer && (
         <>
           {/* Backdrop */}
           <motion.div
@@ -338,28 +338,4 @@ const NotificationDrawer: React.FC<NotificationDrawerProps> = ({ isOpen, onClose
   )
 }
 
-// Usage Example Component
-const NotificationExample = () => {
-  const [isNotificationOpen, setIsNotificationOpen] = useState(false)
-  const unreadCount = sampleNotifications.filter((n) => !n.isRead).length
-
-  return (
-    <div className="p-8">
-      <button
-        onClick={() => setIsNotificationOpen(true)}
-        className="relative p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded-lg transition-colors duration-200"
-      >
-        <Bell className="w-5 h-5" />
-        {unreadCount > 0 && (
-          <div className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center font-medium">
-            {unreadCount > 9 ? '9+' : unreadCount}
-          </div>
-        )}
-      </button>
-
-      <NotificationDrawer isOpen={isNotificationOpen} onClose={() => setIsNotificationOpen(false)} />
-    </div>
-  )
-}
-
-export default NotificationExample
+export default NotificationDrawer

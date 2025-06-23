@@ -21,12 +21,7 @@ export default {
       backgroundImage: {
         homeherosunrays: "url('/images/banner-sun-rays.png')",
         homeherotexture2: "url('/images/homeherotexture2.png')",
-        homeherocenterimage: "url('/images/homeherocenterimage.png')",
-        homeherocenterimage2: "url('/images/homeherocenterimage2.png')",
         headerlogo: "url('/images/header-logo.png')",
-        herologo: "url('/images/hero-logo.png')",
-        herologo3: "url('/images/hero-logo-3.png')",
-        herologo4: "url('/images/hero-logo-4.png')",
         herologo5: "url('/images/hero-logo-5.png')",
         darkstripeslight: "url('/images/dark-stripes-light.png')",
         climpek: "url('/images/climpek.png')",
@@ -34,21 +29,13 @@ export default {
         dust: "url('/images/dust.png')",
         about: "url('/images/about.png')",
         portfoliopattern: "url('/images/portfolio-pattern.png')",
-        star: "url('/images/star.png')",
-        footertexture: "url('/images/footer-texture.png')",
-        rosielogo: "url('/images/rosie-logo.png')"
+        footertexture: "url('/images/footer-texture.png')"
       },
       animation: {
-        rotateToTwoOClock: 'rotateToTwoOClock 375ms ease-in-out forwards',
         slowspin: 'slowspin 200s linear infinite',
         floatCloud: 'floatCloud 6s ease-in-out infinite'
       },
       keyframes: {
-        rotateToTwoOClock: {
-          '0%': { transform: 'rotate(0deg)' },
-          '40%': { transform: 'rotate(30deg)' },
-          '100%': { transform: 'rotate(0deg)' }
-        },
         floatCloud: {
           '0%': { transform: 'translateY(0px) translateX(0px)' },
           '25%': { transform: 'translateY(-12px) translateX(5px)' },

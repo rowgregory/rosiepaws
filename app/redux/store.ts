@@ -7,25 +7,21 @@ import { api } from './services/api'
 import { appReducer } from './features/appSlice'
 import { authReducer } from './features/authSlice'
 import { dashboardReducer } from './features/dashboardSlice'
-import { textBlockReducer } from './features/textBlockSlice'
-import { photoGalleryImageReducer } from './features/photoGalleryImageSlice'
 import { userReducer } from './features/userSlice'
-import { pushNotificationReducer } from './features/pushNotificationSlice'
 import { logReducer } from './features/logSlice'
 import { petReducer } from './features/petSlice'
 import { formReducer } from './features/formSlice'
+import { stripeReducer } from './features/stripeSlice'
 
 const rootReducer = combineReducers({
   app: appReducer,
   auth: authReducer,
   dashboard: dashboardReducer,
-  textBlock: textBlockReducer,
-  photoGalleryImage: photoGalleryImageReducer,
   user: userReducer,
-  pushNotification: pushNotificationReducer,
   log: logReducer,
   pet: petReducer,
   form: formReducer,
+  stripe: stripeReducer,
   [api.reducerPath]: api.reducer
 })
 

@@ -25,7 +25,7 @@ import {
   petsLink,
   subscriptionsLink,
   usersLink
-} from '@/public/admin.data'
+} from '@/public/data/admin.data'
 import useCustomPathname from '../hooks/useCustomPathname'
 import Link from 'next/link'
 import { useAppDispatch } from '../redux/store'
