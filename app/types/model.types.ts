@@ -1,15 +1,59 @@
 export type PetType = 'DOG' | 'CAT'
 
+export interface IStripeSubscription {
+  id: string
+  userId: string
+  customerId: string
+  paymentMethodId: string
+  subscriptionId?: string
+  status: string
+  plan: string
+  planPrice: number
+  trialEndsAt?: Date
+  cancelAtPeriodEnd: boolean
+  canceledAt?: Date
+  currentPeriodEnd?: Date
+  createdAt: Date
+  updatedAt: Date
+
+  user: IUser
+}
+
+export interface IUser {
+  id: string
+  firstName: string
+  lastName: string
+  password: string
+  email: string
+  isSuperUser: boolean
+  isAdmin: boolean
+  isGuardian: boolean
+  isBasicUser: boolean
+  isPremiumUser: boolean
+  role: string
+  securityQuestion: string
+  securityAnswerHash: string
+
+  stripeCustomerId?: string
+  stripeSubscription?: IStripeSubscription
+  pets: Pet[]
+  blogs: Blog[]
+
+  createdAt: Date
+  updatedAt: Date
+}
+
 export interface Pet {
   id: string
   name: string
   type: PetType
-  breed?: string
-  age?: string
-  gender?: string
-  weight?: string
+  breed: string
+  age: string
+  gender: string
+  weight: string
   ownerId: string
   notes?: string
+  owner: IUser
 
   // Related entities - you can type these more precisely if needed
   appointments: Appointment[]

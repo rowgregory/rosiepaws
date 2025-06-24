@@ -194,7 +194,7 @@ const GuardianDashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br py-6">
+    <div className="min-h-screen py-6">
       <div className="max-w-full mx-auto space-y-8">
         {/* Header */}
         <div className="flex items-center justify-between">

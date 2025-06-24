@@ -9,8 +9,11 @@ export const adminApi = api.injectEndpoints({
       query: () => `${BASE_URL}/fetch-dashboard-data`,
       providesTags: ['Admin'],
       keepUnusedDataFor: 0
+    }),
+    fetchAllPets: build.query({
+      query: () => `${BASE_URL}/fetch-all-pets`
     })
   })
 })
 
-export const { useFetchDashboardDataQuery } = adminApi
+export const { useFetchDashboardDataQuery, useFetchAllPetsQuery } = adminApi

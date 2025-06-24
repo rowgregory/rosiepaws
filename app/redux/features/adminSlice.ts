@@ -1,5 +1,7 @@
 import { Reducer, createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { adminApi } from '../services/adminApi'
+import { IUser, Pet } from '@/app/types/model.types'
+import { petInitialState } from '@/app/lib/initial-states/pet'
 
 interface ErrorPayload {
   data: {
@@ -13,6 +15,15 @@ export interface AdminStatePayload {
   error: string
   message: string | null
   grossVolume: number | string
+  zeroUsers: number
+  users: IUser[]
+  actionMenu: boolean
+
+  pets: Pet[]
+  pet: Pet
+  zeroPets: boolean
+  petDrawer: boolean
+  petCount: number
 }
 
 export const initialAdminState: AdminStatePayload = {
@@ -20,19 +31,41 @@ export const initialAdminState: AdminStatePayload = {
   success: false,
   error: '',
   message: '',
-  grossVolume: ''
+  grossVolume: '',
+  zeroUsers: 0,
+  users: [],
+  actionMenu: false,
+
+  pets: [],
+  pet: petInitialState,
+  zeroPets: false,
+  petDrawer: false,
+  petCount: 0
 }
 
 export const adminSlice = createSlice({
   name: 'admin',
   initialState: initialAdminState,
-  reducers: {},
+  reducers: {
+    setOpenAdminActionMenu: (state) => {
+      state.actionMenu = true
+    },
+    setCloseAdminActionMenu: (state) => {
+      state.actionMenu = false
+    }
+  },
   extraReducers: (builder) => {
     builder
       .addMatcher(adminApi.endpoints.fetchDashboardData.matchFulfilled, (state, { payload }) => {
         state.loading = false
         state.success = true
         state.grossVolume = payload.grossVolume
+      })
+      .addMatcher(adminApi.endpoints.fetchAllPets.matchFulfilled, (state, { payload }: any) => {
+        state.pets = payload.pets
+        state.loading = false
+        state.zeroPets = payload.pets.length === 0
+        state.petCount = payload.pets.length
       })
       .addMatcher(
         (action): action is PayloadAction<ErrorPayload> =>
@@ -47,4 +80,4 @@ export const adminSlice = createSlice({
 
 export const adminReducer = adminSlice.reducer as Reducer<AdminStatePayload>
 
-export const {} = adminSlice.actions
+export const { setOpenAdminActionMenu, setCloseAdminActionMenu } = adminSlice.actions

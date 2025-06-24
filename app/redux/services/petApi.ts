@@ -24,9 +24,6 @@ const BASE_URL = '/pet'
 export const petApi = api.injectEndpoints({
   overrideExisting: true,
   endpoints: (build: any) => ({
-    fetchAllPets: build.query({
-      query: () => `${BASE_URL}/fetch-all-pets`
-    }),
     fetchMyPets: build.query({
       query: () => `${BASE_URL}/fetch-my-pets`
     }),
@@ -118,7 +115,6 @@ export const petApi = api.injectEndpoints({
 })
 
 export const {
-  useFetchAllPetsQuery,
   useFetchMyPetsQuery,
   useCreatePetMutation,
   useCreatePainScoreMutation,

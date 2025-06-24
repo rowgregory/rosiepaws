@@ -17,7 +17,10 @@ export async function GET(req: NextRequest) {
     }
 
     const pets = await prisma.pet.findMany({
-      orderBy: { createdAt: 'desc' }
+      orderBy: { createdAt: 'desc' },
+      include: {
+        owner: true
+      }
     })
 
     return NextResponse.json({ pets, sliceName: sliceAuth }, { status: 200 })

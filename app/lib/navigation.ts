@@ -1,12 +1,17 @@
 import {
   authLoginLink,
+  blogLink,
+  dashboardLink,
   guardianDashboardLink,
   guardianPetsLink,
   guardianProfileLink,
   guardianSettingsLink,
-  guardianSubscriptionLink
+  guardianSubscriptionLink,
+  petsLink,
+  settingsLink,
+  subscriptionsLink
 } from '@/public/data/admin.data'
-import { LayoutDashboard, Cat, CreditCard, User, LogOut, Settings } from 'lucide-react'
+import { LayoutDashboard, Cat, CreditCard, User, LogOut, Settings, Dog, Pen } from 'lucide-react'
 
 export const guardianLinkData = (path: string) => [
   {
@@ -38,6 +43,45 @@ export const guardianLinkData = (path: string) => [
     textKey: 'Settings',
     linkKey: guardianSettingsLink,
     isActive: path === guardianSettingsLink
+  },
+  {
+    icon: LogOut,
+    textKey: 'Logout',
+    linkKey: authLoginLink,
+    isActive: path === authLoginLink
+  }
+]
+
+export const adminLinkData = (path: string) => [
+  {
+    icon: LayoutDashboard,
+    textKey: 'Dashboard',
+    linkKey: dashboardLink,
+    isActive: path === dashboardLink
+  },
+  {
+    icon: CreditCard,
+    textKey: 'Subscriptions',
+    linkKey: subscriptionsLink,
+    isActive: path === subscriptionsLink
+  },
+  {
+    icon: Dog,
+    textKey: 'Pets',
+    linkKey: petsLink,
+    isActive: path === petsLink
+  },
+  {
+    icon: Pen,
+    textKey: 'Blog',
+    linkKey: blogLink,
+    isActive: path === blogLink
+  },
+  {
+    icon: Settings,
+    textKey: 'Settings',
+    linkKey: settingsLink,
+    isActive: path === settingsLink
   },
   {
     icon: LogOut,

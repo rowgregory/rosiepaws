@@ -295,12 +295,7 @@ export const petSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addMatcher(petApi.endpoints.fetchAllPets.matchFulfilled, (state, { payload }: any) => {
-        state.pets = payload.pets
-        state.loading = false
-        state.zeroPets = payload.pets.length === 0
-        state.petCount = payload.pets.length
-      })
+
       .addMatcher(petApi.endpoints.fetchMyPets.matchFulfilled, (state, { payload }: any) => {
         state.loading = false
         state.pets = payload.pets
