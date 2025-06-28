@@ -1,154 +1,97 @@
-import { NextRequest, NextResponse } from 'next/server'
-import prisma from '@/prisma/client'
-import Stripe from 'stripe'
-import { parseStack } from 'error-stack-parser-es/lite'
-import { sliceAuth } from '@/public/data/api.data'
 import { createLog } from '@/app/lib/utils/logHelper'
+import prisma from '@/prisma/client'
+import { parseStack } from 'error-stack-parser-es/lite'
+import { NextRequest, NextResponse } from 'next/server'
+import Stripe from 'stripe'
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2025-04-30.basil'
+  apiVersion: '2025-05-28.basil'
 })
 
 export async function POST(req: NextRequest) {
-  const { email, newPlan, prorationBehavior = 'create_prorations' } = await req.json()
-
-  // Input validation
-  if (!email || !newPlan) {
-    return NextResponse.json(
-      {
-        message: 'Email and newPlan are required',
-        sliceName: sliceAuth
-      },
-      { status: 400 }
-    )
-  }
-
-  // Validate plan type
-  if (!['BASIC', 'PREMIUM'].includes(newPlan)) {
-    return NextResponse.json(
-      {
-        message: 'Invalid plan. Must be BASIC or PREMIUM',
-        sliceName: sliceAuth
-      },
-      { status: 400 }
-    )
-  }
-
-  // Get price ID from environment
-  const newPriceId =
-    newPlan === 'BASIC' ? process.env.STRIPE_BASIC_MONTHLY_PRODUCT_ID : process.env.STRIPE_PREMIUM_MONTHLY_PRODUCT_ID
-
-  if (!newPriceId) {
-    return NextResponse.json(
-      { message: `Price ID not found for ${newPlan} plan`, sliceName: sliceAuth },
-      { status: 404 }
-    )
-  }
-
   try {
-    const user = await prisma.user.findUnique({ where: { email } })
+    const { userId, newPlanId } = await req.json()
 
-    if (!user) {
-      await createLog('warning', 'User not found during subscription update', {
-        location: ['stripe route - POST /api/stripe/update-subscription'],
-        name: 'UserNotFound',
-        timestamp: new Date().toISOString(),
-        url: req.url,
-        method: req.method,
-        email
-      })
-      return NextResponse.json({ message: 'User not found', sliceName: sliceAuth }, { status: 404 })
+    // Define your subscription plans (same as checkout)
+    const plans: Record<string, { priceId: string; name: string }> = {
+      basic: { priceId: 'price_xxxxx', name: 'Basic Plan' },
+      pro: { priceId: 'price_yyyyy', name: 'Pro Plan' },
+      premium: { priceId: 'price_zzzzz', name: 'Premium Plan' }
     }
 
-    // Find active subscription
-    const activeSubscription = await prisma.stripeSubscription.findFirst({
-      where: {
-        userId: user.id,
-        status: { in: ['active', 'trialing'] }
-      }
+    if (!plans[newPlanId]) {
+      return NextResponse.json({ error: 'Invalid plan selected' }, { status: 400 })
+    }
+
+    // Get user's current subscription
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      include: { stripeSubscription: true }
     })
 
-    if (!activeSubscription || !activeSubscription.subscriptionId) {
-      return NextResponse.json(
-        {
-          message: 'No active subscription found',
-          sliceName: sliceAuth
-        },
-        { status: 404 }
-      )
+    if (!user || !user.stripeSubscription) {
+      return NextResponse.json({ error: 'User or subscription not found' }, { status: 404 })
     }
 
-    // Check if they're trying to "upgrade" to the same plan
-    const currentPlan = getCurrentPlanName(activeSubscription.plan)
-    if (currentPlan === newPlan) {
-      return NextResponse.json(
-        {
-          message: `Already subscribed to ${newPlan} plan`,
-          sliceName: sliceAuth
-        },
-        { status: 400 }
-      )
+    const currentSubscription = user.stripeSubscription
+
+    if (!currentSubscription.subscriptionId) {
+      return NextResponse.json({ error: 'No active subscription found' }, { status: 400 })
     }
 
-    // Get current subscription from Stripe to get the subscription item ID
-    const stripeSubscription = (await stripe.subscriptions.retrieve(
-      activeSubscription.subscriptionId
-    )) as Stripe.Subscription
+    // Get current subscription from Stripe
+    const stripeSubscription = await stripe.subscriptions.retrieve(currentSubscription.subscriptionId)
+    const subscriptionData = stripeSubscription as any
 
-    if (!stripeSubscription.items.data[0]) {
-      throw new Error('No subscription items found')
-    }
-
-    const subscriptionItemId = stripeSubscription.items.data[0].id
-
-    // Update the subscription in Stripe
-    const updatedSubscription = (await stripe.subscriptions.update(activeSubscription.subscriptionId, {
+    // Update subscription in Stripe
+    const updatedSubscription = await stripe.subscriptions.update(currentSubscription.subscriptionId, {
       items: [
         {
-          id: subscriptionItemId,
-          price: newPriceId
+          id: subscriptionData.items.data[0].id, // Current subscription item ID
+          price: plans[newPlanId].priceId // New price ID
         }
       ],
-      proration_behavior: prorationBehavior
-    })) as Stripe.Subscription
+      proration_behavior: 'create_prorations' // Pro-rate the difference
+    })
 
-    // Determine if this is an upgrade or downgrade
-    const planChange = determinePlanChange(currentPlan, newPlan)
+    // Get the new price details
+    const newPrice = await stripe.prices.retrieve(plans[newPlanId].priceId)
 
-    // Update subscription in database
+    // Map plan to user roles
+    const planMapping: Record<string, { name: string; userRole: string }> = {
+      basic: { name: 'basic', userRole: 'basic' },
+      pro: { name: 'pro', userRole: 'premium' },
+      premium: { name: 'premium', userRole: 'premium' }
+    }
+
+    const planInfo = planMapping[newPlanId]
+
+    // Update subscription in your database
     await prisma.stripeSubscription.update({
-      where: { id: activeSubscription.id },
+      where: { id: currentSubscription.id },
       data: {
-        plan: newPriceId,
-        status: updatedSubscription.status,
+        plan: planInfo.name,
+        planPrice: (newPrice as any).unit_amount || 0,
+        status: (updatedSubscription as any).status,
         currentPeriodEnd: new Date((updatedSubscription as any).current_period_end * 1000)
       }
     })
 
-    await createLog('info', `Subscription ${planChange.type}: ${planChange.from} → ${planChange.to}`, {
-      location: ['stripe route - POST /api/stripe/update-subscription'],
-      name: 'SubscriptionUpdated',
-      timestamp: new Date().toISOString(),
-      url: req.url,
-      method: req.method,
-      email,
-      subscriptionId: activeSubscription.subscriptionId,
-      oldPlan: activeSubscription.plan,
-      newPlan: newPriceId,
-      changeType: planChange.type
+    // Update user role
+    await prisma.user.update({
+      where: { id: userId },
+      data: {
+        isBasicUser: planInfo.userRole === 'basic',
+        isPremiumUser: planInfo.userRole === 'premium',
+        role: planInfo.userRole
+      }
     })
 
-    return NextResponse.json(
-      {
-        message: `Successfully ${planChange.type.toLowerCase()}d to ${planChange.to}`,
-        subscriptionId: activeSubscription.subscriptionId,
-        oldPlan: planChange.from,
-        newPlan: planChange.to,
-        changeType: planChange.type,
-        prorationAmount: calculateProrationInfo(updatedSubscription)
-      },
-      { status: 200 }
-    )
+    return NextResponse.json({
+      success: true,
+      subscription: updatedSubscription,
+      message: `Successfully upgraded to ${plans[newPlanId].name}!`
+    })
   } catch (error: any) {
     await createLog('error', `Subscription update failed: ${error.message}`, {
       errorLocation: parseStack(JSON.stringify(error)),
@@ -157,50 +100,9 @@ export async function POST(req: NextRequest) {
       timestamp: new Date().toISOString(),
       url: req.url,
       method: req.method,
-      email,
       stripeErrorCode: error.code || null,
       stripeErrorType: error.type || null
     })
-
-    return NextResponse.json(
-      {
-        message: 'Subscription update failed',
-        error: error.message,
-        sliceName: sliceAuth
-      },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to upgrade subscription' }, { status: 500 })
   }
-}
-
-// Helper function to get plan name from price ID
-function getCurrentPlanName(priceId: string) {
-  const basicPriceId = process.env.STRIPE_BASIC_PRICE_ID
-  const premiumPriceId = process.env.STRIPE_PREMIUM_PRICE_ID
-
-  if (priceId === basicPriceId) return 'BASIC'
-  if (priceId === premiumPriceId) return 'PREMIUM'
-  return 'UNKNOWN'
-}
-
-// Helper function to determine plan change type
-function determinePlanChange(oldPlan: string, newPlan: string) {
-  const isUpgrade = oldPlan === 'BASIC' && newPlan === 'PREMIUM'
-  const isDowngrade = oldPlan === 'PREMIUM' && newPlan === 'BASIC'
-
-  return {
-    type: isUpgrade ? 'UPGRADE' : isDowngrade ? 'DOWNGRADE' : 'CHANGE',
-    from: oldPlan,
-    to: newPlan
-  }
-}
-
-// Helper function to extract proration info
-function calculateProrationInfo(subscription: Stripe.Subscription) {
-  const latestInvoice = subscription.latest_invoice as any
-  if (latestInvoice && latestInvoice.lines) {
-    const prorationLines = latestInvoice.lines.data.filter((line: any) => line.proration)
-    return prorationLines.length > 0 ? 'Prorated charges applied' : 'No proration'
-  }
-  return 'Proration info unavailable'
 }

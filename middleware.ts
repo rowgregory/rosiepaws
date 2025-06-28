@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server'
-import type { NextRequest } from 'next/server'
-import { jwtVerify } from 'jose'
+import { auth } from './app/lib/auth'
 
 const adminPagePaths = [
   '/admin',
@@ -13,7 +12,7 @@ const adminPagePaths = [
   '/admin/users'
 ]
 
-const guardianPagePaths = ['/guardian']
+// const guardianPagePaths = ['/guardian']
 
 const adminApiPaths = [
   '/api/pet/fetch-pets',
@@ -30,65 +29,54 @@ const adminApiPaths = [
   '/api/subscription/fetch-subscriptions'
 ]
 
-export async function middleware(req: NextRequest) {
-  const url = req.nextUrl.clone()
-  const pathname = url.pathname
+export default auth((req) => {
+  const session = req.auth as any
+  const { pathname } = req.nextUrl
 
-  const token = req.cookies.get('authToken')?.value
+  console.log('Session:', session)
+  console.log('Current path:', pathname)
 
-  if (!token) {
-    // Redirect to login for admin pages, guardian pages, or admin API
-    if (
-      adminPagePaths.some((path) => pathname.startsWith(path)) ||
-      guardianPagePaths.some((path) => pathname.startsWith(path)) ||
-      adminApiPaths.some((path) => pathname.startsWith(path))
-    ) {
-      url.pathname = '/auth/login'
-      return NextResponse.redirect(url)
+  if (!session) {
+    if (needsAuth(pathname)) {
+      return NextResponse.redirect(new URL('/auth/login', req.url))
     }
     return NextResponse.next()
   }
 
-  try {
-    const { payload } = await jwtVerify(token, new TextEncoder().encode(process.env.JWT_SECRET))
+  // Extract user data from session
+  const isAdmin = session.isAdmin as boolean
+  const role = session.role as string
 
-    const role = (payload.role as string) || ''
+  console.log('User role:', role, 'isAdmin:', isAdmin)
 
-    const requestHeaders = new Headers(req.headers)
-    requestHeaders.set('x-user', JSON.stringify(payload))
-
-    const res = NextResponse.next({
-      request: { headers: requestHeaders }
-    })
-
-    if (role === 'admin') {
-      return res
+  // If user is admin and not already on an admin page, redirect to admin dashboard
+  if (isAdmin && role === 'admin') {
+    if (!adminPagePaths.some((path) => pathname.startsWith(path))) {
+      console.log('Redirecting admin to dashboard')
+      return NextResponse.redirect(new URL('/admin/dashboard', req.url))
     }
+  }
 
-    // Authenticated but non-admin user
-    if (adminPagePaths.some((path) => pathname.startsWith(path))) {
-      url.pathname = '/guardian/dashboard'
-      return NextResponse.redirect(url)
+  // Non-admin trying to access admin pages
+  if (adminPagePaths.some((path) => pathname.startsWith(path))) {
+    if (!isAdmin || role !== 'admin') {
+      return NextResponse.redirect(new URL('/guardian/dashboard', req.url))
     }
+  }
 
-    if (adminApiPaths.some((path) => pathname.startsWith(path))) {
+  // Non-admin trying to access admin APIs
+  if (adminApiPaths.some((path) => pathname.startsWith(path))) {
+    if (!isAdmin || role !== 'admin') {
       return new NextResponse('Unauthorized', { status: 401 })
     }
-
-    return res
-  } catch {
-    // Token invalid or expired — treat as unauthenticated
-    if (
-      adminPagePaths.some((path) => pathname.startsWith(path)) ||
-      guardianPagePaths.some((path) => pathname.startsWith(path)) ||
-      adminApiPaths.some((path) => pathname.startsWith(path))
-    ) {
-      url.pathname = '/auth/login'
-      return NextResponse.redirect(url)
-    }
-
-    return NextResponse.next()
   }
+
+  return NextResponse.next()
+})
+
+function needsAuth(pathname: string): boolean {
+  const protectedPaths = ['/admin', '/guardian']
+  return protectedPaths.some((path) => pathname.startsWith(path))
 }
 
 export const config = {

@@ -1,11 +1,19 @@
-// api/subscriptionApi.js
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
+import { api } from './api'
 
-export const stripeApi = createApi({
-  reducerPath: 'subscriptionApi',
-  baseQuery: fetchBaseQuery({ baseUrl: '/api/' }),
-  tagTypes: ['Stripe'],
+const BASE_URL = '/stripe'
+
+export const stripeApi = api.injectEndpoints({
+  overrideExisting: true,
   endpoints: (builder) => ({
+    createCheckoutSession: builder.mutation({
+      query: ({ planId }) => ({
+        url: `${BASE_URL}/create-checkout-session`,
+        method: 'POST',
+        body: { planId }
+      }),
+      // Invalidate subscription cache to trigger refetch
+      invalidatesTags: ['Stripe']
+    }),
     getSubscriptionStatus: builder.query({
       query: (email) => ({
         url: 'user/subscription-status',
@@ -55,6 +63,7 @@ export const stripeApi = createApi({
 })
 
 export const {
+  useCreateCheckoutSessionMutation,
   useGetSubscriptionStatusQuery,
   useUpdateSubscriptionMutation,
   useCancelSubscriptionMutation,

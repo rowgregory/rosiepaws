@@ -5,12 +5,15 @@ import { Provider } from 'react-redux'
 import { IPage } from './types/common.types'
 import PageWrapper from './page-wrapper'
 import { store } from './redux/store'
+import { SessionProvider } from 'next-auth/react'
 
-const ReduxWrapper: FC<IPage> = ({ children, user }) => {
+const ReduxWrapper: FC<IPage> = ({ children, session }) => {
   return (
-    <Provider store={store}>
-      <PageWrapper user={user}>{children}</PageWrapper>
-    </Provider>
+    <SessionProvider session={session}>
+      <Provider store={store}>
+        <PageWrapper session={session}>{children}</PageWrapper>
+      </Provider>
+    </SessionProvider>
   )
 }
 

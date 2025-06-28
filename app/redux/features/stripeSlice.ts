@@ -20,6 +20,9 @@ export const stripeSlice = createSlice({
   initialState: initialStripeState,
   reducers: {},
   extraReducers: (builder) => {
+    builder.addMatcher(stripeApi.endpoints.createCheckoutSession.matchFulfilled, (state) => {
+      state.loading = false
+    })
     builder.addMatcher(stripeApi.endpoints.createCustomer.matchFulfilled, (state) => {
       state.loading = false
     })

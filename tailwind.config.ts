@@ -29,7 +29,8 @@ export default {
         dust: "url('/images/dust.png')",
         about: "url('/images/about.png')",
         portfoliopattern: "url('/images/portfolio-pattern.png')",
-        footertexture: "url('/images/footer-texture.png')"
+        footertexture: "url('/images/footer-texture.png')",
+        logo: "url('/images/rosie-logo.png')"
       },
       animation: {
         slowspin: 'slowspin 200s linear infinite',

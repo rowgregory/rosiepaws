@@ -21,9 +21,9 @@ export interface IStripeSubscription {
 
 export interface IUser {
   id: string
-  firstName: string
-  lastName: string
-  password: string
+  firstName?: string
+  lastName?: string
+  password?: string
   email: string
   isSuperUser: boolean
   isAdmin: boolean
@@ -31,8 +31,12 @@ export interface IUser {
   isBasicUser: boolean
   isPremiumUser: boolean
   role: string
-  securityQuestion: string
-  securityAnswerHash: string
+  securityQuestion?: string
+  securityAnswerHash?: string
+
+  name: string
+  image: string
+  emailVerified: any
 
   stripeCustomerId?: string
   stripeSubscription?: IStripeSubscription
