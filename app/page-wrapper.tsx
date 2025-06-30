@@ -10,6 +10,7 @@ import useCustomPathname from './hooks/useCustomPathname'
 const PageWrapper: FC<IPage> = ({ children, session }) => {
   // useSyncUserToRedux(user)
   const path = useCustomPathname()
+  console.log('SESSION: ', session)
 
   return (
     <>
