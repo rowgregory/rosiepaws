@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
       }
     })
 
-    if (!existingUser) {
+    if (!existingUser || !existingUser.password) {
       await createLog('warning', 'User not found during login', {
         location: ['auth route - POST /api/auth/login'],
         name: 'UserNotFound',

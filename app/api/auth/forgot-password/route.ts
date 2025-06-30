@@ -35,6 +35,10 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ message: 'Security question does not match', sliceName: sliceAuth }, { status: 400 })
     }
 
+    if (!user.securityAnswerHash) {
+      return NextResponse.json({ message: 'User does not have security answer', sliceName: sliceAuth }, { status: 400 })
+    }
+
     const isAnswerValid = await argon2.verify(user.securityAnswerHash, securityAnswer)
     if (!isAnswerValid) {
       await createLog('warning', 'Incorrect security answer during forgot password attempt', {

@@ -1,4 +1,4 @@
-export const cardVariants = (index: number) => ({
+export const cardVariants = (index: number): any => ({
   hidden: {
     opacity: 0,
     y: 30,
@@ -25,7 +25,7 @@ export const cardVariants = (index: number) => ({
   }
 })
 
-export const hoverVariants = {
+export const hoverVariants: any = {
   scale: 1.02,
   y: -4,
   boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
@@ -36,7 +36,7 @@ export const hoverVariants = {
   }
 }
 
-export const contentVariants = (index: number) => ({
+export const contentVariants = (index: number): any => ({
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
@@ -47,7 +47,7 @@ export const contentVariants = (index: number) => ({
   }
 })
 
-export const itemVariants = {
+export const itemVariants: any = {
   hidden: {
     opacity: 0,
     x: -20
@@ -63,7 +63,7 @@ export const itemVariants = {
   }
 }
 
-export const statusBadgeVariants = (index: number) => ({
+export const statusBadgeVariants: any = (index: number) => ({
   hidden: {
     scale: 0,
     opacity: 0
@@ -80,7 +80,7 @@ export const statusBadgeVariants = (index: number) => ({
   }
 })
 
-export const timeChipVariants = (index: number) => ({
+export const timeChipVariants: any = (index: number) => ({
   hidden: {
     scale: 0,
     opacity: 0
@@ -97,7 +97,7 @@ export const timeChipVariants = (index: number) => ({
   })
 })
 
-export const nextDoseVariants = (index: number) => ({
+export const nextDoseVariants: any = (index: number) => ({
   hidden: {
     opacity: 0,
     scale: 0.8

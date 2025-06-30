@@ -4,7 +4,7 @@ import React from 'react'
 import { motion } from 'framer-motion'
 
 const Solution = () => {
-  const containerVariants = {
+  const containerVariants: any = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
@@ -15,7 +15,7 @@ const Solution = () => {
     }
   }
 
-  const itemVariants = {
+  const itemVariants: any = {
     hidden: { opacity: 0, y: 30 },
     visible: {
       opacity: 1,
@@ -24,7 +24,7 @@ const Solution = () => {
     }
   }
 
-  const statVariants = {
+  const statVariants: any = {
     hidden: { scale: 0.8, opacity: 0 },
     visible: {
       scale: 1,

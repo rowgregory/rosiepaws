@@ -55,7 +55,7 @@ const MedicationOverviewStats: FC<IMedicationOverStats> = ({ activeMedications, 
     }
   ]
 
-  const containerVariants = {
+  const containerVariants: any = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
@@ -66,7 +66,7 @@ const MedicationOverviewStats: FC<IMedicationOverStats> = ({ activeMedications, 
     }
   }
 
-  const cardVariants = {
+  const cardVariants: any = {
     hidden: {
       opacity: 0,
       y: 20,
@@ -84,7 +84,7 @@ const MedicationOverviewStats: FC<IMedicationOverStats> = ({ activeMedications, 
     }
   }
 
-  const iconVariants = {
+  const iconVariants: any = {
     hidden: {
       scale: 0,
       rotate: -180
@@ -101,7 +101,7 @@ const MedicationOverviewStats: FC<IMedicationOverStats> = ({ activeMedications, 
     }
   }
 
-  const numberVariants = {
+  const numberVariants: any = {
     hidden: {
       opacity: 0,
       scale: 0.5
@@ -118,7 +118,7 @@ const MedicationOverviewStats: FC<IMedicationOverStats> = ({ activeMedications, 
     }
   }
 
-  const hoverVariants = {
+  const hoverVariants: any = {
     scale: 1.02,
     y: -2,
     transition: {
