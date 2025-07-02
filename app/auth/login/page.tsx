@@ -379,7 +379,6 @@ const Login = () => {
               </button>
             </motion.div>
 
-            {/* Email/Password Form */}
             {showEmailLogin && (
               <motion.div
                 initial={{ opacity: 0, height: 0 }}
