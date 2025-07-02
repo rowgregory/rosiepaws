@@ -45,9 +45,7 @@ const AuthCallback = () => {
           // Route based on user type with clearer priority
           if (session.user.isAdmin && session.user.role === 'admin') {
             push('/admin/dashboard')
-          } else if (session.user.isFreeUser && !session.user.stripeSubscription) {
-            push('/subscriptions')
-          } else if (session.user.stripeSubscription) {
+          } else {
             push('/guardian/dashboard')
           }
         } catch (error) {

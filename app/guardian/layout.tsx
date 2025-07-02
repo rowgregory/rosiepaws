@@ -32,10 +32,10 @@ const GuardianLayout: FC<ChildrenProps> = ({ children }) => {
       <UpdateMedicationDrawer />
       <GuardianActionMenu />
       <NotificationDrawer />
+      <GuardianToolbar />
       <div className="flex">
         <GuardianNavigation toggleSidebar={toggleSidebar} setToggleSidebar={setToggleSidebar} />
         <div className={`flex flex-col w-full ${toggleSidebar ? 'ml-0 lg:ml-16' : 'ml-0 lg:ml-64'}`}>
-          <GuardianToolbar />
           <div className="px-10 pt-2">
             <div className="max-w-screen-xl w-full mx-auto">{children}</div>
           </div>

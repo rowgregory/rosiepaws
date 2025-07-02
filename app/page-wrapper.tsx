@@ -12,9 +12,12 @@ const PageWrapper: FC<IPage> = ({ children, session }) => {
   const path = useCustomPathname()
   console.log('SESSION: ', session)
   console.log('PATH: ', path)
+
+  const hide = ['/guardian', '/auth/login'].some((item) => path.includes(item))
+
   return (
     <>
-      {!['/guardian', '/auth/login'].includes(path) && <Header />}
+      {!hide && <Header />}
       {children}
       {/* <Footer /> */}
     </>

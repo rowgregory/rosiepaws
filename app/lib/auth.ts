@@ -87,7 +87,12 @@ const config = {
   providers: [
     Google({
       clientId: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      authorization: {
+        params: {
+          prompt: "select_account",
+        },
+      },
     }),
     Resend({
       apiKey: process.env.RESEND_API_KEY!,
@@ -151,9 +156,6 @@ const config = {
       return session
     }
   },
-  pages: {
-    signIn: '/auth/login'
-  }
 }
 
 export const { handlers, signIn, signOut, auth } = NextAuth(config)

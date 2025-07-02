@@ -1,12 +1,12 @@
 'use client'
 
 import React, { useState, useMemo } from 'react'
-import { Activity, Droplets, Utensils, Pill, Zap, PawPrint, Heart } from 'lucide-react'
+import { Activity, Droplets, Utensils, Pill, Zap, PawPrint, Heart, Plus } from 'lucide-react'
 import Title from '@/app/components/admin/Title'
 import Spinner from '@/app/components/common/Spinner'
 import GuardianFeedingGraph from '@/app/components/guardian/GuardianFeedingGraph'
 import GuardianPainScoreGraph from '@/app/components/guardian/GuardianPainScoreGraph'
-import { RootState, useAppSelector } from '@/app/redux/store'
+import { RootState, useAppDispatch, useAppSelector } from '@/app/redux/store'
 import GuardianMetricCard from '@/app/components/guardian/GuardianMetricCard'
 import GuardianWaterGraph from '@/app/components/guardian/GuardianWaterGraph'
 import MiniWaterChart from '@/app/components/guardian/MiniGuardianWaterChart'
@@ -18,9 +18,12 @@ import MiniGuardianFeedingChart from '@/app/components/guardian/MiniGuardianFeed
 import GuardianMedicationGraph from '@/app/components/guardian/GuardianMedicationGraph'
 import GuardianSeizureGraph from '@/app/components/guardian/GuardianSeizureGraph'
 import GuardianBloodSugarGraph from '@/app/components/guardian/GuardianBloodSugarGraph'
+import { motion } from 'framer-motion'
+import { setOpenPetDrawer } from '@/app/redux/features/petSlice'
 
 const GuardianDashboard = () => {
-  const { pet, loading } = useAppSelector((state: RootState) => state.pet)
+  const dispatch = useAppDispatch()
+  const { pet, loading, zeroPets } = useAppSelector((state: RootState) => state.pet)
   const [selectedMetric, setSelectedMetric] = useState('overview')
   const [expandedCards, setExpandedCards] = useState<string[]>(['overview'])
 
@@ -188,152 +191,179 @@ const GuardianDashboard = () => {
   if (loading) {
     return (
       <div className="w-full flex items-center justify-center pt-12">
+
+        
         <Spinner fill="fill-indigo-500" track="text-white" wAndH="w-8 h-8" />
       </div>
     )
   }
 
+  console.log('zero pets: ', zeroPets)
+
   return (
     <div className="min-h-screen py-6">
       <div className="max-w-full mx-auto space-y-8">
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-4">
-            <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center shadow-lg">
-              <PawPrint className="w-8 h-8 text-white" />
+        {/* Empty State */}
+        {zeroPets ? (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="text-center py-16 bg-white rounded-2xl shadow-sm border border-gray-100"
+          >
+            <div className="w-24 h-24 mx-auto mb-6 bg-gradient-to-br from-gray-100 to-gray-200 rounded-full flex items-center justify-center">
+              <Heart className="w-12 h-12 text-gray-400" />
             </div>
-            <div>
-              <Title title={`${pet?.name}'s Health Dashboard`} />
-              <p className="text-gray-600 mt-1">
-                {pet?.breed} • Last updated {new Date().toLocaleTimeString()}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* Metrics Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6">
-          <GuardianMetricCard
-            id="pain-score"
-            title="Pain Level"
-            value={`${stats.painScore?.latest ?? 'No data'}/10`}
-            subtitle={`Weekly avg: ${stats.painScore?.average || 0}/10`}
-            icon={Activity}
-            color="orange"
-            trend={stats.painScore?.trend}
-            onClick={() => setSelectedMetric('pain-score')}
-            isActive={selectedMetric === 'pain-score'}
-            expandedCards={expandedCards}
-            toggleCard={toggleCard}
-          />
-
-          <GuardianMetricCard
-            id="feedings"
-            title="Feedings"
-            value={stats.feedings?.todayCount || 0}
-            subtitle={`Last meal: ${stats.feedings?.lastMeal || 'None today'}`}
-            icon={Utensils}
-            color="green"
-            onClick={() => setSelectedMetric('feedings')}
-            isActive={selectedMetric === 'feedings'}
-            expandedCards={expandedCards}
-            toggleCard={toggleCard}
-          />
-
-          <GuardianMetricCard
-            id="water"
-            title="Water Intake"
-            value={`${stats.water?.todayTotal}ml`}
-            subtitle={`${stats.water?.todayCount} drink${stats.water?.todayCount !== 1 ? 's' : ''} today`}
-            icon={Droplets}
-            color="blue"
-            onClick={() => setSelectedMetric('water')}
-            isActive={selectedMetric === 'water'}
-            expandedCards={expandedCards}
-            toggleCard={toggleCard}
-          />
-
-          <GuardianMetricCard
-            id="medications"
-            title="Medications"
-            value={`${stats.medications?.todayTotal}`}
-            subtitle={`Total reminders: ${stats.medications?.totalReminders}`}
-            icon={Pill}
-            color="purple"
-            onClick={() => setSelectedMetric('medications')}
-            isActive={selectedMetric === 'medications'}
-            expandedCards={expandedCards}
-            toggleCard={toggleCard}
-          />
-          <GuardianMetricCard
-            id="blood-sugar"
-            title="Blood Sugar"
-            value={stats.bloodSugar?.latest ? `${stats.bloodSugar.latest} mg/dL` : 'No data'}
-            subtitle={`Avg: ${stats.bloodSugar?.average || 0} mg/dL • ${
-              stats.bloodSugar?.todayCount || 0
-            } readings today`}
-            icon={Heart}
-            color="red"
-            trend={stats.bloodSugar?.trend}
-            onClick={() => setSelectedMetric('blood-sugar')}
-            isActive={selectedMetric === 'blood-sugar'}
-            expandedCards={expandedCards}
-            toggleCard={toggleCard}
-          />
-
-          <GuardianMetricCard
-            id="seizures"
-            title="Seizures"
-            value={stats.seizures?.thisWeek || 0}
-            subtitle={`Last: ${stats.seizures?.lastSeizure || 'None'}`}
-            icon={Zap}
-            color="yellow"
-            onClick={() => setSelectedMetric('seizures')}
-            isActive={selectedMetric === 'seizures'}
-            expandedCards={expandedCards}
-            toggleCard={toggleCard}
-          />
-        </div>
-
-        {/* Main Chart */}
-        <div className="bg-white rounded-2xl p-8 shadow-xl border border-gray-100">
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <h2 className="text-2xl font-bold text-gray-900">
-                {selectedMetric === 'blood-sugar'
-                  ? 'Blood Sugar Monitoring'
-                  : selectedMetric === 'pain-score'
-                    ? 'Pain Score Tracking'
-                    : selectedMetric === 'feedings'
-                      ? 'Feeding History'
-                      : selectedMetric === 'water'
-                        ? 'Water Intake Logs'
-                        : selectedMetric === 'medications'
-                          ? 'Medication Schedule'
-                          : selectedMetric === 'seizures'
-                            ? 'Seizure Events'
-                            : 'Health Overview'}
-              </h2>
-              <p className="text-gray-600 mt-1">
-                {selectedMetric === 'overview'
-                  ? 'Quick overview of all health metrics'
-                  : `Detailed ${selectedMetric.replace('-', ' ')} data and trends`}
-              </p>
-            </div>
-            <button
-              onClick={() => setSelectedMetric('overview')}
-              className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                selectedMetric === 'overview'
-                  ? 'bg-purple-100 text-purple-700'
-                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-              }`}
+            <h3 className="text-xl font-semibold text-gray-600 mb-2">No pets yet</h3>
+            <p className="text-gray-500 mb-6">Pets will appear here once you start tracking.</p>
+            <motion.button
+              onClick={() => dispatch(setOpenPetDrawer())}
+              className="inline-flex items-center space-x-2 px-6 py-3 bg-gradient-to-r from-pink-500 to-rose-500 text-white font-semibold rounded-xl hover:from-pink-600 hover:to-rose-600 transition-all duration-200 shadow-lg hover:shadow-xl"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
             >
-              Overview
-            </button>
-          </div>
+              <Plus className="w-5 h-5" />
+              <span>Add Pet</span>
+            </motion.button>
+          </motion.div>
+        ) : (
+          <>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-4">
+                <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center shadow-lg">
+                  <PawPrint className="w-8 h-8 text-white" />
+                </div>
+                <div>
+                  <Title title={`${pet?.name}'s Health Dashboard`} />
+                  <p className="text-gray-600 mt-1">
+                    {pet?.breed} • Last updated {new Date().toLocaleTimeString()}
+                  </p>
+                </div>
+              </div>
+            </div>
 
-          {renderChart()}
-        </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6">
+              <GuardianMetricCard
+                id="pain-score"
+                title="Pain Level"
+                value={`${stats.painScore?.latest ?? 'No data'}/10`}
+                subtitle={`Weekly avg: ${stats.painScore?.average || 0}/10`}
+                icon={Activity}
+                color="orange"
+                trend={stats.painScore?.trend}
+                onClick={() => setSelectedMetric('pain-score')}
+                isActive={selectedMetric === 'pain-score'}
+                expandedCards={expandedCards}
+                toggleCard={toggleCard}
+              />
+
+              <GuardianMetricCard
+                id="feedings"
+                title="Feedings"
+                value={stats.feedings?.todayCount || 0}
+                subtitle={`Last meal: ${stats.feedings?.lastMeal || 'None today'}`}
+                icon={Utensils}
+                color="green"
+                onClick={() => setSelectedMetric('feedings')}
+                isActive={selectedMetric === 'feedings'}
+                expandedCards={expandedCards}
+                toggleCard={toggleCard}
+              />
+
+              <GuardianMetricCard
+                id="water"
+                title="Water Intake"
+                value={`${stats.water?.todayTotal}ml`}
+                subtitle={`${stats.water?.todayCount} drink${stats.water?.todayCount !== 1 ? 's' : ''} today`}
+                icon={Droplets}
+                color="blue"
+                onClick={() => setSelectedMetric('water')}
+                isActive={selectedMetric === 'water'}
+                expandedCards={expandedCards}
+                toggleCard={toggleCard}
+              />
+
+              <GuardianMetricCard
+                id="medications"
+                title="Medications"
+                value={`${stats.medications?.todayTotal}`}
+                subtitle={`Total reminders: ${stats.medications?.totalReminders}`}
+                icon={Pill}
+                color="purple"
+                onClick={() => setSelectedMetric('medications')}
+                isActive={selectedMetric === 'medications'}
+                expandedCards={expandedCards}
+                toggleCard={toggleCard}
+              />
+              <GuardianMetricCard
+                id="blood-sugar"
+                title="Blood Sugar"
+                value={stats.bloodSugar?.latest ? `${stats.bloodSugar.latest} mg/dL` : 'No data'}
+                subtitle={`Avg: ${stats.bloodSugar?.average || 0} mg/dL • ${
+                  stats.bloodSugar?.todayCount || 0
+                } readings today`}
+                icon={Heart}
+                color="red"
+                trend={stats.bloodSugar?.trend}
+                onClick={() => setSelectedMetric('blood-sugar')}
+                isActive={selectedMetric === 'blood-sugar'}
+                expandedCards={expandedCards}
+                toggleCard={toggleCard}
+              />
+
+              <GuardianMetricCard
+                id="seizures"
+                title="Seizures"
+                value={stats.seizures?.thisWeek || 0}
+                subtitle={`Last: ${stats.seizures?.lastSeizure || 'None'}`}
+                icon={Zap}
+                color="yellow"
+                onClick={() => setSelectedMetric('seizures')}
+                isActive={selectedMetric === 'seizures'}
+                expandedCards={expandedCards}
+                toggleCard={toggleCard}
+              />
+            </div>
+
+            <div className="bg-white rounded-2xl p-8 shadow-xl border border-gray-100">
+              <div className="flex items-center justify-between mb-6">
+                <div>
+                  <h2 className="text-2xl font-bold text-gray-900">
+                    {selectedMetric === 'blood-sugar'
+                      ? 'Blood Sugar Monitoring'
+                      : selectedMetric === 'pain-score'
+                        ? 'Pain Score Tracking'
+                        : selectedMetric === 'feedings'
+                          ? 'Feeding History'
+                          : selectedMetric === 'water'
+                            ? 'Water Intake Logs'
+                            : selectedMetric === 'medications'
+                              ? 'Medication Schedule'
+                              : selectedMetric === 'seizures'
+                                ? 'Seizure Events'
+                                : 'Health Overview'}
+                  </h2>
+                  <p className="text-gray-600 mt-1">
+                    {selectedMetric === 'overview'
+                      ? 'Quick overview of all health metrics'
+                      : `Detailed ${selectedMetric.replace('-', ' ')} data and trends`}
+                  </p>
+                </div>
+                <button
+                  onClick={() => setSelectedMetric('overview')}
+                  className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                    selectedMetric === 'overview'
+                      ? 'bg-purple-100 text-purple-700'
+                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  }`}
+                >
+                  Overview
+                </button>
+              </div>
+
+              {renderChart()}
+            </div>
+          </>
+        )}
       </div>
     </div>
   )

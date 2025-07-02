@@ -70,7 +70,7 @@ export const initialPetState: PetStatePayload = {
 
   pets: [],
   pet: petInitialState,
-  zeroPets: false,
+  zeroPets: true,
   petDrawer: false,
   petCount: 0,
 

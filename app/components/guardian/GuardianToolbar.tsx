@@ -3,9 +3,10 @@
 import { setOpenGuardianActionMenu, setOpenPetDrawer } from '@/app/redux/features/petSlice'
 import { RootState, useAppDispatch, useAppSelector } from '@/app/redux/store'
 import GuardianActionMenuButton from './GuardianActionMenuButton'
-import { Bell, PawPrint, Settings, User } from 'lucide-react'
+import { ArrowLeft, Bell, PawPrint, Settings, User } from 'lucide-react'
 import Link from 'next/link'
 import { setOpenNotificationDrawer } from '@/app/redux/features/dashboardSlice'
+import { motion } from 'framer-motion'
 
 const GuardianToolbar = () => {
   const dispatch = useAppDispatch()
@@ -16,10 +17,16 @@ const GuardianToolbar = () => {
       <div className="flex items-center justify-between">
         {/* Left side - could add breadcrumbs or current pet info later */}
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
-            <PawPrint className="w-4 h-4 text-white" />
-          </div>
-          <h1 className="text-xl font-bold text-gray-900">Pet Care Dashboard</h1>
+          <ArrowLeft className="w-4 h-4" />
+          <Link href="/">
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              transition={{ type: 'spring', stiffness: 400, damping: 10 }}
+              className="flex items-center space-x-2"
+            >
+              <div className="w-12 h-12 bg-contain bg-logo bg-no-repeat bg-center" />
+            </motion.div>
+          </Link>
         </div>
         {/* Right side - actions */}
         <div className="flex items-center gap-3">

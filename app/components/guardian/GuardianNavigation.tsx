@@ -41,7 +41,7 @@ const GuardianNavigation = ({ toggleSidebar, setToggleSidebar }: any) => {
     <div
       className={`${
         toggleSidebar ? 'w-16' : 'w-64'
-      } hidden lg:block fixed top-0 left-0 min-h-screen bg-white border-r border-gray-100 z-20 shadow-sm`}
+      } hidden lg:block fixed top-[81px] left-0 min-h-screen bg-white border-r border-gray-100 z-20 shadow-sm`}
     >
       {/* Pet Selector Header */}
       <div
