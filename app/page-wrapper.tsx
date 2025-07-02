@@ -11,10 +11,10 @@ const PageWrapper: FC<IPage> = ({ children, session }) => {
   // useSyncUserToRedux(user)
   const path = useCustomPathname()
   console.log('SESSION: ', session)
-
+  console.log('PATH: ', path)
   return (
     <>
-      {!path.includes('/guardian') && <Header />}
+      {!['/guardian', '/auth/login'].includes(path) && <Header />}
       {children}
       {/* <Footer /> */}
     </>

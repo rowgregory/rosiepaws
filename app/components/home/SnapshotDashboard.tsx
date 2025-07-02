@@ -2,8 +2,15 @@
 
 import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { FeedingIcon, HeartRateIcon, LightningIcon, WaterIcon } from './SnapshotDashboardSVGs'
-import { HeartIcon, PillIcon } from 'lucide-react'
+import {
+  AppointmentIcon,
+  FeedingIcon,
+  HeartIcon,
+  HeartRateIcon,
+  LightningIcon,
+  PillIcon,
+  WaterIcon
+} from './SnapshotDashboardSVGs'
 
 const PawIcon = () => (
   <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
@@ -60,12 +67,20 @@ const SnapshotDashboard = () => {
       delay: 0.4
     },
     {
+      icon: <AppointmentIcon />,
+      value: '5',
+      label: 'Appointments',
+      subtitle: 'Total reminders: 5',
+      color: 'bg-pink-500',
+      delay: 0.5
+    },
+    {
       icon: <HeartIcon />,
       value: 'No data',
       label: 'Blood Sugar',
       subtitle: 'Avg: 0 mg/dL • 0 readings today',
       color: 'bg-red-500',
-      delay: 0.5
+      delay: 0.6
     },
     {
       icon: <LightningIcon />,
@@ -73,7 +88,7 @@ const SnapshotDashboard = () => {
       label: 'Seizures',
       subtitle: 'Last: 6/18/2025',
       color: 'bg-amber-400',
-      delay: 0.6
+      delay: 0.7
     }
   ]
 
@@ -82,7 +97,7 @@ const SnapshotDashboard = () => {
       initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.8 }}
-      className="my-40 bg-white rounded-3xl shadow-lg border border-gray-200 overflow-hidden max-w-[1320px] mx-auto"
+      className="-mt-40 mb-40 bg-white rounded-3xl shadow-lg border border-gray-200 overflow-hidden max-w-[1320px] mx-auto relative z-50"
     >
       {/* Browser Header */}
       <div className="bg-gray-100 px-4 py-3 flex items-center gap-2 border-b border-gray-200">
@@ -134,7 +149,7 @@ const SnapshotDashboard = () => {
         </div>
 
         {/* Metrics in Horizontal Row */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-7 gap-4">
           {metrics.map((metric, index) => (
             <motion.div
               key={index}

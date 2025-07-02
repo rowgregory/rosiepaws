@@ -52,66 +52,87 @@ export const WaterIcon = () => (
 export const PillIcon = () => (
   <svg viewBox="0 0 24 24" fill="none" className="w-6 h-6">
     {/* Pill bottle body */}
-    <motion.rect
-      x="8"
-      y="10"
-      width="8"
-      height="12"
-      rx="1"
+    <motion.path
+      d="M8 10h8v12H8z"
       stroke="currentColor"
       strokeWidth="2"
       fill="none"
+      initial={{ pathLength: 0 }}
+      animate={{ pathLength: 1 }}
+      transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut', delay: 0.2 }}
+    />
+    {/* Bottle cap */}
+    <motion.path
+      d="M9 7h6v3H9z"
+      stroke="currentColor"
+      strokeWidth="2"
+      fill="none"
+      initial={{ pathLength: 0 }}
+      animate={{ pathLength: 1 }}
+      transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut', delay: 0.4 }}
+    />
+    {/* Label line 1 */}
+    <motion.path
+      d="M10 13h4"
+      stroke="currentColor"
+      strokeWidth="1.5"
       initial={{ pathLength: 0 }}
       animate={{ pathLength: 1 }}
       transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut', delay: 0.6 }}
     />
-    {/* Bottle cap */}
-    <motion.rect
-      x="9"
-      y="7"
-      width="6"
-      height="3"
-      rx="1"
+    {/* Label line 2 */}
+    <motion.path
+      d="M10 15h4"
       stroke="currentColor"
-      strokeWidth="2"
-      fill="none"
+      strokeWidth="1.5"
       initial={{ pathLength: 0 }}
       animate={{ pathLength: 1 }}
       transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut', delay: 0.8 }}
     />
-    {/* Label line 1 */}
-    <motion.line
-      x1="10"
-      y1="13"
-      x2="14"
-      y2="13"
-      stroke="currentColor"
-      strokeWidth="1"
-      initial={{ pathLength: 0 }}
-      animate={{ pathLength: 1 }}
-      transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut', delay: 1.0 }}
-    />
-    {/* Label line 2 */}
-    <motion.line
-      x1="10"
-      y1="15"
-      x2="14"
-      y2="15"
-      stroke="currentColor"
-      strokeWidth="1"
-      initial={{ pathLength: 0 }}
-      animate={{ pathLength: 1 }}
-      transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut', delay: 1.2 }}
-    />
     {/* Cross symbol */}
     <motion.path
-      d="M11 3h2v4h-2zM9 5h6"
+      d="M11.5 3v4M9.5 5h4"
       stroke="currentColor"
       strokeWidth="2"
       strokeLinecap="round"
       initial={{ pathLength: 0 }}
       animate={{ pathLength: 1 }}
-      transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut', delay: 1.4 }}
+      transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut', delay: 1 }}
+    />
+  </svg>
+)
+
+export const AppointmentIcon = () => (
+  <svg viewBox="0 0 24 24" fill="none" className="w-6 h-6">
+    <motion.path
+      d="M8 2v2M16 2v2M3 8h18M5 6h14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2z"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      initial={{ pathLength: 0 }}
+      animate={{ pathLength: 1 }}
+      transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
+    />
+    <motion.circle
+      cx="16"
+      cy="16"
+      r="4"
+      stroke="currentColor"
+      strokeWidth="2"
+      initial={{ pathLength: 0 }}
+      animate={{ pathLength: 1 }}
+      transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut', delay: 0.5 }}
+    />
+    <motion.path
+      d="M16 14v2l1 1"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      initial={{ pathLength: 0 }}
+      animate={{ pathLength: 1 }}
+      transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut', delay: 1 }}
     />
   </svg>
 )

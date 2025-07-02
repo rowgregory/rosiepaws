@@ -2,19 +2,15 @@
 
 import React, { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ChevronDown, Menu, X, Settings } from 'lucide-react'
+import { ChevronDown, Menu, X } from 'lucide-react'
+import Link from 'next/link'
+import FeaturesDropdown from './FeaturesDropdown'
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [activeDropdown, setActiveDropdown] = useState<null | string>(null)
 
-  const navItems = [{ name: 'Home' }, { name: 'Services', hasDropdown: true }, { name: 'Blog' }]
-
-  const dropdownVariants = {
-    hidden: { opacity: 0, y: -10, scale: 0.95 },
-    visible: { opacity: 1, y: 0, scale: 1 },
-    exit: { opacity: 0, y: -10, scale: 0.95 }
-  }
+  const navItems = [{ name: 'Features', hasDropdown: true }, { name: 'Subscriptions' }, { name: 'Blog' }]
 
   const mobileMenuVariants = {
     hidden: { opacity: 0, height: 0 },
@@ -23,7 +19,7 @@ const Header = () => {
   }
 
   return (
-    <div className="bg-gray-50 text-gray-900">
+    <div className="bg-transparent">
       {/* Announcement Bar */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
@@ -40,17 +36,19 @@ const Header = () => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.8, delay: 0.2 }}
-        className="relative px-4 sm:px-6 lg:px-8 py-4"
+        className="relative px-4 sm:px-6 lg:px-8 py-4 z-50"
       >
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           {/* Logo */}
-          <motion.div
-            whileHover={{ scale: 1.05 }}
-            transition={{ type: 'spring', stiffness: 400, damping: 10 }}
-            className="flex items-center space-x-2"
-          >
-            <div className="w-20 h-20 bg-contain bg-logo bg-no-repeat bg-center" />
-          </motion.div>
+          <Link href="/">
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              transition={{ type: 'spring', stiffness: 400, damping: 10 }}
+              className="flex items-center space-x-2"
+            >
+              <div className="w-20 h-20 bg-contain bg-logo bg-no-repeat bg-center" />
+            </motion.div>
+          </Link>
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
@@ -66,7 +64,7 @@ const Header = () => {
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.5, delay: index * 0.1 }}
                   whileHover={{ y: -2 }}
-                  className="flex items-center space-x-1 text-gray-700 hover:bg-gradient-to-r hover:from-red-500 hover:via-pink-500 hover:to-orange-500 hover:bg-clip-text hover:text-transparent transition-all duration-300 font-medium"
+                  className="flex items-center space-x-1 text-white hover:bg-gradient-to-r hover:from-red-500 hover:via-pink-500 hover:to-orange-500 hover:bg-clip-text hover:text-transparent transition-all duration-300 font-medium"
                 >
                   <span>{item.name}</span>
                   {item.hasDropdown && (
@@ -74,34 +72,14 @@ const Header = () => {
                       animate={{ rotate: activeDropdown === item.name ? 180 : 0 }}
                       transition={{ duration: 0.2 }}
                     >
-                      <ChevronDown className="w-4 h-4 text-gray-700" />
+                      <ChevronDown className="w-4 h-4 text-white" />
                     </motion.div>
                   )}
                 </motion.button>
 
                 {/* Dropdown Menu */}
                 <AnimatePresence>
-                  {activeDropdown === item.name && item.hasDropdown && (
-                    <motion.div
-                      variants={dropdownVariants}
-                      initial="hidden"
-                      animate="visible"
-                      exit="exit"
-                      transition={{ duration: 0.2 }}
-                      className="absolute top-full left-0 mt-2 w-48 bg-gray-900 border border-gray-800 rounded-lg shadow-xl py-2 z-50"
-                    >
-                      {['Option 1', 'Option 2', 'Option 3'].map((option) => (
-                        <motion.a
-                          key={option}
-                          href="#"
-                          whileHover={{ x: 4, backgroundColor: 'rgba(34, 197, 94, 0.1)' }}
-                          className="block px-4 py-2 text-sm text-gray-300 hover:text-white transition-colors duration-150"
-                        >
-                          {option}
-                        </motion.a>
-                      ))}
-                    </motion.div>
-                  )}
+                  {activeDropdown === item.name && item.hasDropdown && <FeaturesDropdown />}
                 </AnimatePresence>
               </div>
             ))}
@@ -109,27 +87,19 @@ const Header = () => {
 
           {/* Right Side Actions */}
           <div className="flex items-center space-x-4">
-            {/* Settings Icon */}
-            <motion.button
-              whileHover={{ rotate: 90, scale: 1.1 }}
-              whileTap={{ scale: 0.95 }}
-              transition={{ type: 'spring', stiffness: 400, damping: 10 }}
-              className="p-2 text-gray-700 hover:text-red-500 transition-all duration-300"
-            >
-              <Settings className="w-5 h-5 hover:stroke-red-500" />
-            </motion.button>
-
             {/* Sign Up Button */}
-            <motion.button
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.5, delay: 0.3 }}
-              whileHover={{ scale: 1.05, boxShadow: '0 0 20px rgba(34, 197, 94, 0.4)' }}
-              whileTap={{ scale: 0.95 }}
-              className="bg-gradient-to-r from-red-400 via-pink-400 to-orange-400 px-6 py-2 rounded-full font-semibold hover:from-red-500 hover:via-pink-500 hover:to-orange-500 transition-all duration-200 text-white"
+            <Link
+              href="/auth/login"
+              className="relative px-5 py-2.5 rounded-full text-lg text-white backdrop-blur-lg border border-white/10 mt-6 overflow-hidden group transition-all duration-300 hover:border-white/30"
             >
-              Sign Up
-            </motion.button>
+              <span className="relative z-10">Launch App</span>
+
+              {/* Shiny sweep effect */}
+              <div className="absolute inset-0 -left-full bg-gradient-to-r from-transparent via-white/20 to-transparent skew-x-12 group-hover:left-full transition-all duration-1000 ease-out" />
+
+              {/* Subtle glow on hover */}
+              <div className="absolute inset-0 bg-gradient-to-r from-white/5 via-white/10 to-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            </Link>
 
             {/* Mobile Menu Button */}
             <motion.button

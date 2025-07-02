@@ -13,6 +13,20 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum TokenTransactionType {
+  SIGNUP_BONUS // Initial 150 tokens on signup
+  PURCHASE // Tokens bought
+  USAGE // Tokens consumed for features
+  REFUND // Tokens refunded
+  BONUS // Promotional tokens
+  ADMIN_ADJUSTMENT // Manual adjustments
+}
+
+enum PetType {
+  DOG
+  CAT
+}
+
 model Account {
   id                String  @id @default(cuid())
   userId            String
@@ -49,7 +63,7 @@ model VerificationToken {
 }
 
 model StripeSubscription {
-  id                 String    @id @default(uuid())
+  id                 String    @id @default(cuid())
   userId             String    @unique
   customerId         String // from Stripe when creating the customer
   paymentMethodId    String // Stripe PaymentMethod ID (reusable)
@@ -57,6 +71,7 @@ model StripeSubscription {
   status             String    @default("inactive")
   plan               String    @default("COMFORT")
   planPrice          Int       @default(0)
+  tokensIncluded     Int       @default(0)
   trialEndsAt        DateTime?
   cancelAtPeriodEnd  Boolean
   canceledAt         DateTime?
@@ -68,6 +83,9 @@ model StripeSubscription {
   updatedAt          DateTime  @updatedAt
 
   user User @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@map("subscriptions")
 }
 
 model User {
@@ -87,26 +105,45 @@ model User {
   lastName           String? @db.VarChar(255)
   password           String? @db.VarChar(255)
 
-  stripeCustomerId   String?             @unique @db.VarChar(255)
-  stripeSubscription StripeSubscription?
-  pets               Pet[]
-  blogs              Blog[]
+  stripeCustomerId String? @unique @db.VarChar(255)
 
+  // NextAuth fields
   emailVerified DateTime? // Add for NextAuth
   name          String?
   authProvider  String?   @default("google")
   image         String?
 
-  accounts Account[]
-  sessions Session[]
+  // Token fields
+  tokens         Int       @default(150) // Starting tokens for new users
+  tokensUsed     Int       @default(0) // Track total tokens consumed
+  lastTokenReset DateTime?
+
+  // Relationships 
+  accounts           Account[]
+  sessions           Session[]
+  pets               Pet[]
+  blogs              Blog[]
+  stripeSubscription StripeSubscription?
+  tokenTransactions  TokenTransaction[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
-enum PetType {
-  DOG
-  CAT
+model TokenTransaction {
+  id          String               @id @default(cuid())
+  userId      String
+  amount      Int // Positive for credits, negative for debits
+  type        TokenTransactionType
+  description String? // Optional description of what tokens were used for
+  metadata    Json? // Store additional context (e.g., feature used, request details)
+  createdAt   DateTime             @default(now())
+
+  // Relationships
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@map("token_transactions")
 }
 
 model Pet {
@@ -160,7 +197,7 @@ model Appointment {
 }
 
 model BloodSugar {
-  id        String   @id @default(uuid())
+  id        String   @id @default(cuid())
   value     String
   notes     String?
   timeTaken DateTime
@@ -172,7 +209,7 @@ model BloodSugar {
 }
 
 model Feeding {
-  id         String   @id @default(uuid())
+  id         String   @id @default(cuid())
   timeFed    DateTime
   foodType   String
   foodAmount String
@@ -186,7 +223,7 @@ model Feeding {
 }
 
 model Medication {
-  id                 String    @id @default(uuid())
+  id                 String    @id @default(cuid())
   drugName           String
   dosage             String
   dosageUnit         String
@@ -224,7 +261,7 @@ model Seizure {
 }
 
 model Water {
-  id             String  @id @default(uuid())
+  id             String  @id @default(cuid())
   intakeType     String
   milliliters    String
   relativeIntake String
@@ -239,7 +276,7 @@ model Water {
 }
 
 model Blog {
-  id       String @id @default(uuid())
+  id       String @id @default(cuid())
   title    String
   content  String
   authorId String
