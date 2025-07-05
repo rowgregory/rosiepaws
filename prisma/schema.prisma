@@ -109,7 +109,6 @@ model User {
   // NextAuth fields
   emailVerified DateTime? // Add for NextAuth
   name          String?
-  authProvider  String?   @default("google")
   image         String?
 
   // Token fields
@@ -142,7 +141,6 @@ model TokenTransaction {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId, createdAt])
-  @@map("token_transactions")
 }
 
 model Pet {

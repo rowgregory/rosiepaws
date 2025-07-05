@@ -3,6 +3,7 @@ import {
   blogLink,
   dashboardLink,
   guardianDashboardLink,
+  guardianHomeLink,
   guardianPetsLink,
   guardianProfileLink,
   guardianSettingsLink,
@@ -11,9 +12,15 @@ import {
   settingsLink,
   subscriptionsLink
 } from '@/public/data/admin.data'
-import { LayoutDashboard, Cat, CreditCard, User, LogOut, Settings, Dog, Pen } from 'lucide-react'
+import { LayoutDashboard, Cat, CreditCard, User, LogOut, Settings, Dog, Pen, Home } from 'lucide-react'
 
 export const guardianLinkData = (path: string) => [
+  {
+    icon: Home,
+    textKey: 'Home',
+    linkKey: guardianHomeLink,
+    isActive: path === guardianHomeLink
+  },
   {
     icon: LayoutDashboard,
     textKey: 'Dashboard',

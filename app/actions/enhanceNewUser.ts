@@ -13,8 +13,7 @@ export async function enhanceNewUser(email: string, name: string) {
         firstName: true,
         lastName: true,
         role: true,
-        createdAt: true,
-        stripeSubscription: true
+        createdAt: true
       }
     })
 

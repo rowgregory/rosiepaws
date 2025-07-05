@@ -1,84 +1,101 @@
-import { NextResponse } from 'next/server'
-import { auth } from './app/lib/auth'
+import { NextRequest, NextResponse } from 'next/server'
 
-const adminPagePaths = [
-  '/admin',
-  '/admin/dashboard',
-  '/admin/blog',
-  '/admin/journal',
-  '/admin/newsletter',
-  '/admin/pets',
-  '/admin/subscriptions',
-  '/admin/users'
-]
+// Define auth routes that should redirect if already authenticated
+const authRoutes = ['/auth/login', '/auth/register']
 
-// const guardianPagePaths = ['/guardian']
+// Define admin routes that require admin privileges
+const adminRoutes = ['/admin/dashboard']
 
-const adminApiPaths = [
-  '/api/pet/fetch-pets',
-  '/api/user/fetch-users',
-  '/api/user/update-user',
-  '/api/user/delete-user',
-  '/api/blog/create-blog',
-  '/api/blog/update-blog',
-  '/api/blog/delete-blog',
-  '/api/journal/create-journal',
-  '/api/journal/update-journal',
-  '/api/journal/delete-journal',
-  '/api/newsletter/delete-newsletter',
-  '/api/subscription/fetch-subscriptions'
-]
+// Define guardian routes for regular users
+const guardianRoutes = ['/guardian/dashboard']
 
-export default auth((req) => {
-  const session = req.auth as any
-  const { pathname } = req.nextUrl
+// Define protected routes that require authentication
+const protectedRoutes = ['/admin/dashboard', '/guardian/dashboard']
 
-  console.log('Session:', session)
-  console.log('Current path:', pathname)
+export function middleware(req: NextRequest) {
+  const { nextUrl } = req
 
-  if (!session) {
-    if (needsAuth(pathname)) {
-      return NextResponse.redirect(new URL('/auth/login', req.url))
-    }
+  // Check for NextAuth session token
+  const sessionToken =
+    req.cookies.get('authjs.session-token')?.value || req.cookies.get('__Secure-authjs.session-token')?.value
+  const isLoggedIn = !!sessionToken
+
+  console.log('🔍 Middleware check:', {
+    path: nextUrl.pathname,
+    isLoggedIn,
+    hasSessionToken: !!sessionToken
+  })
+
+  // Check if current path is an API route (skip middleware for API routes except auth)
+  if (nextUrl.pathname.startsWith('/api') && !nextUrl.pathname.startsWith('/api/auth')) {
     return NextResponse.next()
   }
 
-  // Extract user data from session
-  const isAdmin = session.isAdmin as boolean
-  const role = session.role as string
-
-  console.log('User role:', role, 'isAdmin:', isAdmin)
-
-  // If user is admin and not already on an admin page, redirect to admin dashboard
-  if (isAdmin && role === 'admin') {
-    if (!adminPagePaths.some((path) => pathname.startsWith(path))) {
-      console.log('Redirecting admin to dashboard')
-      return NextResponse.redirect(new URL('/admin/dashboard', req.url))
-    }
+  // Check if current path is a static file or Next.js internal route
+  if (
+    nextUrl.pathname.startsWith('/_next') ||
+    nextUrl.pathname.includes('.') ||
+    nextUrl.pathname.startsWith('/favicon')
+  ) {
+    return NextResponse.next()
   }
 
-  // Non-admin trying to access admin pages
-  if (adminPagePaths.some((path) => pathname.startsWith(path))) {
-    if (!isAdmin || role !== 'admin') {
-      return NextResponse.redirect(new URL('/guardian/dashboard', req.url))
-    }
+  // Helper function to check if path matches any route pattern
+  const isRouteMatch = (routes: string[], path: string) => {
+    return routes.some((route) => {
+      if (route.endsWith('*')) {
+        // Wildcard match
+        return path.startsWith(route.slice(0, -1))
+      }
+      return path === route || path.startsWith(route + '/')
+    })
   }
 
-  // Non-admin trying to access admin APIs
-  if (adminApiPaths.some((path) => pathname.startsWith(path))) {
-    if (!isAdmin || role !== 'admin') {
-      return new NextResponse('Unauthorized', { status: 401 })
-    }
+  const isAuthRoute = isRouteMatch(authRoutes, nextUrl.pathname)
+  const isAdminRoute = isRouteMatch(adminRoutes, nextUrl.pathname)
+  const isGuardianRoute = isRouteMatch(guardianRoutes, nextUrl.pathname)
+  const isProtectedRoute = isRouteMatch(protectedRoutes, nextUrl.pathname)
+
+  // If user is logged in and trying to access auth pages, redirect to guardian dashboard
+  // (we can't determine admin status from cookie alone, so default to guardian)
+  if (isLoggedIn && isAuthRoute) {
+    console.log('🔄 Redirecting authenticated user away from auth page')
+    return NextResponse.redirect(new URL('/guardian/dashboard', nextUrl))
   }
 
+  // If user is not logged in and trying to access protected routes
+  if (!isLoggedIn && (isProtectedRoute || isAdminRoute || isGuardianRoute)) {
+    console.log('🚫 Redirecting unauthenticated user to login')
+    const loginUrl = new URL('/auth/login', nextUrl)
+    loginUrl.searchParams.set('callbackUrl', nextUrl.pathname)
+    return NextResponse.redirect(loginUrl)
+  }
+
+  // Redirect to guardian dashboard when accessing root protected paths
+  // (admin role checking will need to happen at the page level)
+  if (
+    isLoggedIn &&
+    (nextUrl.pathname === '/dashboard' || nextUrl.pathname === '/admin' || nextUrl.pathname === '/guardian')
+  ) {
+    console.log('🔄 Redirecting to guardian dashboard (role check at page level)')
+    return NextResponse.redirect(new URL('/guardian/dashboard', nextUrl))
+  }
+
+  console.log('✅ Middleware allowing access to:', nextUrl.pathname)
   return NextResponse.next()
-})
-
-function needsAuth(pathname: string): boolean {
-  const protectedPaths = ['/admin', '/guardian']
-  return protectedPaths.some((path) => pathname.startsWith(path))
 }
 
+// Configure which routes the middleware should run on
 export const config = {
-  matcher: ['/admin/:path*', '/guardian/:path*', '/api/:path*']
+  matcher: [
+    /*
+     * Match all request paths except for the ones starting with:
+     * - api (API routes, except /api/auth)
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - favicon.ico (favicon file)
+     * - public folder files
+     */
+    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)'
+  ]
 }

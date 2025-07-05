@@ -7,11 +7,11 @@ import PageWrapper from './page-wrapper'
 import { store } from './redux/store'
 import { SessionProvider } from 'next-auth/react'
 
-const ReduxWrapper: FC<IPage> = ({ children, session }) => {
+const ReduxWrapper: FC<IPage> = ({ children }) => {
   return (
-    <SessionProvider session={session}>
+    <SessionProvider>
       <Provider store={store}>
-        <PageWrapper session={session}>{children}</PageWrapper>
+        <PageWrapper>{children}</PageWrapper>
       </Provider>
     </SessionProvider>
   )

@@ -2,8 +2,8 @@ import type { Metadata } from 'next'
 import { Barlow_Condensed, Merriweather, Satisfy } from 'next/font/google'
 import './globals.css'
 import ReduxWrapper from './redux-wrapper'
+
 // import { getUserFromServerCookie } from './lib/auth-helpers'
-import { auth } from './lib/auth'
 
 const barlowCondensed = Barlow_Condensed({
   variable: '--font-barlow-condensed',
@@ -40,11 +40,11 @@ export default async function RootLayout({
   // } catch (error) {
   //   console.error('ERROR: ', error)
   // }
-  const session = await auth()
+
   return (
     <html lang="en">
       <body className={`${barlowCondensed.variable} ${satisfy.variable} ${merrieweather.variable} antialiased`}>
-        <ReduxWrapper session={session || null}>{children}</ReduxWrapper>
+        <ReduxWrapper>{children}</ReduxWrapper>
       </body>
     </html>
   )

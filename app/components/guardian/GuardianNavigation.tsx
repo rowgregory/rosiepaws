@@ -4,19 +4,18 @@ import { ChevronRight, ChevronLeft } from 'lucide-react'
 import Link from 'next/link'
 import { RootState, useAppDispatch, useAppSelector } from '@/app/redux/store'
 import { setOpenPetDrawer, setPet } from '@/app/redux/features/petSlice'
-import { useLogoutMutation } from '@/app/redux/services/authApi'
 import { setAuthState } from '@/app/redux/features/authSlice'
 import { useRouter } from 'next/navigation'
-import Spinner from '../common/Spinner'
 import { guardianLinkData } from '@/app/lib/navigation'
 import PetSelectorHeader from './navigation/SelectorHeader'
 import PetDropdownMenu from './navigation/PetDropdownMenu'
+import { signOut } from 'next-auth/react'
 
 const GuardianNavigation = ({ toggleSidebar, setToggleSidebar }: any) => {
   const path = useCustomPathname()
   const { zeroPets, pet, pets, loading } = useAppSelector((state: RootState) => state.pet)
   const dispatch = useAppDispatch()
-  const [logout, { isLoading }] = useLogoutMutation()
+
   const { push } = useRouter()
   const [petDropdownOpen, setPetDropdownOpen] = useState(false)
 
@@ -24,10 +23,12 @@ const GuardianNavigation = ({ toggleSidebar, setToggleSidebar }: any) => {
     e.preventDefault()
 
     try {
-      await logout({}).unwrap()
+      await signOut({
+        callbackUrl: '/auth/login', // Where to redirect after sign out
+        redirect: true // Set to false if you want to handle redirect manually
+      })
 
       dispatch(setAuthState({ isAuthenticated: false, id: '', role: '' }))
-      push('/auth/login')
     } catch {}
   }
 
@@ -101,15 +102,11 @@ const GuardianNavigation = ({ toggleSidebar, setToggleSidebar }: any) => {
             >
               <div className="flex items-center gap-x-3">
                 <div className={`flex items-center justify-center ${toggleSidebar ? 'w-5 h-5' : 'w-5 h-5'}`}>
-                  {isLoading && link.textKey === 'Logout' ? (
-                    <Spinner fill="fill-indigo-500" track="text-gray-200" wAndH="w-4 h-4" />
-                  ) : (
-                    <link.icon
-                      className={`w-5 h-5 transition-colors duration-200 ${
-                        link.isActive ? 'text-indigo-600' : 'text-gray-500 group-hover:text-gray-700'
-                      }`}
-                    />
-                  )}
+                  <link.icon
+                    className={`w-5 h-5 transition-colors duration-200 ${
+                      link.isActive ? 'text-indigo-600' : 'text-gray-500 group-hover:text-gray-700'
+                    }`}
+                  />
                 </div>
                 <span
                   className={`${

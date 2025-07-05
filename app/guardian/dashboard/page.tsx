@@ -191,14 +191,10 @@ const GuardianDashboard = () => {
   if (loading) {
     return (
       <div className="w-full flex items-center justify-center pt-12">
-
-        
         <Spinner fill="fill-indigo-500" track="text-white" wAndH="w-8 h-8" />
       </div>
     )
   }
-
-  console.log('zero pets: ', zeroPets)
 
   return (
     <div className="min-h-screen py-6">

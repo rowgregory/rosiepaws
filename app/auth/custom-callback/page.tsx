@@ -11,8 +11,8 @@ const AuthCallback = () => {
   const { data: session, status } = useSession()
   const { push } = useRouter()
   const dispatch = useAppDispatch()
-  console.log('AUTH CALLBACK: ', session)
-  console.log('STATUS: ', status)
+  // console.log('AUTH CALLBACK: ', session)
+  // console.log('STATUS: ', status)
 
   useEffect(() => {
     const handlePostAuth = async () => {

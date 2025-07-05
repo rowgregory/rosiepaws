@@ -31,7 +31,6 @@ export type User = {
 }
 
 export interface IPage {
-  session: any | null
   children: ReactNode
 }
 export interface IForm {

@@ -3,7 +3,7 @@
 import { setOpenGuardianActionMenu, setOpenPetDrawer } from '@/app/redux/features/petSlice'
 import { RootState, useAppDispatch, useAppSelector } from '@/app/redux/store'
 import GuardianActionMenuButton from './GuardianActionMenuButton'
-import { ArrowLeft, Bell, PawPrint, Settings, User } from 'lucide-react'
+import { ArrowLeft, Bell, Settings, User } from 'lucide-react'
 import Link from 'next/link'
 import { setOpenNotificationDrawer } from '@/app/redux/features/dashboardSlice'
 import { motion } from 'framer-motion'
@@ -13,7 +13,7 @@ const GuardianToolbar = () => {
   const { zeroPets } = useAppSelector((state: RootState) => state.pet)
 
   return (
-    <div className="bg-white border-b border-gray-100 px-10 py-4">
+    <div className="bg-white border-b border-gray-100 px-6 py-4 fixed top-0 left-0 right-0 z-50">
       <div className="flex items-center justify-between">
         {/* Left side - could add breadcrumbs or current pet info later */}
         <div className="flex items-center gap-3">

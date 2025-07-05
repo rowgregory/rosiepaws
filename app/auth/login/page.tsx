@@ -3,17 +3,17 @@
 import React, { useState } from 'react'
 import { motion } from 'framer-motion'
 import { signIn } from 'next-auth/react'
-import { RootState, useAppSelector } from '@/app/redux/store'
+// import { RootState, useAppSelector } from '@/app/redux/store'
 import Link from 'next/link'
 
 const Login = () => {
-  // const [email, setEmail] = useState('')
+  const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showEmailLogin, setShowEmailLogin] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   // const [error, setError] = useState('')
-  const user = useAppSelector((state: RootState) => state.user)
-  console.log('USER: ', user)
+  // const user = useAppSelector((state: RootState) => state.user)
+  // console.log('USER: ', user)
 
   const handleGoogleSignIn = async (e: { preventDefault: () => void }) => {
     e.preventDefault()
@@ -21,7 +21,7 @@ const Login = () => {
     // setError('')
     try {
       const result = await signIn('google', {
-        callbackUrl: '/auth/callback', // Go to callback page after OAuth
+        callbackUrl: '/auth/custom-callback', // Go to callback page after OAuth
         redirect: false
       })
       console.log('result: ', result)
@@ -37,30 +37,31 @@ const Login = () => {
     }
   }
 
-  // const handleMagicLink = async () => {
-  //   if (!email) return
-  //   setIsLoading(true)
-  //   setError('')
-  //   try {
-  //     const result = await signIn('nodemailer', {
-  //       email,
-  //       redirect: false
-  //     })
+  const handleMagicLink = async () => {
+    // if (!email) return
+    setIsLoading(true)
+    // setError('')
+    try {
+      const result = await signIn('email', {
+        email,
+        redirect: false,
+        callbackUrl: '/auth/custom-callback' // Go to callback page after OAuth
+      })
 
-  //     if (result?.ok) {
-  //       setError('')
-  //       // Show success message
-  //       alert('Magic link sent! Check your email.')
-  //     } else {
-  //       setError('Failed to send magic link')
-  //     }
-  //   } catch (error) {
-  //     console.error('Magic link error:', error)
-  //     setError('Failed to send magic link')
-  //   } finally {
-  //     setIsLoading(false)
-  //   }
-  // }
+      if (result?.ok) {
+        // setError('')
+        // Show success message
+        alert('Magic link sent! Check your email.')
+      } else {
+        // setError('Failed to send magic link')
+      }
+    } catch (error) {
+      console.error('Magic link error:', error)
+      // setError('Failed to send magic link')
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
   // const handleCredentialsSignIn = async (e: { preventDefault: () => void }) => {
   //   e.preventDefault()
@@ -432,26 +433,56 @@ const Login = () => {
               </motion.div>
             )}
 
-            {/* <div className="text-center text-gray-500 text-sm my-4">OR</div> */}
+            <div className="text-center text-gray-500 text-sm my-4">OR</div>
 
-            {/* Email Input */}
-            {/* <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="name@host.com"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-gray-50"
-              />
+            {/* Magic Link Section */}
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.5, duration: 0.5 }}
+              className="space-y-4 mb-6"
+            >
+              <div className="relative">
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="Enter your email"
+                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-pink-400 focus:border-transparent transition-all duration-200 pl-12"
+                  required
+                />
+                <svg
+                  className="w-5 h-5 text-gray-400 absolute left-4 top-1/2 transform -translate-y-1/2"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"
+                  />
+                </svg>
+              </div>
+
               <motion.button
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className="w-full mt-3 bg-gray-800 text-white rounded-lg px-4 py-3 font-medium hover:bg-gray-900 transition-colors"
+                onClick={handleMagicLink}
+                disabled={isLoading || !email}
+                className="w-full py-3 px-4 bg-gradient-to-r from-pink-500 to-orange-500 text-white rounded-xl font-medium hover:from-pink-600 hover:to-orange-600 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Continue
+                {isLoading ? (
+                  <div className="flex items-center justify-center">
+                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+                    Sending...
+                  </div>
+                ) : (
+                  'Send Magic Link'
+                )}
               </motion.button>
-            </div> */}
+            </motion.div>
 
             <div className="text-center mt-6">
               <a href="#" className="text-purple-600 hover:text-purple-700 text-sm">
