@@ -7,6 +7,7 @@ import CleanHeader from '@/app/components/guardian/navigation/CleanHeader'
 import ZeroLogs from '@/app/components/guardian/ZeroLogs'
 import PetCard from '@/app/components/guardian/my-pets/PetCard'
 import { Pet } from '@/app/types/entities'
+import { petCreateTokenCost } from '@/app/lib/constants/token'
 
 const MyPets = () => {
   const { zeroPets, pets } = useAppSelector((state: RootState) => state.pet)
@@ -17,7 +18,7 @@ const MyPets = () => {
         btnText="Add first pet"
         title="No pets added yet"
         subtitle="Get started by adding your first pet to begin tracking their health and activities."
-        tokens={35}
+        tokens={petCreateTokenCost}
         func={setOpenPetDrawer}
       />
     )
@@ -27,7 +28,7 @@ const MyPets = () => {
     <div className="h-[calc(100dvh-96px)]">
       <div className="mx-auto px-6 space-y-8">
         {/* Header */}
-        <CleanHeader btnText="Add Pet" func={setOpenPetDrawer} tokens={35} />
+        <CleanHeader btnText="Add Pet" func={setOpenPetDrawer} tokens={petCreateTokenCost} />
 
         {/* Pet Cards Grid */}
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">

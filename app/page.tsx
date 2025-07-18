@@ -1,4 +1,3 @@
-// import SubscriptionsBlock from './components/blocks/SubscriptionsBlock'
 import HomeHero from './components/common/HomeHero'
 import AnnouncementBanner from './components/home/AnnouncementBanner'
 import Audience from './components/home/Audience'
@@ -15,7 +14,6 @@ const Home = () => {
       <AnnouncementBanner />
       <InsideTheApp />
       <Solution />
-      {/* <SubscriptionsBlock /> */}
     </>
   )
 }
