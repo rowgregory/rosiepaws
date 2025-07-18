@@ -2,7 +2,7 @@ import { getToken } from 'next-auth/jwt'
 import { NextRequest, NextResponse } from 'next/server'
 
 // Routes that bypass authentication
-const publicRoutes = ['/auth/login']
+const publicRoutes = ['/auth/login', '/auth/custom-callback']
 const cronRoutes = ['/api/pet/check-med-reminders']
 
 export async function middleware(req: NextRequest) {
