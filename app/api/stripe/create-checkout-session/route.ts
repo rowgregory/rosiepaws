@@ -38,7 +38,7 @@ export async function POST(req: NextRequest) {
       },
 
       success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/subscriptions`,
+      cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}`,
 
       payment_method_types: ['card', 'link', 'us_bank_account', 'paypal'],
 

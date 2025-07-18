@@ -12,8 +12,7 @@ const Header = () => {
 
   const navItems = [
     { name: 'Features', hasDropdown: true },
-    { name: 'Subscriptions', linkKey: '/subscriptions' },
-    { name: 'Blog', linkKey: '/blog' }
+    { name: 'Ebooks', linkKey: '/ebooks' }
   ]
 
   const mobileMenuVariants = {
