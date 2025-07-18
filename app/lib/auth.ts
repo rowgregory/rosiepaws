@@ -6,7 +6,12 @@ import Google from 'next-auth/providers/google'
 import { Resend } from 'resend'
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
-  debug: true,
+  // debug: true,
+  session: {
+    strategy: 'jwt', // More efficient than database sessions
+    maxAge: 30 * 24 * 60 * 60, // 30 days
+    updateAge: 24 * 60 * 60 // 24 hours - how often to update
+  },
   adapter: PrismaAdapter(prisma),
   pages: {
     error: '/auth/error', // Create this page to see detailed errors
@@ -68,22 +73,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     }
   ],
   callbacks: {
-    async signIn({ user, account, email: emailData }) {
-      console.log('🔍 SignIn callback - Full details:', {
-        user: {
-          id: user.id,
-          email: user.email,
-          name: user.name
-        },
-        account: {
-          provider: account?.provider,
-          type: account?.type,
-          providerAccountId: account?.providerAccountId
-        },
-        emailData: emailData,
-        isVerificationRequest: !!emailData?.verificationRequest
-      })
-
+    async signIn({ user, account, profile, email: emailData }) {
       // If this is just the initial email sending request, allow it
       if (emailData?.verificationRequest) {
         console.log('📧 This is a verification request (sending email) - allowing')
@@ -141,70 +131,149 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         }
       }
 
-      // For other providers (Google, etc.)
+      // Handle Google provider - extract and save firstName/lastName + account linking
+      if (account?.provider === 'google') {
+        console.log('👤 Google sign-in - checking for existing user')
+        try {
+          // Check if a user already exists with this email
+          const existingUser = await prisma.user.findUnique({
+            where: { email: user.email! },
+            include: { accounts: true }
+          })
+
+          if (existingUser) {
+            console.log('👤 Found existing user - checking account linking')
+
+            // Check if this Google account is already linked
+            const existingGoogleAccount = existingUser.accounts.find(
+              (acc) => acc.provider === 'google' && acc.providerAccountId === account.providerAccountId
+            )
+
+            if (!existingGoogleAccount) {
+              console.log('🔗 Linking Google account to existing user')
+
+              // Link the Google account to the existing user
+              await prisma.account.create({
+                data: {
+                  userId: existingUser.id,
+                  type: account.type,
+                  provider: account.provider,
+                  providerAccountId: account.providerAccountId,
+                  access_token: account.access_token,
+                  expires_at: account.expires_at,
+                  id_token: account.id_token,
+                  refresh_token: account.refresh_token,
+                  scope: account.scope,
+                  token_type: account.token_type
+                }
+              })
+
+              console.log('✅ Linked Google account to existing user')
+            }
+
+            // Update user info from Google profile if name fields are missing
+            if (profile?.name && (!existingUser.firstName || !existingUser.lastName)) {
+              const nameParts = profile.name.split(' ')
+              const firstName = nameParts[0] || ''
+              const lastName = nameParts.slice(1).join(' ') || ''
+
+              await prisma.user.update({
+                where: { id: existingUser.id },
+                data: {
+                  firstName,
+                  lastName,
+                  name: profile.name,
+                  image: user.image || profile.picture
+                }
+              })
+
+              console.log('✅ Updated existing user name from Google profile')
+            }
+
+            // Set the user.id so the adapter knows to use the existing user
+            user.id = existingUser.id
+          } else {
+            console.log('👤 New Google user - name will be handled in JWT callback')
+          }
+        } catch (error) {
+          console.error('❌ Error in Google sign-in callback:', error)
+          // Don't fail the sign-in if linking fails
+        }
+      }
+
+      // For other providers or fallback
       return true
     },
-    async session({ session, user }) {
-      if (user && session.user) {
-        session.user.id = user.id
-        // Add your custom user fields here
-        session.user.role = user.role || ''
-        session.user.isAdmin = user.isAdmin || false
-        session.user.isGuardian = user.isGuardian || false
-        session.user.isProUser = user.isProUser || false
-        session.user.isPremiumUser = user.isPremiumUser || false
-        session.user.isBasicUser = user.isBasicUser || false
-        session.user.isFreeUser = user.isFreeUser || false
-        session.user.isSuperUser = user.isSuperUser || false
-        session.user.firstName = user.firstName || ''
-        session.user.lastName = user.lastName || ''
-        session.user.tokens = user.tokens || 0
-        session.user.tokensUsed = user.tokensUsed || 0
-        session.user.stripeCustomerId = user.stripeCustomerId || ''
+    async session({ session, token }) {
+      // Pass all the user data from token to session
+      if (token.userId) {
+        session.user.id = token.userId
+        session.user.pets = token.pets
+
+        // Add these missing properties
+        session.user.firstName = token.firstName
+        session.user.lastName = token.lastName
+        session.user.role = token.role
+        session.user.isAdmin = token.isAdmin
+        session.user.isGuardian = token.isGuardian
+        session.user.isFreeUser = token.isFreeUser
+        session.user.isComfortUser = token.isComfortUser
+        session.user.isCompanionUser = token.isCompanionUser
+        session.user.isLegacyUser = token.isLegacyUser
+        session.user.stripeSubscription = token.stripeSubscription
       }
       return session
-    }
-  },
-  events: {
-    async createUser({ user }) {
-      console.log('🎉 USER CREATED:', {
-        id: user.id,
-        email: user.email,
-        timestamp: new Date().toISOString()
-      })
     },
-    async linkAccount({ user, account }) {
-      console.log('🔗 ACCOUNT LINKED:', {
-        userId: user.id,
-        email: user.email,
-        provider: account.provider,
-        type: account.type,
-        timestamp: new Date().toISOString()
-      })
-    },
-    async signIn({ user, account, isNewUser }) {
-      console.log('✅ SIGN IN EVENT:', {
-        email: user.email,
-        provider: account?.provider,
-        isNewUser: isNewUser,
-        timestamp: new Date().toISOString()
-      })
+    async jwt({ token, user, account }) {
+      if (user) {
+        // First time sign in - user was just created by the adapter
+        token.userId = user.id
 
-      // Check what's actually in the database after sign-in
-      try {
+        // If this is a new Google user, update their name fields
+        if (account?.provider === 'google' && user.name && !user.firstName) {
+          try {
+            const nameParts = user.name.split(' ')
+            const firstName = nameParts[0] || ''
+            const lastName = nameParts.slice(1).join(' ') || ''
+
+            await prisma.user.update({
+              where: { id: user.id },
+              data: {
+                firstName,
+                lastName
+              }
+            })
+
+            console.log('✅ Updated new Google user name fields')
+          } catch (error) {
+            console.error('❌ Failed to update new user name:', error)
+          }
+        }
+
+        // Fetch fresh user data from database
         const dbUser = await prisma.user.findUnique({
-          where: { email: user.email! },
-          include: { accounts: true }
+          where: { id: user.id },
+          include: {
+            pets: true,
+            stripeSubscription: true
+          }
         })
 
-        console.log('📊 DATABASE STATE AFTER SIGN-IN:', {
-          userExists: !!dbUser,
-          accountCount: dbUser?.accounts?.length || 0,
-          accounts: dbUser?.accounts?.map((acc) => `${acc.provider}:${acc.type}`) || []
-        })
-      } catch (error) {
-        console.error('❌ Error checking database state:', error)
+        if (dbUser) {
+          token.pets = dbUser.pets || []
+          token.firstName = dbUser.firstName || undefined
+          token.lastName = dbUser.lastName || undefined
+          token.role = dbUser.role || undefined
+          token.isAdmin = dbUser.isAdmin ?? false
+          token.isGuardian = dbUser.isGuardian ?? false
+          token.isFreeUser = dbUser.isFreeUser ?? false
+          token.isComfortUser = dbUser.isComfortUser ?? false
+          token.isCompanionUser = dbUser.isCompanionUser ?? false
+          token.isLegacyUser = dbUser.isLegacyUser ?? false
+          token.stripeSubscription = dbUser.stripeSubscription || undefined
+        }
       }
+      return token
     }
   }
 })

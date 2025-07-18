@@ -17,7 +17,6 @@ export default {
         roseblush: '#D8A48F',
         peachblossum: '#B88588'
       },
-      maxWidth: {},
       backgroundImage: {
         homeherosunrays: "url('/images/banner-sun-rays.png')",
         homeherotexture2: "url('/images/homeherotexture2.png')",
@@ -33,20 +32,63 @@ export default {
         logo: "url('/images/rosie-logo.png')"
       },
       animation: {
-        slowspin: 'slowspin 200s linear infinite',
-        floatCloud: 'floatCloud 6s ease-in-out infinite'
+        'rainbow-spin': 'rainbowSpin 8s linear infinite',
+        'rainbow-spin-reverse': 'rainbowSpinReverse 12s linear infinite',
+        'swirl-motion': 'swirlMotion 10s linear infinite',
+        'pulse-scale': 'pulseScale 6s ease-in-out infinite',
+        shimmer: 'shimmer 3s ease-in-out infinite'
       },
       keyframes: {
-        floatCloud: {
-          '0%': { transform: 'translateY(0px) translateX(0px)' },
-          '25%': { transform: 'translateY(-12px) translateX(5px)' },
-          '50%': { transform: 'translateY(-20px) translateX(0px)' },
-          '75%': { transform: 'translateY(-12px) translateX(-5px)' },
-          '100%': { transform: 'translateY(0px) translateX(0px)' }
+        rainbowSpin: {
+          from: {
+            transform: 'rotate(0deg)'
+          },
+          to: {
+            transform: 'rotate(360deg)'
+          }
         },
-        slowspin: {
-          '0%': { transform: 'rotate(0deg)' },
-          '100%': { transform: 'rotate(360deg)' }
+        rainbowSpinReverse: {
+          from: {
+            transform: 'rotate(360deg) scale(1.1)'
+          },
+          to: {
+            transform: 'rotate(0deg) scale(1.1)'
+          }
+        },
+        swirlMotion: {
+          '0%': {
+            transform: 'rotate(0deg) scale(1)'
+          },
+          '25%': {
+            transform: 'rotate(90deg) scale(1.05)'
+          },
+          '50%': {
+            transform: 'rotate(180deg) scale(1)'
+          },
+          '75%': {
+            transform: 'rotate(270deg) scale(0.95)'
+          },
+          '100%': {
+            transform: 'rotate(360deg) scale(1)'
+          }
+        },
+        pulseScale: {
+          '0%, 100%': {
+            transform: 'scale(1) rotate(0deg)',
+            opacity: '0.4'
+          },
+          '50%': {
+            transform: 'scale(1.1) rotate(180deg)',
+            opacity: '0.6'
+          }
+        },
+        shimmer: {
+          '0%': {
+            transform: 'translateX(-100%) skewX(-15deg)'
+          },
+          '100%': {
+            transform: 'translateX(200%) skewX(-15deg)'
+          }
         }
       },
       screens: {
@@ -85,7 +127,8 @@ export default {
         inter: ['var(--font-inter)'],
         barlowcondensed: ['var(--font-barlow-condensed)'],
         satisfy: ['var(--font-satisfy)'],
-        merrieweather: ['var(--font-merrieweather)']
+        merrieweather: ['var(--font-merrieweather)'],
+        sora: ['var(--font-sora)']
       }
     }
   },

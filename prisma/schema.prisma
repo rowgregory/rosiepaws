@@ -20,11 +20,139 @@ enum TokenTransactionType {
   REFUND // Tokens refunded
   BONUS // Promotional tokens
   ADMIN_ADJUSTMENT // Manual adjustments
+  PET_CREATION
+  WALK_CREATION
+  PAIN_SCORE_CREATION
+  PAIN_SCORE_UPDATE
+  FEEDING_CREATION
+  APPOINTMENT_CREATION
+  WATER_CREATION
+  MEDICATION_CREATION
+  BLOOD_SUGAR_CREATION
+  SEIZURE_TRACKING_CREATION
+  MOVEMENT_CREATION
 }
 
 enum PetType {
   DOG
   CAT
+}
+
+enum MediaType {
+  IMAGE
+  VIDEO
+}
+
+enum AppointmentType {
+  CHECKUP
+  VACCINATION
+  GROOMING
+  DENTAL
+  SURGERY
+  EMERGENCY
+  CONSULTATION
+}
+
+enum AppointmentStatus {
+  SCHEDULED
+  CONFIRMED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+  RESCHEDULED
+}
+
+enum MovementType {
+  WALK
+  RUN
+  SWIM
+  PHYSICAL_THERAPY
+  INDOOR_ACTIVITY
+  YARD_TIME
+  WHEELCHAIR_MOBILITY
+  ASSISTED_WALKING
+  STRETCHING
+  EXERCISE
+}
+
+enum ActivityLevel {
+  VERY_LOW
+  LOW
+  MODERATE
+  HIGH
+  VERY_HIGH
+}
+
+enum EnergyLevel {
+  EXHAUSTED
+  TIRED
+  NORMAL
+  ENERGETIC
+  HYPERACTIVE
+}
+
+enum GaitQuality {
+  NORMAL
+  SLIGHTLY_OFF
+  NOTICEABLE_LIMP
+  SEVERE_LIMP
+  UNABLE_TO_WALK
+}
+
+enum MobilityLevel {
+  FULL_MOBILITY
+  SLIGHT_LIMITATION
+  MODERATE_LIMITATION
+  SEVERE_LIMITATION
+  IMMOBILE
+}
+
+enum AssistanceType {
+  NONE
+  VERBAL_ENCOURAGEMENT
+  LEASH_SUPPORT
+  HARNESS_LIFT
+  WHEELCHAIR
+  CARRIED
+  FULL_ASSISTANCE
+}
+
+enum PantingLevel {
+  NONE
+  LIGHT
+  MODERATE
+  HEAVY
+  EXCESSIVE
+}
+
+enum MealRelation {
+  FASTING
+  BEFORE_MEAL
+  AFTER_MEAL
+  BEDTIME
+  RANDOM
+}
+
+enum MeasurementUnit {
+  MG_DL // milligrams per deciliter
+  MMOL_L // millimoles per liter
+}
+
+enum SeizureType {
+  GENERALIZED // Grand mal, affects whole body
+  FOCAL // Partial, affects specific area
+  ABSENCE // Brief loss of consciousness
+  MYOCLONIC // Brief muscle jerks
+  TONIC_CLONIC // Stiffening then jerking
+  ATONIC // Drop seizures
+  UNKNOWN // Type unclear
+}
+
+enum SeizureSeverity {
+  MILD // Brief, minimal symptoms
+  MODERATE // Noticeable but controlled
+  SEVERE // Intense, long-lasting
+  CRITICAL // Emergency level
 }
 
 model Account {
@@ -88,21 +216,18 @@ model StripeSubscription {
 }
 
 model User {
-  id                 String  @id @default(cuid())
-  email              String  @unique @db.VarChar(255)
-  role               String  @default("free_user") @db.VarChar(255)
-  isFreeUser         Boolean @default(true)
-  isSuperUser        Boolean @default(false)
-  isAdmin            Boolean @default(false)
-  isGuardian         Boolean @default(false)
-  isBasicUser        Boolean @default(false)
-  isProUser          Boolean @default(false)
-  isPremiumUser      Boolean @default(false)
-  securityQuestion   String? @db.VarChar(255)
-  securityAnswerHash String? @db.VarChar(255)
-  firstName          String? @db.VarChar(255)
-  lastName           String? @db.VarChar(255)
-  password           String? @db.VarChar(255)
+  id              String  @id @default(cuid())
+  email           String  @unique @db.VarChar(255)
+  role            String  @default("Free") @db.VarChar(255)
+  isSuperUser     Boolean @default(false)
+  isAdmin         Boolean @default(false)
+  isGuardian      Boolean @default(false)
+  isFreeUser      Boolean @default(true)
+  isComfortUser   Boolean @default(false)
+  isCompanionUser Boolean @default(false)
+  isLegacyUser    Boolean @default(false)
+  firstName       String? @db.VarChar(255)
+  lastName        String? @db.VarChar(255)
 
   stripeCustomerId String? @unique @db.VarChar(255)
 
@@ -112,7 +237,7 @@ model User {
   image         String?
 
   // Token fields
-  tokens         Int       @default(150) // Starting tokens for new users
+  tokens         Int       @default(750) // Starting tokens for new users
   tokensUsed     Int       @default(0) // Track total tokens consumed
   lastTokenReset DateTime?
 
@@ -123,6 +248,7 @@ model User {
   blogs              Blog[]
   stripeSubscription StripeSubscription?
   tokenTransactions  TokenTransaction[]
+  galleryItems       GalleryItem[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -144,16 +270,23 @@ model TokenTransaction {
 }
 
 model Pet {
-  id      String  @id @default(cuid())
-  name    String
-  type    PetType
-  breed   String
-  age     String
-  gender  String
-  weight  String
-  owner   User    @relation(fields: [ownerId], references: [id])
-  ownerId String
-  notes   String?
+  id                    String    @id @default(cuid())
+  name                  String
+  type                  PetType
+  breed                 String
+  age                   String
+  gender                String
+  weight                String
+  spayedNeutered        String
+  microchipId           String?
+  allergies             String?
+  emergencyContactName  String?
+  emergencyContactPhone String?
+  lastVisit             DateTime?
+  nextVisit             DateTime?
+  owner                 User      @relation(fields: [ownerId], references: [id])
+  ownerId               String
+  notes                 String?
 
   painScores   PainScore[]
   appointments Appointment[]
@@ -162,58 +295,72 @@ model Pet {
   seizures     Seizure[]
   waters       Water[]
   bloodSugars  BloodSugar[]
+  walks        Walk[]
+  galleryItems GalleryItem[]
+  movements    Movement[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
 model PainScore {
-  id           String  @id @default(cuid())
+  id           String   @id @default(cuid())
   score        Int
-  timeRecorded String  @default("")
-  notes        String?
-  pet          Pet     @relation(fields: [petId], references: [id])
-  petId        String
+  timeRecorded DateTime
+  symptoms     String?  @default("")
+  location     String? // Where on the body is the pain (e.g., "left hip", "back legs", "abdomen")
+  triggers     String? // What triggered or worsened the pain (e.g., "after walking", "weather change", "before medication")
+  relief       String? // What provided relief (e.g., "heat pad", "medication", "rest", "massage")
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-model Appointment {
-  id       String   @id @default(cuid())
-  date     DateTime
-  reason   String
-  location String?
-  notes    String?
-
-  pet   Pet    @relation(fields: [petId], references: [id])
+  notes String?
+  pet   Pet     @relation(fields: [petId], references: [id], onDelete: Cascade)
   petId String
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
-model BloodSugar {
-  id        String   @id @default(cuid())
-  value     String
-  notes     String?
-  timeTaken DateTime
-  pet       Pet      @relation(fields: [petId], references: [id])
-  petId     String
+model Feeding {
+  id           String   @id @default(cuid())
+  timeRecorded DateTime
+  foodType     String
+  foodAmount   String
+  moodRating   Int      @default(0)
+  brand        String
+  ingredients  String?
+  notes        String?
+  pet          Pet      @relation(fields: [petId], references: [id], onDelete: Cascade)
+  petId        String
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
-model Feeding {
-  id         String   @id @default(cuid())
-  timeFed    DateTime
-  foodType   String
-  foodAmount String
-  moodRating Int      @default(0)
-  notes      String?
-  pet        Pet      @relation(fields: [petId], references: [id])
-  petId      String
+model Water {
+  id           String   @id @default(cuid())
+  milliliters  String
+  timeRecorded DateTime
+  moodRating   Int
+  notes        String?
+  pet          Pet      @relation(fields: [petId], references: [id], onDelete: Cascade)
+  petId        String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Walk {
+  id           String   @id @default(cuid())
+  distance     String
+  duration     String
+  pace         String
+  distraction  String
+  timeRecorded DateTime
+  moodRating   Int      @default(0)
+  movement     String?  @default("")
+  notes        String?
+  pet          Pet      @relation(fields: [petId], references: [id], onDelete: Cascade)
+  petId        String
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -231,12 +378,107 @@ model Medication {
   reminderEnabled    Boolean   @default(false)
   reminderTimes      String[] // Changed from Json to String[]
   lastReminderDate   String?
-  sentRemindersToday String[]
-  instructions       String?
+  sentRemindersToday String[]  @default([])
+  notes              String?
   prescribedBy       String?
-  timezoneOffset     Int       @default(-5)
+  timezoneOffset     Int?      @default(-5)
 
-  pet   Pet    @relation(fields: [petId], references: [id])
+  pet   Pet    @relation(fields: [petId], references: [id], onDelete: Cascade)
+  petId String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Movement {
+  id           String   @id @default(cuid())
+  petId        String
+  userId       String
+  timeRecorded DateTime
+
+  // Movement Type
+  movementType MovementType
+
+  // Duration & Distance
+  durationMinutes Int?
+  distanceMeters  Float?
+
+  // Activity Level
+  activityLevel ActivityLevel
+
+  // Location & Environment
+  location    String?
+  indoor      Boolean @default(false)
+  weather     String?
+  temperature Float?
+
+  // Pet Condition
+  energyBefore EnergyLevel
+  energyAfter  EnergyLevel
+  painBefore   Int? // 1-10 scale
+  painAfter    Int? // 1-10 scale
+
+  // Movement Quality
+  gaitQuality GaitQuality?
+  mobility    MobilityLevel
+  assistance  AssistanceType?
+
+  // Equipment Used
+  wheelchair Boolean @default(false)
+  harness    Boolean @default(false)
+  leash      Boolean @default(false)
+
+  // Behavioral Observations
+  enthusiasm Int? // 1-10 scale
+  reluctance Boolean       @default(false)
+  limping    Boolean       @default(false)
+  panting    PantingLevel?
+
+  // Rest & Recovery
+  restBreaks   Int?
+  recoveryTime Int? // minutes needed to recover
+
+  // Notes
+  notes String?
+
+  // Relationships
+  pet Pet @relation(fields: [petId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Appointment {
+  id              String            @id @default(cuid())
+  date            DateTime
+  time            String
+  reminderTime    String?
+  reminderEnabled Boolean?
+  serviceType     AppointmentType
+  description     String?
+  status          AppointmentStatus @default(SCHEDULED)
+  veterinarian    String?
+  notes           String?
+
+  pet   Pet    @relation(fields: [petId], references: [id], onDelete: Cascade)
+  petId String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model BloodSugar {
+  id              String          @id @default(cuid())
+  value           String
+  notes           String?
+  timeRecorded    DateTime
+  mealRelation    MealRelation    @default(FASTING) // FASTING, BEFORE_MEAL, AFTER_MEAL, BEDTIME
+  measurementUnit MeasurementUnit @default(MG_DL) // MG_DL, MMOL_L
+  targetRange     String? // e.g., "80-120 mg/dL" or custom range
+  symptoms        String? // Associated symptoms (lethargy, excessive thirst, etc.)
+  medicationGiven Boolean         @default(false) // Whether insulin/medication was administered
+
+  pet   Pet    @relation(fields: [petId], references: [id], onDelete: Cascade)
   petId String
 
   createdAt DateTime @default(now())
@@ -244,29 +486,18 @@ model Medication {
 }
 
 model Seizure {
-  id            String   @id @default(cuid())
-  timeTaken     DateTime
+  id            String          @id @default(cuid())
+  timeRecorded  DateTime
   duration      Int // Duration in seconds (optional)
   notes         String? // Optional observations or details
   videoUrl      String?
   videoFilename String?
-  pet           Pet      @relation(fields: [petId], references: [id])
+  seizureType   SeizureType     @default(GENERALIZED) // Type classification
+  severity      SeizureSeverity @default(MILD) // Intensity level
+  triggerFactor String? // Potential triggers
+  recoveryTime  Int?
+  pet           Pet             @relation(fields: [petId], references: [id], onDelete: Cascade)
   petId         String
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-model Water {
-  id             String  @id @default(cuid())
-  intakeType     String
-  milliliters    String
-  relativeIntake String
-  timeRecorded   String
-  moodRating     String
-  notes          String?
-  pet            Pet     @relation(fields: [petId], references: [id])
-  petId          String
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -300,4 +531,43 @@ model Log {
   message   String
   metadata  Json? // Optional, store additional context
   createdAt DateTime @default(now())
+}
+
+model CareTask {
+  id        String  @id @default(cuid())
+  type      String
+  title     String
+  time      String
+  completed Boolean
+  urgent    Boolean
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model GalleryItem {
+  id          String    @id @default(cuid())
+  url         String // Firebase download URL
+  type        MediaType // ENUM for IMAGE or VIDEO
+  name        String // Original filename
+  size        Int // File size in bytes
+  mimeType    String // e.g., "image/jpeg", "video/mp4"
+  thumbnail   String? // Optional thumbnail URL for videos
+  description String? // Optional user description
+  tags        String[] // Array of tags for organization
+
+  // Relationships
+  pet    Pet    @relation(fields: [petId], references: [id], onDelete: Cascade)
+  petId  String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Indexes for performance
+  @@index([userId, createdAt])
+  @@index([petId, createdAt])
+  @@index([type])
 }

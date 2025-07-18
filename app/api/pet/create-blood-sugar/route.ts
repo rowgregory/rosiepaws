@@ -1,56 +1,91 @@
 import prisma from '@/prisma/client'
 import { NextRequest, NextResponse } from 'next/server'
-import { createLog } from '@/app/lib/utils/logHelper'
-import { parseStack } from 'error-stack-parser-es/lite'
 import { slicePet } from '@/public/data/api.data'
+import { bloodSugarCreateTokenCost } from '@/app/lib/constants/token'
+import { createLog } from '@/app/lib/api/createLog'
+import { getUserFromHeader } from '@/app/lib/api/getUserFromheader'
+import { validateOwnerAndPet } from '@/app/lib/api/validateOwnerAndPet'
+import { handleApiError } from '@/app/lib/api/handleApiError'
 
 export async function POST(req: NextRequest) {
   try {
-    const userHeader = req.headers.get('x-user')!
-    if (!userHeader) {
-      return NextResponse.json({ message: 'Unauthorized: Missing user header', sliceName: slicePet }, { status: 401 })
+    const userAuth = getUserFromHeader({
+      req
+    })
+
+    if (!userAuth.success) {
+      return userAuth.response!
     }
-    const parsedUser = JSON.parse(userHeader)
-    const ownerId = parsedUser.id
 
-    const { petId, value, timeTaken, notes } = await req.json()
+    const { petId, value, timeRecorded, notes, mealRelation, measurementUnit, targetRange, symptoms, medicationGiven } =
+      await req.json()
 
-    if (!petId || !value || !timeTaken) {
+    if (!petId || !value || !timeRecorded) {
       return NextResponse.json(
         {
-          message: `Missing required fields: petId: ${petId}, value: ${value}, timeTaken: ${timeTaken} are required`,
+          message: `Missing required fields: petId: ${petId}, value: ${value}, timeRecorded: ${timeRecorded} are required`,
           sliceName: slicePet
         },
         { status: 400 }
       )
     }
 
-    // Confirm pet exists
-    const pet = await prisma.pet.findUnique({ where: { id: petId } })
-    if (!pet) {
-      await createLog('warning', 'Pet not found when creating feedomg', {
-        location: ['api route - POST /api/pet/create-feeding'],
-        name: 'PetNotFound',
-        timestamp: new Date().toISOString(),
-        url: req.url,
-        method: req.method,
-        petId,
-        ownerId
-      })
-      return NextResponse.json({ message: 'Pet not found', sliceName: slicePet }, { status: 404 })
+    const validation = await validateOwnerAndPet({
+      userId: userAuth.userId ?? '',
+      petId,
+      tokenCost: bloodSugarCreateTokenCost,
+      actionName: 'blood sugar',
+      req
+    })
+
+    if (!validation.success) {
+      return validation.response!
     }
 
-    // Create PainScore entry
-    const bloodSugar = await prisma.bloodSugar.create({
-      data: {
-        petId,
-        value,
-        timeTaken,
-        notes
-      },
-      include: {
-        pet: true // Optional: attach pet info like name
-      }
+    // Use transaction to ensure atomicity
+    const result = await prisma.$transaction(async (tx) => {
+      // Create Blood Sugar entry
+      const newBloodSugar = await tx.bloodSugar.create({
+        data: {
+          petId,
+          value,
+          timeRecorded,
+          notes,
+          mealRelation,
+          measurementUnit,
+          targetRange,
+          symptoms,
+          medicationGiven
+        },
+        include: {
+          pet: true // Optional: attach pet info like name
+        }
+      })
+
+      // Deduct tokens from user
+      const updatedUser = await tx.user.update({
+        where: { id: userAuth.userId },
+        data: {
+          tokens: { decrement: bloodSugarCreateTokenCost },
+          tokensUsed: { increment: bloodSugarCreateTokenCost }
+        }
+      })
+
+      // Create token transaction record
+      await tx.tokenTransaction.create({
+        data: {
+          userId: userAuth.userId!,
+          amount: -bloodSugarCreateTokenCost, // Negative for debit
+          type: 'BLOOD_SUGAR_CREATION',
+          description: `Blood sugar creation`,
+          metadata: {
+            bloodSugarId: newBloodSugar.id,
+            feature: 'blood_sugar_creation'
+          }
+        }
+      })
+
+      return { newBloodSugar, updatedUser }
     })
 
     await createLog('info', 'Blood sugar created successfully', {
@@ -60,20 +95,27 @@ export async function POST(req: NextRequest) {
       url: req.url,
       method: req.method,
       petId,
-      bloodSugarId: bloodSugar.id,
-      ownerId
+      bloodSugarId: result.newBloodSugar.id,
+      userId: userAuth.userId
     })
 
-    return NextResponse.json({ bloodSugar, sliceName: slicePet }, { status: 201 })
+    return NextResponse.json(
+      {
+        bloodSugar: result.newBloodSugar,
+        user: {
+          tokens: result.updatedUser.tokens,
+          tokensUsed: result.updatedUser.tokensUsed
+        },
+        sliceName: slicePet
+      },
+      { status: 201 }
+    )
   } catch (error: any) {
-    await createLog('error', `Blood sugar creation failed: ${error.message}`, {
-      errorLocation: parseStack(JSON.stringify(error)),
-      errorMessage: error.message,
-      errorName: error.name || 'UnknownError',
-      timestamp: new Date().toISOString(),
-      url: req.url,
-      method: req.method
+    return await handleApiError({
+      error,
+      req,
+      action: 'Blood sugar creation',
+      sliceName: slicePet
     })
-    return NextResponse.json({ message: 'Blood sugar creation failed', error, sliceName: slicePet }, { status: 500 })
   }
 }

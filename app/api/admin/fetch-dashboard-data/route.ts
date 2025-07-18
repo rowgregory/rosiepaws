@@ -1,8 +1,8 @@
 import prisma from '@/prisma/client'
 import { NextRequest, NextResponse } from 'next/server'
-import { createLog } from '@/app/lib/utils/logHelper'
 import { parseStack } from 'error-stack-parser-es/lite'
 import { sliceStripe } from '@/public/data/api.data'
+import { createLog } from '@/app/lib/api/createLog'
 
 export async function GET(req: NextRequest) {
   try {

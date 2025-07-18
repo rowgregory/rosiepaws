@@ -1,7 +1,7 @@
 import Image from 'next/image'
 import React, { FC, memo, MouseEventHandler } from 'react'
 
-interface PitureProps {
+interface PictureProps {
   src: string
   alt?: string
   className: string
@@ -11,12 +11,12 @@ interface PitureProps {
   height?: number
 }
 
-const Picture: FC<PitureProps> = ({ src, alt, className, priority = false, onClick, width, height }) => {
+const Picture: FC<PictureProps> = ({ src, alt, className, priority = false, onClick, width, height }) => {
   return (
     <Image
       onClick={onClick}
-      src={src}
-      alt={alt || 'The Pops'}
+      src={src || '/images/sqysh.png'}
+      alt={alt || 'Rosie Paws'}
       width={width || '0'}
       height={height || '0'}
       className={className}

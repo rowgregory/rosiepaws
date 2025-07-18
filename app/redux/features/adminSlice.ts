@@ -1,6 +1,6 @@
 import { Reducer, createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { adminApi } from '../services/adminApi'
-import { IUser, Pet } from '@/app/types/model.types'
+import { IUser, Pet } from '@/app/types/entities'
 import { petInitialState } from '@/app/lib/initial-states/pet'
 
 interface ErrorPayload {

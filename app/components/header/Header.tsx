@@ -10,7 +10,11 @@ const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [activeDropdown, setActiveDropdown] = useState<null | string>(null)
 
-  const navItems = [{ name: 'Features', hasDropdown: true }, { name: 'Subscriptions' }, { name: 'Blog' }]
+  const navItems = [
+    { name: 'Features', hasDropdown: true },
+    { name: 'Subscriptions', linkKey: '/subscriptions' },
+    { name: 'Blog', linkKey: '/blog' }
+  ]
 
   const mobileMenuVariants = {
     hidden: { opacity: 0, height: 0 },
@@ -53,7 +57,8 @@ const Header = () => {
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
             {navItems.map((item, index) => (
-              <div
+              <Link
+                href={item.linkKey || ''}
                 key={item.name}
                 className="relative"
                 onMouseEnter={() => setActiveDropdown(item.name)}
@@ -81,7 +86,7 @@ const Header = () => {
                 <AnimatePresence>
                   {activeDropdown === item.name && item.hasDropdown && <FeaturesDropdown />}
                 </AnimatePresence>
-              </div>
+              </Link>
             ))}
           </nav>
 

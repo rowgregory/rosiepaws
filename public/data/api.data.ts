@@ -1,6 +1,6 @@
 export const sliceApp = 'appApi'
 export const sliceAuth = 'authApi'
-export const slicePhotoGallery = 'photoGalleryApi'
+export const sliceGallery = 'galleryApi'
 export const sliceUser = 'userApi'
 export const slicePet = 'petApi'
 export const sliceStripe = 'stripeApi'

@@ -1,7 +1,7 @@
-import { Medication } from '@/app/types/model.types'
+import { IMedication } from '@/app/types'
 import { petInitialState } from './pet'
 
-export const medicationInitialState: Medication = {
+export const medicationInitialState: IMedication = {
   id: '',
   drugName: '',
   dosage: '',
@@ -12,6 +12,7 @@ export const medicationInitialState: Medication = {
   endDate: '',
   reminderEnabled: false,
   reminderTimes: [],
+  sentRemindersToday: [],
   instructions: '',
   prescribedBy: '',
   petId: '',

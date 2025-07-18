@@ -1,4 +1,4 @@
-import { Blog } from '@/app/types/model.types'
+import { Blog } from '@/app/types/entities'
 
 export const blogInitialState: Blog = {
   id: '',

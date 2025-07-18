@@ -1,24 +1,22 @@
 'use client'
 
 import { setAuthState } from '@/app/redux/features/authSlice'
+import { setPet, setPets } from '@/app/redux/features/petSlice'
 import { setUser } from '@/app/redux/features/userSlice'
 import { useAppDispatch } from '@/app/redux/store'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
 
-const AuthCallback = () => {
+const CustomCallback = () => {
   const { data: session, status } = useSession()
   const { push } = useRouter()
   const dispatch = useAppDispatch()
-  // console.log('AUTH CALLBACK: ', session)
-  // console.log('STATUS: ', status)
 
   useEffect(() => {
     const handlePostAuth = async () => {
       if (status === 'authenticated' && session?.user?.id) {
         try {
-          // Dispatch user data first
           dispatch(
             setUser({
               id: session.user.id,
@@ -29,8 +27,11 @@ const AuthCallback = () => {
               hasSubscription: !!session.user.stripeSubscription,
               isAdmin: session.user.isAdmin,
               isGuardian: session.user.isGuardian,
-              isProUser: session.user.isProUser,
-              isPremiumUser: session.user.isPremiumUser
+              isFreeUser: session.user.isFreeUser,
+              isComfortUser: session.user.isComfortUser,
+              isCompanionUser: session.user.isCompanionUser,
+              isLegacyUser: session.user.isLegacyUser,
+              pets: session.user.pets
             })
           )
 
@@ -38,15 +39,18 @@ const AuthCallback = () => {
             setAuthState({
               isAuthenticated: true,
               id: session.user.id,
-              role: session.user.role
+              role: session.user.role || ''
             })
           )
+
+          dispatch(setPets(session.user.pets))
+          dispatch(setPet(session.user.pets?.[0]))
 
           // Route based on user type with clearer priority
           if (session.user.isAdmin && session.user.role === 'admin') {
             push('/admin/dashboard')
           } else {
-            push('/guardian/dashboard')
+            push('/guardian/home')
           }
         } catch (error) {
           console.error('Failed to load user data:', error)
@@ -92,4 +96,4 @@ const AuthCallback = () => {
   )
 }
 
-export default AuthCallback
+export default CustomCallback

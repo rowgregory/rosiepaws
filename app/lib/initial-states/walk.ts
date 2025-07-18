@@ -1,11 +1,16 @@
-import { Walk } from '@/app/types/model.types'
+import { IWalk } from '@/app/types/entities'
 
-export const walkInitialState: Walk = {
+export const walkInitialState: IWalk = {
   id: '',
-  duration: 0,
-  timeWalked: new Date(),
-  notes: '',
   petId: '',
+  distance: '',
+  duration: '',
+  pace: '',
+  distraction: '',
+  moodRating: 0,
+  notes: '',
+  timeRecorded: '',
+  movement: '',
   createdAt: new Date(),
   updatedAt: new Date()
 }

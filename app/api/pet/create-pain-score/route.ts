@@ -1,56 +1,91 @@
 import prisma from '@/prisma/client'
 import { NextRequest, NextResponse } from 'next/server'
-import { createLog } from '@/app/lib/utils/logHelper'
-import { parseStack } from 'error-stack-parser-es/lite'
 import { slicePet } from '@/public/data/api.data'
+import { getUserFromHeader } from '@/app/lib/api/getUserFromheader'
+import { validatePainScoreRequiredFields } from '@/app/lib/api/validatePainScoreRequiredFields'
+import { painScoreCreateTokenCost } from '@/app/lib/constants/token'
+import { createLog } from '@/app/lib/api/createLog'
+import { handleApiError } from '@/app/lib/api/handleApiError'
+import { validateOwnerAndPet } from '@/app/lib/api/validateOwnerAndPet'
 
 export async function POST(req: NextRequest) {
   try {
-    const userHeader = req.headers.get('x-user')!
-    if (!userHeader) {
-      return NextResponse.json({ message: 'Unauthorized: Missing user header', sliceName: slicePet }, { status: 401 })
+    const userAuth = getUserFromHeader({
+      req
+    })
+
+    if (!userAuth.success) {
+      return userAuth.response!
     }
-    const parsedUser = JSON.parse(userHeader)
-    const ownerId = parsedUser.id
 
-    const { petId, score, timeRecorded, notes } = await req.json()
+    const { petId, score, timeRecorded, symptoms, location, triggers, relief, notes } = await req.json()
 
-    if (!petId || score === undefined || score === null || !timeRecorded) {
-      return NextResponse.json(
-        {
-          message: `Missing required fields: petId: ${petId}, score: ${score}, and timeRecorded: ${timeRecorded} are required`,
-          sliceName: slicePet
+    const validatedFields = validatePainScoreRequiredFields({
+      petId,
+      score,
+      timeRecorded
+    })
+
+    if (!validatedFields.success) {
+      return validatedFields.response!
+    }
+
+    const validation = await validateOwnerAndPet({
+      userId: userAuth.userId ?? '',
+      petId,
+      tokenCost: painScoreCreateTokenCost,
+      actionName: 'pain score',
+      req
+    })
+
+    if (!validation.success) {
+      return validation.response! // This is the NextResponse with error details
+    }
+
+    // Use transaction to ensure atomicity
+    const result = await prisma.$transaction(async (tx) => {
+      // Create PainScore entry
+      const newPainScore = await tx.painScore.create({
+        data: {
+          petId,
+          score: Number(score),
+          timeRecorded: new Date(timeRecorded),
+          symptoms,
+          location,
+          triggers,
+          relief,
+          notes
         },
-        { status: 400 }
-      )
-    }
-
-    // Confirm pet exists
-    const pet = await prisma.pet.findUnique({ where: { id: petId } })
-    if (!pet) {
-      await createLog('warning', 'Pet not found when creating pain score', {
-        location: ['api route - POST /api/pet/create-pain-score'],
-        name: 'PetNotFound',
-        timestamp: new Date().toISOString(),
-        url: req.url,
-        method: req.method,
-        petId,
-        ownerId
+        include: {
+          pet: true
+        }
       })
-      return NextResponse.json({ message: 'Pet not found', sliceName: slicePet }, { status: 404 })
-    }
 
-    // Create PainScore entry
-    const painScore = await prisma.painScore.create({
-      data: {
-        petId,
-        score: Number(score),
-        timeRecorded,
-        notes
-      },
-      include: {
-        pet: true // Optional: attach pet info like name
-      }
+      // Deduct tokens from user
+      const updatedUser = await tx.user.update({
+        where: { id: userAuth.userId },
+        data: {
+          tokens: { decrement: painScoreCreateTokenCost },
+          tokensUsed: { increment: painScoreCreateTokenCost }
+        }
+      })
+
+      // Create token transaction record
+      await tx.tokenTransaction.create({
+        data: {
+          userId: userAuth.userId!,
+          amount: -painScoreCreateTokenCost,
+          type: 'PAIN_SCORE_CREATION',
+          description: `Pain score creation`,
+          metadata: {
+            painScoreId: newPainScore.id,
+            painScore: newPainScore.score,
+            feature: 'pain_score_creation'
+          }
+        }
+      })
+
+      return { newPainScore, updatedUser }
     })
 
     await createLog('info', 'Pain score created successfully', {
@@ -60,20 +95,27 @@ export async function POST(req: NextRequest) {
       url: req.url,
       method: req.method,
       petId,
-      painScoreId: painScore.id,
-      ownerId
+      painScoreId: result.newPainScore.id,
+      userId: userAuth.userId
     })
 
-    return NextResponse.json({ painScore, sliceName: slicePet }, { status: 201 })
+    return NextResponse.json(
+      {
+        painScore: result.newPainScore,
+        user: {
+          tokens: result.updatedUser.tokens,
+          tokensUsed: result.updatedUser.tokensUsed
+        },
+        sliceName: slicePet
+      },
+      { status: 201 }
+    )
   } catch (error: any) {
-    await createLog('error', `Pain score creation failed: ${error.message}`, {
-      errorLocation: parseStack(JSON.stringify(error)),
-      errorMessage: error.message,
-      errorName: error.name || 'UnknownError',
-      timestamp: new Date().toISOString(),
-      url: req.url,
-      method: req.method
+    return await handleApiError({
+      error,
+      req,
+      action: 'Pain score creation',
+      sliceName: slicePet
     })
-    return NextResponse.json({ message: 'Pain score creation failed', error, sliceName: slicePet }, { status: 500 })
   }
 }

@@ -1,58 +1,95 @@
 import prisma from '@/prisma/client'
 import { NextRequest, NextResponse } from 'next/server'
-import { createLog } from '@/app/lib/utils/logHelper'
-import { parseStack } from 'error-stack-parser-es/lite'
 import { slicePet } from '@/public/data/api.data'
+import { getUserFromHeader } from '@/app/lib/api/getUserFromheader'
+import { validateFeedingRequiredFields } from '@/app/lib/api/validateFeedingRequiredFields'
+import { validateOwnerAndPet } from '@/app/lib/api/validateOwnerAndPet'
+import { handleApiError } from '@/app/lib/api/handleApiError'
+import { feedingCreateTokenCost } from '@/app/lib/constants/token'
+import { createLog } from '@/app/lib/api/createLog'
 
 export async function POST(req: NextRequest) {
   try {
-    const userHeader = req.headers.get('x-user')!
-    if (!userHeader) {
-      return NextResponse.json({ message: 'Unauthorized: Missing user header', sliceName: slicePet }, { status: 401 })
+    const userAuth = getUserFromHeader({
+      req
+    })
+
+    if (!userAuth.success) {
+      return userAuth.response!
     }
-    const parsedUser = JSON.parse(userHeader)
-    const ownerId = parsedUser.id
 
-    const { petId, foodAmount, foodType, notes, timeFed, moodRating } = await req.json()
+    const { petId, foodAmount, foodType, notes, timeRecorded, moodRating, brand, ingredients } = await req.json()
 
-    if (!petId || !foodAmount || !foodType || !timeFed) {
-      return NextResponse.json(
-        {
-          message: `Missing required fields: petId: ${petId}, foodAmount: ${foodAmount}, foodType: ${foodType}, timeFed: ${timeFed} are required`,
-          sliceName: slicePet
+    const validatedFields = validateFeedingRequiredFields({
+      petId,
+      foodAmount,
+      foodType,
+      timeRecorded,
+      moodRating,
+      brand
+    })
+
+    if (!validatedFields.success) {
+      return validatedFields.response!
+    }
+
+    const validation = await validateOwnerAndPet({
+      userId: userAuth.userId ?? '',
+      petId,
+      tokenCost: feedingCreateTokenCost,
+      actionName: 'feeding',
+      req
+    })
+
+    if (!validation.success) {
+      return validation.response! // This is the NextResponse with error details
+    }
+
+    // Use transaction to ensure atomicity
+    const result = await prisma.$transaction(async (tx) => {
+      // Create PainScore entry
+      const newFeeding = await prisma.feeding.create({
+        data: {
+          petId,
+          foodAmount,
+          foodType,
+          notes,
+          timeRecorded,
+          moodRating,
+          ingredients,
+          brand
         },
-        { status: 400 }
-      )
-    }
-
-    // Confirm pet exists
-    const pet = await prisma.pet.findUnique({ where: { id: petId } })
-    if (!pet) {
-      await createLog('warning', 'Pet not found when creating feeding', {
-        location: ['api route - POST /api/pet/create-feeding'],
-        name: 'PetNotFound',
-        timestamp: new Date().toISOString(),
-        url: req.url,
-        method: req.method,
-        petId,
-        ownerId
+        include: {
+          pet: true // Optional: attach pet info like name
+        }
       })
-      return NextResponse.json({ message: 'Pet not found', sliceName: slicePet }, { status: 404 })
-    }
 
-    // Create PainScore entry
-    const feeding = await prisma.feeding.create({
-      data: {
-        petId,
-        foodAmount,
-        foodType,
-        notes,
-        timeFed,
-        moodRating
-      },
-      include: {
-        pet: true // Optional: attach pet info like name
-      }
+      // Deduct tokens from user
+      const updatedUser = await tx.user.update({
+        where: { id: userAuth.userId },
+        data: {
+          tokens: { decrement: feedingCreateTokenCost },
+          tokensUsed: { increment: feedingCreateTokenCost }
+        }
+      })
+
+      // Create token transaction record
+      await tx.tokenTransaction.create({
+        data: {
+          userId: userAuth.userId!,
+          amount: -feedingCreateTokenCost, // Negative for debit
+          type: 'FEEDING_CREATION',
+          description: `Feeding creation`,
+          metadata: {
+            feedingId: newFeeding.id,
+            foodAmount: newFeeding.foodAmount,
+            foodType: newFeeding.foodType,
+            feature: 'feeding_creation'
+          }
+        }
+      })
+
+      return { newFeeding, updatedUser }
     })
 
     await createLog('info', 'Feeding created successfully', {
@@ -62,20 +99,27 @@ export async function POST(req: NextRequest) {
       url: req.url,
       method: req.method,
       petId,
-      feedingId: feeding.id,
-      ownerId
+      feedingId: result.newFeeding.id,
+      userId: userAuth.userId
     })
 
-    return NextResponse.json({ feeding, sliceName: slicePet }, { status: 201 })
+    return NextResponse.json(
+      {
+        feeding: result.newFeeding,
+        user: {
+          tokens: result.updatedUser.tokens,
+          tokensUsed: result.updatedUser.tokensUsed
+        },
+        sliceName: slicePet
+      },
+      { status: 201 }
+    )
   } catch (error: any) {
-    await createLog('error', `Feeding creation failed: ${error.message}`, {
-      errorLocation: parseStack(JSON.stringify(error)),
-      errorMessage: error.message,
-      errorName: error.name || 'UnknownError',
-      timestamp: new Date().toISOString(),
-      url: req.url,
-      method: req.method
+    return await handleApiError({
+      error,
+      req,
+      action: 'Feeding creation',
+      sliceName: slicePet
     })
-    return NextResponse.json({ message: 'Feeding creation failed', error, sliceName: slicePet }, { status: 500 })
   }
 }

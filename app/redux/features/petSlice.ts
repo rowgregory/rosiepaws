@@ -1,5 +1,16 @@
 import { petInitialState } from '@/app/lib/initial-states/pet'
-import { BloodSugar, IFeeding, PainScore, Pet, ISeizure, Water, Medication } from '@/app/types/model.types'
+import {
+  IBloodSugar,
+  IFeeding,
+  PainScore,
+  Pet,
+  ISeizure,
+  IWater,
+  IMedication,
+  IWalk,
+  IAppointment,
+  IMovement
+} from '@/app/types/entities'
 import { Reducer, createSlice } from '@reduxjs/toolkit'
 import { petApi } from '../services/petApi'
 import { painScoreInitialState } from '@/app/lib/initial-states/pain-score'
@@ -8,6 +19,9 @@ import { bloodSugarInitialState } from '@/app/lib/initial-states/bloodSugar'
 import { seizureInitialState } from '@/app/lib/initial-states/seizure'
 import { waterInitialState } from '@/app/lib/initial-states/water'
 import { medicationInitialState } from '@/app/lib/initial-states/medication'
+import { walkInitialState } from '@/app/lib/initial-states/walk'
+import { appointmentInitialState } from '@/app/lib/initial-states/appointment'
+import { movementInitialState } from '@/app/lib/initial-states/movement'
 
 export interface PetStatePayload {
   loading: boolean
@@ -35,20 +49,32 @@ export interface PetStatePayload {
   feedingDrawer: boolean
   feedingCount: number
 
-  bloodSugars: BloodSugar[]
-  bloodSugar: BloodSugar
+  walks: IWalk[]
+  walk: IWalk
+  zeroWalks: boolean
+  walkDrawer: boolean
+  walkCount: number
+
+  appointments: IAppointment[]
+  appointment: IAppointment
+  zeroAppointments: boolean
+  appointmentDrawer: boolean
+  appointmentCount: number
+
+  bloodSugars: IBloodSugar[]
+  bloodSugar: IBloodSugar
   zeroBloodSugars: boolean
   bloodSugarDrawer: boolean
   bloodSugarCount: number
 
-  waters: Water[]
-  water: Water
+  waters: IWater[]
+  water: IWater
   zeroWaters: boolean
   waterDrawer: boolean
   waterCount: number
 
-  medications: Medication[]
-  medication: Medication
+  medications: IMedication[]
+  medication: IMedication
   zeroMedications: boolean
   medicationDrawer: boolean
   updateMedicationDrawer: boolean
@@ -59,10 +85,16 @@ export interface PetStatePayload {
   zeroSeizures: boolean
   seizureDrawer: boolean
   seizureCount: number
+
+  movements: IMovement[]
+  movement: IMovement
+  zeroMovements: boolean
+  movementDrawer: boolean
+  movementCount: number
 }
 
 export const initialPetState: PetStatePayload = {
-  loading: true,
+  loading: false,
   success: false,
   error: '',
   message: '',
@@ -85,6 +117,18 @@ export const initialPetState: PetStatePayload = {
   zeroFeedings: true,
   feedingDrawer: false,
   feedingCount: 0,
+
+  walks: [],
+  walk: walkInitialState,
+  zeroWalks: true,
+  walkDrawer: false,
+  walkCount: 0,
+
+  appointments: [],
+  appointment: appointmentInitialState,
+  zeroAppointments: true,
+  appointmentDrawer: false,
+  appointmentCount: 0,
 
   bloodSugars: [],
   bloodSugar: bloodSugarInitialState,
@@ -109,7 +153,13 @@ export const initialPetState: PetStatePayload = {
   seizure: seizureInitialState,
   zeroSeizures: true,
   seizureDrawer: false,
-  seizureCount: 0
+  seizureCount: 0,
+
+  movements: [],
+  movement: movementInitialState,
+  zeroMovements: true,
+  movementDrawer: false,
+  movementCount: 0
 }
 
 interface ErrorPayload {
@@ -153,6 +203,12 @@ export const petSlice = createSlice({
     setCloseFeedingDrawer: (state) => {
       state.feedingDrawer = false
     },
+    setOpenWalkDrawer: (state) => {
+      state.walkDrawer = true
+    },
+    setCloseWalkDrawer: (state) => {
+      state.walkDrawer = false
+    },
     setOpenBloodSugarDrawer: (state) => {
       state.bloodSugarDrawer = true
     },
@@ -164,6 +220,12 @@ export const petSlice = createSlice({
     },
     setCloseMedicationDrawer: (state) => {
       state.medicationDrawer = false
+    },
+    setOpenAppointmentDrawer: (state) => {
+      state.appointmentDrawer = true
+    },
+    setCloseAppointmentDrawer: (state) => {
+      state.appointmentDrawer = false
     },
     setOpenUpdateMedicationDrawer: (state) => {
       state.updateMedicationDrawer = true
@@ -177,6 +239,12 @@ export const petSlice = createSlice({
     setCloseSeizureDrawer: (state) => {
       state.seizureDrawer = false
     },
+    setOpenMovementDrawer: (state) => {
+      state.movementDrawer = true
+    },
+    setCloseMovementDrawer: (state) => {
+      state.movementDrawer = false
+    },
     setOpenGuardianActionMenu: (state) => {
       state.guardianActionMenu = true
     },
@@ -186,6 +254,7 @@ export const petSlice = createSlice({
 
     addPetToState: (state, action) => {
       state.pets.push(action.payload)
+      state.pet = action.payload
       state.petCount = state.petCount + 1
       state.zeroPets = state.pets.length === 0
     },
@@ -291,11 +360,54 @@ export const petSlice = createSlice({
       if (state.pet && Array.isArray(state.pet.seizures)) {
         state.pet.seizures.unshift(action.payload)
       }
+    },
+    addWalkToState: (state, action) => {
+      state.walks.unshift(action.payload)
+      state.walkCount = state.walkCount + 1
+      state.zeroWalks = state.walks.length === 0
+    },
+    addWalkToPet: (state, action) => {
+      if (state.pet && Array.isArray(state.pet.walks)) {
+        state.pet.walks.unshift(action.payload)
+      }
+    },
+    updateWalkInState: (state, action) => {
+      const updatedWalk = action.payload
+      const index = state.walks.findIndex((walk: { id: string }) => walk.id === updatedWalk.id)
+      if (index !== -1) {
+        state.walks[index] = updatedWalk
+      }
+    },
+    updateWalkInPet: (state, action) => {
+      const updatedWalk = action.payload
+      const index = state.pet.walks.findIndex((walk: { id: string }) => walk.id === updatedWalk.id)
+      if (index !== -1) {
+        state.pet.walks[index] = updatedWalk
+      }
+    },
+    addAppointmentToState: (state, action) => {
+      state.appointments.unshift(action.payload)
+      state.appointmentCount = state.appointmentCount + 1
+      state.zeroAppointments = state.appointments.length === 0
+    },
+    addAppointmentToPet: (state, action) => {
+      if (state.pet && Array.isArray(state.pet.appointments)) {
+        state.pet.appointments.unshift(action.payload)
+      }
+    },
+    addMovementToState: (state, action) => {
+      state.movements.unshift(action.payload)
+      state.movementCount = state.movementCount + 1
+      state.zeroMovements = state.movements.length === 0
+    },
+    addMovementToPet: (state, action) => {
+      if (state.pet && Array.isArray(state.pet.movements)) {
+        state.pet.movements.unshift(action.payload)
+      }
     }
   },
   extraReducers: (builder) => {
     builder
-
       .addMatcher(petApi.endpoints.fetchMyPets.matchFulfilled, (state, { payload }: any) => {
         state.loading = false
         state.pets = payload.pets
@@ -313,9 +425,19 @@ export const petSlice = createSlice({
         state.zeroFeedings = payload.feedings.length === 0
         state.feedingCount = payload.feedings.length
 
+        state.walks = payload.walks
+        state.walk = payload.walks[0]
+        state.zeroWalks = payload.walks.length === 0
+        state.walkCount = payload.walks.length
+
+        state.appointments = payload.appointments
+        state.appointment = payload.appointments[0]
+        state.zeroAppointments = payload.appointments.length === 0
+        state.appointmentCount = payload.appointments.length
+
         state.bloodSugars = payload.bloodSugars
         state.bloodSugar = payload.bloodSugars[0]
-        state.zeroFeedings = payload.bloodSugars.length === 0
+        state.zeroBloodSugars = payload.bloodSugars.length === 0
         state.bloodSugarCount = payload.bloodSugars.length
 
         state.seizures = payload.seizures
@@ -332,6 +454,11 @@ export const petSlice = createSlice({
         state.medication = payload.medications[0]
         state.zeroMedications = payload.medications.length === 0
         state.medicationCount = payload.medications.length
+
+        state.movements = payload.movements
+        state.movement = payload.movements[0]
+        state.zeroMovements = payload.movements.length === 0
+        state.movementCount = payload.movements.length
       })
       .addMatcher(petApi.endpoints.createPet.matchFulfilled, (state) => {
         state.loading = false
@@ -361,11 +488,18 @@ export const petSlice = createSlice({
       .addMatcher(petApi.endpoints.createSeizure.matchFulfilled, (state) => {
         state.loading = false
       })
+      .addMatcher(petApi.endpoints.createWalk.matchFulfilled, (state) => {
+        state.loading = false
+      })
+      .addMatcher(petApi.endpoints.createAppointment.matchFulfilled, (state) => {
+        state.loading = false
+      })
       .addMatcher(
         (action): action is { type: string; payload: ErrorPayload } =>
           action.type.endsWith('/rejected') && action.payload?.data?.sliceName === 'petApi',
         (state, { payload }) => {
           state.loading = false
+          state.success = false
           state.error = payload.data.message
         }
       )
@@ -413,5 +547,19 @@ export const {
   setCloseUpdateMedicationDrawer,
   setOpenUpdateMedicationDrawer,
   addSeizureToState,
-  addSeizureToPet
+  addSeizureToPet,
+  setOpenWalkDrawer,
+  setCloseWalkDrawer,
+  setOpenAppointmentDrawer,
+  setCloseAppointmentDrawer,
+  addWalkToState,
+  addWalkToPet,
+  addAppointmentToState,
+  addAppointmentToPet,
+  updateWalkInPet,
+  updateWalkInState,
+  setOpenMovementDrawer,
+  setCloseMovementDrawer,
+  addMovementToPet,
+  addMovementToState
 } = petSlice.actions

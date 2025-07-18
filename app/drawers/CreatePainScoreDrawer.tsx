@@ -1,13 +1,11 @@
-'use client'
-
 import React, { MouseEvent } from 'react'
 import { RootState, useAppDispatch, useAppSelector } from '../redux/store'
 import { clearInputs, createFormActions } from '../redux/features/formSlice'
 import { useCreatePainScoreMutation } from '../redux/services/petApi'
 import { setClosePainScoreDrawer } from '../redux/features/petSlice'
 import { validatePainScoreForm } from '../validations/validatePainScoreForm'
-import PainScoreForm from '../forms/pain-score-form/PainScoreForm'
-import GuardianPainAssessmentChart from '../components/guardian/GuardianPassAssessmentChart'
+import PainScoreForm from '../forms/PainScoreForm'
+import GuardianPainAssessmentChart from '../components/guardian/pain/GuardianPainAssessmentChart'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Activity } from 'lucide-react'
 import AnimatedDrawerHeader from '../components/guardian/AnimatedDrawerHeader'
@@ -30,6 +28,10 @@ const CreatePainScoreDrawer = () => {
       await createPainScore({
         petId: painScoreForm.inputs.petId,
         score: painScoreForm.inputs.score,
+        symptoms: painScoreForm.inputs.symptoms,
+        location: painScoreForm.inputs.location,
+        triggers: painScoreForm.inputs.triggers,
+        relief: painScoreForm.inputs.relief,
         timeRecorded: painScoreForm.inputs.timeRecorded,
         notes: painScoreForm.inputs.notes
       }).unwrap()
@@ -48,7 +50,7 @@ const CreatePainScoreDrawer = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40"
+            className="fixed inset-0 bg-black/20 backdrop-blur-sm z-50"
             onClick={closePainScoreDrawer}
           />
 
@@ -62,7 +64,7 @@ const CreatePainScoreDrawer = () => {
               duration: 0.3,
               ease: 'easeInOut'
             }}
-            className="min-h-dvh w-[930px] fixed top-0 right-0 z-50 bg-white shadow-[-10px_0_30px_-5px_rgba(0,0,0,0.2)] flex flex-col"
+            className="min-h-dvh w-full max-w-[930px] fixed top-0 right-0 z-50 bg-white shadow-[-10px_0_30px_-5px_rgba(0,0,0,0.2)] flex flex-col"
           >
             {/* Header */}
             <AnimatedDrawerHeader
@@ -76,8 +78,8 @@ const CreatePainScoreDrawer = () => {
 
             <div className="flex flex-col lg:flex-row">
               <PainScoreForm
-                inputs={painScoreForm.inputs}
-                errors={painScoreForm.errors}
+                inputs={painScoreForm?.inputs}
+                errors={painScoreForm?.errors}
                 handleInput={handleInput}
                 close={closePainScoreDrawer}
                 handleSubmit={handleAddPainScore}

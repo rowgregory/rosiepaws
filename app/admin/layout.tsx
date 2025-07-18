@@ -1,7 +1,7 @@
 'use client'
 
 import React, { FC, useState } from 'react'
-import { ChildrenProps } from '../types/common.types'
+import { ChildrenProps } from '../types/common'
 // import { blogIcon, catIcon, dashboardIcon, signOutAltIcon, starIcon } from '../lib/icons'
 // import {
 //   authLoginLink,

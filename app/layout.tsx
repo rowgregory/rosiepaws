@@ -1,9 +1,9 @@
 import type { Metadata } from 'next'
-import { Barlow_Condensed, Merriweather, Satisfy } from 'next/font/google'
+import { Barlow_Condensed, Merriweather, Satisfy, Sora } from 'next/font/google'
 import './globals.css'
 import ReduxWrapper from './redux-wrapper'
-
-// import { getUserFromServerCookie } from './lib/auth-helpers'
+import { auth } from './lib/auth'
+import { SessionProvider } from 'next-auth/react'
 
 const barlowCondensed = Barlow_Condensed({
   variable: '--font-barlow-condensed',
@@ -23,6 +23,12 @@ const merrieweather = Merriweather({
   weight: ['300', '400', '700', '900']
 })
 
+const sora = Sora({
+  variable: '--font-sora',
+  subsets: ['latin'],
+  weight: ['200', '300', '400', '500', '600', '700', '800']
+})
+
 export const metadata: Metadata = {
   title: 'Rosie Paws',
   description:
@@ -34,17 +40,15 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
-  // let user
-  // try {
-  //   user = await getUserFromServerCookie()
-  // } catch (error) {
-  //   console.error('ERROR: ', error)
-  // }
-
+  const session = await auth()
   return (
     <html lang="en">
-      <body className={`${barlowCondensed.variable} ${satisfy.variable} ${merrieweather.variable} antialiased`}>
-        <ReduxWrapper>{children}</ReduxWrapper>
+      <body
+        className={`${barlowCondensed.variable} ${satisfy.variable} ${merrieweather.variable} ${sora.variable} antialiased`}
+      >
+        <SessionProvider session={session}>
+          <ReduxWrapper session={session}>{children}</ReduxWrapper>
+        </SessionProvider>
       </body>
     </html>
   )

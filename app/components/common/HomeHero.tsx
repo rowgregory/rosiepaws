@@ -31,7 +31,7 @@ const HomeHero = () => {
       <div className="absolute inset-0 max-w-[1320px] mx-auto z-40">
         {/* Title and Subtitle Overlay - Left Side Centered */}
         <div className="absolute inset-0 flex mt-40 flex-col items-center z-10">
-          <motion.div className="max-w-3xl">
+          <motion.div className="max-w-4xl">
             <motion.div
               initial={{ opacity: 0, x: -50 }}
               animate={{ opacity: 1, x: 0 }}
@@ -44,7 +44,7 @@ const HomeHero = () => {
               className="backdrop-blur-lg border border-white/10 rounded-3xl px-8 py-6 shadow-2xl flex items-center justify-center flex-col"
             >
               <motion.h1
-                className="text-4xl md:text-5xl font-bold text-white leading-tight mb-3 text-center"
+                className="text-4xl md:text-5xl lg:text-7xl font-bold text-white leading-tight mb-3 text-center"
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{
@@ -84,7 +84,7 @@ const HomeHero = () => {
           </motion.div>
           <Link
             href="/auth/login"
-            className="relative px-5 py-2.5 rounded-full text-lg text-white backdrop-blur-lg border border-white/10 mt-6 overflow-hidden group transition-all duration-300 hover:border-white/30"
+            className="relative px-5 py-2.5 rounded-full text-lg text-white backdrop-blur-lg border border-white/10 mt-16 overflow-hidden group transition-all duration-300 hover:border-white/30"
           >
             <span className="relative z-10">Get Started</span>
 

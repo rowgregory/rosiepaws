@@ -18,10 +18,10 @@ async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
         data: { status: subscriptionData.status }
       })
 
-      await prisma.user.update({
-        where: { id: stripeSubscription.userId },
-        data: { isBasicUser: false, isPremiumUser: false, role: 'free' }
-      })
+      // await prisma.user.update({
+      //   where: { id: stripeSubscription.userId },
+      //   data: { isBasicUser: false, isPremiumUser: false, role: 'free' }
+      // })
     }
   }
 

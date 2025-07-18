@@ -1,12 +1,11 @@
-import { Water } from '@/app/types/model.types'
+import { IWater } from '@/app/types'
 import { petInitialState } from './pet'
 
-export const waterInitialState: Water = {
+export const waterInitialState: IWater = {
   id: '',
   petId: '',
-  intakeType: '',
+  intakeType: 'milliliters',
   milliliters: '',
-  relativeIntake: '',
   timeRecorded: '',
   moodRating: '',
   notes: '',

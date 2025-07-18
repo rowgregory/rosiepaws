@@ -2,7 +2,7 @@ interface FeedingFormInputs {
   petId: string
   foodType: string
   foodAmount: string
-  timeFed: string
+  timeRecorded: string
   moodRating: string
 }
 
@@ -21,8 +21,8 @@ const validateFeedingForm = (inputs: FeedingFormInputs, setErrors: any) => {
     newErrors.foodAmount = 'Please specify the custom food type'
   }
 
-  if (!inputs?.timeFed?.trim()) {
-    newErrors.timeFed = 'Please select when the pet was fed'
+  if (!inputs?.timeRecorded?.trim()) {
+    newErrors.timeRecorded = 'Please select when the pet was fed'
   }
   if (!inputs?.moodRating?.trim()) {
     newErrors.moodRating = 'Please select a mood'

@@ -2,13 +2,14 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { ChangeEvent } from 'react'
 import { UserProps } from './userSlice'
 import { petInitialState } from '@/app/lib/initial-states/pet'
-import { registerInitialState } from '@/app/lib/initial-states/register'
-import { painScoreInitialState } from '@/app/lib/initial-states/pain-score'
+import { painScoreInitialErrorState, painScoreInitialState } from '@/app/lib/initial-states/pain-score'
 import { feedingInitialState } from '@/app/lib/initial-states/feeding'
 import { bloodSugarInitialState } from '@/app/lib/initial-states/bloodSugar'
 import { waterInitialState } from '@/app/lib/initial-states/water'
 import { medicationInitialState } from '@/app/lib/initial-states/medication'
 import { seizureInitialState } from '@/app/lib/initial-states/seizure'
+import { appointmentInitialError, appointmentInitialState } from '@/app/lib/initial-states/appointment'
+import { movementInitialState } from '@/app/lib/initial-states/movement'
 
 export type Inputs = {
   [key: string]: string | number | boolean | undefined | unknown
@@ -42,13 +43,9 @@ const formInitialState = {
     inputs: petInitialState,
     errors: petInitialState
   },
-  registerForm: {
-    inputs: registerInitialState,
-    errors: registerInitialState
-  },
   painScoreForm: {
     inputs: painScoreInitialState,
-    errors: painScoreInitialState
+    errors: painScoreInitialErrorState
   },
   feedingForm: {
     inputs: feedingInitialState,
@@ -69,6 +66,14 @@ const formInitialState = {
   seizureForm: {
     inputs: seizureInitialState,
     errors: seizureInitialState
+  },
+  appointmentForm: {
+    inputs: appointmentInitialState,
+    errors: appointmentInitialError
+  },
+  movementForm: {
+    inputs: movementInitialState,
+    errors: movementInitialState
   }
 } as any
 

@@ -1,7 +1,7 @@
 interface SeizureInputs {
   petId: string
   duration?: number
-  timeTaken: string
+  timeRecorded: string
   videoFile?: File | null
 }
 
@@ -21,8 +21,8 @@ export const validateSeizureForm = (inputs: SeizureInputs, setErrors: any) => {
     }
   }
 
-  if (!inputs?.timeTaken?.trim()) {
-    newErrors.timeTaken = 'Please select when your last reading was'
+  if (!inputs?.timeRecorded?.trim()) {
+    newErrors.timeRecorded = 'Please select when your last reading was'
   }
 
   // Video file validation (if provided)
@@ -43,5 +43,5 @@ export const validateSeizureForm = (inputs: SeizureInputs, setErrors: any) => {
 }
 
 export const isSeizureFormValid = (inputs: SeizureInputs) => {
-  return inputs.petId && inputs.duration && inputs.timeTaken
+  return inputs.petId && inputs.duration && inputs.timeRecorded
 }

@@ -6,7 +6,7 @@ import { setClosePetDrawer } from '../redux/features/petSlice'
 import { clearInputs, createFormActions } from '../redux/features/formSlice'
 import { validatePetForm } from '../validations/validatePetForm'
 import { useCreatePetMutation } from '../redux/services/petApi'
-import PetForm from '../forms/pet-form/PetForm'
+import PetForm from '../forms/PetForm'
 import { Heart } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import GuardianPetGuide from '../components/guardian/GuardianPetGuide'
@@ -34,7 +34,12 @@ const CreatePetDrawer = () => {
         age: petForm.inputs.age,
         gender: petForm.inputs.gender,
         weight: petForm.inputs.weight,
-        notes: petForm.inputs.notes
+        notes: petForm.inputs.notes,
+        spayedNeutered: petForm.inputs.spayedNeutered,
+        microchipId: petForm.inputs.microchipId,
+        allergies: petForm.inputs.allergies,
+        emergencyContactName: petForm.inputs.emergencyContactName,
+        emergencyContactPhone: petForm.inputs.emergencyContactPhone
       }).unwrap()
 
       closePetDrawer()
@@ -51,7 +56,7 @@ const CreatePetDrawer = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40"
+            className="fixed inset-0 bg-black/20 backdrop-blur-sm z-50"
             onClick={closePetDrawer}
           />
 

@@ -6,7 +6,7 @@ import handleSubscriptionUpdated from '../webhook-helpers/handleSubscriptionUpda
 import handleSubscriptionDeleted from '../webhook-helpers/handleSubscriptionDeleted'
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2025-05-28.basil'
+  apiVersion: '2025-06-30.basil'
 })
 
 // Stripe webhook secret (You get this from your Stripe dashboard)

@@ -1,5 +1,5 @@
-import sendMedicationReminder from '@/app/lib/resendService'
-import { createLog } from '@/app/lib/utils/logHelper'
+import sendMedicationReminder from '@/app/lib/resend/sendMedicationReminder'
+import { createLog } from '@/app/lib/api/createLog'
 import prisma from '@/prisma/client'
 import { slicePet } from '@/public/data/api.data'
 import { parseStack } from 'error-stack-parser-es/lite'

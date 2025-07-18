@@ -1,8 +1,9 @@
 import prisma from '@/prisma/client'
 import { NextRequest, NextResponse } from 'next/server'
-import { createLog } from '@/app/lib/utils/logHelper'
 import { parseStack } from 'error-stack-parser-es/lite'
 import { slicePet } from '@/public/data/api.data'
+import { waterCreateTokenCost } from '@/app/lib/constants/token'
+import { createLog } from '@/app/lib/api/createLog'
 
 export async function POST(req: NextRequest) {
   try {
@@ -13,12 +14,46 @@ export async function POST(req: NextRequest) {
     const parsedUser = JSON.parse(userHeader)
     const ownerId = parsedUser.id
 
-    const { petId, intakeType, milliliters, relativeIntake, timeRecorded, moodRating, notes } = await req.json()
+    const { petId, milliliters, timeRecorded, moodRating, notes } = await req.json()
 
-    if (!petId || !intakeType || !timeRecorded || !moodRating) {
+    if (!petId || !timeRecorded || !moodRating) {
       return NextResponse.json(
         {
-          message: `Missing required fields: petId: ${petId}, intakeType: ${intakeType}, milliliters: ${milliliters}, timeRecorded: ${timeRecorded}, and moodRading: ${moodRating} are required`,
+          message: `Missing required fields: petId: ${petId}, milliliters: ${milliliters}, timeRecorded: ${timeRecorded}, and moodRading: ${moodRating} are required`,
+          sliceName: slicePet
+        },
+        { status: 400 }
+      )
+    }
+
+    // Confirm owner exists (optional since user is logged in, but good safety)
+    const owner = await prisma.user.findUnique({ where: { id: ownerId } })
+    if (!owner) {
+      await createLog('warning', 'Owner user not found when creating water log', {
+        location: ['api route - POST /api/pet/create-water'],
+        name: 'OwnerNotFound',
+        timestamp: new Date().toISOString(),
+        url: req.url,
+        method: req.method,
+        ownerId
+      })
+      return NextResponse.json({ message: 'Owner not found', sliceName: slicePet }, { status: 404 })
+    }
+
+    if (owner.tokens < waterCreateTokenCost) {
+      await createLog('warning', 'Insufficient tokens for water creation', {
+        location: ['api route - POST /api/pet/create-water'],
+        name: 'InsufficientTokens',
+        timestamp: new Date().toISOString(),
+        url: req.url,
+        method: req.method,
+        ownerId,
+        requiredTokens: waterCreateTokenCost,
+        availableTokens: owner.tokens
+      })
+      return NextResponse.json(
+        {
+          message: `Insufficient tokens. Required: ${waterCreateTokenCost}, Available: ${owner.tokens}`,
           sliceName: slicePet
         },
         { status: 400 }
@@ -40,20 +75,46 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ message: 'Pet not found', sliceName: slicePet }, { status: 404 })
     }
 
-    // Create PainScore entry
-    const water = await prisma.water.create({
-      data: {
-        petId,
-        intakeType,
-        milliliters,
-        relativeIntake,
-        timeRecorded,
-        moodRating,
-        notes
-      },
-      include: {
-        pet: true // Optional: attach pet info like name
-      }
+    // Use transaction to ensure atomicity
+    const result = await prisma.$transaction(async (tx) => {
+      // Create water entry
+      const newWater = await tx.water.create({
+        data: {
+          petId,
+          milliliters,
+          timeRecorded,
+          moodRating,
+          notes
+        },
+        include: {
+          pet: true // Optional: attach pet info like name
+        }
+      })
+
+      // Deduct tokens from user
+      const updatedUser = await tx.user.update({
+        where: { id: ownerId },
+        data: {
+          tokens: { decrement: waterCreateTokenCost },
+          tokensUsed: { increment: waterCreateTokenCost }
+        }
+      })
+
+      // Create token transaction record
+      await tx.tokenTransaction.create({
+        data: {
+          userId: ownerId,
+          amount: -waterCreateTokenCost, // Negative for debit
+          type: 'WATER_CREATION',
+          description: `Water creation`,
+          metadata: {
+            waterId: newWater.id,
+            feature: 'water_creation'
+          }
+        }
+      })
+
+      return { newWater, updatedUser }
     })
 
     await createLog('info', 'Water created successfully', {
@@ -63,11 +124,21 @@ export async function POST(req: NextRequest) {
       url: req.url,
       method: req.method,
       petId,
-      waterId: water.id,
+      waterId: result.newWater.id,
       ownerId
     })
 
-    return NextResponse.json({ water, sliceName: slicePet }, { status: 201 })
+    return NextResponse.json(
+      {
+        water: result.newWater,
+        user: {
+          tokens: result.updatedUser.tokens,
+          tokensUsed: result.updatedUser.tokensUsed
+        },
+        sliceName: slicePet
+      },
+      { status: 201 }
+    )
   } catch (error: any) {
     await createLog('error', `Water creation failed: ${error.message}`, {
       errorLocation: parseStack(JSON.stringify(error)),

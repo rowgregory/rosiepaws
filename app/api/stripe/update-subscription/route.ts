@@ -1,11 +1,11 @@
-import { createLog } from '@/app/lib/utils/logHelper'
+import { createLog } from '@/app/lib/api/createLog'
 import prisma from '@/prisma/client'
 import { parseStack } from 'error-stack-parser-es/lite'
 import { NextRequest, NextResponse } from 'next/server'
 import Stripe from 'stripe'
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2025-05-28.basil'
+  apiVersion: '2025-06-30.basil'
 })
 
 export async function POST(req: NextRequest) {
@@ -78,14 +78,14 @@ export async function POST(req: NextRequest) {
     })
 
     // Update user role
-    await prisma.user.update({
-      where: { id: userId },
-      data: {
-        isBasicUser: planInfo.userRole === 'basic',
-        isPremiumUser: planInfo.userRole === 'premium',
-        role: planInfo.userRole
-      }
-    })
+    // await prisma.user.update({
+    //   where: { id: userId },
+    //   data: {
+    //     isBasicUser: planInfo.userRole === 'basic',
+    //     isPremiumUser: planInfo.userRole === 'premium',
+    //     role: planInfo.userRole
+    //   }
+    // })
 
     return NextResponse.json({
       success: true,

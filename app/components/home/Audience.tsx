@@ -35,16 +35,20 @@ const Audience = () => {
   ]
 
   return (
-    <div className="flex items-center justify-center p-8">
+    <div className="max-w-6xl mx-auto flex flex-col items-center justify-center">
+      <h1 className="uppercase text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-pink-400 to-red-400 font-semibold tracking-wide mb-2">
+        Honoring Sacred Time
+      </h1>
+      <h2 className="text-5xl font-medium text-zinc-800 mb-20">Facing life&apos;s final chapter</h2>
       <motion.div
-        className="grid grid-cols-1 lg:grid-cols-3 gap-6 max-w-screen-xl w-full"
+        className="grid grid-cols-1 lg:grid-cols-3 gap-6 w-full"
         variants={containerVariants}
         initial="hidden"
         animate="visible"
       >
         {cards.map((card, index) => {
           return (
-            <motion.div key={index} variants={containerVariants} className="group relative cursor-pointer">
+            <motion.div key={index} variants={containerVariants} className="group relative">
               {/* Gradient glow layer */}
               <div className="absolute inset-[-1px] rounded-2xl bg-gradient-to-br from-red-500 via-pink-500 to-orange-500 opacity-0 group-hover:opacity-100 blur-md transition-opacity duration-200 pointer-events-none" />
 

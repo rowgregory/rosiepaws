@@ -1,0 +1,2 @@
+-- AlterEnum
+ALTER TYPE "TokenTransactionType" ADD VALUE 'APPOINTMENT_CREATION';

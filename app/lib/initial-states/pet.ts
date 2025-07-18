@@ -1,4 +1,4 @@
-import { Pet, PetType } from '@/app/types/model.types'
+import { Pet, PetType } from '@/app/types/entities'
 
 export const petInitialState: Pet = {
   id: '',
@@ -28,6 +28,14 @@ export const petInitialState: Pet = {
     updatedAt: new Date()
   },
 
+  spayedNeutered: '',
+  microchipId: '',
+  allergies: '',
+  emergencyContactName: '',
+  emergencyContactPhone: '',
+  lastVisit: new Date(),
+  nextVisit: new Date(),
+
   appointments: [],
   medications: [],
   feedings: [],
@@ -36,6 +44,7 @@ export const petInitialState: Pet = {
   waters: [],
   bloodSugars: [],
   painScores: [],
+  movements: [],
 
   createdAt: new Date(),
   updatedAt: new Date()

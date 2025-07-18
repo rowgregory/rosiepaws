@@ -3,9 +3,9 @@ import { useCreateWaterMutation } from '@/app/redux/services/petApi'
 import { setCloseWaterDrawer } from '@/app/redux/features/petSlice'
 import validateWaterIntakeForm from '@/app/validations/validateWaterForm'
 import { RootState, useAppDispatch, useAppSelector } from '@/app/redux/store'
-import { clearInputs, createFormActions, setInputs } from '../redux/features/formSlice'
-import WaterForm from '../forms/water-form/WaterForm'
-import GuardianWaterChart from '../forms/water-form/GuardianWaterChart'
+import { clearInputs, createFormActions } from '../redux/features/formSlice'
+import WaterForm from '../forms/WaterForm'
+import GuardianWaterChart from '../components/guardian/dashboard/GuardianWaterChart'
 import { AnimatePresence, motion } from 'framer-motion'
 import AnimatedDrawerHeader from '../components/guardian/AnimatedDrawerHeader'
 import { Droplets } from 'lucide-react'
@@ -15,26 +15,9 @@ const CreateWaterDrawer = () => {
   const { waterForm } = useAppSelector((state: RootState) => state.form)
   const { pets, waterDrawer } = useAppSelector((state: RootState) => state.pet)
   const [createWater, { isLoading }] = useCreateWaterMutation()
-  const { setErrors } = createFormActions('waterForm', dispatch)
+  const { setErrors, handleInput } = createFormActions('waterForm', dispatch)
 
   const closeWaterDrawer = () => dispatch(setCloseWaterDrawer())
-
-  const handleInput = (e: { target: { name: any; value: any } }) => {
-    const { name, value } = e.target
-    dispatch(
-      setInputs({
-        formName: 'waterForm',
-        data: {
-          [name]: value,
-          // Reset related fields when intake type changes
-          ...(name === 'intakeType' && {
-            milliliters: '',
-            relativeIntake: ''
-          })
-        }
-      })
-    )
-  }
 
   const handleSubmit = async (e: { preventDefault: () => void }) => {
     e.preventDefault()
@@ -44,11 +27,9 @@ const CreateWaterDrawer = () => {
 
     await createWater({
       petId: waterForm?.inputs?.petId,
-      intakeType: waterForm?.inputs?.intakeType,
       milliliters: waterForm?.inputs?.milliliters,
-      relativeIntake: waterForm?.inputs?.relativeIntake,
-      timeRecorded: waterForm?.inputs?.timeRecorded,
-      moodRating: waterForm?.inputs?.moodRating,
+      timeRecorded: new Date(waterForm?.inputs?.timeRecorded),
+      moodRating: parseInt(waterForm?.inputs?.moodRating),
       notes: waterForm?.inputs?.notes
     }).unwrap()
 
@@ -66,7 +47,7 @@ const CreateWaterDrawer = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40"
+            className="fixed inset-0 bg-black/20 backdrop-blur-sm z-50"
             onClick={closeWaterDrawer}
           />
 

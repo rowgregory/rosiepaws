@@ -1,8 +1,9 @@
 import prisma from '@/prisma/client'
 import { NextRequest, NextResponse } from 'next/server'
-import { createLog } from '@/app/lib/utils/logHelper'
 import { parseStack } from 'error-stack-parser-es/lite'
 import { slicePet } from '@/public/data/api.data'
+import { createLog } from '@/app/lib/api/createLog'
+import { petCreateTokenCost } from '@/app/lib/constants/token'
 
 export async function POST(req: NextRequest) {
   try {
@@ -13,7 +14,20 @@ export async function POST(req: NextRequest) {
     const parsedUser = JSON.parse(userHeader)
     const ownerId = parsedUser.id
 
-    const { name, type, breed, age, gender, weight, notes } = await req.json()
+    const {
+      name,
+      type,
+      breed,
+      age,
+      gender,
+      weight,
+      spayedNeutered,
+      microchipId,
+      allergies,
+      emergencyContactName,
+      emergencyContactPhone,
+      notes
+    } = await req.json()
 
     // Validate required fields
     if (!name || !type) {
@@ -37,31 +51,100 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ message: 'Owner not found', sliceName: slicePet }, { status: 404 })
     }
 
-    // Create the pet
-    const newPet = await prisma.pet.create({
-      data: {
-        name,
-        type,
-        breed,
-        age,
-        gender,
-        weight,
+    // Check if user has enough tokens
+
+    if (owner.tokens < petCreateTokenCost) {
+      await createLog('warning', 'Insufficient tokens for pet creation', {
+        location: ['api route - POST /api/pet/create-pet'],
+        name: 'InsufficientTokens',
+        timestamp: new Date().toISOString(),
+        url: req.url,
+        method: req.method,
         ownerId,
-        notes
-      }
+        requiredTokens: petCreateTokenCost,
+        availableTokens: owner.tokens
+      })
+      return NextResponse.json(
+        {
+          message: `Insufficient tokens. Required: ${petCreateTokenCost}, Available: ${owner.tokens}`,
+          sliceName: slicePet
+        },
+        { status: 400 }
+      )
+    }
+
+    // Use transaction to ensure atomicity
+    const result = await prisma.$transaction(async (tx) => {
+      // Create the pet
+      const newPet = await tx.pet.create({
+        data: {
+          name,
+          type,
+          breed,
+          age,
+          gender,
+          weight,
+          ownerId,
+          notes,
+          spayedNeutered,
+          microchipId,
+          allergies,
+          emergencyContactName,
+          emergencyContactPhone
+        }
+      })
+
+      // Deduct tokens from user
+      const updatedUser = await tx.user.update({
+        where: { id: ownerId },
+        data: {
+          tokens: { decrement: petCreateTokenCost },
+          tokensUsed: { increment: petCreateTokenCost }
+        }
+      })
+
+      // Create token transaction record
+      await tx.tokenTransaction.create({
+        data: {
+          userId: ownerId,
+          amount: -petCreateTokenCost, // Negative for debit
+          type: 'PET_CREATION', // You'll need to add this to your enum
+          description: `Pet creation: ${name}`,
+          metadata: {
+            petId: newPet.id,
+            petName: name,
+            petType: type,
+            feature: 'pet_creation'
+          }
+        }
+      })
+
+      return { newPet, updatedUser }
     })
 
-    await createLog('info', 'Pet created successfully', {
+    await createLog('info', 'Pet created successfully with token deduction', {
       location: ['api route - POST /api/pet/create-pet'],
       name: 'PetCreated',
       timestamp: new Date().toISOString(),
       url: req.url,
       method: req.method,
-      petId: newPet.id,
-      ownerId
+      petId: result.newPet.id,
+      ownerId,
+      tokensDeducted: petCreateTokenCost,
+      remainingTokens: result.updatedUser.tokens
     })
 
-    return NextResponse.json({ pet: newPet, sliceName: slicePet }, { status: 201 })
+    return NextResponse.json(
+      {
+        pet: result.newPet,
+        user: {
+          tokens: result.updatedUser.tokens,
+          tokensUsed: result.updatedUser.tokensUsed
+        },
+        sliceName: slicePet
+      },
+      { status: 201 }
+    )
   } catch (error: any) {
     await createLog('error', `Pet creation failed: ${error.message}`, {
       errorLocation: parseStack(JSON.stringify(error)),

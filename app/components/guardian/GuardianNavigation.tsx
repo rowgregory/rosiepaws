@@ -1,36 +1,25 @@
-import useCustomPathname from '@/app/hooks/useCustomPathname'
-import React, { MouseEvent, useState } from 'react'
-import { ChevronRight, ChevronLeft } from 'lucide-react'
+'use client'
+
+import React, { useState } from 'react'
 import Link from 'next/link'
 import { RootState, useAppDispatch, useAppSelector } from '@/app/redux/store'
-import { setOpenPetDrawer, setPet } from '@/app/redux/features/petSlice'
-import { setAuthState } from '@/app/redux/features/authSlice'
 import { useRouter } from 'next/navigation'
-import { guardianLinkData } from '@/app/lib/navigation'
-import PetSelectorHeader from './navigation/SelectorHeader'
+import UserSelectorHeader from './navigation/UserSelectorHeader'
+import UserDropdownMenu from './navigation/UserDropdownMenu'
+import useCustomPathname from '@/app/hooks/useCustomPathname'
+import TokenCounter from './TokenCounter'
 import PetDropdownMenu from './navigation/PetDropdownMenu'
-import { signOut } from 'next-auth/react'
+import { setOpenPetDrawer, setPet } from '@/app/redux/features/petSlice'
+import { guardianLinkData } from '@/app/lib/utils'
+import { petCreateTokenCost } from '@/app/lib/constants/token'
 
-const GuardianNavigation = ({ toggleSidebar, setToggleSidebar }: any) => {
+const GuardianNavigation = () => {
   const path = useCustomPathname()
-  const { zeroPets, pet, pets, loading } = useAppSelector((state: RootState) => state.pet)
   const dispatch = useAppDispatch()
-
   const { push } = useRouter()
+  const { zeroPets, pet, pets } = useAppSelector((state: RootState) => state.pet)
+  const { user } = useAppSelector((state: RootState) => state.user)
   const [petDropdownOpen, setPetDropdownOpen] = useState(false)
-
-  const handleLogout = async (e: MouseEvent) => {
-    e.preventDefault()
-
-    try {
-      await signOut({
-        callbackUrl: '/auth/login', // Where to redirect after sign out
-        redirect: true // Set to false if you want to handle redirect manually
-      })
-
-      dispatch(setAuthState({ isAuthenticated: false, id: '', role: '' }))
-    } catch {}
-  }
 
   const handlePetSelect = (selectedPet: any) => {
     dispatch(setPet(selectedPet))
@@ -40,104 +29,88 @@ const GuardianNavigation = ({ toggleSidebar, setToggleSidebar }: any) => {
 
   return (
     <div
-      className={`${
-        toggleSidebar ? 'w-16' : 'w-64'
-      } hidden lg:block fixed top-[81px] left-0 min-h-screen bg-white border-r border-gray-100 z-20 shadow-sm`}
+      className={`w-64 hidden md:block fixed top-0 left-0 min-h-screen bg-white border-r border-gray-100 z-40 shadow-sm`}
     >
-      {/* Pet Selector Header */}
-      <div
-        className={`relative px-4 h-16 flex items-center border-b border-gray-50 ${
-          toggleSidebar ? 'justify-center' : ''
-        }`}
-      >
-        <PetSelectorHeader
-          zeroPets={zeroPets}
-          setOpenPetDrawer={setOpenPetDrawer}
-          setPetDropdownOpen={setPetDropdownOpen}
-          pets={pets}
-          dispatch={dispatch}
-          loading={loading}
-          pet={pet}
-          petDropdownOpen={petDropdownOpen}
-          toggleSidebar={toggleSidebar}
-        />
+      <Link href="/" className="px-4 flex items-center justify-center border-b-1 border-b-gray-300 h-24">
+        <div className="bg-logo bg-center bg-no repeat bg-contain w-[68px] h-[68px]" />
+      </Link>
 
-        {/* Pet Dropdown Menu */}
-        <PetDropdownMenu
-          zeroPets={zeroPets}
-          setOpenPetDrawer={setOpenPetDrawer}
-          setPetDropdownOpen={setPetDropdownOpen}
-          pets={pets}
-          dispatch={dispatch}
-          pet={pet}
-          petDropdownOpen={petDropdownOpen}
-          toggleSidebar={toggleSidebar}
-          handlePetSelect={handlePetSelect}
-        />
+      <div className={`relative flex flex-col items-center justify-center`}>
+        <UserSelectorHeader />
+        <UserDropdownMenu />
       </div>
 
-      {/* Toggle Button */}
-      <button
-        onClick={() => setToggleSidebar(!toggleSidebar)}
-        className="absolute top-1/2 -translate-y-1/2 -right-3 w-6 h-6 bg-white border border-gray-200 rounded-full shadow-sm hover:shadow-md transition-shadow duration-200 flex items-center justify-center text-gray-400 hover:text-gray-600"
-      >
-        {toggleSidebar ? <ChevronRight className="w-3 h-3" /> : <ChevronLeft className="w-3 h-3" />}
-      </button>
+      {user.role === 'Free' && (
+        <Link
+          href="/buy"
+          className="mx-auto pl-3 border-1 border-gray-300 rounded-full gap-x-3 flex items-center w-fit"
+        >
+          <TokenCounter color1="#f472b6" color2="#fb923c" id="pinkToOrange" tokens={user?.tokens} />
+          <div className="bg-gradient-to-r from-pink-500 via-orange-500 to-red-500 rounded-full h-7 flex items-center justify-center text-12 font-semibold text-white px-2 border-1 border-pink-500 hover:bg-gradient-to-r hover:from-zinc-500 hover:to-zinc-600 hover:border-zinc-500">
+            Upgrade
+          </div>
+        </Link>
+      )}
 
       {/* Navigation Links */}
-      <div className="pt-6 pb-4">
-        <nav className={`px-3 space-y-1 ${toggleSidebar ? 'flex flex-col items-center' : ''}`}>
-          {guardianLinkData(path).map((link, i) => (
+      <div className="pb-4 mt-3">
+        <nav className={`space-y-1`}>
+          {guardianLinkData(path, zeroPets).map((link, i) => (
             <Link
-              onClick={(e) => (link.textKey === 'Logout' ? handleLogout(e) : {})}
               key={i}
               href={link.linkKey}
-              className={`group flex items-center rounded-xl transition-all duration-200 ${
-                toggleSidebar ? 'w-10 h-10 justify-center p-2' : 'px-3 py-2.5 justify-between'
-              } ${
-                link.isActive
-                  ? 'bg-indigo-50 text-indigo-600 shadow-sm'
-                  : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-              }`}
+              className={`group flex items-center transition-all duration-200 px-3 py-2.5 justify-between ${link.isActive ? 'bg-gray-50 shadow-sm' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'}`}
             >
               <div className="flex items-center gap-x-3">
-                <div className={`flex items-center justify-center ${toggleSidebar ? 'w-5 h-5' : 'w-5 h-5'}`}>
+                <div className={`flex items-center justify-center`}>
                   <link.icon
                     className={`w-5 h-5 transition-colors duration-200 ${
-                      link.isActive ? 'text-indigo-600' : 'text-gray-500 group-hover:text-gray-700'
+                      link.isActive ? 'text-pink-600' : 'text-gray-500 group-hover:text-gray-700'
                     }`}
                   />
                 </div>
-                <span
-                  className={`${
-                    toggleSidebar ? 'hidden' : 'block'
-                  } text-sm font-medium whitespace-nowrap transition-colors duration-200`}
-                >
+                <span className={`text-sm font-medium whitespace-nowrap transition-colors duration-200`}>
                   {link.textKey}
                 </span>
               </div>
-
-              {/* Active indicator */}
-              {link.isActive && !toggleSidebar && <div className="w-1.5 h-1.5 bg-indigo-600 rounded-full"></div>}
+              {link.isActive && <div className="w-1.5 h-1.5 bg-pink-600 rounded-full"></div>}
             </Link>
           ))}
         </nav>
       </div>
 
-      {/* Bottom section for additional info when expanded */}
-      {!toggleSidebar && (
-        <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-100">
-          <div className="flex items-center gap-x-3 p-3 rounded-xl bg-gray-50">
-            <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center">
-              <span className="text-sm font-semibold text-indigo-600">X</span>
+      <div
+        onClick={() => (zeroPets ? dispatch(setOpenPetDrawer()) : setPetDropdownOpen(!petDropdownOpen))}
+        className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-100 cursor-pointer"
+      >
+        <div className="flex justify-center items-center gap-x-3">
+          {zeroPets ? (
+            <div className="w-full flex items-center justify-center gap-x-2 bg-gradient-to-r from-orange-400 via-pink-500 to-red-500 px-4 py-2 rounded-full text-white">
+              <p>Log pet</p> <TokenCounter tokens={petCreateTokenCost} />
             </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-gray-900 truncate">Xyla</p>
-              <p className="text-xs text-gray-500">Guardian Account</p>
+          ) : (
+            <div className="w-full flex gap-x-3 bg-gray-50 p-3 rounded-xl">
+              <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center">
+                <span className="text-sm font-semibold text-indigo-600">X</span>
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-gray-900 truncate">{pet?.name}</p>
+                <p className="text-xs text-gray-500">{user.role}</p>
+              </div>
             </div>
-          </div>
+          )}
         </div>
-      )}
+      </div>
+
+      <PetDropdownMenu
+        setOpenPetDrawer={setOpenPetDrawer}
+        setPetDropdownOpen={setPetDropdownOpen}
+        pets={pets}
+        dispatch={dispatch}
+        pet={pet}
+        petDropdownOpen={petDropdownOpen}
+        handlePetSelect={handlePetSelect}
+      />
     </div>
   )
 }

@@ -1,7 +1,8 @@
 import { useEffect, useRef } from 'react'
 import { useAppDispatch } from '../redux/store'
 import { setAuthState } from '../redux/features/authSlice'
-import { User } from '../types/common.types'
+import { User } from '../types/common'
+import { setUser } from '../redux/features/userSlice'
 
 function useSyncUserToRedux(userData: User | null) {
   const dispatch = useAppDispatch()
@@ -17,6 +18,7 @@ function useSyncUserToRedux(userData: User | null) {
 
     if (userData && isDifferent) {
       dispatch(setAuthState(userData))
+      dispatch(setUser(userData))
       prevUserRef.current = userData
     }
   }, [userData, dispatch])

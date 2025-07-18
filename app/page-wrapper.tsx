@@ -1,27 +1,22 @@
 'use client'
 
-import React, { FC } from 'react'
-import { IPage } from './types/common.types'
+import React, { FC, ReactNode } from 'react'
 import Header from './components/header/Header'
-// import Footer from './components/footer/Footer'
-// import useSyncUserToRedux from './hooks/useSyncUserToRedux'
+import useSyncUserToRedux from './hooks/useSyncUserToRedux'
 import useCustomPathname from './hooks/useCustomPathname'
-import { useSession } from 'next-auth/react'
+import Footer from './components/footer/Footer'
 
-const PageWrapper: FC<IPage> = ({ children }) => {
-  // useSyncUserToRedux(user)
+const PageWrapper: FC<{ children: ReactNode; user: any }> = ({ children, user }) => {
   const path = useCustomPathname()
-  const { data: session } = useSession()
-  console.log('SESSION: ', session)
-  // console.log('PATH: ', path)
+  useSyncUserToRedux(user)
 
-  const hide = ['/guardian', '/auth/login'].some((item) => path.includes(item))
+  const hide = ['/guardian', '/auth/login', '/admin', '/buy'].some((item) => path.includes(item))
 
   return (
     <>
       {!hide && <Header />}
       {children}
-      {/* <Footer /> */}
+      {!hide && <Footer />}
     </>
   )
 }

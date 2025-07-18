@@ -1,11 +1,11 @@
-import { Medication } from '@/app/types/model.types'
-import { getTimeUntilNext } from '@/app/utils/medication-helpers'
+import { getTimeUntilNext } from '@/app/lib/utils/medication'
 import { AlertCircle, Calendar, Clock, Pill } from 'lucide-react'
 import React, { FC } from 'react'
 import { motion } from 'framer-motion'
+import { IMedication } from '@/app/types'
 
 interface IMedicationOverStats {
-  activeMedications: Medication[]
+  activeMedications: IMedication[]
   currentTime: Date
 }
 

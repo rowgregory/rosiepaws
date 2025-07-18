@@ -34,7 +34,7 @@ const Solution = () => {
   }
 
   return (
-    <div className="mt-40 max-w-[1320px] mx-auto rounded-3xl p-8 md:p-12 shadow-lg min-h-[600px] relative overflow-hidden border border-gray-100">
+    <div className="mt-40 max-w-6xl mx-auto rounded-3xl p-8 md:p-12 shadow-lg min-h-[600px] relative overflow-hidden border border-gray-100">
       {/* Top-right glow effect */}
       <div className="absolute -top-32 -left-32 w-[500px] h-[500px] bg-gradient-to-bl from-emerald-400/15 via-green-300/8 to-transparent rounded-full blur-3xl pointer-events-none" />
       <div className="absolute -top-16 -left-16 w-80 h-80 bg-gradient-to-bl from-emerald-500/25 via-green-400/15 to-blue-400/5 rounded-full blur-2xl pointer-events-none" />

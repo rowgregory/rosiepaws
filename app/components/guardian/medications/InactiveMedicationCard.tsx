@@ -1,11 +1,11 @@
 import { setInputs } from '@/app/redux/features/formSlice'
 import { setOpenUpdateMedicationDrawer } from '@/app/redux/features/petSlice'
 import { useAppDispatch } from '@/app/redux/store'
-import { Medication } from '@/app/types/model.types'
+import { IMedication } from '@/app/types'
 import { BellOff } from 'lucide-react'
 import React, { FC } from 'react'
 
-const InactiveMedicationCard: FC<{ inactiveMedications: Medication[] }> = ({ inactiveMedications }) => {
+const InactiveMedicationCard: FC<{ inactiveMedications: IMedication[] }> = ({ inactiveMedications }) => {
   const dispatch = useAppDispatch()
   return (
     <div className="space-y-6">

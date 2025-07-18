@@ -4,10 +4,10 @@ import React, { MouseEvent } from 'react'
 import { RootState, useAppDispatch, useAppSelector } from '../redux/store'
 import { clearInputs, createFormActions } from '../redux/features/formSlice'
 import { setCloseUpdateMedicationDrawer } from '../redux/features/petSlice'
-import MedicationForm from '../forms/medication-form/MedicationForm'
+import MedicationForm from '../forms/MedicationForm'
 import validateMedicationForm from '../validations/validateMedicationForm'
 import { X } from 'lucide-react'
-import GuardianMedicationChart from '../components/guardian/GuardianMedicationGuildlines'
+import GuardianMedicationChart from '../components/guardian/medications/GuardianMedicationGuildlines'
 import { useUpdateMedicationMutation } from '../redux/services/petApi'
 
 const UpdateMedicationDrawer = () => {

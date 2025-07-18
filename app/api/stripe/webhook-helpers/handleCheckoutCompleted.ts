@@ -2,7 +2,7 @@ import prisma from '@/prisma/client'
 import Stripe from 'stripe'
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2025-05-28.basil'
+  apiVersion: '2025-06-30.basil'
 })
 
 async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
@@ -36,12 +36,8 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
         email: customer.email,
         firstName: firstName || 'User',
         lastName: lastName || '',
-        password: '', // You'll need to handle password setup separately
         role: 'user',
-        securityQuestion: '',
-        securityAnswerHash: '',
-        stripeCustomerId: customer.id,
-        isBasicUser: true // Will update based on actual plan below
+        stripeCustomerId: customer.id
       }
     })
   } else {
@@ -124,10 +120,10 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
   await prisma.user.update({
     where: { id: user.id },
     data: {
-      isBasicUser: planInfo.userRole === 'basic_user',
-      isProUser: planInfo.userRole === 'pro_user',
-      isPremiumUser: planInfo.userRole === 'premium_user',
-      isFreeUser: false,
+      isFreeUser: planInfo.userRole === 'Free',
+      isComfortUser: planInfo.userRole === 'Comfort',
+      isCompanionUser: planInfo.userRole === 'Companion',
+      isLegacyUser: planInfo.userRole === 'Legacy',
       role: planInfo.userRole
     }
   })

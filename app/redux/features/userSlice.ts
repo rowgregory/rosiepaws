@@ -6,11 +6,41 @@ export interface UserProps {
   firstName: string
   lastName: string
   email: string
+  image?: string
+  name?: string
+  role: string
   isAdmin: boolean
   isSuperUser: boolean
-  role: string
+  isGuardian: boolean
+  isFreeUser: boolean
+  isComfortUser: boolean
+  isCompanionUser: boolean
+  isLegacyUser: boolean
+  tokens: number
+  tokensUsed: number
   createdAt: Date
   updatedAt: Date
+}
+
+const userState: UserProps = {
+  id: '',
+  firstName: '',
+  lastName: '',
+  email: '',
+  image: '',
+  name: '',
+  role: '',
+  isAdmin: false,
+  isSuperUser: false,
+  isGuardian: false,
+  isFreeUser: false,
+  isComfortUser: false,
+  isCompanionUser: false,
+  isLegacyUser: false,
+  tokens: 150,
+  tokensUsed: 0,
+  createdAt: new Date(),
+  updatedAt: new Date()
 }
 
 export interface UserStatePayload {
@@ -21,18 +51,6 @@ export interface UserStatePayload {
   user: UserProps
   usersCount: number
   noUsers: boolean
-}
-
-const userState: UserProps = {
-  id: '',
-  firstName: '',
-  lastName: '',
-  email: '',
-  isAdmin: false,
-  isSuperUser: false,
-  role: '',
-  createdAt: new Date(),
-  updatedAt: new Date()
 }
 
 const initialUserState: UserStatePayload = {
@@ -59,13 +77,20 @@ export const userSlice = createSlice({
       state.noUsers = payload?.length === 0
     },
     setUser: (state, { payload }) => {
-      state.user = { ...state.user, ...payload }
+      state.user = payload
+      state.loading = false
     },
     resetUserError: (state) => {
       state.error = null
     },
     removeUserFromState: (state, action) => {
       state.users = state.users.filter((user) => user.id !== action.payload)
+    },
+    updateUserTokens: (state, { payload }) => {
+      if (state.user) {
+        state.user.tokens = payload.tokens
+        state.user.tokensUsed = payload.tokensUsed
+      }
     }
   },
   extraReducers: (builder) => {
@@ -98,4 +123,4 @@ export const userSlice = createSlice({
 
 export const userReducer = userSlice.reducer as Reducer<UserStatePayload>
 
-export const { resetUser, setUsers, setUser, resetUserError, removeUserFromState } = userSlice.actions
+export const { resetUser, setUsers, setUser, resetUserError, removeUserFromState, updateUserTokens } = userSlice.actions

@@ -43,6 +43,13 @@ export interface AppStatePayload {
   logCount: number
   isOnline: boolean
   noUsers: boolean
+  subsctiptionModal: boolean
+  updateSubscriptionModal: boolean
+  userDropdown: boolean
+  support24Drawer: boolean
+  disabilityEndOfLifeCareDrawer: boolean
+  viewGuideDrawer: boolean
+  contactSupportDrawer: boolean
 }
 
 const mediaDataInitialState: ModalUploaderPayload = {
@@ -75,7 +82,14 @@ const initialAppState: AppStatePayload = {
   selectedIndex: -1,
   logCount: 0,
   isOnline: true,
-  noUsers: false
+  noUsers: false,
+  subsctiptionModal: false,
+  updateSubscriptionModal: false,
+  userDropdown: false,
+  support24Drawer: false,
+  disabilityEndOfLifeCareDrawer: false,
+  viewGuideDrawer: false,
+  contactSupportDrawer: false
 }
 
 interface FetchAppDataPayload {
@@ -155,6 +169,48 @@ export const appSlice = createSlice({
     },
     decreaseUsersCount: (state) => {
       state.usersCount--
+    },
+    setOpenSubscriptionModal: (state) => {
+      state.subsctiptionModal = true
+    },
+    setCloseSubscriptionModal: (state) => {
+      state.subsctiptionModal = false
+    },
+    setOpenUpdateSubscriptionModal: (state) => {
+      state.updateSubscriptionModal = true
+    },
+    setClosepdateSubscriptionModal: (state) => {
+      state.updateSubscriptionModal = false
+    },
+    setOpenUserDropdown: (state) => {
+      state.userDropdown = true
+    },
+    setCloseUserDropdown: (state) => {
+      state.userDropdown = false
+    },
+    setOpenSupport24Dropdown: (state) => {
+      state.support24Drawer = true
+    },
+    setCloseSupport24Dropdown: (state) => {
+      state.support24Drawer = false
+    },
+    setOpenDisabilityEndOfLifeCareDrawer: (state) => {
+      state.disabilityEndOfLifeCareDrawer = true
+    },
+    setCloseDisabilityEndOfLifeCareDrawer: (state) => {
+      state.disabilityEndOfLifeCareDrawer = false
+    },
+    setOpenViewGuideDrawer: (state) => {
+      state.viewGuideDrawer = true
+    },
+    setCloseViewGuideeDrawer: (state) => {
+      state.viewGuideDrawer = false
+    },
+    setOpenContactSupportDrawer: (state) => {
+      state.contactSupportDrawer = true
+    },
+    setCloseContactSupporteDrawer: (state) => {
+      state.contactSupportDrawer = false
     }
   },
   extraReducers: (builder) => {
@@ -207,5 +263,19 @@ export const {
   increasePhotoGalleryImageCount,
   decreasePhotoGalleryImageCount,
   increaseUsersCount,
-  decreaseUsersCount
+  decreaseUsersCount,
+  setOpenSubscriptionModal,
+  setCloseSubscriptionModal,
+  setOpenUpdateSubscriptionModal,
+  setClosepdateSubscriptionModal,
+  setOpenUserDropdown,
+  setCloseUserDropdown,
+  setOpenSupport24Dropdown,
+  setCloseSupport24Dropdown,
+  setOpenDisabilityEndOfLifeCareDrawer,
+  setCloseDisabilityEndOfLifeCareDrawer,
+  setOpenViewGuideDrawer,
+  setCloseViewGuideeDrawer,
+  setOpenContactSupportDrawer,
+  setCloseContactSupporteDrawer
 } = appSlice.actions

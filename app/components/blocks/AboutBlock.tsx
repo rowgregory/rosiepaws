@@ -1,6 +1,5 @@
+import { BookOpen } from 'lucide-react'
 import React from 'react'
-import AwesomeIcon from '../common/AwesomeIcon'
-import { bookOpenIcon } from '@/app/lib/icons'
 
 const aboutData = [
   {
@@ -99,7 +98,7 @@ const AboutBlock = () => {
                     key={i}
                     className="text-lg font-merrieweather tracking-wider text-[#333] relative gap-x-4 flex items-center border-t-2 border-dashed border-t-[#D5CDC1] py-4"
                   >
-                    <AwesomeIcon icon={bookOpenIcon} className="w-5 h-5 text-peachblossum" />
+                    <BookOpen className="w-5 h-5 text-peachblossum" />
                     {about.text}
                   </li>
                 ))}

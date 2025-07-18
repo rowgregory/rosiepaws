@@ -2,9 +2,9 @@
 
 import React, { useState } from 'react'
 import { motion } from 'framer-motion'
-import { TrendingDown, TrendingUp, DollarSign, Users, CreditCard, BarChart3, Calendar } from 'lucide-react'
+import { TrendingDown, TrendingUp, DollarSign, Users, CreditCard, BarChart3 } from 'lucide-react'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts'
-import GuardianMetricCard from '@/app/components/guardian/GuardianMetricCard'
+import GuardianMetricCard from '@/app/components/guardian/dashboard/GuardianMetricCard'
 
 // Sample data
 const monthlyVolumeData = [
@@ -45,21 +45,11 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 }
 
 const AdminDashboard = () => {
-  const [expandedCards, setExpandedCards] = useState([])
   const [selectedMetric, setSelectedMetric] = useState('overview')
-
-  const toggleCard = (id: any) => {
-    setExpandedCards((prev: any) => (prev.includes(id) ? prev.filter((cardId: any) => cardId !== id) : [...prev, id]))
-  }
 
   const totalVolume = monthlyVolumeData.reduce((sum, item) => sum + item.volume, 0)
   const totalSubscriptions = monthlyVolumeData[monthlyVolumeData.length - 1].subscriptions
   const avgMonthlyVolume = Math.round(totalVolume / monthlyVolumeData.length)
-  const volumeGrowth = (
-    ((monthlyVolumeData[monthlyVolumeData.length - 1].volume - monthlyVolumeData[0].volume) /
-      monthlyVolumeData[0].volume) *
-    100
-  ).toFixed(1)
 
   // Chart rendering function
   const renderChart = () => {
@@ -250,9 +240,9 @@ const AdminDashboard = () => {
             icon={DollarSign}
             color="green"
             trend="up"
-            trendValue={`+${volumeGrowth}%`}
-            expandedCards={expandedCards}
-            toggleCard={toggleCard}
+            onClick={() => {}}
+            isActive={false}
+            hasLogs={false}
           />
 
           <GuardianMetricCard
@@ -263,9 +253,9 @@ const AdminDashboard = () => {
             icon={BarChart3}
             color="blue"
             trend="up"
-            trendValue="+12.5%"
-            expandedCards={expandedCards}
-            toggleCard={toggleCard}
+            onClick={() => {}}
+            isActive={false}
+            hasLogs={false}
           />
 
           <GuardianMetricCard
@@ -276,9 +266,9 @@ const AdminDashboard = () => {
             icon={Users}
             color="purple"
             trend="up"
-            trendValue="+8.2%"
-            expandedCards={expandedCards}
-            toggleCard={toggleCard}
+            onClick={() => {}}
+            isActive={false}
+            hasLogs={false}
           />
 
           <GuardianMetricCard
@@ -289,9 +279,9 @@ const AdminDashboard = () => {
             icon={TrendingUp}
             color="yellow"
             trend="up"
-            trendValue="+0.3%"
-            expandedCards={expandedCards}
-            toggleCard={toggleCard}
+            onClick={() => {}}
+            isActive={false}
+            hasLogs={false}
           />
 
           <GuardianMetricCard
@@ -302,9 +292,9 @@ const AdminDashboard = () => {
             icon={CreditCard}
             color="red"
             trend="up"
-            trendValue="+15.3%"
-            expandedCards={expandedCards}
-            toggleCard={toggleCard}
+            onClick={() => {}}
+            isActive={false}
+            hasLogs={false}
           />
 
           <GuardianMetricCard
@@ -315,9 +305,9 @@ const AdminDashboard = () => {
             icon={TrendingDown}
             color="blue"
             trend="down"
-            trendValue="-0.5%"
-            expandedCards={expandedCards}
-            toggleCard={toggleCard}
+            onClick={() => {}}
+            isActive={false}
+            hasLogs={false}
           />
         </div>
 
@@ -356,67 +346,6 @@ const AdminDashboard = () => {
           </motion.div>
         </div>
 
-        {/* Original Charts Section - Now Hidden */}
-        <div className="hidden grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-          {/* Monthly Volume Chart */}
-          <GuardianMetricCard
-            id="volume-chart"
-            title="Monthly Gross Volume Trend"
-            value=""
-            subtitle="Click to expand detailed view"
-            icon={Calendar}
-            color="blue"
-            collapsible={true}
-            expandedCards={expandedCards}
-            toggleCard={toggleCard}
-          >
-            <div className="h-64">
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={monthlyVolumeData}>
-                  <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
-                  <XAxis dataKey="month" className="text-xs" />
-                  <YAxis className="text-xs" />
-                  <Tooltip content={<CustomTooltip />} />
-                  <Line
-                    type="monotone"
-                    dataKey="volume"
-                    stroke="#3B82F6"
-                    strokeWidth={3}
-                    dot={{ fill: '#3B82F6', strokeWidth: 2, r: 4 }}
-                    activeDot={{ r: 6, stroke: '#3B82F6', strokeWidth: 2 }}
-                    name="Volume"
-                  />
-                </LineChart>
-              </ResponsiveContainer>
-            </div>
-          </GuardianMetricCard>
-
-          {/* Subscription Growth Chart */}
-          <GuardianMetricCard
-            id="subscription-chart"
-            title="Subscription Growth"
-            value=""
-            subtitle="Monthly subscription acquisitions"
-            icon={CreditCard}
-            color="green"
-            collapsible={true}
-            expandedCards={expandedCards}
-            toggleCard={toggleCard}
-          >
-            <div className="h-64">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={monthlyVolumeData}>
-                  <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
-                  <XAxis dataKey="month" className="text-xs" />
-                  <YAxis className="text-xs" />
-                  <Tooltip content={<CustomTooltip />} />
-                  <Bar dataKey="subscriptions" fill="#10B981" radius={[4, 4, 0, 0]} name="Subscriptions" />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          </GuardianMetricCard>
-        </div>
-
         {/* Subscription Breakdown */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {subscriptionBreakdown.map((plan) => (
@@ -429,36 +358,10 @@ const AdminDashboard = () => {
               icon={CreditCard}
               color={plan.color}
               trend="up"
-              trendValue="+5.2%"
-              expandedCards={expandedCards}
-              toggleCard={toggleCard}
-              collapsible={true}
-            >
-              <div className="space-y-3">
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-600">Monthly Revenue</span>
-                  <span className="font-semibold">${plan.revenue.toLocaleString()}</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-600">Avg. per User</span>
-                  <span className="font-semibold">${Math.round(plan.revenue / plan.count).toLocaleString()}</span>
-                </div>
-                <div className="w-full bg-gray-200 rounded-full h-2">
-                  <div
-                    className={`h-2 rounded-full bg-gradient-to-r ${
-                      plan.color === 'blue'
-                        ? 'from-blue-500 to-cyan-500'
-                        : plan.color === 'green'
-                          ? 'from-green-500 to-emerald-500'
-                          : plan.color === 'purple'
-                            ? 'from-indigo-500 to-purple-500'
-                            : 'from-yellow-500 to-orange-500'
-                    }`}
-                    style={{ width: `${(plan.count / 1050) * 100}%` }}
-                  ></div>
-                </div>
-              </div>
-            </GuardianMetricCard>
+              onClick={() => {}}
+              isActive={false}
+              hasLogs={false}
+            />
           ))}
         </div>
       </div>

@@ -1,5 +1,4 @@
-import { Medication } from '@/app/types/model.types'
-import { formatTimeRemaining, getNextDoseTime } from '@/app/utils/medication-helpers'
+import { formatTimeRemaining, getNextDoseTime } from '@/app/lib/utils/medication'
 import React, { FC } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
@@ -15,9 +14,10 @@ import {
 import { setOpenUpdateMedicationDrawer } from '@/app/redux/features/petSlice'
 import { useAppDispatch } from '@/app/redux/store'
 import { setInputs } from '@/app/redux/features/formSlice'
+import { IMedication } from '@/app/types'
 
 interface IActiveMedicationCard {
-  medication: Medication
+  medication: IMedication
   status: any
   timeRemaining: any
   currentTime: Date

@@ -14,7 +14,7 @@ import {
 } from '@/app/redux/features/petSlice'
 import Link from 'next/link'
 import { Utensils, Pill, Heart, Sparkles, Crown, Zap, Activity, Droplets } from 'lucide-react'
-import { getTodaysBloodSugarLogs } from '@/app/forms/blood-sugar-form/constants'
+import { getTodaysBloodSugarLogs } from '@/app/lib/utils/blood-sugar'
 
 const actions = (hasReachedBloodSugarLimit: boolean, todaysBloodSugarLogs: any) => [
   {
@@ -95,7 +95,7 @@ const GuardianActionMenu = () => {
 
   // Calculate today's blood sugar logs
   const todaysBloodSugarLogs = getTodaysBloodSugarLogs(bloodSugars || [])
-  const hasReachedBloodSugarLimit = todaysBloodSugarLogs.length >= 4
+  const hasReachedBloodSugarLimit = todaysBloodSugarLogs?.length >= 4
 
   return (
     <AnimatePresence>

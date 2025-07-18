@@ -3,9 +3,9 @@ import { RootState, useAppDispatch, useAppSelector } from '../redux/store'
 import { clearInputs, createFormActions } from '../redux/features/formSlice'
 import { useCreateFeedingMutation } from '../redux/services/petApi'
 import { setCloseFeedingDrawer } from '../redux/features/petSlice'
-import FeedingForm from '../forms/feeding-form/FeedingForm'
+import FeedingForm from '../forms/FeedingForm'
 import validateFeedingForm from '../validations/validateFeedingForm'
-import GuardianFeedingChart from '../components/guardian/GuardianFeedingChart'
+import GuardianFeedingChart from '../components/guardian/dashboard/GuardianFeedingChart'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Utensils } from 'lucide-react'
 import AnimatedDrawerHeader from '../components/guardian/AnimatedDrawerHeader'
@@ -30,8 +30,10 @@ const CreateFeedingDrawer = () => {
         foodAmount: feedingForm.inputs.foodAmount,
         foodType: feedingForm.inputs.foodType,
         notes: feedingForm.inputs.notes,
-        moodRating: +feedingForm.inputs.moodRating,
-        timeFed: new Date(feedingForm.inputs.timeFed)
+        brand: feedingForm.inputs.brand,
+        ingredients: feedingForm.inputs.ingredients,
+        moodRating: Number(feedingForm.inputs.moodRating),
+        timeRecorded: new Date(feedingForm.inputs.timeRecorded)
       }).unwrap()
 
       closeFeedingDrawer()
@@ -48,7 +50,7 @@ const CreateFeedingDrawer = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40"
+            className="fixed inset-0 bg-black/20 backdrop-blur-sm z-50"
             onClick={closeFeedingDrawer}
           />
 

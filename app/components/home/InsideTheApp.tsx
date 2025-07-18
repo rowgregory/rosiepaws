@@ -167,7 +167,7 @@ const InsideTheApp = () => {
   ]
 
   return (
-    <div className="max-w-[1320px] mx-auto p-4 mt-40">
+    <div className="max-w-6xl mx-auto p-4 mt-40">
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}

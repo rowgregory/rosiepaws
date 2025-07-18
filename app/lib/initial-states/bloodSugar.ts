@@ -1,12 +1,17 @@
-import { BloodSugar } from '@/app/types/model.types'
+import { IBloodSugar } from '@/app/types/entities'
 import { petInitialState } from './pet'
 
-export const bloodSugarInitialState: BloodSugar = {
+export const bloodSugarInitialState: IBloodSugar = {
   id: '',
   value: '',
   notes: '',
   petId: '',
-  timeTaken: '',
+  timeRecorded: '',
+  mealRelation: 'FASTING',
+  measurementUnit: 'MG_DL',
+  targetRange: '',
+  symptoms: '',
+  medicationGiven: false,
   createdAt: new Date(),
   updatedAt: new Date(),
   pet: petInitialState

@@ -1,7 +1,5 @@
+import { getToken } from 'next-auth/jwt'
 import { NextRequest, NextResponse } from 'next/server'
-
-// Define auth routes that should redirect if already authenticated
-const authRoutes = ['/auth/login', '/auth/register']
 
 // Define admin routes that require admin privileges
 const adminRoutes = ['/admin/dashboard']
@@ -10,25 +8,65 @@ const adminRoutes = ['/admin/dashboard']
 const guardianRoutes = ['/guardian/dashboard']
 
 // Define protected routes that require authentication
-const protectedRoutes = ['/admin/dashboard', '/guardian/dashboard']
+const protectedRoutes = ['/admin', '/guardian']
 
-export function middleware(req: NextRequest) {
+// Define cron job routes that should bypass authentication
+const cronRoutes = ['/api/pet/check-med-reminders']
+
+export async function middleware(req: NextRequest) {
   const { nextUrl } = req
 
-  // Check for NextAuth session token
-  const sessionToken =
-    req.cookies.get('authjs.session-token')?.value || req.cookies.get('__Secure-authjs.session-token')?.value
-  const isLoggedIn = !!sessionToken
+  // Check if this is a cron job route - allow it to pass through immediately
+  if (cronRoutes.includes(nextUrl.pathname)) {
+    console.log('🤖 Allowing cron job to proceed:', nextUrl.pathname)
+    return NextResponse.next()
+  }
 
-  console.log('🔍 Middleware check:', {
-    path: nextUrl.pathname,
-    isLoggedIn,
-    hasSessionToken: !!sessionToken
+  // Get the decoded token from NextAuth
+  const token = await getToken({
+    req,
+    secret: process.env.NEXTAUTH_SECRET
   })
+
+  const isLoggedIn = !!token
+
+  // console.log('🔍 Middleware check:', {
+  //   path: nextUrl.pathname,
+  //   isLoggedIn,
+  //   userId: token?.sub || token?.id
+  // })
+
+  // Set up request headers with user data
+  const requestHeaders = new Headers(req.headers)
+  requestHeaders.set('x-pathname', nextUrl.pathname)
+  if (token) {
+    // Include the user data you need - adjust based on what's in your token
+    const userData = {
+      id: token.sub || token.id, // NextAuth typically uses 'sub' for user ID
+      email: token.email,
+      name: token.name
+      // Add other fields you need from the token
+    }
+    requestHeaders.set('x-user', JSON.stringify(userData))
+  }
+
+  if (nextUrl.pathname === '/auth/custom-callback') {
+    console.log('✅ Allowing auth callback to proceed')
+    return NextResponse.next({
+      request: {
+        headers: requestHeaders
+      }
+    })
+  }
 
   // Check if current path is an API route (skip middleware for API routes except auth)
   if (nextUrl.pathname.startsWith('/api') && !nextUrl.pathname.startsWith('/api/auth')) {
-    return NextResponse.next()
+    // For API routes, pass through with headers
+    return NextResponse.next({
+      request: {
+        headers: requestHeaders
+      }
+    })
   }
 
   // Check if current path is a static file or Next.js internal route
@@ -51,16 +89,15 @@ export function middleware(req: NextRequest) {
     })
   }
 
-  const isAuthRoute = isRouteMatch(authRoutes, nextUrl.pathname)
+  const isAuthRoute = nextUrl.pathname === '/auth/login'
   const isAdminRoute = isRouteMatch(adminRoutes, nextUrl.pathname)
   const isGuardianRoute = isRouteMatch(guardianRoutes, nextUrl.pathname)
   const isProtectedRoute = isRouteMatch(protectedRoutes, nextUrl.pathname)
 
   // If user is logged in and trying to access auth pages, redirect to guardian dashboard
-  // (we can't determine admin status from cookie alone, so default to guardian)
   if (isLoggedIn && isAuthRoute) {
     console.log('🔄 Redirecting authenticated user away from auth page')
-    return NextResponse.redirect(new URL('/guardian/dashboard', nextUrl))
+    return NextResponse.redirect(new URL('/guardian/home', nextUrl))
   }
 
   // If user is not logged in and trying to access protected routes
@@ -72,17 +109,21 @@ export function middleware(req: NextRequest) {
   }
 
   // Redirect to guardian dashboard when accessing root protected paths
-  // (admin role checking will need to happen at the page level)
   if (
     isLoggedIn &&
     (nextUrl.pathname === '/dashboard' || nextUrl.pathname === '/admin' || nextUrl.pathname === '/guardian')
   ) {
     console.log('🔄 Redirecting to guardian dashboard (role check at page level)')
-    return NextResponse.redirect(new URL('/guardian/dashboard', nextUrl))
+    return NextResponse.redirect(new URL('/guardian/home', nextUrl))
   }
 
-  console.log('✅ Middleware allowing access to:', nextUrl.pathname)
-  return NextResponse.next()
+  // console.log('✅ Middleware allowing access to:', nextUrl.pathname)
+  // For all other routes, pass through with headers
+  return NextResponse.next({
+    request: {
+      headers: requestHeaders
+    }
+  })
 }
 
 // Configure which routes the middleware should run on

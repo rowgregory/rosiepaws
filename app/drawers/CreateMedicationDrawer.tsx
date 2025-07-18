@@ -4,10 +4,10 @@ import React, { MouseEvent } from 'react'
 import { RootState, useAppDispatch, useAppSelector } from '../redux/store'
 import { clearInputs, createFormActions } from '../redux/features/formSlice'
 import { setCloseMedicationDrawer } from '../redux/features/petSlice'
-import MedicationForm from '../forms/medication-form/MedicationForm'
+import MedicationForm from '../forms/MedicationForm'
 import validateMedicationForm from '../validations/validateMedicationForm'
 import { useCreateMedicationMutation } from '../redux/services/petApi'
-import GuardianMedicationChart from '../components/guardian/GuardianMedicationGuildlines'
+import GuardianMedicationChart from '../components/guardian/medications/GuardianMedicationGuildlines'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Pill } from 'lucide-react'
 import AnimatedDrawerHeader from '../components/guardian/AnimatedDrawerHeader'
@@ -33,14 +33,13 @@ const CreateMedicationDrawer = () => {
         dosage: medicationForm?.inputs.dosage,
         dosageUnit: medicationForm?.inputs.dosageUnit,
         frequency: medicationForm?.inputs.frequency,
-        customFrequency: medicationForm?.inputs.customFrequency,
-        startDate: medicationForm?.inputs.startDate,
+        startDate: new Date(medicationForm?.inputs.startDate),
         endDate: medicationForm?.inputs.endDate,
         reminderEnabled: medicationForm?.inputs.reminderEnabled,
         reminderTimes: medicationForm?.inputs.reminderTimes,
-        instructions: medicationForm?.inputs.instructions,
+        notes: medicationForm?.inputs.notes,
         prescribedBy: medicationForm?.inputs.prescribedBy,
-        timezoneOffset: medicationForm?.inputs.timezoneOffset
+        timezoneOffset: Number(medicationForm?.inputs.timezoneOffset)
       }).unwrap()
 
       closeMedicationDrawer()
@@ -57,7 +56,7 @@ const CreateMedicationDrawer = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40"
+            className="fixed inset-0 bg-black/20 backdrop-blur-sm z-50"
             onClick={closeMedicationDrawer}
           />
 

@@ -5,9 +5,9 @@ import validateBloodSugarForm from '../validations/validateBloodSugarForm'
 import { setCloseBloodSugarDrawer } from '../redux/features/petSlice'
 import { useCreateBloodSugarMutation } from '../redux/services/petApi'
 import { Heart } from 'lucide-react'
-import GuardianBloodSugarGuide from '../components/guardian/GuardianBloodSugarGuide'
+import GuardianBloodSugarGuide from '../components/guardian/blood-sugar/GuardianBloodSugarGuide'
 import { AnimatePresence, motion } from 'framer-motion'
-import BloodSugarForm from '../forms/blood-sugar-form/BloodSugarForm'
+import BloodSugarForm from '../forms/BloodSugarForm'
 import AnimatedDrawerHeader from '../components/guardian/AnimatedDrawerHeader'
 
 const CreateBloodSugarDrawer = () => {
@@ -29,7 +29,12 @@ const CreateBloodSugarDrawer = () => {
         petId: bloodSugarForm.inputs.petId,
         value: bloodSugarForm.inputs.value,
         notes: bloodSugarForm.inputs.notes,
-        timeTaken: new Date(bloodSugarForm.inputs.timeTaken)
+        timeRecorded: new Date(bloodSugarForm.inputs.timeRecorded),
+        mealRelation: bloodSugarForm.inputs.mealRelation,
+        measurementUnit: bloodSugarForm.inputs.measurementUnit,
+        targetRange: bloodSugarForm.inputs.targetRange,
+        symptoms: bloodSugarForm.inputs.symptoms,
+        medicationGiven: bloodSugarForm.inputs.medicationGiven
       }).unwrap()
 
       closeBloodSugarDrawer()
@@ -47,7 +52,7 @@ const CreateBloodSugarDrawer = () => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
-            className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40"
+            className="fixed inset-0 bg-black/20 backdrop-blur-sm z-50"
             onClick={closeBloodSugarDrawer}
           />
 
@@ -64,7 +69,6 @@ const CreateBloodSugarDrawer = () => {
             className="min-h-dvh w-[930px] fixed top-0 right-0 z-50 bg-white shadow-[-10px_0_30px_-5px_rgba(0,0,0,0.2)] flex flex-col"
           >
             {/* Header */}
-
             <AnimatedDrawerHeader
               title="Blood Sugar Reading"
               subtitle="Track your pet's glucose levels"

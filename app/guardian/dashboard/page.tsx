@@ -1,187 +1,222 @@
 'use client'
 
 import React, { useState, useMemo } from 'react'
-import { Activity, Droplets, Utensils, Pill, Zap, PawPrint, Heart, Plus } from 'lucide-react'
-import Title from '@/app/components/admin/Title'
 import Spinner from '@/app/components/common/Spinner'
-import GuardianFeedingGraph from '@/app/components/guardian/GuardianFeedingGraph'
-import GuardianPainScoreGraph from '@/app/components/guardian/GuardianPainScoreGraph'
-import { RootState, useAppDispatch, useAppSelector } from '@/app/redux/store'
-import GuardianMetricCard from '@/app/components/guardian/GuardianMetricCard'
-import GuardianWaterGraph from '@/app/components/guardian/GuardianWaterGraph'
-import MiniWaterChart from '@/app/components/guardian/MiniGuardianWaterChart'
-import MiniSeizureChart from '@/app/components/guardian/MiniGuardianSeizureChart'
-import MiniGuardianMedicationChart from '@/app/components/guardian/MiniGuardianMedicationChart'
-import MiniGuardianBloodSugarGraph from '@/app/components/guardian/MiniGuardianBloodSugarGraph'
-import MiniGuardianPainChart from '@/app/components/guardian/MiniGuardianPainChart'
-import MiniGuardianFeedingChart from '@/app/components/guardian/MiniGuardianFeedingChart'
-import GuardianMedicationGraph from '@/app/components/guardian/GuardianMedicationGraph'
-import GuardianSeizureGraph from '@/app/components/guardian/GuardianSeizureGraph'
-import GuardianBloodSugarGraph from '@/app/components/guardian/GuardianBloodSugarGraph'
+import LargeFeedingGraph from '@/app/components/guardian/dashboard/LargeFeedingGraph'
+import GuardianPainScoreGraph from '@/app/components/guardian/dashboard/GuardianPainScoreGraph'
+import { useAppDispatch } from '@/app/redux/store'
+import GuardianMetricCard from '@/app/components/guardian/dashboard/GuardianMetricCard'
+import LargeWaterGraph from '@/app/components/guardian/dashboard/LargeWaterGraph'
+import MiniWaterChart from '@/app/components/guardian/dashboard/MiniWaterChart'
+import MiniSeizureChart from '@/app/components/guardian/dashboard/MiniSeizureChart'
+import MiniMedicationChart from '@/app/components/guardian/dashboard/MiniMedicationChart'
+import MiniBloodSugarGraph from '@/app/components/guardian/dashboard/MiniBloodSugarGraph'
+import MiniPainScoreGraph from '@/app/components/guardian/dashboard/MiniPainScoreGraph'
+import MiniFeedingGraph from '@/app/components/guardian/dashboard/MiniFeedingGraph'
+import GuardianMedicationGraph from '@/app/components/guardian/dashboard/GuardianMedicationGraph'
+import LargeSeizureGraph from '@/app/components/guardian/dashboard/LargeSeizureGraph'
+import LargeBloodSugarGraph from '@/app/components/guardian/dashboard/LargeBloodSugarGraph'
+import {
+  getDashboardNextAppointment,
+  IProcessedChartData,
+  metricConfigButton,
+  metricsConfigCards,
+  processChartData
+} from '@/app/lib/utils'
+import LargeAppointmentChart from '@/app/components/guardian/dashboard/LargeAppointmentChart'
+import MiniAppointmentChart from '@/app/components/guardian/dashboard/MiniAppointmentChart'
+import MiniWalkGraph from '@/app/components/guardian/dashboard/MiniWalkGraph'
+import TokenCounter from '@/app/components/guardian/TokenCounter'
+import { ArrowLeftIcon } from 'lucide-react'
+import {
+  setOpenAppointmentDrawer,
+  setOpenBloodSugarDrawer,
+  setOpenFeedingDrawer,
+  setOpenMedicationDrawer,
+  setOpenMovementDrawer,
+  setOpenPainScoreDrawer,
+  setOpenSeizureDrawer,
+  setOpenWalkDrawer,
+  setOpenWaterDrawer
+} from '@/app/redux/features/petSlice'
+import { useRouter } from 'next/navigation'
+import LargeWalkGraph from '@/app/components/guardian/dashboard/LargeWalkGraph'
 import { motion } from 'framer-motion'
-import { setOpenPetDrawer } from '@/app/redux/features/petSlice'
+import MiniMovementsGraph from '@/app/components/guardian/dashboard/MiniMovementGraph'
+import LargeMovementsGraph from '@/app/components/guardian/dashboard/LargeMovementGraph'
+import { useFetchMyPetsQuery } from '@/app/redux/services/petApi'
 
 const GuardianDashboard = () => {
   const dispatch = useAppDispatch()
-  const { pet, loading, zeroPets } = useAppSelector((state: RootState) => state.pet)
+  const { push } = useRouter()
   const [selectedMetric, setSelectedMetric] = useState('overview')
-  const [expandedCards, setExpandedCards] = useState<string[]>(['overview'])
+  const { data, isLoading: loading } = useFetchMyPetsQuery({}) as any
+  const pet = data?.pets[0]
 
-  // Process chart data
-  const chartData = useMemo(() => {
-    if (!pet) return {}
-
-    return {
-      painScores:
-        pet?.painScores?.map((obj: any) => ({
-          date: new Date(obj.createdAt).toLocaleDateString(),
-          time: new Date(obj.createdAt).toLocaleTimeString(),
-          score: obj.score,
-          notes: obj.notes
-        })) || [],
-
-      bloodSugar:
-        pet?.bloodSugars?.map((obj: any) => ({
-          date: new Date(obj.timeTaken).toLocaleDateString(),
-          time: new Date(obj.timeTaken).toLocaleTimeString(),
-          value: parseInt(obj.value),
-          status: obj.value < 80 ? 'low' : obj.value > 180 ? 'high' : obj.value > 120 ? 'elevated' : 'normal'
-        })) || [],
-
-      feedings:
-        pet?.feedings?.map((obj: any) => ({
-          date: new Date(obj.timeFed).toLocaleDateString(),
-          time: new Date(obj.timeFed).toLocaleTimeString([], {
-            timeStyle: 'short'
-          }),
-          amount: obj.foodAmount,
-          type: obj.foodType
-        })) || [],
-
-      waters:
-        pet?.waters?.map((obj: any) => ({
-          date: new Date(obj.timeRecorded).toLocaleDateString(),
-          time: new Date(obj.timeRecorded).toLocaleTimeString(),
-          intakeType: obj.intakeType,
-          milliliters: obj.milliliters,
-          relativeIntake: obj.relativeIntake,
-          timeRecorded: obj.timeRecorded,
-          moodRating: obj.moodRating
-        })) || [],
-
-      medications:
-        pet?.medications?.map((obj: any) => ({
-          date: new Date(obj.timeTaken).toLocaleDateString(),
-          time: new Date(obj.timeTaken).toLocaleTimeString(),
-          drugName: obj.drugName,
-          dosage: obj.dosage,
-          dosageUnit: obj.dosageUnit,
-          reminderEnabled: obj.reminderEnabled,
-          frequency: obj.frequency,
-          sentRemindersToday: obj.sentRemindersToday
-        })) || [],
-
-      seizures:
-        pet?.seizures?.map((obj: any) => ({
-          date: new Date(obj.timeTaken).toLocaleDateString(),
-          time: new Date(obj.timeTaken).toLocaleTimeString(),
-          duration: obj.duration
-        })) || []
-    }
-  }, [pet])
+  const chartData: IProcessedChartData = useMemo(() => processChartData(pet), [pet])
 
   // Calculate quick stats
   const stats = useMemo(() => {
     if (!pet || !chartData) return {}
 
     const now = new Date()
-    const today = now.toLocaleDateString()
     const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
 
-    // Filter data for today and this week
-    const todayBloodSugar = chartData.bloodSugar?.filter((item) => item.date === today) || []
-    const weekBloodSugar = chartData.bloodSugar?.filter((item) => new Date(item.date) >= weekAgo) || []
+    const { painScores, feedings, waters, walks, medications, movements, appointments, bloodSugars, seizures } =
+      chartData
 
-    const todayPain = chartData.painScores?.filter((item) => item.date === today) || []
-    const weekPain = chartData.painScores?.filter((item) => new Date(item.date) >= weekAgo) || []
-
-    const todayMedications = chartData.medications?.length || 0
-    const todayMedicationReminders = chartData.medications?.filter((item) => item.reminderEnabled)
-    const todayWater = chartData.waters?.filter((item) => item.date === today) || []
-    const todayFeedings = chartData.feedings?.filter((item) => item.date === today) || []
+    const weekPain = painScores?.filter((item) => new Date(item.date) >= weekAgo) || []
+    const weekFeeding = feedings?.filter((item) => new Date(item.date) >= weekAgo) || []
+    const weekWater = waters?.filter((item) => new Date(item.date) >= weekAgo) || []
+    const weekWalks = walks?.filter((item) => new Date(item.date) >= weekAgo) || []
+    const weekMovements = movements?.filter((item) => new Date(item.date) >= weekAgo) || []
+    const nextAppointment = getDashboardNextAppointment(appointments)
+    const weekBloodSugars = bloodSugars?.filter((item) => new Date(item.date) >= weekAgo) || []
+    const weekSeizures = seizures?.filter((item) => new Date(item.date) >= weekAgo) || []
 
     return {
-      bloodSugar: {
-        latest: todayBloodSugar[todayBloodSugar.length - 1]?.value || 0,
-        average:
-          weekBloodSugar.length > 0
-            ? Math.round(weekBloodSugar.reduce((sum, item) => sum + item.value, 0) / weekBloodSugar.length)
-            : 0,
-        todayCount: todayBloodSugar.length,
-        trend:
-          todayBloodSugar.length >= 2
-            ? todayBloodSugar[todayBloodSugar.length - 1].value > todayBloodSugar[todayBloodSugar.length - 2].value
-              ? 'up'
-              : 'down'
-            : 'stable'
-      },
-      painScore: {
-        latest: todayPain[0]?.score || 0,
+      painScores: {
+        mostRecent: painScores.length > 0 ? painScores[painScores.length - 1].score : 0, // Most recent record score
         average:
           weekPain.length > 0 ? Math.round(weekPain.reduce((sum, item) => sum + item.score, 0) / weekPain.length) : 0,
         trend:
-          weekPain.length >= 2 ? (weekPain[weekPain.length - 1].score > weekPain[0].score ? 'up' : 'down') : 'stable'
-      },
-      medications: {
-        todayTotal: todayMedications,
-        totalReminders: todayMedicationReminders?.length
-      },
-      water: {
-        todayTotal: todayWater.reduce((sum, item) => {
-          const milliliters = parseInt(item.milliliters) || 0
-          return sum + milliliters
-        }, 0),
-        todayCount: todayWater.length
+          weekPain.length >= 2 ? (weekPain[weekPain.length - 1].score > weekPain[0].score ? 'up' : 'down') : 'stable',
+        hasPainScores: (painScores?.length || 0) > 0,
+        totalLogs: painScores?.length || 0
       },
       feedings: {
-        todayCount: todayFeedings.length,
-        lastMeal: todayFeedings[todayFeedings.length - 1]?.time || 'None today'
+        mostRecent: feedings.length > 0 ? feedings[feedings.length - 1].foodAmount : 0,
+        average:
+          weekFeeding.length > 0
+            ? Math.round(weekFeeding.reduce((sum, item) => sum + parseInt(item.foodAmount), 0) / weekFeeding.length)
+            : 0,
+        trend:
+          weekFeeding.length >= 2
+            ? weekFeeding[weekFeeding.length - 1].moodRating > weekFeeding[0].moodRating
+              ? 'up'
+              : 'down'
+            : 'stable',
+        hasFeedings: (feedings?.length || 0) > 0,
+        totalLogs: feedings?.length || 0
       },
+      waters: {
+        mostRecent: waters.length > 0 ? waters[0].milliliters : 0,
+        average:
+          weekWater.length > 0
+            ? Math.round(weekWater.reduce((sum, item) => sum + Number(item.milliliters || 0), 0) / weekWater.length)
+            : 0,
+        trend:
+          weekWater.length >= 2
+            ? weekWater[weekWater.length - 1].milliliters || 0 > weekWater[0].milliliters || 0
+              ? 'up'
+              : 'down'
+            : 'stable',
+        hasWaters: (waters?.length || 0) > 0,
+        totalLogs: waters?.length || 0
+      },
+      walks: {
+        mostRecent: walks.length > 0 ? walks[0].distance : 0,
+        average:
+          weekWalks.length > 0
+            ? Math.round(weekWalks.reduce((sum, item) => sum + Number(item.distance || 0), 0) / weekWalks.length)
+            : 0,
+        trend: weekWalks.length >= 2 ? (weekWalks[weekWalks.length - 1].distance ? 'up' : 'down') : 'stable',
+        hasWalks: (walks?.length || 0) > 0,
+        totalLogs: walks?.length || 0
+      },
+      movements: {
+        mostRecent: movements.length > 0 ? movements[0].durationMinutes : 0,
+        average:
+          weekMovements.length > 0
+            ? Math.round(
+                weekMovements.reduce((sum, item) => sum + Number(item.durationMinutes || 0), 0) / weekMovements.length
+              )
+            : 0,
+        trend:
+          weekMovements.length >= 2
+            ? weekMovements[weekMovements.length - 1].durationMinutes
+              ? 'up'
+              : 'down'
+            : 'stable',
+        hasMovements: (movements?.length || 0) > 0,
+        totalLogs: movements?.length || 0
+      },
+      medications: {
+        mostRecent: medications.length > 0 ? medications?.[0]?.drugName : 0,
+        hasMedications: (medications?.length || 0) > 0,
+        totalLogs: medications?.length || 0,
+        dosage: medications?.[0]?.dosage,
+        dosageUnit: medications?.[0]?.dosageUnit
+      },
+      appointments: {
+        mostRecent:
+          appointments.length > 0
+            ? nextAppointment.serviceType?.charAt(0).toUpperCase() + nextAppointment.serviceType?.slice(1).toLowerCase()
+            : '--',
+        average: 0,
+        trend: '--',
+        hasAppointments: (appointments?.length || 0) > 0,
+        totalLogs: appointments?.length || 0,
+        date: nextAppointment?.date,
+        time: nextAppointment?.time
+      },
+      bloodSugars: {
+        mostRecent: bloodSugars.length > 0 ? bloodSugars[0]?.value : 0,
+        average:
+          weekBloodSugars.length > 0
+            ? Math.round(
+                weekBloodSugars.reduce((sum, item) => sum + Number(item.value || 0), 0) / weekBloodSugars.length
+              )
+            : 0,
+        trend:
+          weekBloodSugars.length >= 2 ? (weekBloodSugars[weekBloodSugars.length - 1].value ? 'up' : 'down') : 'stable',
+        hasBloodSugars: (bloodSugars?.length || 0) > 0 || false,
+        totalLogs: bloodSugars?.length || 0
+      },
+
       seizures: {
-        thisWeek: chartData.seizures?.filter((item: any) => new Date(item.date) >= weekAgo).length || 0,
-        lastSeizure: chartData.seizures?.[chartData.seizures.length - 1]?.date || 'None recorded'
+        mostRecent: seizures.length > 0 ? seizures[0]?.duration : 0,
+        average:
+          weekBloodSugars.length > 0 ? weekSeizures.reduce((sum, seizure) => sum + Number(seizure.duration), 0) : 0,
+        trend: weekSeizures.length >= 2 ? (weekSeizures[weekSeizures.length - 1].duration ? 'up' : 'down') : 'stable',
+        hasSeizures: (seizures?.length || 0) > 0 || false,
+        totalLogs: seizures?.length || 0
       }
     }
   }, [pet, chartData])
 
-  const toggleCard = (cardId: string) => {
-    setExpandedCards((prev) => (prev.includes(cardId) ? prev.filter((id) => id !== cardId) : [...prev, cardId]))
-  }
-
   const renderChart = () => {
     switch (selectedMetric) {
-      case 'blood-sugar':
-        return <GuardianBloodSugarGraph bloodSugarData={chartData?.bloodSugar} />
-
-      case 'pain-score':
-        return <GuardianPainScoreGraph chartData={chartData.painScores} />
+      case 'blood-sugars':
+        return <LargeBloodSugarGraph bloodSugarData={chartData?.bloodSugars} />
+      case 'pain-scores':
+        return <GuardianPainScoreGraph chartData={chartData?.painScores} />
       case 'feedings':
-        return <GuardianFeedingGraph feedingData={chartData.feedings} />
-      case 'water':
-        return <GuardianWaterGraph waterData={chartData.waters} petWeight={pet?.weight || 20} />
+        return <LargeFeedingGraph feedingData={chartData.feedings} />
+      case 'waters':
+        return <LargeWaterGraph waterData={chartData.waters} petWeight={pet?.weight || 20} />
+      case 'walks':
+        return <LargeWalkGraph walks={chartData.walks} petWeight={pet?.weight || 20} />
+      case 'appointments':
+        return <LargeAppointmentChart appointments={chartData.appointments} />
       case 'medications':
         return <GuardianMedicationGraph medicationData={chartData.medications} />
       case 'seizures':
-        return <GuardianSeizureGraph seizureData={chartData?.seizures} />
+        return <LargeSeizureGraph seizures={chartData?.seizures} />
+      case 'movements':
+        return <LargeMovementsGraph movements={chartData?.movements} />
 
       default:
         return (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <MiniGuardianPainChart chartData={chartData} />
-            <MiniGuardianFeedingChart chartData={chartData} />
-            <MiniWaterChart waterData={chartData.waters || []} />
-            <MiniGuardianMedicationChart medications={chartData.medications} />
-            <MiniGuardianBloodSugarGraph chartData={chartData} />
+            <MiniPainScoreGraph painScores={chartData?.painScores} />
+            <MiniFeedingGraph feedings={chartData?.feedings} />
+            <MiniWaterChart waters={chartData?.waters} />
+            <MiniWalkGraph walks={chartData?.walks} />
+            <MiniMovementsGraph movements={chartData?.movements} />
+            <MiniMedicationChart medications={chartData?.medications} />
+            <MiniAppointmentChart appointments={chartData.appointments} />
+            <MiniBloodSugarGraph bloodSugars={chartData?.bloodSugars} />
             <MiniSeizureChart seizures={chartData.seizures} />
           </div>
         )
@@ -196,170 +231,147 @@ const GuardianDashboard = () => {
     )
   }
 
+  const handleMetricClick = (metric: any) => {
+    // If clicking the same metric, go back to overview
+    if (selectedMetric === metric.id) {
+      setSelectedMetric('overview')
+      return
+    }
+
+    // Handle metrics with no data - open drawer and navigate
+    const noDataActions: Record<string, { drawer: any; route: string }> = {
+      'pain-scores': { drawer: setOpenPainScoreDrawer(), route: '/guardian/pets/pain' },
+      feedings: { drawer: setOpenFeedingDrawer(), route: '/guardian/pets/feedings' },
+      waters: { drawer: setOpenWaterDrawer(), route: '/guardian/pets/water' },
+      walks: { drawer: setOpenWalkDrawer(), route: '/guardian/pets/walks' },
+      medications: { drawer: setOpenMedicationDrawer(), route: '/guardian/pets/medication' },
+      movements: { drawer: setOpenMovementDrawer(), route: '/guardian/pets/movements' },
+      appointments: { drawer: setOpenAppointmentDrawer(), route: '/guardian/pets/appointments' },
+      'blood-sugars': { drawer: setOpenBloodSugarDrawer(), route: '/guardian/pets/blood-sugar' },
+      seizures: { drawer: setOpenSeizureDrawer(), route: '/guardian/pets/seizure' }
+    }
+
+    const metricAction = noDataActions[metric.id]
+    const hasData = [
+      'pain-scores',
+      'feedings',
+      'waters',
+      'walks',
+      'medications',
+      'movements',
+      'appointments',
+      'blood-sugars',
+      'seizures'
+    ].includes(metric.id)
+      ? metric.hasLogs
+      : false
+
+    if (metricAction && !hasData) {
+      dispatch(metricAction.drawer)
+      push(metricAction.route)
+    } else {
+      setSelectedMetric(metric.id)
+    }
+  }
+
   return (
-    <div className="min-h-screen py-6">
-      <div className="max-w-full mx-auto space-y-8">
-        {/* Empty State */}
-        {zeroPets ? (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="text-center py-16 bg-white rounded-2xl shadow-sm border border-gray-100"
-          >
-            <div className="w-24 h-24 mx-auto mb-6 bg-gradient-to-br from-gray-100 to-gray-200 rounded-full flex items-center justify-center">
-              <Heart className="w-12 h-12 text-gray-400" />
-            </div>
-            <h3 className="text-xl font-semibold text-gray-600 mb-2">No pets yet</h3>
-            <p className="text-gray-500 mb-6">Pets will appear here once you start tracking.</p>
-            <motion.button
-              onClick={() => dispatch(setOpenPetDrawer())}
-              className="inline-flex items-center space-x-2 px-6 py-3 bg-gradient-to-r from-pink-500 to-rose-500 text-white font-semibold rounded-xl hover:from-pink-600 hover:to-rose-600 transition-all duration-200 shadow-lg hover:shadow-xl"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <Plus className="w-5 h-5" />
-              <span>Add Pet</span>
-            </motion.button>
-          </motion.div>
-        ) : (
-          <>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-4">
-                <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center shadow-lg">
-                  <PawPrint className="w-8 h-8 text-white" />
-                </div>
-                <div>
-                  <Title title={`${pet?.name}'s Health Dashboard`} />
-                  <p className="text-gray-600 mt-1">
-                    {pet?.breed} • Last updated {new Date().toLocaleTimeString()}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6">
-              <GuardianMetricCard
-                id="pain-score"
-                title="Pain Level"
-                value={`${stats.painScore?.latest ?? 'No data'}/10`}
-                subtitle={`Weekly avg: ${stats.painScore?.average || 0}/10`}
-                icon={Activity}
-                color="orange"
-                trend={stats.painScore?.trend}
-                onClick={() => setSelectedMetric('pain-score')}
-                isActive={selectedMetric === 'pain-score'}
-                expandedCards={expandedCards}
-                toggleCard={toggleCard}
-              />
-
-              <GuardianMetricCard
-                id="feedings"
-                title="Feedings"
-                value={stats.feedings?.todayCount || 0}
-                subtitle={`Last meal: ${stats.feedings?.lastMeal || 'None today'}`}
-                icon={Utensils}
-                color="green"
-                onClick={() => setSelectedMetric('feedings')}
-                isActive={selectedMetric === 'feedings'}
-                expandedCards={expandedCards}
-                toggleCard={toggleCard}
-              />
-
-              <GuardianMetricCard
-                id="water"
-                title="Water Intake"
-                value={`${stats.water?.todayTotal}ml`}
-                subtitle={`${stats.water?.todayCount} drink${stats.water?.todayCount !== 1 ? 's' : ''} today`}
-                icon={Droplets}
-                color="blue"
-                onClick={() => setSelectedMetric('water')}
-                isActive={selectedMetric === 'water'}
-                expandedCards={expandedCards}
-                toggleCard={toggleCard}
-              />
-
-              <GuardianMetricCard
-                id="medications"
-                title="Medications"
-                value={`${stats.medications?.todayTotal}`}
-                subtitle={`Total reminders: ${stats.medications?.totalReminders}`}
-                icon={Pill}
-                color="purple"
-                onClick={() => setSelectedMetric('medications')}
-                isActive={selectedMetric === 'medications'}
-                expandedCards={expandedCards}
-                toggleCard={toggleCard}
-              />
-              <GuardianMetricCard
-                id="blood-sugar"
-                title="Blood Sugar"
-                value={stats.bloodSugar?.latest ? `${stats.bloodSugar.latest} mg/dL` : 'No data'}
-                subtitle={`Avg: ${stats.bloodSugar?.average || 0} mg/dL • ${
-                  stats.bloodSugar?.todayCount || 0
-                } readings today`}
-                icon={Heart}
-                color="red"
-                trend={stats.bloodSugar?.trend}
-                onClick={() => setSelectedMetric('blood-sugar')}
-                isActive={selectedMetric === 'blood-sugar'}
-                expandedCards={expandedCards}
-                toggleCard={toggleCard}
-              />
-
-              <GuardianMetricCard
-                id="seizures"
-                title="Seizures"
-                value={stats.seizures?.thisWeek || 0}
-                subtitle={`Last: ${stats.seizures?.lastSeizure || 'None'}`}
-                icon={Zap}
-                color="yellow"
-                onClick={() => setSelectedMetric('seizures')}
-                isActive={selectedMetric === 'seizures'}
-                expandedCards={expandedCards}
-                toggleCard={toggleCard}
-              />
-            </div>
-
-            <div className="bg-white rounded-2xl p-8 shadow-xl border border-gray-100">
-              <div className="flex items-center justify-between mb-6">
-                <div>
-                  <h2 className="text-2xl font-bold text-gray-900">
-                    {selectedMetric === 'blood-sugar'
-                      ? 'Blood Sugar Monitoring'
-                      : selectedMetric === 'pain-score'
-                        ? 'Pain Score Tracking'
-                        : selectedMetric === 'feedings'
-                          ? 'Feeding History'
-                          : selectedMetric === 'water'
-                            ? 'Water Intake Logs'
-                            : selectedMetric === 'medications'
-                              ? 'Medication Schedule'
-                              : selectedMetric === 'seizures'
-                                ? 'Seizure Events'
-                                : 'Health Overview'}
-                  </h2>
-                  <p className="text-gray-600 mt-1">
-                    {selectedMetric === 'overview'
-                      ? 'Quick overview of all health metrics'
-                      : `Detailed ${selectedMetric.replace('-', ' ')} data and trends`}
-                  </p>
-                </div>
-                <button
-                  onClick={() => setSelectedMetric('overview')}
-                  className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                    selectedMetric === 'overview'
-                      ? 'bg-purple-100 text-purple-700'
-                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                  }`}
+    <div className="bg-gray-50">
+      <div className="sticky top-0 pt-6 pl-6 border-b-1 border-b-gray-300 z-30 bg-white h-24">
+        <span className="text-2xl bg-gradient-to-r from-orange-400 via-orange-600 to-pink-600 bg-clip-text text-transparent font-semibold">
+          {pet?.name}&apos;s Health Dashboard
+        </span>
+      </div>
+      <div className="h-[calc(100dvh-96px)] mx-auto p-6 space-y-8">
+        <>
+          <div className="flex gap-3.5 w-[calc(100vw-304px)] overflow-x-auto pb-2 scrollbar-hide">
+            {metricsConfigCards(stats).map((metric, index) => {
+              return (
+                <motion.div
+                  key={metric.id}
+                  className="flex-shrink-0 w-[133px] h-[158px]"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{
+                    duration: 0.4,
+                    delay: index * 0.05,
+                    ease: 'easeOut'
+                  }}
                 >
-                  Overview
-                </button>
+                  <GuardianMetricCard
+                    key={metric.id}
+                    title={metric.title}
+                    value={metric.value}
+                    subtitle={metric.subtitle}
+                    icon={metric.icon}
+                    color={metric.color}
+                    trend={metric.trend}
+                    onClick={() => handleMetricClick(metric)}
+                    isActive={selectedMetric === metric.id}
+                    id={metric.id}
+                    hasLogs={metric.hasLogs}
+                  />
+                </motion.div>
+              )
+            })}
+          </div>
+          <div className="bg-white rounded-2xl p-8 shadow-xl border border-gray-100">
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900">
+                  {selectedMetric === 'blood-sugar'
+                    ? 'Blood Sugar Monitoring'
+                    : selectedMetric === 'pain-score'
+                      ? 'Pain Score Tracking'
+                      : selectedMetric === 'feedings'
+                        ? 'Feeding History'
+                        : selectedMetric === 'water'
+                          ? 'Water Intake Logs'
+                          : selectedMetric === 'medications'
+                            ? 'Medication Schedule'
+                            : selectedMetric === 'seizures'
+                              ? 'Seizure Events'
+                              : 'Health Overview'}
+                </h2>
+                <p className="text-gray-600 mt-1">
+                  {selectedMetric === 'overview'
+                    ? 'Quick overview of all health metrics'
+                    : `Detailed ${selectedMetric.replace('-', ' ')} data and trends`}
+                </p>
               </div>
-
-              {renderChart()}
+              <div className="flex items-center gap-x-3">
+                {selectedMetric !== 'overview' && (
+                  <button
+                    onClick={() => {
+                      const config = metricConfigButton[selectedMetric as keyof typeof metricConfigButton]
+                      if (config) {
+                        dispatch(config.action)
+                      }
+                    }}
+                    className="inline-flex items-center gap-x-2 px-4 py-2 bg-gradient-to-r from-pink-500 to-orange-500 hover:from-pink-600 hover:to-orange-600 text-white text-sm font-medium rounded-full shadow-sm transition-all duration-200"
+                  >
+                    Log {metricConfigButton[selectedMetric as keyof typeof metricConfigButton]?.label || ''}
+                    <TokenCounter
+                      tokens={metricConfigButton[selectedMetric as keyof typeof metricConfigButton]?.tokens || 0}
+                    />
+                  </button>
+                )}
+                {selectedMetric !== 'overview' && (
+                  <button
+                    onClick={() => setSelectedMetric('overview')}
+                    className={`px-4 py-2 rounded-full font-medium text-sm transition-colors flex items-center gap-x-1.5 ${
+                      selectedMetric === 'overview'
+                        ? 'bg-purple-100 text-purple-700'
+                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                    }`}
+                  >
+                    {selectedMetric !== 'overview' && <ArrowLeftIcon size={16} />} Overview
+                  </button>
+                )}
+              </div>
             </div>
-          </>
-        )}
+            {renderChart()}
+          </div>
+        </>
       </div>
     </div>
   )

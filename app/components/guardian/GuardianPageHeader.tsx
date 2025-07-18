@@ -16,7 +16,7 @@ const GuardianPageHeader = ({
 }: any) => {
   const getTodaysLogs = () => {
     const today = new Date().toDateString()
-    return data?.filter((log: any) => new Date(log.createdAt).toDateString() === today).length
+    return data?.filter((log: any) => new Date(log?.createdAt).toDateString() === today).length
   }
   const dispatch = useAppDispatch()
 
@@ -47,10 +47,12 @@ const GuardianPageHeader = ({
                   <div className="text-2xl font-bold text-gray-900">{data?.length}</div>
                   <div className="text-sm text-gray-500">Total Records</div>
                 </div>
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-gray-900">{getTodaysLogs()}</div>
-                  <div className="text-sm text-gray-500">Today&apos;s Logs</div>
-                </div>
+                {btnText !== 'Pet' && (
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-gray-900">{getTodaysLogs()}</div>
+                    <div className="text-sm text-gray-500">Today&apos;s Logs</div>
+                  </div>
+                )}
               </div>
             )}
 

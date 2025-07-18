@@ -1,38 +1,76 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
-import { Zap, Plus } from 'lucide-react'
-import { RootState, useAppSelector } from '@/app/redux/store'
-import GuardianPageHeader from '@/app/components/guardian/GuardianPageHeader'
-import { setOpenSeizureDrawer } from '@/app/redux/features/petSlice'
+import { AlertTriangle, Video, FileText, Phone } from 'lucide-react'
+import { RootState, useAppDispatch, useAppSelector } from '@/app/redux/store'
+import { setOpenSeizureDrawer, setPet } from '@/app/redux/features/petSlice'
 import VideoModal from '@/app/modals/VideoModal'
-import GuardianSeizureGridCard from '@/app/components/guardian/GuardianSeizureGridCard'
+import CleanHeader from '@/app/components/guardian/navigation/CleanHeader'
+import { getLocalISOString, getTimeInfo } from '@/app/lib/utils'
+import { ISeizure } from '@/app/types'
+import ZeroLogs from '@/app/components/guardian/ZeroLogs'
+import { formatDuration, getRecentSeizures, getSeizureSeverity, getTodaysSeizures } from '@/app/lib/utils/seizure'
+import SeizureCard from '@/app/components/guardian/seizure/SeizureCard'
+import { seizureCreateTokenCost } from '@/app/lib/constants/token'
+import { generateSeizurePDFReport } from '@/app/lib/utils/reports/seizure-pdf-report-generator'
+import { setInputs } from '@/app/redux/features/formSlice'
+import SeizureCalendarDrawer from '@/app/drawers/SeizureCalendarDrawer'
+import { setOpenSeizureCalendarDrawer } from '@/app/redux/features/dashboardSlice'
 
-const SeizureTracking = () => {
-  const { seizures, zeroSeizures } = useAppSelector((state: RootState) => state.pet)
+const Seizure = () => {
+  const { zeroSeizures, seizures, pet, pets } = useAppSelector((state: RootState) => state.pet)
+  const todaysSeizures = getTodaysSeizures(seizures || [])
+  const todaysSeizuresCount = todaysSeizures?.length
+  const latestSeizure = seizures?.length > 0 ? seizures[0] : null
+  const [isGenerating, setIsGenerating] = useState(false)
   const [selectedVideo, setSelectedVideo] = useState<{
     url: string
     filename?: string
     petName?: string
     date?: string
   } | null>(null)
+  const dispatch = useAppDispatch()
 
-  const getEmergencyStatus = (seizure: any, dailyCount: number) => {
-    const duration = seizure.duration || 0
-    if (duration >= 300 || dailyCount > 5) {
-      return { level: 'emergency', text: 'Emergency', color: 'bg-red-100 text-red-800 border-red-200' }
+  useEffect(() => {
+    if (pets) {
+      dispatch(setPet(pets[0]))
     }
-    if (duration >= 180 || dailyCount > 3) {
-      return { level: 'warning', text: 'Monitor', color: 'bg-orange-100 text-orange-800 border-orange-200' }
+  }, [dispatch, pets])
+
+  const handleDownload = async () => {
+    try {
+      setIsGenerating(true)
+
+      const doc = await generateSeizurePDFReport(seizures, {
+        includeCharts: true,
+        includeFullLog: true,
+        ownerName: 'John Doe'
+      })
+
+      // Generate filename with date
+      const today = new Date().toISOString().split('T')[0]
+      const filename = `${pet?.name}_Seizure_Report_${today}.pdf`
+
+      // Download the PDF
+      doc.save(filename)
+    } catch {
+      alert('Error generating PDF report. Please try again.')
+    } finally {
+      setIsGenerating(false)
     }
-    return { level: 'normal', text: 'Normal', color: 'bg-green-100 text-green-800 border-green-200' }
   }
 
-  const getDailySeizureCount = (seizure: any, allSeizures: any[]) => {
-    const seizureDate = new Date(seizure.occurredAt).toDateString()
-    return allSeizures.filter((s) => s.petId === seizure.petId && new Date(s.occurredAt).toDateString() === seizureDate)
-      .length
+  if (zeroSeizures) {
+    return (
+      <ZeroLogs
+        btnText="Log seizure"
+        title="No seizures recorded"
+        subtitle="Track seizure episodes to monitor patterns and help your veterinarian provide better care."
+        tokens={seizureCreateTokenCost}
+        func={setOpenSeizureDrawer}
+      />
+    )
   }
 
   return (
@@ -44,97 +82,276 @@ const SeizureTracking = () => {
         petName={selectedVideo?.petName}
         seizureDate={selectedVideo?.date}
       />
-      <div className="min-h-dvh">
-        <div className="max-w-7xl mx-auto p-6 space-y-8">
-          <GuardianPageHeader
-            Icon={Zap}
-            data={seizures}
-            title="Seizures"
-            subtitle="Track episodes for better management"
-            setOpenDrawer={setOpenSeizureDrawer}
-            btnText="Seizure"
-            overlayGradient="bg-gradient-to-r from-yellow-500/10 to-orange-500/10"
-            iconGradient="bg-gradient-to-br from-yellow-500 to-orange-500"
-            buttonGradient="bg-gradient-to-br from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600"
-          />
+      <SeizureCalendarDrawer />
+      <div className="h-[calc(100dvh-96px)]">
+        <div className="mx-auto px-6 space-y-8">
+          {/* Header */}
+          <CleanHeader btnText="Log Seizure" func={setOpenSeizureDrawer} tokens={seizureCreateTokenCost} />
 
-          {zeroSeizures ? (
+          {/* Alert for Recent Activity */}
+          {todaysSeizuresCount > 0 && (
             <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="text-center py-16 bg-white rounded-2xl shadow-sm border border-gray-100"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-red-50 border border-red-200 rounded-2xl p-6"
             >
-              <div className="w-24 h-24 mx-auto mb-6 bg-gradient-to-br from-gray-100 to-gray-200 rounded-full flex items-center justify-center">
-                <Zap className="w-12 h-12 text-gray-400" />
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl font-semibold text-red-800 flex items-center">
+                  <AlertTriangle className="w-5 h-5 mr-2" />
+                  Seizure Activity Today
+                </h2>
+                <span className="text-sm text-red-600">
+                  {todaysSeizuresCount} episode{todaysSeizuresCount > 1 ? 's' : ''}
+                </span>
               </div>
-              <h3 className="text-xl font-semibold text-gray-600 mb-2">Seizures</h3>
-              <p className="text-gray-500 mb-6">Track episodes for better management</p>
-              <motion.button
-                onClick={() => setOpenSeizureDrawer()}
-                className="inline-flex items-center space-x-2 px-6 py-3 bg-gradient-to-r from-yellow-500 to-orange-500 text-white font-semibold rounded-xl hover:from-yellow-600 hover:to-orange-600 transition-all duration-200 shadow-lg hover:shadow-xl"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <Plus className="w-5 h-5" />
-                <span>Add Seizure</span>
-              </motion.button>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {todaysSeizures.map((seizure) => (
+                  <div key={seizure.id} className="bg-white rounded-lg p-4 border border-red-200">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h3 className="font-semibold text-gray-900">{seizure.pet?.name}</h3>
+                        <p className="text-sm text-gray-600">{getTimeInfo(new Date(seizure.timeRecorded))?.time}</p>
+                        {seizure.duration && (
+                          <p className="text-sm text-red-600">Duration: {formatDuration(seizure.duration)}</p>
+                        )}
+                      </div>
+                      <div className="text-right">
+                        {seizure.videoUrl && <div className="text-xs text-blue-600 mb-1">📹 Video recorded</div>}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </motion.div>
-          ) : (
-            <div className="space-y-6">
-              {/* Seizures Grid */}
-              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                {seizures.map((seizure, index) => {
-                  const dailyCount = getDailySeizureCount(seizure, seizures)
-                  const emergencyStatus = getEmergencyStatus(seizure, dailyCount)
-                  const duration = seizure.duration || 0
+          )}
+
+          <div className="grid grid-cols-1 xl:grid-cols-4 gap-6">
+            <div className="xl:col-span-3 space-y-6">
+              {/* Latest Seizure Highlight */}
+              {latestSeizure && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden"
+                >
+                  <div className="p-6">
+                    <div className="flex items-center justify-between mb-4">
+                      <h2 className="text-xl font-semibold text-gray-800">Latest Seizure Episode</h2>
+                      <span className="text-sm text-gray-500">Most recent</span>
+                    </div>
+
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h3 className="text-lg font-semibold text-gray-900">{latestSeizure.pet?.name}</h3>
+                        <p className="text-sm text-gray-500">{getTimeInfo(latestSeizure.createdAt)?.relative}</p>
+                        <p className="text-xs text-gray-400">
+                          {getTimeInfo(new Date(latestSeizure.timeRecorded))?.date} at{' '}
+                          {getTimeInfo(new Date(latestSeizure.timeRecorded))?.time}
+                        </p>
+                      </div>
+
+                      <div className="flex items-center space-x-6">
+                        <div className="text-right">
+                          {latestSeizure.duration ? (
+                            <>
+                              <div className="text-2xl font-bold text-red-600">
+                                {formatDuration(latestSeizure.duration)}
+                              </div>
+                              <div className="text-sm text-gray-500">Duration</div>
+                            </>
+                          ) : (
+                            <>
+                              <div className="text-lg font-bold text-gray-600">Duration</div>
+                              <div className="text-sm text-gray-500">Not recorded</div>
+                            </>
+                          )}
+                        </div>
+                        <div className="flex flex-col space-y-2">
+                          {latestSeizure.videoUrl && (
+                            <div className="flex items-center space-x-1 px-3 py-1 rounded-full bg-blue-100 text-blue-800 text-xs">
+                              <Video className="w-3 h-3" />
+                              <span>Video Available</span>
+                            </div>
+                          )}
+                          {latestSeizure.notes && (
+                            <div className="flex items-center space-x-1 px-3 py-1 rounded-full bg-gray-100 text-gray-800 text-xs">
+                              <FileText className="w-3 h-3" />
+                              <span>Notes Added</span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+
+              {/* All Seizure Episodes Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {seizures?.map((seizure: ISeizure, index: number) => {
+                  const severity = getSeizureSeverity(seizure.duration)
+                  const SeverityIcon = severity.icon
 
                   return (
-                    <GuardianSeizureGridCard
+                    <SeizureCard
                       key={seizure.id}
                       seizure={seizure}
                       index={index}
-                      emergencyStatus={emergencyStatus}
-                      duration={duration}
+                      severity={severity}
+                      SeverityIcon={SeverityIcon}
                       setSelectedVideo={setSelectedVideo}
                     />
                   )
                 })}
               </div>
+            </div>
 
-              {/* Summary Stats */}
-              <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Seizure Summary</h3>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  <div className="text-center p-4 bg-gray-50 rounded-lg">
-                    <div className="text-2xl font-bold text-gray-900">{seizures.length}</div>
-                    <div className="text-sm text-gray-600">Total Seizures</div>
-                  </div>
-                  <div className="text-center p-4 bg-yellow-50 rounded-lg">
-                    <div className="text-2xl font-bold text-yellow-600">
-                      {seizures.filter((s) => (s.duration || 0) >= 60).length}
+            {/* Sidebar */}
+            <div className="xl:col-span-1 space-y-6">
+              {/* Quick Overview */}
+              <motion.div
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                className="bg-white rounded-xl shadow-sm border border-gray-100 p-6"
+              >
+                <h3 className="text-lg font-semibold text-gray-800 mb-4">Overview</h3>
+                <div className="space-y-4">
+                  {/* Today's Activity */}
+                  {todaysSeizuresCount > 0 && (
+                    <div className="bg-red-50 rounded-lg p-3 border border-red-200">
+                      <h4 className="text-sm font-semibold text-red-900 mb-2">Today&apos;s Activity</h4>
+                      <div className="space-y-2">
+                        <div className="flex justify-between">
+                          <span className="text-sm text-red-700">Episodes Today</span>
+                          <span className="font-semibold text-red-900">{todaysSeizuresCount}</span>
+                        </div>
+                        {todaysSeizures.some((s) => s.duration) && (
+                          <div className="flex justify-between">
+                            <span className="text-sm text-red-700">Total Duration</span>
+                            <span className="font-semibold text-red-900">
+                              {formatDuration(todaysSeizures.reduce((sum, s) => sum + (s.duration || 0), 0))}
+                            </span>
+                          </div>
+                        )}
+                      </div>
                     </div>
-                    <div className="text-sm text-gray-600">1+ Minutes</div>
-                  </div>
-                  <div className="text-center p-4 bg-orange-50 rounded-lg">
-                    <div className="text-2xl font-bold text-orange-600">
-                      {seizures.filter((s) => (s.duration || 0) >= 180).length}
+                  )}
+
+                  {/* General Stats */}
+                  <div className="space-y-3">
+                    <div className="flex justify-between">
+                      <span className="text-sm text-gray-600">Total Episodes</span>
+                      <span className="font-semibold text-gray-900">{seizures.length}</span>
                     </div>
-                    <div className="text-sm text-gray-600">3+ Minutes</div>
-                  </div>
-                  <div className="text-center p-4 bg-red-50 rounded-lg">
-                    <div className="text-2xl font-bold text-red-600">
-                      {seizures.filter((s) => (s.duration || 0) >= 300).length}
+                    <div className="flex justify-between">
+                      <span className="text-sm text-gray-600">This Week</span>
+                      <span className="font-semibold text-red-600">{getRecentSeizures(seizures, 7).length}</span>
                     </div>
-                    <div className="text-sm text-gray-600">Emergency (5+ min)</div>
+                    <div className="flex justify-between">
+                      <span className="text-sm text-gray-600">This Month</span>
+                      <span className="font-semibold text-orange-600">{getRecentSeizures(seizures, 30).length}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-sm text-gray-600">With Video</span>
+                      <span className="font-semibold text-blue-600">{seizures.filter((s) => s.videoUrl).length}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-sm text-gray-600">With Duration</span>
+                      <span className="font-semibold text-green-600">{seizures.filter((s) => s.duration).length}</span>
+                    </div>
+                    {latestSeizure && (
+                      <div className="flex justify-between">
+                        <span className="text-sm text-gray-600">Last Episode</span>
+                        <span className="font-semibold text-gray-900">
+                          {getTimeInfo(latestSeizure.createdAt)?.relative}
+                        </span>
+                      </div>
+                    )}
                   </div>
                 </div>
-              </div>
+              </motion.div>
+
+              {/* Emergency Info */}
+              <motion.div
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.1 }}
+                className="bg-red-50 rounded-xl border border-red-200 p-6"
+              >
+                <div className="flex items-center mb-3">
+                  <Phone className="w-5 h-5 text-red-600 mr-2" />
+                  <h3 className="text-lg font-semibold text-red-800">Emergency Guidelines</h3>
+                </div>
+                <div className="space-y-3 text-sm text-red-700">
+                  <div>
+                    <strong>Call vet immediately if:</strong>
+                    <ul className="list-disc list-inside mt-1 space-y-1 text-xs">
+                      <li>Seizure lasts over 5 minutes</li>
+                      <li>Multiple seizures in 24 hours</li>
+                      <li>First-time seizure</li>
+                      <li>Difficulty breathing after seizure</li>
+                    </ul>
+                  </div>
+                  <div>
+                    <strong>During seizure:</strong>
+                    <ul className="list-disc list-inside mt-1 space-y-1 text-xs">
+                      <li>Stay calm and time the episode</li>
+                      <li>Keep pet safe from injury</li>
+                      <li>Record video if possible</li>
+                      <li>Do NOT put hands near mouth</li>
+                    </ul>
+                  </div>
+                </div>
+              </motion.div>
+
+              {/* Quick Actions */}
+              <motion.div
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.2 }}
+                className="bg-white rounded-xl shadow-sm border border-gray-100 p-6"
+              >
+                <h3 className="text-lg font-semibold text-gray-800 mb-4">Quick Actions</h3>
+                <div className="space-y-3">
+                  <button
+                    onClick={() => {
+                      dispatch(
+                        setInputs({
+                          formName: 'seizureForm',
+                          data: {
+                            seizureType: 'TONIC_CLONIC',
+                            severity: 'CRITICAL',
+                            duration: 5,
+                            timeRecorded: getLocalISOString(new Date())
+                          }
+                        })
+                      )
+                      dispatch(setOpenSeizureDrawer())
+                    }}
+                    className="w-full bg-red-600 text-white rounded-lg py-2 px-4 hover:bg-red-700 transition-colors text-sm"
+                  >
+                    🚨 Log Emergency Seizure
+                  </button>
+                  <button
+                    onClick={handleDownload}
+                    className="w-full bg-blue-600 text-white rounded-lg py-2 px-4 hover:bg-blue-700 transition-colors text-sm"
+                  >
+                    📊 Generat{isGenerating ? 'ing' : 'e'} Report for Vet
+                  </button>
+                  <button
+                    onClick={() => dispatch(setOpenSeizureCalendarDrawer())}
+                    className="w-full bg-green-600 text-white rounded-lg py-2 px-4 hover:bg-green-700 transition-colors text-sm"
+                  >
+                    📅 View Seizure Calendar
+                  </button>
+                </div>
+              </motion.div>
             </div>
-          )}
+          </div>
         </div>
       </div>
     </>
   )
 }
 
-export default SeizureTracking
+export default Seizure

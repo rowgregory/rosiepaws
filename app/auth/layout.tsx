@@ -1,23 +1,23 @@
+import { headers } from 'next/headers'
+import { ChildrenProps } from '../types/common'
+import { auth } from '../lib/auth'
 import { redirect } from 'next/navigation'
-import { cookies } from 'next/headers'
-import { jwtVerify } from 'jose'
-import { ChildrenProps } from '@/app/types/common.types'
 
 export default async function LoginLayout({ children }: ChildrenProps) {
-  const cookieStore = cookies()
-  const token = (await cookieStore).get('authToken')?.value
+  const session = await auth()
+  const headersList = headers()
+  const pathname = (await headersList).get('x-pathname') || (await headersList).get('x-invoke-path') || ''
 
-  if (token) {
-    const { payload } = await jwtVerify(token, new TextEncoder().encode(process.env.JWT_SECRET))
-
-    const role = payload.role
-    const isAdmin = payload.isAdmin
+  // Only redirect if user is logged in AND trying to access the login page
+  if (session?.user && pathname === '/auth/login') {
+    const role = session.user.role
+    const isAdmin = session.user.isAdmin
 
     if (role === 'admin' && isAdmin) {
       redirect('/admin/dashboard')
     }
 
-    redirect('/guardian/dashboard')
+    redirect('/guardian/home')
   }
 
   return <>{children}</>

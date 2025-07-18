@@ -4,11 +4,11 @@ import { clearInputs, createFormActions } from '../redux/features/formSlice'
 import { setCloseSeizureDrawer } from '../redux/features/petSlice'
 import { AlertTriangle } from 'lucide-react'
 import { AnimatePresence, motion } from 'framer-motion'
-import SeizureForm from '../forms/seizure-form/SeizureForm'
+import SeizureForm from '../forms/SeizureForm'
 import { validateSeizureForm } from '../validations/validateSeizureForm'
 import { useCreateSeizureMutation } from '../redux/services/petApi'
 import AnimatedDrawerHeader from '../components/guardian/AnimatedDrawerHeader'
-import GuardianSeizureGuide from '../components/guardian/GuardianSeizureGuide'
+import GuardianSeizureGuide from '../components/guardian/seizure/GuardianSeizureGuide'
 import { uploadFileToFirebase } from '../utils/firebase-helpers'
 
 const CreateSeizureDrawer = () => {
@@ -44,10 +44,14 @@ const CreateSeizureDrawer = () => {
       await createSeizure({
         petId: seizureForm.inputs.petId,
         duration: Number(seizureForm.inputs.duration),
-        timeTaken: seizureForm.inputs.timeTaken,
+        timeRecorded: new Date(seizureForm.inputs.timeRecorded),
         notes: seizureForm.inputs.notes || '',
         videoUrl: videoUrl || '',
-        videoFilename: videoFilename || ''
+        videoFilename: videoFilename || '',
+        seizureType: seizureForm.inputs.seizureType,
+        severity: seizureForm.inputs.severity,
+        triggerFactor: seizureForm.inputs.triggerFactor,
+        recoveryTime: Number(seizureForm.inputs.recoveryTime)
       }).unwrap()
 
       dispatch(closeSeizureDrawer())
@@ -67,7 +71,7 @@ const CreateSeizureDrawer = () => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
-            className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40"
+            className="fixed inset-0 bg-black/20 backdrop-blur-sm z-50"
             onClick={closeSeizureDrawer}
           />
 

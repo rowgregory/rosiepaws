@@ -1,7 +1,7 @@
 interface BloodSugarFormInputs {
   petId: string
   value: string // string to match form input, will parse to int
-  timeTaken: string
+  timeRecorded: string
 }
 
 // Pass existingEntriesCount to check how many readings for this pet today
@@ -19,8 +19,8 @@ const validateBloodSugarForm = (inputs: BloodSugarFormInputs, setErrors: (errors
     newErrors.value = 'Value must be a number between 0 and 500'
   }
 
-  if (!inputs?.timeTaken?.trim()) {
-    newErrors.timeTaken = 'Please select when your last reading was'
+  if (!inputs?.timeRecorded?.trim()) {
+    newErrors.timeRecorded = 'Please select when your last reading was'
   }
 
   setErrors(newErrors)

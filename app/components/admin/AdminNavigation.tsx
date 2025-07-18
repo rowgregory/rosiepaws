@@ -8,7 +8,7 @@ import { useLogoutMutation } from '@/app/redux/services/authApi'
 import { setAuthState } from '@/app/redux/features/authSlice'
 import { useRouter } from 'next/navigation'
 import Spinner from '../common/Spinner'
-import { adminLinkData } from '@/app/lib/navigation'
+import { adminLinkData } from '@/app/lib/utils'
 
 const AdminNavigation = ({ toggleSidebar, setToggleSidebar }: any) => {
   const path = useCustomPathname()

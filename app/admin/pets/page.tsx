@@ -1,7 +1,7 @@
 'use client'
 
 import { useFetchAllPetsQuery } from '@/app/redux/services/adminApi'
-import { Pet } from '@/app/types/model.types'
+import { Pet } from '@/app/types/entities'
 import { motion } from 'framer-motion'
 import {
   Search,

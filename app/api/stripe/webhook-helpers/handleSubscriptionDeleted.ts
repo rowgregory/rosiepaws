@@ -28,10 +28,11 @@ async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
   await prisma.user.update({
     where: { id: stripeSubscription.userId },
     data: {
-      isBasicUser: false,
-      isProUser: false,
-      isPremiumUser: false,
-      role: 'canceled',
+      isFreeUser: true,
+      isComfortUser: false,
+      isCompanionUser: false,
+      isLegacyUser: false,
+      role: 'Free',
       isGuardian: false
     }
   })
