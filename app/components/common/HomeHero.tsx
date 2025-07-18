@@ -1,23 +1,17 @@
 'use client'
 
-import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
 
 const HomeHero = () => {
-  const [isClient, setIsClient] = useState(false)
   const src = '/videos/xyla-hero.mp4'
-
-  useEffect(() => {
-    setIsClient(true)
-  }, [])
 
   return (
     <div className="relative w-full h-full mt-[-112px]">
       <video
         className="object-cover w-full h-[900px]"
         controls={false}
-        autoPlay={isClient} // Only autoplay on client
+        autoPlay={true}
         loop
         muted={true}
         playsInline
@@ -34,77 +28,59 @@ const HomeHero = () => {
       <div className="absolute inset-0 max-w-[1320px] mx-auto z-40">
         <div className="absolute inset-0 flex mt-40 flex-col items-center z-10">
           {/* Only animate after client hydration */}
-          {isClient ? (
-            <motion.div className="max-w-4xl">
-              <motion.div
-                initial={{ opacity: 0, x: -50 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{
-                  duration: 0.8,
-                  type: 'spring',
-                  stiffness: 100,
-                  damping: 15
-                }}
-                className="backdrop-blur-lg border border-white/10 rounded-3xl px-8 py-6 shadow-2xl flex items-center justify-center flex-col"
-              >
-                {/* Your motion components here */}
-                <motion.h1
-                  className="text-4xl md:text-5xl lg:text-7xl font-bold text-white leading-tight mb-3 text-center"
-                  initial={{ opacity: 0, y: 30 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{
-                    delay: 0.3,
-                    duration: 0.6,
-                    type: 'spring',
-                    stiffness: 80
-                  }}
-                >
-                  Every Moment&nbsp;
-                  <motion.span
-                    className="text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-purple-400"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 0.6, duration: 0.8 }}
-                  >
-                    Deserves <br />
-                    to Be Remembered
-                  </motion.span>
-                </motion.h1>
 
-                <motion.p
-                  className="text-lg md:text-xl text-white/90 leading-relaxed text-center"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{
-                    delay: 0.8,
-                    duration: 0.6,
-                    type: 'spring',
-                    stiffness: 60
-                  }}
+          <motion.div className="max-w-4xl">
+            <motion.div
+              initial={{ opacity: 0, x: -50 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{
+                duration: 0.8,
+                type: 'spring',
+                stiffness: 100,
+                damping: 15
+              }}
+              className="backdrop-blur-lg border border-white/10 rounded-3xl px-8 py-6 shadow-2xl flex items-center justify-center flex-col"
+            >
+              {/* Your motion components here */}
+              <motion.h1
+                className="text-4xl md:text-5xl lg:text-7xl font-bold text-white leading-tight mb-3 text-center"
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{
+                  delay: 0.3,
+                  duration: 0.6,
+                  type: 'spring',
+                  stiffness: 80
+                }}
+              >
+                Every Moment&nbsp;
+                <motion.span
+                  className="text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-purple-400"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.6, duration: 0.8 }}
                 >
-                  Track symptoms and provide comfort <br />
-                  during your pet&apos;s final journey
-                </motion.p>
-              </motion.div>
+                  Deserves <br />
+                  to Be Remembered
+                </motion.span>
+              </motion.h1>
+
+              <motion.p
+                className="text-lg md:text-xl text-white/90 leading-relaxed text-center"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{
+                  delay: 0.8,
+                  duration: 0.6,
+                  type: 'spring',
+                  stiffness: 60
+                }}
+              >
+                Track symptoms and provide comfort <br />
+                during your pet&apos;s final journey
+              </motion.p>
             </motion.div>
-          ) : (
-            // Static version for SSR
-            <div className="max-w-4xl">
-              <div className="backdrop-blur-lg border border-white/10 rounded-3xl px-8 py-6 shadow-2xl flex items-center justify-center flex-col">
-                <h1 className="text-4xl md:text-5xl lg:text-7xl font-bold text-white leading-tight mb-3 text-center">
-                  Every Moment&nbsp;
-                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-purple-400">
-                    Deserves <br />
-                    to Be Remembered
-                  </span>
-                </h1>
-                <p className="text-lg md:text-xl text-white/90 leading-relaxed text-center">
-                  Track symptoms and provide comfort <br />
-                  during your pet&apos;s final journey
-                </p>
-              </div>
-            </div>
-          )}
+          </motion.div>
 
           <Link
             href="/auth/login"
