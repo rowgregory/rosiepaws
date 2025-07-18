@@ -228,6 +228,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       if (user) {
         // First time sign in - user was just created by the adapter
         token.userId = user.id
+        token.role = user.role
+        token.isAdmin = user.isAdmin
 
         // If this is a new Google user, update their name fields
         if (account?.provider === 'google' && user.name && !user.firstName) {
