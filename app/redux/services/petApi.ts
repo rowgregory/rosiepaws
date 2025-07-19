@@ -43,7 +43,8 @@ export const petApi = api.injectEndpoints({
             tokensUsed: data.user.tokensUsed
           })
         )
-      }
+      },
+      providesTags: ['Pet']
     }),
     createPet: build.mutation({
       query: (body: any) => ({ url: `${BASE_URL}/create-pet`, method: 'POST', body }),

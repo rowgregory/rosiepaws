@@ -4,7 +4,7 @@ import React, { useState, useMemo } from 'react'
 import Spinner from '@/app/components/common/Spinner'
 import LargeFeedingGraph from '@/app/components/guardian/dashboard/LargeFeedingGraph'
 import GuardianPainScoreGraph from '@/app/components/guardian/dashboard/GuardianPainScoreGraph'
-import { useAppDispatch } from '@/app/redux/store'
+import { RootState, useAppDispatch, useAppSelector } from '@/app/redux/store'
 import GuardianMetricCard from '@/app/components/guardian/dashboard/GuardianMetricCard'
 import LargeWaterGraph from '@/app/components/guardian/dashboard/LargeWaterGraph'
 import MiniWaterChart from '@/app/components/guardian/dashboard/MiniWaterChart'
@@ -44,14 +44,12 @@ import LargeWalkGraph from '@/app/components/guardian/dashboard/LargeWalkGraph'
 import { motion } from 'framer-motion'
 import MiniMovementsGraph from '@/app/components/guardian/dashboard/MiniMovementGraph'
 import LargeMovementsGraph from '@/app/components/guardian/dashboard/LargeMovementGraph'
-import { useFetchMyPetsQuery } from '@/app/redux/services/petApi'
 
 const GuardianDashboard = () => {
   const dispatch = useAppDispatch()
   const { push } = useRouter()
   const [selectedMetric, setSelectedMetric] = useState('overview')
-  const { data, isLoading: loading } = useFetchMyPetsQuery({}) as any
-  const pet = data?.pets[0]
+  const { pet, loading } = useAppSelector((state: RootState) => state.pet)
 
   const chartData: IProcessedChartData = useMemo(() => processChartData(pet), [pet])
 
