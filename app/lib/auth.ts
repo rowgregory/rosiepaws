@@ -1,9 +1,7 @@
-import magicLinkTemplate from '@/app/lib/email-templates/magic-link'
 import prisma from '@/prisma/client'
 import { PrismaAdapter } from '@auth/prisma-adapter'
 import NextAuth from 'next-auth'
 import Google from 'next-auth/providers/google'
-import { Resend } from 'resend'
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   // debug: true,
@@ -32,29 +30,30 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       id: 'email',
       name: 'Email',
       type: 'email',
+      maxAge: 15 * 60, // 15 mins
       from: process.env.RESEND_FROM_EMAIL!,
       sendVerificationRequest: async ({ identifier: email, url, provider }) => {
         console.log('Sending magic link to:', email)
         console.log('🔗 Magic link URL:', url)
 
-        const resend = new Resend(process.env.RESEND_API_KEY)
-
         try {
-          const { data, error } = await resend.emails.send({
-            from: provider.from || '',
-            to: email,
-            subject: 'Sign in to Your App',
-            html: magicLinkTemplate(url)
+          const response = await fetch(`${process.env.NEXTAUTH_URL}/api/auth/send-verification`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              email,
+              url,
+              from: provider.from
+            })
           })
 
-          if (error) {
-            console.error('Resend API error:', error)
-            throw new Error(`Failed to send email: ${error.message}`)
+          if (!response.ok) {
+            const errorData = await response.json()
+            throw new Error(`Failed to send email: ${errorData.error}`)
           }
 
-          console.log('Magic link sent successfully:', data?.id)
-
-          // Debug: Check if token was created
           setTimeout(async () => {
             try {
               const tokens = await prisma.verificationToken.findMany({

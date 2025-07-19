@@ -38,7 +38,7 @@ const magicLinkTemplate = (url: string) => `
     <!-- Footer -->
     <div style="text-align: center; margin-top: 32px; padding-top: 16px; border-top: 1px solid #e5e7eb;">
       <p style="margin: 0; color: #9ca3af; font-size: 12px;">
-        This link expires in 24 hours. If you didn't request this, you can ignore this email.
+        This link expires in 15 minutes. If you didn't request this, you can ignore this email.
       </p>
     </div>
   </div>
