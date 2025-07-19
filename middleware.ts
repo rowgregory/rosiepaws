@@ -1,5 +1,5 @@
-import { getToken } from 'next-auth/jwt'
 import { NextRequest, NextResponse } from 'next/server'
+import { auth } from './app/lib/auth'
 
 // Routes that bypass authentication
 const publicRoutes = ['/auth/login', '/auth/custom-callback']
@@ -22,30 +22,33 @@ export async function middleware(req: NextRequest) {
     return NextResponse.next()
   }
 
-  const token = await getToken({
-    req,
-    secret: process.env.NEXTAUTH_SECRET
-  })
+  const session = await auth()
+  const isLoggedIn = !!session?.user
 
-  const isLoggedIn = !!token
+  console.log('🎫 Middleware auth check:', {
+    pathname: nextUrl.pathname,
+    isLoggedIn,
+    userId: session?.user?.id,
+    userRole: session?.user?.role
+  })
 
   // Set up request headers
   const requestHeaders = new Headers(req.headers)
   requestHeaders.set('x-pathname', nextUrl.pathname)
-  if (token) {
+  if (session?.user) {
     const userData = {
-      id: token.userId,
-      email: token.email,
-      name: token.name,
-      firstName: token.firstName,
-      lastName: token.lastName,
-      role: token.role,
-      isAdmin: token.isAdmin,
-      isGuardian: token.isGuardian,
-      isFreeUser: token.isFreeUser,
-      isComfortUser: token.isComfortUser,
-      isCompanionUser: token.isCompanionUser,
-      isLegacyUser: token.isLegacyUser
+      id: session.user.id,
+      email: session.user.email,
+      name: session.user.name,
+      firstName: session.user.firstName,
+      lastName: session.user.lastName,
+      role: session.user.role,
+      isAdmin: session.user.isAdmin,
+      isGuardian: session.user.isGuardian,
+      isFreeUser: session.user.isFreeUser,
+      isComfortUser: session.user.isComfortUser,
+      isCompanionUser: session.user.isCompanionUser,
+      isLegacyUser: session.user.isLegacyUser
     }
     requestHeaders.set('x-user', JSON.stringify(userData))
   }
@@ -57,14 +60,24 @@ export async function middleware(req: NextRequest) {
 
   // Handle page route redirects for logged in users
   if (isLoggedIn && isPublicRoute) {
-    const role = token?.role
-    const isAdmin = token?.isAdmin
+    // Only redirect from login page, not from custom callback
+    if (nextUrl.pathname === '/auth/login') {
+      const role = session.user.role
+      const isAdmin = session.user.isAdmin
 
-    if (role === 'admin' || isAdmin) {
-      return NextResponse.redirect(new URL('/admin/dashboard', nextUrl))
+      if (role === 'admin' || isAdmin) {
+        return NextResponse.redirect(new URL('/admin/dashboard', nextUrl))
+      }
+
+      return NextResponse.redirect(new URL('/guardian/home', nextUrl))
     }
 
-    return NextResponse.redirect(new URL('/guardian/home', nextUrl))
+    // Let custom callback handle its own routing
+    return NextResponse.next({
+      request: {
+        headers: requestHeaders
+      }
+    })
   }
 
   // Protect API routes - require authentication
@@ -85,4 +98,8 @@ export async function middleware(req: NextRequest) {
       headers: requestHeaders
     }
   })
+}
+
+export const config = {
+  matcher: ['/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)']
 }
