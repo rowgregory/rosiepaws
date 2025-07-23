@@ -24,14 +24,18 @@ export interface IStripeSubscription {
   userId: string
   customerId: string
   paymentMethodId: string
-  subscriptionId?: string
+  subscriptionId: string | null
   status: string
   plan: string
   planPrice: number
-  trialEndsAt?: Date
+  tokensIncluded: number
+  trialEndsAt: Date | null
   cancelAtPeriodEnd: boolean
-  canceledAt?: Date
-  currentPeriodEnd?: Date
+  canceledAt: Date | null
+  currentPeriodEnd: Date | null
+  paymentMethod: string | null
+  paymentMethodBrand: string | null
+  paymentMethodLast4: string | null
   createdAt: Date
   updatedAt: Date
 
@@ -40,27 +44,38 @@ export interface IStripeSubscription {
 
 export interface IUser {
   id: string
-  firstName?: string
-  lastName?: string
-  password?: string
   email: string
+  role: string
   isSuperUser: boolean
   isAdmin: boolean
   isGuardian: boolean
-  isBasicUser: boolean
-  isPremiumUser: boolean
-  role: string
-  securityQuestion?: string
-  securityAnswerHash?: string
-
-  name: string
-  image: string
-  emailVerified: any
+  isFreeUser: boolean
+  isComfortUser: boolean
+  isCompanionUser: boolean
+  isLegacyUser: boolean
+  firstName?: string
+  lastName?: string
 
   stripeCustomerId?: string
-  stripeSubscription?: IStripeSubscription
-  pets: Pet[]
-  blogs: Blog[]
+
+  // NextAuth fields
+  emailVerified?: Date | null
+  name?: string
+  image?: string
+
+  // Token fields
+  tokens: number
+  tokensUsed: number
+  lastTokenReset?: Date | null
+
+  // Relationships
+  accounts: any[]
+  sessions: any[]
+  pets: any[]
+  blogs: any[]
+  stripeSubscription?: any
+  tokenTransactions: any[]
+  galleryItems: any[]
 
   createdAt: Date
   updatedAt: Date

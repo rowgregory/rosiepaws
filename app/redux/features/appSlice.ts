@@ -50,6 +50,7 @@ export interface AppStatePayload {
   disabilityEndOfLifeCareDrawer: boolean
   viewGuideDrawer: boolean
   contactSupportDrawer: boolean
+  authErrorDrawer: boolean
 }
 
 const mediaDataInitialState: ModalUploaderPayload = {
@@ -89,7 +90,8 @@ const initialAppState: AppStatePayload = {
   support24Drawer: false,
   disabilityEndOfLifeCareDrawer: false,
   viewGuideDrawer: false,
-  contactSupportDrawer: false
+  contactSupportDrawer: false,
+  authErrorDrawer: false
 }
 
 interface FetchAppDataPayload {
@@ -211,6 +213,12 @@ export const appSlice = createSlice({
     },
     setCloseContactSupporteDrawer: (state) => {
       state.contactSupportDrawer = false
+    },
+    setOpenAuthErrorDrawer: (state) => {
+      state.authErrorDrawer = true
+    },
+    setCloseAuthErrorDrawer: (state) => {
+      state.authErrorDrawer = false
     }
   },
   extraReducers: (builder) => {
@@ -277,5 +285,7 @@ export const {
   setOpenViewGuideDrawer,
   setCloseViewGuideeDrawer,
   setOpenContactSupportDrawer,
-  setCloseContactSupporteDrawer
+  setCloseContactSupporteDrawer,
+  setOpenAuthErrorDrawer,
+  setCloseAuthErrorDrawer
 } = appSlice.actions

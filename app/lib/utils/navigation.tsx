@@ -1,6 +1,5 @@
 import {
   authLoginLink,
-  blogLink,
   dashboardLink,
   guardianDashboardLink,
   guardianHomeLink,
@@ -19,7 +18,6 @@ import {
   LogOut,
   Settings,
   Dog,
-  Pen,
   Home,
   Images,
   Info,
@@ -104,12 +102,6 @@ export const adminLinkData = (path: string) => [
     textKey: 'Pets',
     linkKey: petsLink,
     isActive: path === petsLink
-  },
-  {
-    icon: Pen,
-    textKey: 'Blog',
-    linkKey: blogLink,
-    isActive: path === blogLink
   },
   {
     icon: Settings,

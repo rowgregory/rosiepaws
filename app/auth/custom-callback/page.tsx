@@ -47,7 +47,7 @@ const CustomCallback = () => {
           dispatch(setPet(session.user.pets?.[0]))
 
           // Route based on user type with clearer priority
-          if (session.user.isAdmin && session.user.role === 'admin') {
+          if ((session.user.isAdmin || session.user.isSuperUser) && session.user.role === 'ADMIN') {
             push('/admin/dashboard')
           } else {
             push('/guardian/home')

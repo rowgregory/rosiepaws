@@ -1,4 +1,5 @@
 import { Pet, PetType } from '@/app/types/entities'
+import { initialUserState } from './user'
 
 export const petInitialState: Pet = {
   id: '',
@@ -10,24 +11,7 @@ export const petInitialState: Pet = {
   weight: '',
   ownerId: '',
   notes: '',
-  owner: {
-    id: '',
-    name: '',
-    email: '',
-    isSuperUser: false,
-    isAdmin: false,
-    isGuardian: false,
-    isBasicUser: false,
-    isPremiumUser: false,
-    role: '',
-    image: '',
-    emailVerified: undefined,
-    pets: [],
-    blogs: [],
-    createdAt: new Date(),
-    updatedAt: new Date()
-  },
-
+  owner: initialUserState,
   spayedNeutered: '',
   microchipId: '',
   allergies: '',
@@ -36,15 +20,15 @@ export const petInitialState: Pet = {
   lastVisit: new Date(),
   nextVisit: new Date(),
 
-  appointments: [],
-  medications: [],
+  painScores: [],
   feedings: [],
-  seizures: [],
   walks: [],
   waters: [],
-  bloodSugars: [],
-  painScores: [],
   movements: [],
+  medications: [],
+  appointments: [],
+  bloodSugars: [],
+  seizures: [],
 
   createdAt: new Date(),
   updatedAt: new Date()

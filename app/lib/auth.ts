@@ -4,7 +4,7 @@ import NextAuth from 'next-auth'
 import Google from 'next-auth/providers/google'
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
-  // debug: true,
+  debug: false,
   session: {
     strategy: 'jwt', // More efficient than database sessions
     maxAge: 30 * 24 * 60 * 60, // 30 days
@@ -12,7 +12,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   },
   adapter: PrismaAdapter(prisma),
   pages: {
-    error: '/auth/error', // Create this page to see detailed errors
+    error: '/auth/error',
     signIn: '/auth/login',
     verifyRequest: '/auth/verify-request'
   },
@@ -93,12 +93,19 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           // If user doesn't exist, create them
           if (!dbUser) {
             console.log('👤 Creating new user for email provider')
+
+            const isAdminEmail = user.email === process.env.JACI_EMAIL || user.email === process.env.SUPER_USER
+            const isSuperUser = user.email === process.env.SUPER_USER
+
             dbUser = await prisma.user.create({
               data: {
                 email: user.email!,
                 emailVerified: new Date(),
                 name: user.name || null,
-                image: user.image || null
+                image: user.image || null,
+                isAdmin: isAdminEmail,
+                isSuperUser: isSuperUser,
+                role: isAdminEmail ? 'ADMIN' : undefined
               },
               include: { accounts: true }
             })
@@ -214,6 +221,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         session.user.lastName = token.lastName
         session.user.role = token.role
         session.user.isAdmin = token.isAdmin
+        session.user.isSuperUser = token.isSuperUser
         session.user.isGuardian = token.isGuardian
         session.user.isFreeUser = token.isFreeUser
         session.user.isComfortUser = token.isComfortUser
@@ -266,6 +274,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           token.lastName = dbUser.lastName || undefined
           token.role = dbUser.role || undefined
           token.isAdmin = dbUser.isAdmin ?? false
+          token.isSuperUser = dbUser.isSuperUser ?? false
           token.isGuardian = dbUser.isGuardian ?? false
           token.isFreeUser = dbUser.isFreeUser ?? false
           token.isComfortUser = dbUser.isComfortUser ?? false

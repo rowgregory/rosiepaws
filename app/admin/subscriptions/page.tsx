@@ -1,508 +1,325 @@
 'use client'
 
 import React, { useState } from 'react'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import {
   Search,
+  Filter,
   Download,
-  MoreVertical,
-  User,
   CreditCard,
-  AlertCircle,
+  Users,
+  DollarSign,
+  TrendingUp,
   CheckCircle,
   XCircle,
-  Clock,
-  DollarSign,
-  Eye,
-  Edit,
-  RefreshCw
+  AlertCircle,
+  CreditCardIcon
 } from 'lucide-react'
+import { RootState, useAppDispatch, useAppSelector } from '@/app/redux/store'
+import AdminManagePaymentDrawer from '@/app/drawers/AdminManagePaymentDrawer'
+import { setOpenAdminManagePaymentDrawer } from '@/app/redux/features/adminSlice'
+import AdminConfirmModal from '@/app/modals/AdminConformModal'
 
-// Sample subscription data
-const subscriptionsData = [
-  {
-    id: 'sub_001',
-    customerName: 'John Smith',
-    customerEmail: 'john.smith@email.com',
-    plan: 'Pro',
-    status: 'active',
-    amount: 49.99,
-    currency: 'USD',
-    billingCycle: 'monthly',
-    nextBilling: '2025-07-15',
-    startDate: '2024-07-15',
-    lastPayment: '2025-06-15',
-    paymentMethod: '**** 4242'
-  },
-  {
-    id: 'sub_002',
-    customerName: 'Sarah Johnson',
-    customerEmail: 'sarah.j@company.com',
-    plan: 'Premium',
-    status: 'active',
-    amount: 199.99,
-    currency: 'USD',
-    billingCycle: 'monthly',
-    nextBilling: '2025-07-20',
-    startDate: '2023-12-01',
-    lastPayment: '2025-06-20',
-    paymentMethod: '**** 5555'
-  },
-  {
-    id: 'sub_003',
-    customerName: 'Mike Wilson',
-    customerEmail: 'mike.wilson@startup.io',
-    plan: 'Basic',
-    status: 'past_due',
-    amount: 19.99,
-    currency: 'USD',
-    billingCycle: 'monthly',
-    nextBilling: '2025-06-25',
-    startDate: '2025-01-10',
-    lastPayment: '2025-05-25',
-    paymentMethod: '**** 1234'
-  },
-  {
-    id: 'sub_004',
-    customerName: 'Emma Davis',
-    customerEmail: 'emma.davis@freelance.com',
-    plan: 'Pro',
-    status: 'cancelled',
-    amount: 49.99,
-    currency: 'USD',
-    billingCycle: 'monthly',
-    nextBilling: null,
-    startDate: '2024-03-15',
-    lastPayment: '2025-05-15',
-    paymentMethod: '**** 9876'
-  },
-  {
-    id: 'sub_005',
-    customerName: 'David Brown',
-    customerEmail: 'david.brown@agency.com',
-    plan: 'Premium',
-    status: 'trialing',
-    amount: 99.99,
-    currency: 'USD',
-    billingCycle: 'monthly',
-    nextBilling: '2025-07-30',
-    startDate: '2025-06-30',
-    lastPayment: null,
-    paymentMethod: '**** 6789'
-  },
-  {
-    id: 'sub_006',
-    customerName: 'Lisa Anderson',
-    customerEmail: 'lisa.a@techcorp.com',
-    plan: 'Premium',
-    status: 'active',
-    amount: 1999.99,
-    currency: 'USD',
-    billingCycle: 'yearly',
-    nextBilling: '2026-01-15',
-    startDate: '2024-01-15',
-    lastPayment: '2025-01-15',
-    paymentMethod: '**** 1111'
-  }
-]
-
-const StatusBadge = ({ status }: any) => {
-  const statusConfig: any = {
-    active: { color: 'green', icon: CheckCircle, label: 'Active' },
-    past_due: { color: 'red', icon: AlertCircle, label: 'Past Due' },
-    cancelled: { color: 'gray', icon: XCircle, label: 'Cancelled' },
-    trialing: { color: 'blue', icon: Clock, label: 'Trial' },
-    paused: { color: 'yellow', icon: Clock, label: 'Paused' }
+const StatusBadge = ({ status }: { status: string }) => {
+  const getStatusConfig = (status: string) => {
+    switch (status) {
+      case 'active':
+        return { color: 'bg-green-100 text-green-800', icon: CheckCircle, label: 'Active' }
+      case 'past_due':
+        return { color: 'bg-red-100 text-red-800', icon: AlertCircle, label: 'Past Due' }
+      case 'canceled':
+        return { color: 'bg-gray-100 text-gray-800', icon: XCircle, label: 'Canceled' }
+      case 'incomplete':
+        return { color: 'bg-yellow-100 text-yellow-800', icon: AlertCircle, label: 'Incomplete' }
+      default:
+        return { color: 'bg-gray-100 text-gray-800', icon: XCircle, label: 'Inactive' }
+    }
   }
 
-  const config = statusConfig[status] || statusConfig.active
+  const config = getStatusConfig(status)
   const Icon = config.icon
 
   return (
-    <div
-      className={`flex items-center space-x-1 px-2 py-1 rounded-full text-xs font-medium ${
-        config.color === 'green'
-          ? 'bg-green-100 text-green-700'
-          : config.color === 'red'
-            ? 'bg-red-100 text-red-700'
-            : config.color === 'blue'
-              ? 'bg-blue-100 text-blue-700'
-              : config.color === 'yellow'
-                ? 'bg-yellow-100 text-yellow-700'
-                : 'bg-gray-100 text-gray-700'
-      }`}
-    >
+    <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-md text-xs font-medium ${config.color}`}>
       <Icon className="w-3 h-3" />
-      <span>{config.label}</span>
-    </div>
-  )
-}
-
-const PlanBadge = ({ plan }: any) => {
-  const planColors: any = {
-    Basic: 'bg-blue-100 text-blue-700',
-    Pro: 'bg-green-100 text-green-700',
-    Premium: 'bg-purple-100 text-purple-700'
-  }
-
-  return (
-    <span className={`px-2 py-1 rounded-lg text-xs font-medium ${planColors[plan] || 'bg-gray-100 text-gray-700'}`}>
-      {plan}
+      {config.label}
     </span>
   )
 }
 
-const ActionMenu = ({ subscription, onView, onEdit, onCancel }: any) => {
-  const [isOpen, setIsOpen] = useState(false)
-
-  return (
-    <div className="relative">
-      <button onClick={() => setIsOpen(!isOpen)} className="p-1 hover:bg-gray-100 rounded-full transition-colors">
-        <MoreVertical className="w-4 h-4 text-gray-500" />
-      </button>
-
-      {isOpen && (
-        <div className="absolute right-0 top-8 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-10">
-          <button
-            onClick={() => {
-              onView(subscription)
-              setIsOpen(false)
-            }}
-            className="flex items-center space-x-2 w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
-          >
-            <Eye className="w-4 h-4" />
-            <span>View Details</span>
-          </button>
-          <button
-            onClick={() => {
-              onEdit(subscription)
-              setIsOpen(false)
-            }}
-            className="flex items-center space-x-2 w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
-          >
-            <Edit className="w-4 h-4" />
-            <span>Edit Subscription</span>
-          </button>
-          {subscription.status === 'active' && (
-            <button
-              onClick={() => {
-                onCancel(subscription)
-                setIsOpen(false)
-              }}
-              className="flex items-center space-x-2 w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50"
-            >
-              <XCircle className="w-4 h-4" />
-              <span>Cancel Subscription</span>
-            </button>
-          )}
-          {subscription.status === 'past_due' && (
-            <button
-              onClick={() => {
-                /* Handle retry payment */ setIsOpen(false)
-              }}
-              className="flex items-center space-x-2 w-full px-4 py-2 text-sm text-blue-600 hover:bg-blue-50"
-            >
-              <RefreshCw className="w-4 h-4" />
-              <span>Retry Payment</span>
-            </button>
-          )}
-        </div>
-      )}
-    </div>
-  )
-}
-
-const Subscriptions = () => {
+const AdminSubscriptions = () => {
   const [searchTerm, setSearchTerm] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
   const [planFilter, setPlanFilter] = useState('all')
-  const [sortBy, setSortBy] = useState('nextBilling')
-  const [sortOrder, setSortOrder] = useState('asc')
+  const { subscriptions } = useAppSelector((state: RootState) => state.admin)
+  // const [selectedSubscription, setSelectedSubscription] = useState<any>(null)
+  const dispatch = useAppDispatch()
 
-  // Filter and sort subscriptions
-  const filteredSubscriptions = subscriptionsData
-    .filter((sub) => {
+  // Calculate summary stats
+  const totalSubscriptions = subscriptions?.length || 0
+  const activeSubscriptions = subscriptions?.filter((s) => s.status === 'active').length || 0
+  const totalMRR =
+    subscriptions?.filter((s) => s.status === 'active').reduce((sum, s) => sum + s.planPrice, 0) / 100 || 0
+  const avgRevenuePerUser = activeSubscriptions > 0 ? totalMRR / activeSubscriptions : 0
+
+  // Filter subscriptions
+  const filteredSubscriptions =
+    subscriptions?.filter((subscription) => {
       const matchesSearch =
-        sub.customerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        sub.customerEmail.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        sub.id.toLowerCase().includes(searchTerm.toLowerCase())
-      const matchesStatus = statusFilter === 'all' || sub.status === statusFilter
-      const matchesPlan = planFilter === 'all' || sub.plan === planFilter
+        subscription.user?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        subscription.user?.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        subscription.plan.toLowerCase().includes(searchTerm.toLowerCase())
+
+      const matchesStatus = statusFilter === 'all' || subscription.status === statusFilter
+      const matchesPlan = planFilter === 'all' || subscription.plan === planFilter
+
       return matchesSearch && matchesStatus && matchesPlan
-    })
-    .sort((a: any, b: any) => {
-      let aValue = a[sortBy]
-      let bValue = b[sortBy]
+    }) || []
 
-      if (sortBy === 'amount') {
-        aValue = parseFloat(aValue)
-        bValue = parseFloat(bValue)
-      } else if (sortBy === 'nextBilling' || sortBy === 'startDate') {
-        aValue = new Date(aValue || 0)
-        bValue = new Date(bValue || 0)
-      }
-
-      if (sortOrder === 'asc') {
-        return aValue > bValue ? 1 : -1
-      } else {
-        return aValue < bValue ? 1 : -1
-      }
-    })
-
-  const handleSort = (field: string) => {
-    if (sortBy === field) {
-      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')
-    } else {
-      setSortBy(field)
-      setSortOrder('asc')
-    }
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD'
+    }).format(amount)
   }
 
-  const handleView = (subscription: string) => {
-    console.log('View subscription:', subscription)
-    // Implement view logic
-  }
-
-  const handleEdit = (subscription: string) => {
-    console.log('Edit subscription:', subscription)
-    // Implement edit logic
-  }
-
-  const handleCancel = (subscription: string) => {
-    console.log('Cancel subscription:', subscription)
-    // Implement cancel logic
-  }
-
-  const exportData = () => {
-    console.log('Exporting subscriptions data...')
-    // Implement export logic
+  const formatDate = (date: Date | string | null) => {
+    if (!date) return 'N/A'
+    const dateObj = typeof date === 'string' ? new Date(date) : date
+    return new Intl.DateTimeFormat('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    }).format(dateObj)
   }
 
   return (
-    <div className="min-h-screen py-6">
-      <div className="max-w-7xl mx-auto">
+    <>
+      <AdminManagePaymentDrawer />
+      <AdminConfirmModal />
+      <div className="bg-gray-50 min-h-screen p-6">
         {/* Header */}
-        <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
+        <div className="mb-8">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Subscriptions</h1>
-              <p className="text-gray-600 mt-1">Manage all customer subscriptions</p>
+              <h1 className="text-2xl font-bold text-gray-900">Subscription Management</h1>
+              <p className="text-gray-600">Monitor and manage all subscription accounts</p>
             </div>
-            <button
-              onClick={exportData}
-              className="flex items-center space-x-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
-            >
-              <Download className="w-4 h-4" />
-              <span>Export</span>
-            </button>
-          </div>
-
-          {/* Stats Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-            <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
-              <div className="flex items-center space-x-3">
-                <div className="p-2 bg-green-100 rounded-lg">
-                  <CheckCircle className="w-5 h-5 text-green-600" />
-                </div>
-                <div>
-                  <p className="text-sm text-gray-600">Active</p>
-                  <p className="text-xl font-bold text-gray-900">
-                    {subscriptionsData.filter((s) => s.status === 'active').length}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
-              <div className="flex items-center space-x-3">
-                <div className="p-2 bg-red-100 rounded-lg">
-                  <AlertCircle className="w-5 h-5 text-red-600" />
-                </div>
-                <div>
-                  <p className="text-sm text-gray-600">Past Due</p>
-                  <p className="text-xl font-bold text-gray-900">
-                    {subscriptionsData.filter((s) => s.status === 'past_due').length}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
-              <div className="flex items-center space-x-3">
-                <div className="p-2 bg-blue-100 rounded-lg">
-                  <Clock className="w-5 h-5 text-blue-600" />
-                </div>
-                <div>
-                  <p className="text-sm text-gray-600">Trial</p>
-                  <p className="text-xl font-bold text-gray-900">
-                    {subscriptionsData.filter((s) => s.status === 'trialing').length}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
-              <div className="flex items-center space-x-3">
-                <div className="p-2 bg-purple-100 rounded-lg">
-                  <DollarSign className="w-5 h-5 text-purple-600" />
-                </div>
-                <div>
-                  <p className="text-sm text-gray-600">Total MRR</p>
-                  <p className="text-xl font-bold text-gray-900">
-                    $
-                    {subscriptionsData
-                      .filter((s) => s.status === 'active')
-                      .reduce((sum, s) => {
-                        return sum + (s.billingCycle === 'yearly' ? s.amount / 12 : s.amount)
-                      }, 0)
-                      .toLocaleString()}
-                  </p>
-                </div>
-              </div>
+            <div className="flex items-center gap-3">
+              <button className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
+                <Download className="w-4 h-4" />
+                Export
+              </button>
             </div>
           </div>
 
-          {/* Filters */}
-          <div className="flex flex-wrap gap-4 items-center bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
-            <div className="flex items-center space-x-2 flex-1 min-w-64">
-              <Search className="w-4 h-4 text-gray-400" />
+          {/* Summary Stats */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <div className="bg-white rounded-lg border border-gray-200 p-6">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="p-2 bg-gray-100 rounded-lg">
+                  <Users className="w-5 h-5 text-gray-700" />
+                </div>
+                <h3 className="text-sm font-medium text-gray-600 uppercase tracking-wide">Total Subscriptions</h3>
+              </div>
+              <p className="text-2xl font-bold text-gray-900">{totalSubscriptions}</p>
+            </div>
+
+            <div className="bg-white rounded-lg border border-gray-200 p-6">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="p-2 bg-gray-100 rounded-lg">
+                  <CheckCircle className="w-5 h-5 text-gray-700" />
+                </div>
+                <h3 className="text-sm font-medium text-gray-600 uppercase tracking-wide">Active Subscriptions</h3>
+              </div>
+              <p className="text-2xl font-bold text-gray-900">{activeSubscriptions}</p>
+            </div>
+
+            <div className="bg-white rounded-lg border border-gray-200 p-6">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="p-2 bg-gray-100 rounded-lg">
+                  <DollarSign className="w-5 h-5 text-gray-700" />
+                </div>
+                <h3 className="text-sm font-medium text-gray-600 uppercase tracking-wide">Monthly Recurring Revenue</h3>
+              </div>
+              <p className="text-2xl font-bold text-gray-900">{formatCurrency(totalMRR)}</p>
+            </div>
+
+            <div className="bg-white rounded-lg border border-gray-200 p-6">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="p-2 bg-gray-100 rounded-lg">
+                  <TrendingUp className="w-5 h-5 text-gray-700" />
+                </div>
+                <h3 className="text-sm font-medium text-gray-600 uppercase tracking-wide">Average Revenue Per User</h3>
+              </div>
+              <p className="text-2xl font-bold text-gray-900">{formatCurrency(avgRevenuePerUser)}</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Filters and Search */}
+        <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6">
+          <div className="flex flex-col sm:flex-row gap-4">
+            {/* Search */}
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
               <input
                 type="text"
-                placeholder="Search by customer, email, or ID..."
+                placeholder="Search by customer name, email, or plan..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="flex-1 border-none outline-none text-sm"
+                className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent"
               />
             </div>
 
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              className="px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="all">All Status</option>
-              <option value="active">Active</option>
-              <option value="past_due">Past Due</option>
-              <option value="trialing">Trial</option>
-              <option value="cancelled">Cancelled</option>
-            </select>
+            {/* Status Filter */}
+            <div className="flex items-center gap-2">
+              <Filter className="w-4 h-4 text-gray-500" />
+              <select
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                className="px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent"
+              >
+                <option value="all">All Status</option>
+                <option value="active">Active</option>
+                <option value="past_due">Past Due</option>
+                <option value="canceled">Canceled</option>
+                <option value="incomplete">Incomplete</option>
+              </select>
+            </div>
 
+            {/* Plan Filter */}
             <select
               value={planFilter}
               onChange={(e) => setPlanFilter(e.target.value)}
-              className="px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent"
             >
               <option value="all">All Plans</option>
-              <option value="Basic">Basic</option>
-              <option value="Pro">Pro</option>
-              <option value="Premium">Premium</option>
+              <option value="FREE">Free</option>
+              <option value="COMFORT">Comfort</option>
+              <option value="COMPANION">Companion</option>
+              <option value="LECAGY">Legacy</option>
             </select>
           </div>
-        </motion.div>
+        </div>
 
         {/* Subscriptions Table */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden"
-        >
+        <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-gray-50 border-b border-gray-200">
-                <tr>
-                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <thead>
+                <tr className="border-b border-gray-200 bg-gray-50">
+                  <th className="text-left py-3 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Customer
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="text-left py-3 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Plan
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="text-left py-3 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Status
                   </th>
-                  <th
-                    className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:text-gray-700"
-                    onClick={() => handleSort('amount')}
-                  >
-                    Amount
+                  <th className="text-left py-3 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Payment Method
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Billing
+                  <th className="text-left py-3 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Revenue
                   </th>
-                  <th
-                    className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:text-gray-700"
-                    onClick={() => handleSort('nextBilling')}
-                  >
+                  <th className="text-left py-3 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Next Billing
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="text-left py-3 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Created
+                  </th>
+                  <th className="text-center py-3 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Actions
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {filteredSubscriptions.map((subscription, index) => (
-                  <motion.tr
-                    key={subscription.id}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: index * 0.05 }}
-                    className="hover:bg-gray-50 transition-colors"
-                  >
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center space-x-3">
-                        <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
-                          <User className="w-4 h-4 text-white" />
-                        </div>
+              <tbody className="divide-y divide-gray-200">
+                <AnimatePresence>
+                  {filteredSubscriptions.map((subscription, index) => (
+                    <motion.tr
+                      key={subscription.id}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -20 }}
+                      transition={{ delay: index * 0.05 }}
+                      className="hover:bg-gray-50 transition-colors"
+                    >
+                      <td className="py-4 px-6">
                         <div>
-                          <div className="text-sm font-medium text-gray-900">{subscription.customerName}</div>
-                          <div className="text-sm text-gray-500">{subscription.customerEmail}</div>
+                          <p className="text-sm font-medium text-gray-900">{subscription.user?.name || 'N/A'}</p>
+                          <p className="text-sm text-gray-500">{subscription.user?.email || 'N/A'}</p>
                         </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <PlanBadge plan={subscription.plan} />
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <StatusBadge status={subscription.status} />
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-gray-900">${subscription.amount}</div>
-                      <div className="text-sm text-gray-500">{subscription.currency}</div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900 capitalize">{subscription.billingCycle}</div>
-                      <div className="text-sm text-gray-500">{subscription.paymentMethod}</div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">
-                        {subscription.nextBilling ? new Date(subscription.nextBilling).toLocaleDateString() : 'N/A'}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <ActionMenu
-                        subscription={subscription}
-                        onView={handleView}
-                        onEdit={handleEdit}
-                        onCancel={handleCancel}
-                      />
-                    </td>
-                  </motion.tr>
-                ))}
+                      </td>
+                      <td className="py-4 px-6">
+                        <div className="flex flex-col">
+                          <span className="text-sm font-medium text-gray-900">{subscription.plan}</span>
+                          <span className="text-xs text-gray-500">
+                            {subscription.tokensIncluded.toLocaleString()} tokens
+                          </span>
+                        </div>
+                      </td>
+                      <td className="py-4 px-6">
+                        <StatusBadge status={subscription.status} />
+                      </td>
+                      <td className="py-4 px-6">
+                        <div className="flex items-center gap-2">
+                          <CreditCard className="w-4 h-4 text-gray-400" />
+                          <div className="text-sm">
+                            {subscription.paymentMethodBrand && subscription.paymentMethodLast4 ? (
+                              <span className="capitalize">
+                                {subscription.paymentMethodBrand} •••• {subscription.paymentMethodLast4}
+                              </span>
+                            ) : (
+                              <span className="capitalize">
+                                {subscription.paymentMethod?.replace('_', ' ') || 'N/A'}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      </td>
+                      <td className="py-4 px-6">
+                        <span className="text-sm font-medium text-gray-900">
+                          {formatCurrency(subscription.planPrice / 100)}
+                        </span>
+                      </td>
+                      <td className="py-4 px-6">
+                        <span className="text-sm text-gray-900">
+                          {subscription.currentPeriodEnd ? formatDate(subscription.currentPeriodEnd) : 'N/A'}
+                        </span>
+                      </td>
+                      <td className="py-4 px-6">
+                        <span className="text-sm text-gray-900">{formatDate(subscription.createdAt)}</span>
+                      </td>
+                      <td className="py-4 px-6">
+                        <div className="flex items-center justify-center">
+                          <motion.button
+                            onClick={() => dispatch(setOpenAdminManagePaymentDrawer({ subscription }))}
+                            whileHover={{ scale: 1.1 }}
+                            whileTap={{ scale: 0.95 }}
+                            className="p-1 text-gray-500 hover:text-blue-700 transition-colors"
+                          >
+                            <CreditCardIcon className="w-4 h-4" />
+                          </motion.button>
+                        </div>
+                      </td>
+                    </motion.tr>
+                  ))}
+                </AnimatePresence>
               </tbody>
             </table>
-          </div>
 
-          {filteredSubscriptions.length === 0 && (
-            <div className="text-center py-12">
-              <CreditCard className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">No subscriptions found</h3>
-              <p className="text-gray-500">Try adjusting your search or filter criteria.</p>
-            </div>
-          )}
-        </motion.div>
+            {filteredSubscriptions.length === 0 && (
+              <div className="text-center py-12">
+                <p className="text-gray-500">No subscriptions found matching your criteria.</p>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
-    </div>
+    </>
   )
 }
 
-export default Subscriptions
+export default AdminSubscriptions

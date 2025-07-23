@@ -1,16 +1,26 @@
 'use client'
 
-import { useState } from 'react'
-import { Save, CreditCard, Check, DollarSign, Calendar, Heart, Crown, Sparkles } from 'lucide-react'
+import React, { useState } from 'react'
 import { motion } from 'framer-motion'
+import { Save, Settings, Check, Bell, Users, AlertCircle, Coins, Heart } from 'lucide-react'
 
 const AdminSettings = () => {
-  // Subscription Plan Settings
-  const [subscriptionSettings, setSubscriptionSettings] = useState({
-    trialDuration: 7,
-    basicPlanPrice: 23,
-    premiumPlanPrice: 34,
-    professionalPlanPrice: 42
+  const [settings, setSettings] = useState({
+    // Token Settings
+    dailyTokenAllocation: 100,
+    tokenResetTime: '00:00',
+
+    // User Management
+    maxPetsPerFreeUser: 1,
+
+    // Notifications
+    lowTokenWarningThreshold: 20,
+    sendWeeklyReports: true,
+    maintenanceNotifications: true,
+
+    // System Settings
+    enableSystemMaintenance: false,
+    backupFrequency: 'daily'
   })
 
   const [isSaving, setIsSaving] = useState(false)
@@ -26,178 +36,315 @@ const AdminSettings = () => {
   }
 
   const updateSetting = (key: string, value: any) => {
-    setSubscriptionSettings((prev) => ({
+    setSettings((prev) => ({
       ...prev,
       [key]: value
     }))
   }
 
+  const SettingCard = ({
+    title,
+    description,
+    children,
+    icon: Icon
+  }: {
+    title: string
+    description: string
+    children: React.ReactNode
+    icon: any
+  }) => (
+    <div className="bg-white rounded-lg border border-gray-200 p-6">
+      <div className="flex items-center gap-3 mb-4">
+        <div className="p-2 bg-gray-100 rounded-lg">
+          <Icon className="w-5 h-5 text-gray-700" />
+        </div>
+        <div>
+          <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
+          <p className="text-sm text-gray-600">{description}</p>
+        </div>
+      </div>
+      <div className="space-y-4">{children}</div>
+    </div>
+  )
+
+  const ToggleSwitch = ({
+    enabled,
+    onChange,
+    label,
+    description
+  }: {
+    enabled: boolean
+    onChange: (value: boolean) => void
+    label: string
+    description?: string
+  }) => (
+    <div className="flex items-center justify-between">
+      <div className="flex-1">
+        <p className="text-sm font-medium text-gray-900">{label}</p>
+        {description && <p className="text-xs text-gray-500">{description}</p>}
+      </div>
+      <button
+        onClick={() => onChange(!enabled)}
+        className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+          enabled ? 'bg-gray-900' : 'bg-gray-200'
+        }`}
+      >
+        <span
+          className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+            enabled ? 'translate-x-6' : 'translate-x-1'
+          }`}
+        />
+      </button>
+    </div>
+  )
+
+  const NumberInput = ({
+    value,
+    onChange,
+    label,
+    min = 0,
+    max,
+    unit,
+    description
+  }: {
+    value: number
+    onChange: (value: number) => void
+    label: string
+    min?: number
+    max?: number
+    unit?: string
+    description?: string
+  }) => (
+    <div>
+      <label className="block text-sm font-medium text-gray-900 mb-2">{label}</label>
+      <div className="relative">
+        <input
+          type="number"
+          min={min}
+          max={max}
+          value={value}
+          onChange={(e) => onChange(parseInt(e.target.value))}
+          className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent"
+        />
+        {unit && <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-500">{unit}</span>}
+      </div>
+      {description && <p className="text-xs text-gray-500 mt-1">{description}</p>}
+    </div>
+  )
+
+  const SelectInput = ({
+    value,
+    onChange,
+    label,
+    options,
+    description
+  }: {
+    value: string
+    onChange: (value: string) => void
+    label: string
+    options: { value: string; label: string }[]
+    description?: string
+  }) => (
+    <div>
+      <label className="block text-sm font-medium text-gray-900 mb-2">{label}</label>
+      <select
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent"
+      >
+        {options.map((option) => (
+          <option key={option.value} value={option.value}>
+            {option.label}
+          </option>
+        ))}
+      </select>
+      {description && <p className="text-xs text-gray-500 mt-1">{description}</p>}
+    </div>
+  )
+
   return (
-    <div className="min-h-screen py-6">
-      <div className="max-w-full mx-auto space-y-8">
-        {/* Settings Panel */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="bg-white/80 backdrop-blur-sm rounded-2xl border border-white/20 shadow-xl overflow-hidden"
+    <div className="bg-gray-50 min-h-screen p-6">
+      {/* Header */}
+      <div className="mb-8">
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">System Settings</h1>
+            <p className="text-gray-600">Configure platform settings and preferences</p>
+          </div>
+        </div>
+      </div>
+
+      <div className="space-y-8 max-w-6xl">
+        {/* Token Management */}
+        <SettingCard
+          title="Token Management"
+          description="Configure daily token allocations and usage limits"
+          icon={Coins}
         >
-          <div className="p-8 border-b border-gray-200 bg-gradient-to-r from-pink-500/10 to-purple-500/10">
-            <div className="flex items-center space-x-3">
-              <CreditCard className="w-7 h-7 text-pink-600" />
-              <h2 className="text-2xl font-bold text-gray-900">Subscription Plans</h2>
+          <div className="grid md:grid-cols-2 gap-4">
+            <NumberInput
+              label="Daily Token Allocation"
+              value={settings.dailyTokenAllocation}
+              onChange={(value) => updateSetting('dailyTokenAllocation', value)}
+              min={10}
+              max={1000}
+              unit="tokens"
+              description="Tokens given to each user daily"
+            />
+          </div>
+          <div className="grid md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-900 mb-2">Token Reset Time</label>
+              <input
+                type="time"
+                value={settings.tokenResetTime}
+                onChange={(e) => updateSetting('tokenResetTime', e.target.value)}
+                className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent"
+              />
+              <p className="text-xs text-gray-500 mt-1">When daily tokens reset (UTC time)</p>
             </div>
-            <p className="text-gray-600 mt-2">
-              Manage trial duration and pricing for all Rosie Paws subscription tiers
+            <NumberInput
+              label="Low Token Warning"
+              value={settings.lowTokenWarningThreshold}
+              onChange={(value) => updateSetting('lowTokenWarningThreshold', value)}
+              min={1}
+              max={100}
+              unit="tokens"
+              description="Show warning when tokens fall below this"
+            />
+          </div>
+        </SettingCard>
+
+        {/* User Management */}
+        <SettingCard title="User Management" description="Control user registration and account settings" icon={Users}>
+          <NumberInput
+            label="Max Pets Per Free User"
+            value={settings.maxPetsPerFreeUser}
+            onChange={(value) => updateSetting('maxPetsPerFreeUser', value)}
+            min={1}
+            max={50}
+            unit="pets"
+            description="Maximum number of pets a free user can register"
+          />
+        </SettingCard>
+
+        {/* Notification Settings */}
+        <SettingCard title="Notifications" description="Configure email and system notifications" icon={Bell}>
+          <div className="grid md:grid-cols-2 gap-6">
+            <div className="space-y-4">
+              <ToggleSwitch
+                enabled={settings.sendWeeklyReports}
+                onChange={(value) => updateSetting('sendWeeklyReports', value)}
+                label="Weekly Reports"
+                description="Send weekly usage reports to admins"
+              />
+            </div>
+            <div className="space-y-4">
+              <ToggleSwitch
+                enabled={settings.maintenanceNotifications}
+                onChange={(value) => updateSetting('maintenanceNotifications', value)}
+                label="Maintenance Notifications"
+                description="Notify users about system maintenance"
+              />
+            </div>
+          </div>
+        </SettingCard>
+
+        {/* System Configuration */}
+        <SettingCard
+          title="System Configuration"
+          description="Core system settings and security options"
+          icon={Settings}
+        >
+          <div className="grid md:grid-cols-2 gap-4">
+            <SelectInput
+              label="Backup Frequency"
+              value={settings.backupFrequency}
+              onChange={(value) => updateSetting('backupFrequency', value)}
+              options={[
+                { value: 'hourly', label: 'Every Hour' },
+                { value: 'daily', label: 'Daily' },
+                { value: 'weekly', label: 'Weekly' }
+              ]}
+              description="How often to backup system data"
+            />
+            <div>
+              <ToggleSwitch
+                enabled={settings.enableSystemMaintenance}
+                onChange={(value) => updateSetting('enableSystemMaintenance', value)}
+                label="Maintenance Mode"
+                description="Enable maintenance mode for system updates"
+              />
+            </div>
+          </div>
+        </SettingCard>
+
+        {/* Current Plan Information */}
+        <SettingCard
+          title="Subscription Plans"
+          description="Current pricing structure (managed by system)"
+          icon={Heart}
+        >
+          <div className="grid md:grid-cols-3 gap-6">
+            <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+              <h4 className="font-semibold text-gray-900 mb-2">Comfort Plan</h4>
+              <p className="text-2xl font-bold text-green-600 mb-1">$11.99/month</p>
+              <p className="text-sm text-gray-600">45,000 tokens included</p>
+            </div>
+            <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
+              <h4 className="font-semibold text-gray-900 mb-2">Companion Plan</h4>
+              <p className="text-2xl font-bold text-purple-600 mb-1">$22.99/month</p>
+              <p className="text-sm text-gray-600">120,000 tokens included</p>
+            </div>
+            <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
+              <h4 className="font-semibold text-gray-900 mb-2">Legacy Plan</h4>
+              <p className="text-2xl font-bold text-orange-600 mb-1">$34.99/month</p>
+              <p className="text-sm text-gray-600">Unlimited tokens included</p>
+            </div>
+          </div>
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <div className="flex items-center gap-2 mb-2">
+              <AlertCircle className="w-4 h-4 text-blue-600" />
+              <span className="text-sm font-medium text-blue-900">Plan Information</span>
+            </div>
+            <p className="text-sm text-blue-800">
+              Subscription pricing is managed at the system level. Users receive daily tokens based on their plan and
+              can purchase additional tokens as needed.
             </p>
           </div>
+        </SettingCard>
 
-          <div className="p-8 space-y-8">
-            {/* Trial Duration */}
-            <div className="bg-gradient-to-r from-blue-50 to-cyan-50 p-6 rounded-xl border border-blue-200">
-              <div className="flex items-center space-x-3 mb-4">
-                <Calendar className="w-6 h-6 text-blue-600" />
-                <h3 className="text-lg font-semibold text-gray-900">Free Trial Period</h3>
-              </div>
-              <div className="flex items-center space-x-4">
-                <label className="text-sm font-medium text-gray-700 min-w-fit">Trial Duration:</label>
-                <div className="relative max-w-32">
-                  <input
-                    type="number"
-                    min="0"
-                    max="90"
-                    value={subscriptionSettings.trialDuration}
-                    onChange={(e) => updateSetting('trialDuration', parseInt(e.target.value))}
-                    className="w-full px-4 py-2 pr-12 border border-blue-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-                  />
-                  <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-sm text-gray-500">
-                    days
-                  </span>
-                </div>
-                <p className="text-sm text-gray-600">
-                  Users get {subscriptionSettings.trialDuration} days free access to all features
-                </p>
-              </div>
+        {/* Save Button */}
+        <div className="bg-white rounded-lg border border-gray-200 p-6">
+          <div className="flex items-center justify-between">
+            <div className="text-sm text-gray-600">
+              <p className="font-medium text-gray-900 mb-1">Save Configuration</p>
+              <p>Changes will be applied immediately and affect all users.</p>
+              <p>Some settings may require a system restart to take effect.</p>
             </div>
-
-            {/* Pricing Tiers */}
-            <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-6">Subscription Pricing</h3>
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                {/* Basic Plan */}
-                <div className="bg-gradient-to-br from-green-50 to-emerald-50 p-6 rounded-xl border-2 border-green-200 relative">
-                  <div className="flex items-center space-x-3 mb-4">
-                    <div className="p-2 bg-green-100 rounded-lg">
-                      <Heart className="w-6 h-6 text-green-600" />
-                    </div>
-                    <h4 className="text-xl font-bold text-gray-900">Basic Paws</h4>
-                  </div>
-
-                  <div className="mb-4">
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Monthly Price</label>
-                    <div className="relative">
-                      <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-                      <input
-                        type="number"
-                        step="0.01"
-                        min="0"
-                        value={subscriptionSettings.basicPlanPrice}
-                        onChange={(e) => updateSetting('basicPlanPrice', parseFloat(e.target.value))}
-                        className="pl-10 w-full px-4 py-3 border border-green-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 bg-white text-xl font-bold"
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Premium Plan */}
-                <div className="bg-gradient-to-br from-purple-50 to-pink-50 p-6 rounded-xl border-2 border-purple-300 relative">
-                  <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                    <span className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-4 py-1 rounded-full text-sm font-medium">
-                      Most Popular
-                    </span>
-                  </div>
-
-                  <div className="flex items-center space-x-3 mb-4 mt-2">
-                    <div className="p-2 bg-purple-100 rounded-lg">
-                      <Crown className="w-6 h-6 text-purple-600" />
-                    </div>
-                    <h4 className="text-xl font-bold text-gray-900">Premium Paws</h4>
-                  </div>
-
-                  <div className="mb-4">
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Monthly Price</label>
-                    <div className="relative">
-                      <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-                      <input
-                        type="number"
-                        step="0.01"
-                        min="0"
-                        value={subscriptionSettings.premiumPlanPrice}
-                        onChange={(e) => updateSetting('premiumPlanPrice', parseFloat(e.target.value))}
-                        className="pl-10 w-full px-4 py-3 border border-purple-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 bg-white text-xl font-bold"
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Professional Plan */}
-                <div className="bg-gradient-to-br from-orange-50 to-amber-50 p-6 rounded-xl border-2 border-orange-200 relative">
-                  <div className="flex items-center space-x-3 mb-4">
-                    <div className="p-2 bg-orange-100 rounded-lg">
-                      <Sparkles className="w-6 h-6 text-orange-600" />
-                    </div>
-                    <h4 className="text-xl font-bold text-gray-900">Professional Paws</h4>
-                  </div>
-
-                  <div className="mb-4">
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Monthly Price</label>
-                    <div className="relative">
-                      <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-                      <input
-                        type="number"
-                        step="0.01"
-                        min="0"
-                        value={subscriptionSettings.professionalPlanPrice}
-                        onChange={(e) => updateSetting('professionalPlanPrice', parseFloat(e.target.value))}
-                        className="pl-10 w-full px-4 py-3 border border-orange-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 bg-white text-xl font-bold"
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Save Button */}
-            <div className="pt-6 border-t border-gray-200">
-              <div className="flex items-center justify-between">
-                <div className="text-sm text-gray-600">
-                  <p>Changes will affect all new subscriptions immediately.</p>
-                  <p>Existing subscribers will see changes at their next billing cycle.</p>
-                </div>
-                <button
-                  onClick={handleSaveSettings}
-                  disabled={isSaving}
-                  className={`flex items-center space-x-3 px-8 py-3 rounded-xl font-semibold transition-all transform ${
-                    saved
-                      ? 'bg-green-500 text-white scale-105'
-                      : 'bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white hover:scale-105'
-                  } ${isSaving ? 'opacity-50 cursor-not-allowed scale-100' : 'shadow-lg hover:shadow-xl'}`}
-                >
-                  {saved ? (
-                    <>
-                      <Check className="w-5 h-5" />
-                      <span>Settings Saved!</span>
-                    </>
-                  ) : (
-                    <>
-                      <Save className="w-5 h-5" />
-                      <span>{isSaving ? 'Saving Changes...' : 'Save All Settings'}</span>
-                    </>
-                  )}
-                </button>
-              </div>
-            </div>
+            <motion.button
+              onClick={handleSaveSettings}
+              disabled={isSaving}
+              whileHover={{ scale: isSaving ? 1 : 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              className={`flex items-center gap-3 px-6 py-3 rounded-lg font-semibold transition-all ${
+                saved ? 'bg-green-600 text-white' : 'bg-gray-900 text-white hover:bg-gray-800'
+              } ${isSaving ? 'opacity-50 cursor-not-allowed' : ''}`}
+            >
+              {saved ? (
+                <>
+                  <Check className="w-5 h-5" />
+                  <span>Settings Saved!</span>
+                </>
+              ) : (
+                <>
+                  <Save className="w-5 h-5" />
+                  <span>{isSaving ? 'Saving...' : 'Save All Settings'}</span>
+                </>
+              )}
+            </motion.button>
           </div>
-        </motion.div>
+        </div>
       </div>
     </div>
   )

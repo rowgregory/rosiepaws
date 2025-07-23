@@ -25,13 +25,6 @@ export async function middleware(req: NextRequest) {
   const session = await auth()
   const isLoggedIn = !!session?.user
 
-  console.log('🎫 Middleware auth check:', {
-    pathname: nextUrl.pathname,
-    isLoggedIn,
-    userId: session?.user?.id,
-    userRole: session?.user?.role
-  })
-
   // Set up request headers
   const requestHeaders = new Headers(req.headers)
   requestHeaders.set('x-pathname', nextUrl.pathname)
