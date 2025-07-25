@@ -5,7 +5,6 @@ import { configureStore } from '@reduxjs/toolkit'
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux'
 import { api } from './services/api'
 import { appReducer } from './features/appSlice'
-import { authReducer } from './features/authSlice'
 import { dashboardReducer } from './features/dashboardSlice'
 import { userReducer } from './features/userSlice'
 import { logReducer } from './features/logSlice'
@@ -13,10 +12,10 @@ import { petReducer } from './features/petSlice'
 import { formReducer } from './features/formSlice'
 import { stripeReducer } from './features/stripeSlice'
 import { adminReducer } from './features/adminSlice'
+import { ticketReducer } from './features/ticketSlice'
 
 const rootReducer = combineReducers({
   app: appReducer,
-  auth: authReducer,
   dashboard: dashboardReducer,
   user: userReducer,
   log: logReducer,
@@ -24,6 +23,7 @@ const rootReducer = combineReducers({
   form: formReducer,
   stripe: stripeReducer,
   admin: adminReducer,
+  ticket: ticketReducer,
   [api.reducerPath]: api.reducer
 })
 

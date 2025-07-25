@@ -48,7 +48,6 @@ export interface IUser {
   role: string
   isSuperUser: boolean
   isAdmin: boolean
-  isGuardian: boolean
   isFreeUser: boolean
   isComfortUser: boolean
   isCompanionUser: boolean
@@ -124,6 +123,7 @@ export interface IAppointment {
   status: AppointmentStatus
   veterinarian?: string
   notes?: string
+  isCareTask?: boolean
   petId: string
   pet: Pet
   createdAt: Date
@@ -143,6 +143,7 @@ export interface IMedication {
   reminderTimes: string[]
   instructions?: string
   prescribedBy?: string
+  isCareTask?: boolean
   sentRemindersToday: string[]
   petId: string
   createdAt: Date
@@ -161,6 +162,7 @@ export interface IFeeding {
   ingredients?: string
   notes?: string
   petId: string
+  isCareTask?: boolean
   createdAt: Date
   updatedAt: Date
 
@@ -192,6 +194,7 @@ export interface Walk {
   timeRecorded: string
   notes?: string
   petId: string
+  isCareTask?: boolean
   createdAt: Date
   updatedAt: Date
 }
@@ -221,6 +224,7 @@ export interface IBloodSugar {
   targetRange?: string
   symptoms?: string
   medicationGiven?: boolean
+  isCareTask?: boolean
   createdAt: Date
   updatedAt: Date
 
@@ -260,6 +264,7 @@ export interface IWalk {
   notes?: string
   petId: string
   pet?: Pet
+  isCareTask?: boolean
   createdAt: Date
   updatedAt: Date
 }
@@ -292,4 +297,30 @@ export interface IMovement {
   timeRecorded: string
 
   pet: Pet
+}
+
+export interface ITicketAttachment {
+  id?: string
+  url: string
+  filename: string
+  size?: number
+  type?: string
+  uploadedAt?: string
+}
+
+export interface ITicket {
+  messages: any
+  status: any
+  id: string
+  category: 'bug' | 'feature' | 'support' | 'billing' | 'other'
+  priority: 'low' | 'medium' | 'high' | 'urgent'
+  subject: string
+  description: string
+  email: string
+  deviceInfo?: string | null // JSON string in DB
+  attachments?: ITicketAttachment[] | null // JSON in DB
+  user?: IUser
+  userId: string
+  createdAt: Date | string
+  updatedAt: Date | string
 }

@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { signIn } from 'next-auth/react'
 import Link from 'next/link'
-import AuthErrorDrawer from '@/app/drawers/AuthErrorDrawer'
+import AuthErrorDrawer from '@/app/drawers/general/AuthErrorDrawer'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { setOpenAuthErrorDrawer } from '@/app/redux/features/appSlice'
 import { useAppDispatch } from '@/app/redux/store'
@@ -24,7 +24,7 @@ const Login = () => {
 
     try {
       const result = await signIn('google', {
-        callbackUrl: '/auth/custom-callback', // Go to callback page after OAuth
+        callbackUrl: '/auth/custom-callback',
         redirect: false
       })
 
@@ -41,24 +41,21 @@ const Login = () => {
   }
 
   const handleMagicLink = async () => {
-    // if (!email) return
     setIsLoading(true)
 
     try {
       const result = await signIn('email', {
         email,
         redirect: false,
-        callbackUrl: '/auth/custom-callback' // Go to callback page after OAuth
+        callbackUrl: '/auth/custom-callback'
       })
 
       if (result?.ok) {
         setShowMessage(true)
       } else {
-        // setError('Failed to send magic link')
       }
     } catch (error) {
       console.error('Magic link error:', error)
-      // setError('Failed to send magic link')
     } finally {
       setIsLoading(false)
     }
@@ -75,7 +72,11 @@ const Login = () => {
 
   return (
     <>
-      <SlideMessage showMessage={showMessage} setShowMessage={setShowMessage} />
+      <SlideMessage
+        showMessage={showMessage}
+        setShowMessage={setShowMessage}
+        message="Your magic link has been sent successfully."
+      />
       <AuthErrorDrawer />
       <div className="min-h-dvh p-10 flex bg-gradient-to-tr from-red-100 via-pink-100 to-orange-100">
         {/* Left Side - Login Form */}

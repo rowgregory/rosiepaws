@@ -1,50 +1,47 @@
-// lib/constants/tokens.ts
-
 // Create token costs
-export const petCreateTokenCost = parseInt(process.env.PET_CREATE_TOKEN_COST!) || 200
-export const painScoreCreateTokenCost = parseInt(process.env.PAIN_SCORE_CREATE_TOKEN_COST!) || 75
-export const feedingCreateTokenCost = parseInt(process.env.FEEDING_CREATE_TOKEN_COST!) || 85
-export const waterCreateTokenCost = parseInt(process.env.WATER_CREATE_TOKEN_COST!) || 90
-export const walkCreateTokenCost = parseInt(process.env.WALK_CREATE_TOKEN_COST!) || 125
-export const movementCreateTokenCost = parseInt(process.env.MOVEMENT_CREATE_TOKEN_COST!) || 225
-export const appointmentCreateTokenCost = parseInt(process.env.APPOINTMENT_CREATE_TOKEN_COST!) || 150
-export const medicationCreateTokenCost = parseInt(process.env.MEDICATION_CREATE_TOKEN_COST!) || 225
-export const bloodSugarCreateTokenCost = parseInt(process.env.BLOOD_SUGAR_CREATE_TOKEN_COST!) || 300
-export const seizureCreateTokenCost = parseInt(process.env.SEIZURE_CREATE_TOKEN_COST!) || 400
+export const petCreateTokenCost = parseInt(process.env.NEXT_PUBLIC_PET_CREATE_TOKEN_COST!) || 200
+export const painScoreCreateTokenCost = parseInt(process.env.NEXT_PUBLIC_PAIN_SCORE_CREATE_TOKEN_COST!) || 75
+export const feedingCreateTokenCost = parseInt(process.env.NEXT_PUBLIC_FEEDING_CREATE_TOKEN_COST!) || 85
+export const waterCreateTokenCost = parseInt(process.env.NEXT_PUBLIC_WATER_CREATE_TOKEN_COST!) || 90
+export const walkCreateTokenCost = parseInt(process.env.NEXT_PUBLIC_WALK_CREATE_TOKEN_COST!) || 125
+export const movementCreateTokenCost = parseInt(process.env.NEXT_PUBLIC_MOVEMENT_CREATE_TOKEN_COST!) || 225
+export const appointmentCreateTokenCost = parseInt(process.env.NEXT_PUBLIC_APPOINTMENT_CREATE_TOKEN_COST!) || 150
+export const medicationCreateTokenCost = parseInt(process.env.NEXT_PUBLIC_MEDICATION_CREATE_TOKEN_COST!) || 225
+export const bloodSugarCreateTokenCost = parseInt(process.env.NEXT_PUBLIC_BLOOD_SUGAR_CREATE_TOKEN_COST!) || 300
+export const seizureCreateTokenCost = parseInt(process.env.NEXT_PUBLIC_SEIZURE_CREATE_TOKEN_COST!) || 400
 
 // Edit token amounts
-export const petEditTokenCost = parseInt(process.env.PET_EDIT_TOKEN_COST!) || 100
-export const painScoreEditTokenCost = parseInt(process.env.PAIN_SCORE_EDIT_TOKEN_COST!) || 40
-export const walkEditTokenCost = parseInt(process.env.WALK_EDIT_TOKEN_COST!) || 65
-export const feedingEditTokenCost = parseInt(process.env.FEEDING_EDIT_TOKEN_COST!) || 45
-export const waterEditTokenCost = parseInt(process.env.WATER_EDIT_TOKEN_COST!) || 45
-export const appointmentEditTokenCost = parseInt(process.env.APPOINTMENT_EDIT_TOKEN_COST!) || 75
-export const medicationEditTokenCost = parseInt(process.env.MEDICATION_EDIT_TOKEN_COST!) || 115
-export const bloodSugarEditTokenCost = parseInt(process.env.BLOOD_SUGAR_EDIT_TOKEN_COST!) || 150
-export const seizureEditTokenCost = parseInt(process.env.SEIZURE_EDIT_TOKEN_COST!) || 200
-export const movementEditTokenCost = parseInt(process.env.MOVEMENT_EDIT_TOKEN_COST!) || 115
+export const petUpdateTokenCost = parseInt(process.env.NEXT_PUBLIC_PET_UPDATE_TOKEN_COST!) || 10
+export const painScoreUpdateTokenCost = parseInt(process.env.NEXT_PUBLIC_PAIN_SCORE_UPDATE_TOKEN_COST!) || 40
+export const walkUpdateTokenCost = parseInt(process.env.NEXT_PUBLIC_WALK_UPDATE_TOKEN_COST!) || 65
+export const feedingUpdateTokenCost = parseInt(process.env.NEXT_PUBLIC_FEEDING_UPDATE_TOKEN_COST!) || 45
+export const waterUpdateTokenCost = parseInt(process.env.NEXT_PUBLIC_WATER_UPDATE_TOKEN_COST!) || 45
+export const appointmentUpdateTokenCost = parseInt(process.env.NEXT_PUBLIC_APPOINTMENT_UPDATE_TOKEN_COST!) || 75
+export const medicationUpdateTokenCost = parseInt(process.env.NEXT_PUBLIC_MEDICATION_UPDATE_TOKEN_COST!) || 115
+export const bloodSugarUpdateTokenCost = parseInt(process.env.NEXT_PUBLIC_BLOOD_SUGAR_UPDATE_TOKEN_COST!) || 150
+export const seizureUpdateTokenCost = parseInt(process.env.NEXT_PUBLIC_SEIZURE_UPDATE_TOKEN_COST!) || 200
+export const movementUpdateTokenCost = parseInt(process.env.NEXT_PUBLIC_MOVEMENT_UPDATE_TOKEN_COST!) || 115
 
 // Delete token amounts
-export const petDeleteTokenCost = parseInt(process.env.PET_DELETE_TOKEN_COST!) || 50
-export const painScoreDeleteTokenCost = parseInt(process.env.PAIN_SCORE_DELETE_TOKEN_COST!) || 20
-export const walkDeleteTokenCost = parseInt(process.env.WALK_DELETE_TOKEN_COST!) || 35
-export const feedingDeleteTokenCost = parseInt(process.env.FEEDING_DELETE_TOKEN_COST!) || 25
-export const waterDeleteTokenCost = parseInt(process.env.WATER_DELETE_TOKEN_COST!) || 25
-export const appointmentDeleteTokenCost = parseInt(process.env.APPOINTMENT_DELETE_TOKEN_COST!) || 40
-export const medicationDeleteTokenCost = parseInt(process.env.MEDICATION_DELETE_TOKEN_COST!) || 60
-export const bloodSugarDeleteTokenCost = parseInt(process.env.BLOOD_SUGAR_DELETE_TOKEN_COST!) || 75
-export const seizureDeleteTokenCost = parseInt(process.env.SEIZURE_DELETE_TOKEN_COST!) || 100
-export const movementDeleteTokenCost = parseInt(process.env.MOVEMENT_DELETE_TOKEN_COST!) || 60
+export const petDeleteTokenCost = parseInt(process.env.NEXT_PUBLIC_PET_DELETE_TOKEN_COST!) || 50
+export const painScoreDeleteTokenCost = parseInt(process.env.NEXT_PUBLIC_PAIN_SCORE_DELETE_TOKEN_COST!) || 20
+export const walkDeleteTokenCost = parseInt(process.env.NEXT_PUBLIC_WALK_DELETE_TOKEN_COST!) || 35
+export const feedingDeleteTokenCost = parseInt(process.env.NEXT_PUBLIC_FEEDING_DELETE_TOKEN_COST!) || 25
+export const waterDeleteTokenCost = parseInt(process.env.NEXT_PUBLIC_WATER_DELETE_TOKEN_COST!) || 25
+export const appointmentDeleteTokenCost = parseInt(process.env.NEXT_PUBLIC_APPOINTMENT_DELETE_TOKEN_COST!) || 40
+export const medicationDeleteTokenCost = parseInt(process.env.NEXT_PUBLIC_MEDICATION_DELETE_TOKEN_COST!) || 60
+export const bloodSugarDeleteTokenCost = parseInt(process.env.NEXT_PUBLIC_BLOOD_SUGAR_DELETE_TOKEN_COST!) || 75
+export const seizureDeleteTokenCost = parseInt(process.env.NEXT_PUBLIC_SEIZURE_DELETE_TOKEN_COST!) || 100
+export const movementDeleteTokenCost = parseInt(process.env.NEXT_PUBLIC_MOVEMENT_DELETE_TOKEN_COST!) || 60
 
 // Other costs
-export const petUpdateTokenCost = parseInt(process.env.PET_UPDATE_TOKEN_COST!) || 5
-export const galleryUploadTokenCost = parseInt(process.env.GALLERY_UPLOAD_TOKEN_COST!) || 5
+export const galleryUploadTokenCost = parseInt(process.env.NEXT_PUBLIC_GALLERY_UPLOAD_TOKEN_COST!) || 5
 
 // Tier prices
-export const freeTierPrice = parseFloat(process.env.FREE_TIER_PRICE!) || 0
-export const comfortTierPrice = parseFloat(process.env.COMFORT_TIER_PRICE!) || 11.99
-export const companionTierPrice = parseFloat(process.env.COMPANION_TIER_PRICE!) || 22.99
-export const legacyTierPrice = parseFloat(process.env.LEGACY_TIER_PRICE!) || 34.99
+export const freeTierPrice = parseFloat(process.env.NEXT_PUBLIC_FREE_TIER_PRICE!) || 0
+export const comfortTierPrice = parseFloat(process.env.NEXT_PUBLIC_COMFORT_TIER_PRICE!) || 11.99
+export const companionTierPrice = parseFloat(process.env.NEXT_PUBLIC_COMPANION_TIER_PRICE!) || 22.99
+export const legacyTierPrice = parseFloat(process.env.NEXT_PUBLIC_LEGACY_TIER_PRICE!) || 34.99
 
 // Tier names
 export const freeTierName = 'Free'

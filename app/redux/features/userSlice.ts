@@ -11,7 +11,6 @@ export interface UserProps {
   role: string
   isAdmin: boolean
   isSuperUser: boolean
-  isGuardian: boolean
   isFreeUser: boolean
   isComfortUser: boolean
   isCompanionUser: boolean
@@ -32,12 +31,11 @@ const userState: UserProps = {
   role: '',
   isAdmin: false,
   isSuperUser: false,
-  isGuardian: false,
   isFreeUser: false,
   isComfortUser: false,
   isCompanionUser: false,
   isLegacyUser: false,
-  tokens: 150,
+  tokens: 750,
   tokensUsed: 0,
   createdAt: new Date(),
   updatedAt: new Date()

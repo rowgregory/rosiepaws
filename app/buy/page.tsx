@@ -4,7 +4,7 @@ import React from 'react'
 import PricingCard from '../components/home/PricingCard'
 import { plans } from '@/public/data/home.data'
 import SubscriptionPlan from '../components/guardian/SubscriptionPlan'
-import { ArrowLeftFromLine, Check, Coins, Crown, X } from 'lucide-react'
+import { ArrowLeftFromLine, Check, Coins, Crown, X, Shield, Star } from 'lucide-react'
 import Link from 'next/link'
 import { RootState, useAppSelector } from '../redux/store'
 import SubscriptionManagementModal from '../modals/SubscriptionManagementModal'
@@ -27,128 +27,264 @@ const Buy = () => {
   return (
     <>
       <SubscriptionManagementModal />
-      <div className="pt-3 bg-zinc-50 min-h-dvh">
-        <Link href="/guardian/home" className="w-fit h-10 pl-8 flex items-center gap-x-3 group">
-          <ArrowLeftFromLine className="w-5 h-5 group-hover:text-pink-500 duration-300" />
-          <span className="text-lg bg-gradient-to-r from-orange-500 via-pink-500 to-red-500 bg-clip-text text-transparent font-semibold tracking-wide">
-            <span className="text-gray-800">Rosie</span>.Paws
-          </span>
-        </Link>
-        <div className="max-w-[1440px] mx-auto w-full flex items-center flex-col">
-          <SubscriptionPlan user={user} />
-          <div className="space-y-4 sm:space-y-0 grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 sm:gap-3 mb-6 sm:mb-8 px-3">
-            {plans.map((plan, index) => (
-              <PricingCard key={index} plan={plan} index={index} user={user} />
-            ))}
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50">
+        {/* Header */}
+        <div className="bg-white/80 backdrop-blur-sm border-b border-slate-200 sticky top-0 z-10">
+          <div className="max-w-7xl mx-auto px-6 py-4">
+            <Link
+              href="/guardian/home"
+              className="inline-flex items-center gap-3 text-slate-600 hover:text-pink-500 transition-colors duration-300 group"
+            >
+              <ArrowLeftFromLine className="w-5 h-5 group-hover:-translate-x-1 transition-transform duration-300" />
+              <span className="text-xl font-bold">
+                <span className="text-slate-800">Rosie</span>
+                <span className="bg-gradient-to-r from-orange-500 via-pink-500 to-red-500 bg-clip-text text-transparent">
+                  .Paws
+                </span>
+              </span>
+            </Link>
           </div>
         </div>
 
-        <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-6">
-          {/* Plan Comparison Chart */}
-          <div className="bg-gradient-to-r from-purple-50 to-pink-50 p-6 rounded-xl border border-purple-200">
-            <div className="flex items-center space-x-3 mb-6">
-              <Crown className="w-6 h-6 text-purple-600" />
-              <h3 className="text-lg font-semibold text-gray-900">Plan Comparison</h3>
+        {/* Main Content */}
+        <div className="max-w-7xl mx-auto px-6 py-12">
+          {/* Hero Section */}
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-16">
+            <div className="inline-flex items-center gap-2 bg-gradient-to-r from-pink-100 to-orange-100 text-pink-700 px-4 py-2 rounded-full text-sm font-medium mb-6">
+              <Star className="w-4 h-4" />
+              Choose Your Perfect Plan
             </div>
+            <h1 className="text-4xl md:text-5xl font-bold text-slate-900 mb-4">
+              Professional Pet Care
+              <span className="block text-transparent bg-gradient-to-r from-pink-500 to-orange-500 bg-clip-text">
+                Made Simple
+              </span>
+            </h1>
+            <p className="text-xl text-slate-600 max-w-2xl mx-auto">
+              Comprehensive health tracking and personalized care recommendations for your beloved companion
+            </p>
+          </motion.div>
 
-            <div className="overflow-x-auto">
-              <table className="w-full bg-white rounded-lg border border-purple-100 overflow-hidden">
-                <thead className="bg-gradient-to-r from-purple-500/10 to-pink-500/10">
-                  <tr>
-                    <th className="px-4 py-3 text-left font-medium text-gray-900">Features</th>
-                    <th className="px-4 py-3 text-center font-medium text-gray-600">
-                      {freeTierName}
-                      <br />
-                      <span className="text-sm font-normal">${freeTierPrice}/month</span>
-                    </th>
-                    <th className="px-4 py-3 text-center font-medium text-blue-600">
-                      {comfortTierName}
-                      <br />
-                      <span className="text-sm font-normal">${comfortTierPrice}/month</span>
-                    </th>
-                    <th className="px-4 py-3 text-center font-medium text-purple-600">
-                      {companionTierName}
-                      <br />
-                      <span className="text-sm font-normal">${companionTierPrice}/month</span>
-                    </th>
-                    <th className="px-4 py-3 text-center font-medium text-yellow-600">
-                      {legacyTierName}
-                      <br />
-                      <span className="text-sm font-normal">${legacyTierPrice}/month</span>
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-100">
-                  {planFeatures.map((row, index) => (
-                    <tr key={index} className={index % 2 === 0 ? 'bg-gray-50/50' : 'bg-white'}>
-                      <td className="px-4 py-3 font-medium text-gray-900">{row.feature}</td>
-                      <td className="px-4 py-3 text-center text-sm">
-                        {row.free === '✓' ? (
-                          <Check className="w-5 h-5 text-green-500 mx-auto" />
-                        ) : row.free === '✗' ? (
-                          <X className="w-5 h-5 text-red-400 mx-auto" />
-                        ) : (
-                          <span className="text-gray-600">{row.free}</span>
-                        )}
-                      </td>
-                      <td className="px-4 py-3 text-center text-sm">
-                        {row.comfort === '✓' ? (
-                          <Check className="w-5 h-5 text-green-500 mx-auto" />
-                        ) : row.comfort === '✗' ? (
-                          <X className="w-5 h-5 text-red-400 mx-auto" />
-                        ) : (
-                          <span className="text-blue-600 font-medium">{row.comfort}</span>
-                        )}
-                      </td>
-                      <td className="px-4 py-3 text-center text-sm">
-                        {row.companion === '✓' ? (
-                          <Check className="w-5 h-5 text-green-500 mx-auto" />
-                        ) : row.companion === '✗' ? (
-                          <X className="w-5 h-5 text-red-400 mx-auto" />
-                        ) : (
-                          <span className="text-purple-600 font-medium">{row.companion}</span>
-                        )}
-                      </td>
-                      <td className="px-4 py-3 text-center text-sm">
-                        {row.legacy === '✓' ? (
-                          <Check className="w-5 h-5 text-green-500 mx-auto" />
-                        ) : row.legacy === '✗' ? (
-                          <X className="w-5 h-5 text-red-400 mx-auto" />
-                        ) : (
-                          <span className="text-yellow-600 font-medium">{row.legacy}</span>
-                        )}
-                      </td>
+          {/* Current Subscription */}
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
+            <SubscriptionPlan user={user} />
+          </motion.div>
+
+          {/* Pricing Cards */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-6 mb-16"
+          >
+            {plans.map((plan, index) => (
+              <PricingCard key={index} plan={plan} index={index} user={user} />
+            ))}
+          </motion.div>
+
+          {/* Feature Comparison */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            className="mb-12"
+          >
+            <div className="bg-white rounded-2xl shadow-lg border border-slate-200 overflow-hidden">
+              {/* Header */}
+              <div className="bg-gradient-to-r from-slate-900 to-slate-800 px-8 py-6">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-white/10 rounded-lg">
+                    <Crown className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <h2 className="text-2xl font-bold text-white">Feature Comparison</h2>
+                    <p className="text-slate-300">Compare all plans side by side</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Table */}
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="bg-slate-50 border-b border-slate-200">
+                      <th className="px-6 py-4 text-left font-semibold text-slate-900 min-w-[200px]">Features</th>
+                      <th className="px-6 py-4 text-center font-semibold text-slate-600 min-w-[120px]">
+                        <div className="flex flex-col items-center">
+                          <span>{freeTierName}</span>
+                          <span className="text-sm font-normal text-slate-500 mt-1">${freeTierPrice}/month</span>
+                        </div>
+                      </th>
+                      <th className="px-6 py-4 text-center font-semibold text-blue-600 min-w-[120px]">
+                        <div className="flex flex-col items-center">
+                          <span>{comfortTierName}</span>
+                          <span className="text-sm font-normal text-blue-500 mt-1">${comfortTierPrice}/month</span>
+                        </div>
+                      </th>
+                      <th className="px-6 py-4 text-center font-semibold text-purple-600 min-w-[120px]">
+                        <div className="flex flex-col items-center">
+                          <span>{companionTierName}</span>
+                          <span className="text-sm font-normal text-purple-500 mt-1">${companionTierPrice}/month</span>
+                        </div>
+                      </th>
+                      <th className="px-6 py-4 text-center font-semibold text-amber-600 min-w-[120px]">
+                        <div className="flex flex-col items-center">
+                          <span>{legacyTierName}</span>
+                          <span className="text-sm font-normal text-amber-500 mt-1">${legacyTierPrice}/month</span>
+                        </div>
+                      </th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody className="divide-y divide-slate-200">
+                    {planFeatures.map((row, index) => (
+                      <tr
+                        key={index}
+                        className={`hover:bg-slate-50 transition-colors ${
+                          index % 2 === 0 ? 'bg-white' : 'bg-slate-50/50'
+                        }`}
+                      >
+                        <td className="px-6 py-4 font-medium text-slate-900">{row.feature}</td>
+                        <td className="px-6 py-4 text-center">
+                          {row.free === '✓' ? (
+                            <div className="inline-flex items-center justify-center w-8 h-8 bg-green-100 rounded-full">
+                              <Check className="w-5 h-5 text-green-600" />
+                            </div>
+                          ) : row.free === '✗' ? (
+                            <div className="inline-flex items-center justify-center w-8 h-8 bg-red-100 rounded-full">
+                              <X className="w-5 h-5 text-red-500" />
+                            </div>
+                          ) : (
+                            <span className="text-slate-600 font-medium">{row.free}</span>
+                          )}
+                        </td>
+                        <td className="px-6 py-4 text-center">
+                          {row.comfort === '✓' ? (
+                            <div className="inline-flex items-center justify-center w-8 h-8 bg-green-100 rounded-full">
+                              <Check className="w-5 h-5 text-green-600" />
+                            </div>
+                          ) : row.comfort === '✗' ? (
+                            <div className="inline-flex items-center justify-center w-8 h-8 bg-red-100 rounded-full">
+                              <X className="w-5 h-5 text-red-500" />
+                            </div>
+                          ) : (
+                            <span className="text-blue-600 font-semibold">{row.comfort}</span>
+                          )}
+                        </td>
+                        <td className="px-6 py-4 text-center">
+                          {row.companion === '✓' ? (
+                            <div className="inline-flex items-center justify-center w-8 h-8 bg-green-100 rounded-full">
+                              <Check className="w-5 h-5 text-green-600" />
+                            </div>
+                          ) : row.companion === '✗' ? (
+                            <div className="inline-flex items-center justify-center w-8 h-8 bg-red-100 rounded-full">
+                              <X className="w-5 h-5 text-red-500" />
+                            </div>
+                          ) : (
+                            <span className="text-purple-600 font-semibold">{row.companion}</span>
+                          )}
+                        </td>
+                        <td className="px-6 py-4 text-center">
+                          {row.legacy === '✓' ? (
+                            <div className="inline-flex items-center justify-center w-8 h-8 bg-green-100 rounded-full">
+                              <Check className="w-5 h-5 text-green-600" />
+                            </div>
+                          ) : row.legacy === '✗' ? (
+                            <div className="inline-flex items-center justify-center w-8 h-8 bg-red-100 rounded-full">
+                              <X className="w-5 h-5 text-red-500" />
+                            </div>
+                          ) : (
+                            <span className="text-amber-600 font-semibold">{row.legacy}</span>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
-          </div>
+          </motion.div>
 
-          {/* Token Economics Explanation */}
-          <div className="bg-gradient-to-r from-green-50 to-emerald-50 p-6 rounded-xl border border-green-200">
-            <div className="flex items-center space-x-3 mb-4">
-              <Coins className="w-6 h-6 text-green-600" />
-              <h3 className="text-lg font-semibold text-gray-900">Token Economics</h3>
-            </div>
-            <div className="grid md:grid-cols-2 gap-4">
-              <div className="bg-white p-4 rounded-lg border border-green-100">
-                <h4 className="font-medium text-gray-900 mb-2">Why Token Limits?</h4>
-                <p className="text-sm text-gray-600">
-                  Token limits encourage thoughtful health tracking while preventing system overload. They help
-                  prioritize the most important health metrics for your pet.
-                </p>
+          {/* Token Economics */}
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
+            <div className="bg-white rounded-2xl shadow-lg border border-slate-200 overflow-hidden">
+              {/* Header */}
+              <div className="bg-gradient-to-r from-emerald-600 to-green-600 px-8 py-6">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-white/10 rounded-lg">
+                    <Coins className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <h2 className="text-2xl font-bold text-white">Token Economics</h2>
+                    <p className="text-emerald-100">Understanding our value-based pricing model</p>
+                  </div>
+                </div>
               </div>
-              <div className="bg-white p-4 rounded-lg border border-green-100">
-                <h4 className="font-medium text-gray-900 mb-2">Value-Based Pricing</h4>
-                <p className="text-sm text-gray-600">
-                  Higher token costs for critical health data reflect their importance and the advanced processing
-                  required for accurate tracking and analysis.
-                </p>
+
+              {/* Content */}
+              <div className="p-8">
+                <div className="grid md:grid-cols-2 gap-8">
+                  <div className="space-y-6">
+                    <div className="flex items-start gap-4">
+                      <div className="p-3 bg-blue-100 rounded-xl shrink-0">
+                        <Shield className="w-6 h-6 text-blue-600" />
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-semibold text-slate-900 mb-2">Why Token Limits?</h3>
+                        <p className="text-slate-600 leading-relaxed">
+                          Token limits encourage thoughtful health tracking while preventing system overload. They help
+                          prioritize the most important health metrics for your pet, ensuring you focus on what matters
+                          most for their wellbeing.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="space-y-6">
+                    <div className="flex items-start gap-4">
+                      <div className="p-3 bg-purple-100 rounded-xl shrink-0">
+                        <Star className="w-6 h-6 text-purple-600" />
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-semibold text-slate-900 mb-2">Value-Based Pricing</h3>
+                        <p className="text-slate-600 leading-relaxed">
+                          Higher token costs for critical health data reflect their importance and the advanced
+                          processing required for accurate tracking, analysis, and personalized care recommendations.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Additional Benefits */}
+                <div className="mt-8 pt-8 border-t border-slate-200">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div className="text-center">
+                      <div className="w-12 h-12 bg-gradient-to-r from-pink-500 to-orange-500 rounded-xl mx-auto mb-3 flex items-center justify-center">
+                        <Crown className="w-6 h-6 text-white" />
+                      </div>
+                      <h4 className="font-semibold text-slate-900 mb-2">Premium Quality</h4>
+                      <p className="text-sm text-slate-600">Advanced health insights and tracking</p>
+                    </div>
+                    <div className="text-center">
+                      <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl mx-auto mb-3 flex items-center justify-center">
+                        <Shield className="w-6 h-6 text-white" />
+                      </div>
+                      <h4 className="font-semibold text-slate-900 mb-2">Secure & Private</h4>
+                      <p className="text-sm text-slate-600">Your pet&apos;s data is always protected</p>
+                    </div>
+                    <div className="text-center">
+                      <div className="w-12 h-12 bg-gradient-to-r from-emerald-500 to-green-500 rounded-xl mx-auto mb-3 flex items-center justify-center">
+                        <Star className="w-6 h-6 text-white" />
+                      </div>
+                      <h4 className="font-semibold text-slate-900 mb-2">24/7 Support</h4>
+                      <p className="text-sm text-slate-600">Expert help whenever you need it</p>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
-        </motion.div>
+          </motion.div>
+        </div>
       </div>
     </>
   )

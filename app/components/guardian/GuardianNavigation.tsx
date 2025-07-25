@@ -20,6 +20,7 @@ const GuardianNavigation = () => {
   const { zeroPets, pet, pets } = useAppSelector((state: RootState) => state.pet)
   const { user } = useAppSelector((state: RootState) => state.user)
   const [petDropdownOpen, setPetDropdownOpen] = useState(false)
+  const linkData = guardianLinkData(path, zeroPets)
 
   const handlePetSelect = (selectedPet: any) => {
     dispatch(setPet(selectedPet))
@@ -55,7 +56,7 @@ const GuardianNavigation = () => {
       {/* Navigation Links */}
       <div className="pb-4 mt-3">
         <nav className={`space-y-1`}>
-          {guardianLinkData(path, zeroPets).map((link, i) => (
+          {linkData.map((link, i) => (
             <Link
               key={i}
               href={link.linkKey}

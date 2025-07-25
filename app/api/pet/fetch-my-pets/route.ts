@@ -20,6 +20,10 @@ export async function GET(req: NextRequest) {
       select: { id: true, date: true, time: true }
     })
 
+    const tokenTransactions = await prisma.tokenTransaction.findMany({
+      where: { userId: userAuth.userId }
+    })
+
     const now = new Date()
     const pastAppointmentIds = appointmentsToUpdate
       .filter((apt: any) => {
@@ -96,6 +100,7 @@ export async function GET(req: NextRequest) {
         appointments,
         movements,
         user: owner,
+        tokenTransactions,
         sliceName: slicePet
       },
       { status: 200 }

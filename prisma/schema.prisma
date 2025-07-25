@@ -21,16 +21,35 @@ enum TokenTransactionType {
   BONUS // Promotional tokens
   ADMIN_ADJUSTMENT // Manual adjustments
   PET_CREATION
+  PET_UPDATE
+  PET_DELETE
   WALK_CREATION
+  WALK_UPDATE
+  WALK_DELETE
   PAIN_SCORE_CREATION
   PAIN_SCORE_UPDATE
+  PAIN_SCORE_DELETE
   FEEDING_CREATION
+  FEEDING_UPDATE
+  FEEDING_DELETE
   APPOINTMENT_CREATION
+  APPOINTMENT_UPDATE
+  APPOINTMENT_DELETE
   WATER_CREATION
+  WATER_UPDATE
+  WATER_DELETE
   MEDICATION_CREATION
+  MEDICATION_UPDATE
+  MEDICATION_DELETE
   BLOOD_SUGAR_CREATION
+  BLOOD_SUGAR_UPDATE
+  BLOOD_SUGAR_DELETE
   SEIZURE_TRACKING_CREATION
+  SEIZURE_TRACKING_UPDATE
+  SEIZURE_TRACKING_DELETE
   MOVEMENT_CREATION
+  MOVEMENT_UPDATE
+  MOVEMENT_DELETE
 }
 
 enum PetType {
@@ -221,7 +240,6 @@ model User {
   role            String  @default("Free") @db.VarChar(255)
   isSuperUser     Boolean @default(false)
   isAdmin         Boolean @default(false)
-  isGuardian      Boolean @default(false)
   isFreeUser      Boolean @default(true)
   isComfortUser   Boolean @default(false)
   isCompanionUser Boolean @default(false)
@@ -245,10 +263,10 @@ model User {
   accounts           Account[]
   sessions           Session[]
   pets               Pet[]
-  blogs              Blog[]
   stripeSubscription StripeSubscription?
   tokenTransactions  TokenTransaction[]
   galleryItems       GalleryItem[]
+  tickets            Ticket[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -503,17 +521,6 @@ model Seizure {
   updatedAt DateTime @updatedAt
 }
 
-model Blog {
-  id       String @id @default(cuid())
-  title    String
-  content  String
-  authorId String
-  author   User   @relation(fields: [authorId], references: [id])
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
 model Newsletter {
   id                       String  @id @default(cuid())
   firstName                String  @db.VarChar(255)
@@ -531,18 +538,6 @@ model Log {
   message   String
   metadata  Json? // Optional, store additional context
   createdAt DateTime @default(now())
-}
-
-model CareTask {
-  id        String  @id @default(cuid())
-  type      String
-  title     String
-  time      String
-  completed Boolean
-  urgent    Boolean
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
 }
 
 model GalleryItem {
@@ -570,4 +565,53 @@ model GalleryItem {
   @@index([userId, createdAt])
   @@index([petId, createdAt])
   @@index([type])
+}
+
+model Ticket {
+  id          String @id @default(cuid())
+  category    String
+  priority    String
+  status      String @default("open") // open, in_progress, resolved, closed
+  subject     String
+  description String
+  email       String
+  deviceInfo  String
+  attachments Json
+
+  // Relationships
+  user     User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId   String
+  messages TicketMessage[]
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Indexes for performance
+  @@index([userId, createdAt])
+  @@index([priority])
+  @@index([status])
+}
+
+model TicketMessage {
+  id      String  @id @default(cuid())
+  content String
+  isStaff Boolean @default(false) // true if message from support staff
+
+  // Optional attachments for the message
+  attachments Json?
+
+  // Relationships
+  ticket   Ticket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  ticketId String
+
+  // Author info
+  authorEmail String?
+  authorName  String?
+
+  // Timestamps
+  createdAt DateTime @default(now())
+
+  // Indexes
+  @@index([ticketId, createdAt])
 }

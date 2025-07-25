@@ -1,6 +1,6 @@
 import React from 'react'
 import { motion } from 'framer-motion'
-import { Activity, Bell, Camera, PawPrint } from 'lucide-react'
+import { Activity, ArrowRight, Calendar, Camera, Clock, FileText, Heart, PawPrint, Pill } from 'lucide-react'
 import { useAppDispatch } from '@/app/redux/store'
 import { setOpenPetDrawer } from '@/app/redux/features/petSlice'
 import TokenCounter from '../TokenCounter'
@@ -10,131 +10,186 @@ const MainActionCard = () => {
   const dispatch = useAppDispatch()
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6 }}
-      className="mb-12"
-    >
-      <div className="rounded-2xl shadow-lg border border-gray-100 bg-white">
-        <div className="p-6 border-b border-gray-100">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="flex items-center justify-center w-10 h-10 bg-blue-100 rounded-xl">
-                <PawPrint className="w-5 h-5 text-blue-600" />
-              </div>
-              <div>
-                <h2 className="text-xl font-semibold text-gray-900">Get Started</h2>
-                <p className="text-sm text-gray-600">Add your first pet to unlock all features</p>
-              </div>
+    <div className="space-y-8">
+      {/* Main Setup Section */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="bg-white rounded-lg border border-slate-200 shadow-sm"
+      >
+        <div className="p-8 text-centerf flex items-center flex-col">
+          <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-6">
+            <PawPrint className="w-8 h-8 text-blue-600" />
+          </div>
+
+          <h1 className="text-3xl font-bold text-slate-900 mb-4">Add Your First Pet</h1>
+
+          <p className="text-lg text-slate-600 mb-8 max-w-2xl mx-auto text-center">
+            Create a profile to start tracking health, managing appointments, and organizing your pet&apos;s care.
+          </p>
+
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => dispatch(setOpenPetDrawer())}
+            className="w-fit flex items-center justify-center gap-x-2 bg-gradient-to-r from-orange-400 via-pink-500 to-red-500 px-4 py-2 rounded-full text-white"
+          >
+            <p>Log pet</p> <TokenCounter tokens={petCreateTokenCost} />
+          </motion.button>
+        </div>
+      </motion.div>
+
+      {/* Features Grid */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.2 }}
+        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+      >
+        {/* Health Tracking */}
+        <div className="bg-white rounded-lg border border-slate-200 p-6 shadow-sm">
+          <div className="w-12 h-12 bg-emerald-50 rounded-lg flex items-center justify-center mb-4">
+            <Activity className="w-6 h-6 text-emerald-600" />
+          </div>
+          <h3 className="text-lg font-semibold text-slate-900 mb-2">Health Tracking</h3>
+          <p className="text-slate-600 text-sm mb-4">
+            Monitor symptoms, track medications, and log daily activities for comprehensive health insights.
+          </p>
+          <div className="space-y-3">
+            <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-md">
+              <div className="w-2 h-2 bg-emerald-500 rounded-full" />
+              <span className="text-sm text-slate-700">Daily symptom logging</span>
             </div>
-            <div className="bg-gradient-to-r from-gray-400 to-gray-600 text-white px-3 py-1 rounded-full text-sm font-medium">
-              Required
+            <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-md">
+              <div className="w-2 h-2 bg-emerald-500 rounded-full" />
+              <span className="text-sm text-slate-700">Medication reminders</span>
             </div>
           </div>
+        </div>
+
+        {/* Photo Management */}
+        <div className="bg-white rounded-lg border border-slate-200 p-6 shadow-sm">
+          <div className="w-12 h-12 bg-purple-50 rounded-lg flex items-center justify-center mb-4">
+            <Camera className="w-6 h-6 text-purple-600" />
+          </div>
+          <h3 className="text-lg font-semibold text-slate-900 mb-2">Photo Gallery</h3>
+          <p className="text-slate-600 text-sm mb-4">
+            Upload, organize, and share photos and videos of your pet with automatic categorization.
+          </p>
+          <div className="space-y-3">
+            <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-md">
+              <div className="w-2 h-2 bg-purple-500 rounded-full" />
+              <span className="text-sm text-slate-700">Smart photo organization</span>
+            </div>
+            <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-md">
+              <div className="w-2 h-2 bg-purple-500 rounded-full" />
+              <span className="text-sm text-slate-700">Share with family & vets</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Appointment Scheduling */}
+        <div className="bg-white rounded-lg border border-slate-200 p-6 shadow-sm md:col-span-2 lg:col-span-1">
+          <div className="w-12 h-12 bg-blue-50 rounded-lg flex items-center justify-center mb-4">
+            <Calendar className="w-6 h-6 text-blue-600" />
+          </div>
+          <h3 className="text-lg font-semibold text-slate-900 mb-2">Smart Scheduling</h3>
+          <p className="text-slate-600 text-sm mb-4">
+            Never miss important appointments with automated reminders and calendar integration.
+          </p>
+          <div className="space-y-3">
+            <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-md">
+              <div className="w-2 h-2 bg-blue-500 rounded-full" />
+              <span className="text-sm text-slate-700">Vet appointment tracking</span>
+            </div>
+            <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-md">
+              <div className="w-2 h-2 bg-blue-500 rounded-full" />
+              <span className="text-sm text-slate-700">Vaccination schedules</span>
+            </div>
+          </div>
+        </div>
+      </motion.div>
+
+      {/* Preview Dashboard */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.4 }}
+        className="bg-white rounded-lg border border-slate-200 shadow-sm"
+      >
+        <div className="p-6 border-b border-slate-200">
+          <h2 className="text-xl font-semibold text-slate-900">Your Dashboard Preview</h2>
+          <p className="text-slate-600 mt-1">Here&apos;s what you&apos;ll see once your pet profile is created</p>
         </div>
 
         <div className="p-6">
-          <div className="text-center mb-8">
-            <motion.h3
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              className="text-2xl font-bold text-gray-900 mb-3"
-            >
-              Add Your First Pet
-            </motion.h3>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {/* Today's Tasks */}
+            <div className="space-y-4">
+              <div className="flex items-center gap-3 mb-4">
+                <Clock className="w-5 h-5 text-slate-600" />
+                <h3 className="font-medium text-slate-900">Today&apos;s Tasks</h3>
+              </div>
 
-            <motion.p
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-              className="text-gray-600 max-w-lg mx-auto leading-relaxed"
-            >
-              Setup a profile for your pet to start tracking their health, uploading photos, and managing their care.
-            </motion.p>
+              <div className="space-y-3 opacity-60">
+                <div className="flex items-center gap-4 p-4 bg-slate-50 rounded-lg border border-slate-200">
+                  <div className="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
+                    <Pill className="w-5 h-5 text-red-600" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="font-medium text-slate-900">Morning Medication</p>
+                    <p className="text-sm text-slate-600">Give insulin shot - 8:00 AM</p>
+                  </div>
+                  <div className="w-4 h-4 border-2 border-slate-300 rounded" />
+                </div>
+
+                <div className="flex items-center gap-4 p-4 bg-slate-50 rounded-lg border border-slate-200">
+                  <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                    <Heart className="w-5 h-5 text-blue-600" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="font-medium text-slate-900">Health Check</p>
+                    <p className="text-sm text-slate-600">Log energy level and appetite</p>
+                  </div>
+                  <div className="w-4 h-4 border-2 border-slate-300 rounded" />
+                </div>
+              </div>
+            </div>
+
+            {/* Quick Actions */}
+            <div className="space-y-4">
+              <div className="flex items-center gap-3 mb-4">
+                <ArrowRight className="w-5 h-5 text-slate-600" />
+                <h3 className="font-medium text-slate-900">Quick Actions</h3>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3 opacity-60">
+                <button className="p-4 bg-slate-50 rounded-lg border border-slate-200 text-center hover:bg-slate-100 transition-colors">
+                  <Activity className="w-6 h-6 mx-auto mb-2 text-slate-600" />
+                  <span className="text-sm font-medium text-slate-700">Log Health</span>
+                </button>
+
+                <button className="p-4 bg-slate-50 rounded-lg border border-slate-200 text-center hover:bg-slate-100 transition-colors">
+                  <Camera className="w-6 h-6 mx-auto mb-2 text-slate-600" />
+                  <span className="text-sm font-medium text-slate-700">Add Photo</span>
+                </button>
+
+                <button className="p-4 bg-slate-50 rounded-lg border border-slate-200 text-center hover:bg-slate-100 transition-colors">
+                  <FileText className="w-6 h-6 mx-auto mb-2 text-slate-600" />
+                  <span className="text-sm font-medium text-slate-700">View Records</span>
+                </button>
+
+                <button className="p-4 bg-slate-50 rounded-lg border border-slate-200 text-center hover:bg-slate-100 transition-colors">
+                  <Calendar className="w-6 h-6 mx-auto mb-2 text-slate-600" />
+                  <span className="text-sm font-medium text-slate-700">Schedule</span>
+                </button>
+              </div>
+            </div>
           </div>
-
-          {/* Prominent circular button */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.4, duration: 0.6 }}
-            className="text-center mb-8"
-          >
-            <motion.button
-              onClick={() => dispatch(setOpenPetDrawer())}
-              whileHover={{ scale: 1.05, y: -2 }}
-              whileTap={{ scale: 0.95, y: 0 }}
-              className="relative w-24 h-24 bg-gradient-to-b from-pink-400 via-red-500 to-orange-600 rounded-full shadow-lg hover:shadow-xl transition-all duration-200 group border-2 border-pink-300"
-              style={{
-                boxShadow:
-                  '0 8px 16px rgba(236, 72, 153, 0.3), inset 0 2px 4px rgba(255, 255, 255, 0.3), inset 0 -2px 4px rgba(0, 0, 0, 0.1)'
-              }}
-            >
-              {/* Top highlight for 3D effect */}
-              <div className="absolute inset-2 bg-gradient-to-b from-white/40 to-transparent rounded-full pointer-events-none" />
-
-              {/* Pressed state shadow */}
-              <div className="absolute inset-0 bg-gradient-to-b from-pink-600 via-red-700 to-orange-800 rounded-full opacity-0 group-active:opacity-100 transition-opacity duration-100" />
-
-              {/* Icon container */}
-              <div className="relative flex items-center justify-center w-full h-full">
-                <PawPrint className="w-8 h-8 text-white drop-shadow-sm" />
-              </div>
-
-              {/* Bottom shadow for depth */}
-              <div
-                className="absolute -bottom-2 left-2 right-2 h-4 bg-pink-600/30 rounded-full blur-sm -z-10"
-                style={{ transform: 'scaleY(0.3)' }}
-              />
-            </motion.button>
-
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6 }}
-              className="mt-4"
-            >
-              <p className="text-sm text-gray-600">Start here to begin your pet&apos;s health journey</p>
-              <div className="flex items-center justify-center gap-2 mt-2">
-                <TokenCounter color1="#ef4444" color2="#ec4899" id="redToPink" tokens={petCreateTokenCost} />
-                <span className="text-xs text-gray-500">tokens required</span>
-              </div>
-            </motion.div>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.9 }}
-            className="grid grid-cols-1 md:grid-cols-3 gap-6"
-          >
-            <div className="text-center p-4 opacity-60">
-              <div className="w-12 h-12 mx-auto mb-3 bg-blue-100 rounded-xl flex items-center justify-center">
-                <Activity className="w-6 h-6 text-blue-600" />
-              </div>
-              <h4 className="font-medium text-gray-900 mb-1">Health Tracking</h4>
-              <p className="text-sm text-gray-600">Monitor daily activities and symptoms</p>
-            </div>
-            <div className="text-center p-4 opacity-60">
-              <div className="w-12 h-12 mx-auto mb-3 bg-green-100 rounded-xl flex items-center justify-center">
-                <Camera className="w-6 h-6 text-green-600" />
-              </div>
-              <h4 className="font-medium text-gray-900 mb-1">Photo Gallery</h4>
-              <p className="text-sm text-gray-600">Upload and organize photos and videos</p>
-            </div>
-            <div className="text-center p-4 opacity-60">
-              <div className="w-12 h-12 mx-auto mb-3 bg-purple-100 rounded-xl flex items-center justify-center">
-                <Bell className="w-6 h-6 text-purple-600" />
-              </div>
-              <h4 className="font-medium text-gray-900 mb-1">Care Reminders</h4>
-              <p className="text-sm text-gray-600">Schedule and track appointments</p>
-            </div>
-          </motion.div>
         </div>
-      </div>
-    </motion.div>
+      </motion.div>
+    </div>
   )
 }
 

@@ -1,7 +1,7 @@
 import React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 
-const SlideMessage = ({ showMessage, setShowMessage }: any) => {
+const SlideMessage = ({ showMessage, setShowMessage, message }: any) => {
   return (
     <AnimatePresence>
       {showMessage && (
@@ -60,9 +60,7 @@ const SlideMessage = ({ showMessage, setShowMessage }: any) => {
                 {/* Text Content */}
                 <div className="flex-1">
                   <h3 className="text-lg font-semibold text-gray-900 mb-1">Success!</h3>
-                  <p className="text-gray-600 text-sm leading-relaxed">
-                    Your message has been sent successfully. We&apos;ll get back to you within 24 hours.
-                  </p>
+                  <p className="text-gray-600 text-sm leading-relaxed">{message}</p>
                 </div>
               </div>
 

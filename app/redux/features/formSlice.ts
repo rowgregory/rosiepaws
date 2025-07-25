@@ -74,6 +74,10 @@ const formInitialState = {
   movementForm: {
     inputs: movementInitialState,
     errors: movementInitialState
+  },
+  ticketForm: {
+    inputs: { category: '', priority: '', subject: '', email: '', description: '', deviceInfo: '', attachments: [] },
+    errors: movementInitialState
   }
 } as any
 

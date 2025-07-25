@@ -12,7 +12,7 @@ const LargeFeedingGraph: FC<{ feedingData: any; showIndividualFeedings?: boolean
     ? processFeedingDataByTime(feedingData)
     : processFeedingDataByTime(feedingData)
 
-  const latestAmount = chartData?.slice(-1)[0]?.amount || 0
+  const latestAmount = chartData?.[0]?.amount || 0
   const totalAmount = chartData.reduce((sum, item) => sum + item.amount, 0)
   const averageAmount = chartData.length > 0 ? (totalAmount / chartData.length).toFixed(1) : '--'
 

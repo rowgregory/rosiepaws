@@ -109,7 +109,8 @@ export async function POST(req: NextRequest) {
           description: `Water creation`,
           metadata: {
             waterId: newWater.id,
-            feature: 'water_creation'
+            feature: 'water_creation',
+            milliliters: newWater.milliliters
           }
         }
       })

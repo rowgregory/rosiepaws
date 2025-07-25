@@ -1,6 +1,5 @@
 import { useEffect, useRef } from 'react'
 import { useAppDispatch } from '../redux/store'
-import { setAuthState } from '../redux/features/authSlice'
 import { User } from '../types/common'
 import { setUser } from '../redux/features/userSlice'
 
@@ -17,7 +16,6 @@ function useSyncUserToRedux(userData: User | null) {
     const isDifferent = !prevUser || JSON.stringify(prevUser) !== JSON.stringify(userData)
 
     if (userData && isDifferent) {
-      dispatch(setAuthState(userData))
       dispatch(setUser(userData))
       prevUserRef.current = userData
     }

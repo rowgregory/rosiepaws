@@ -1,6 +1,5 @@
 'use client'
 
-import { setAuthState } from '@/app/redux/features/authSlice'
 import { setPet, setPets } from '@/app/redux/features/petSlice'
 import { setUser } from '@/app/redux/features/userSlice'
 import { useAppDispatch } from '@/app/redux/store'
@@ -26,20 +25,11 @@ const CustomCallback = () => {
               role: session.user.role,
               hasSubscription: !!session.user.stripeSubscription,
               isAdmin: session.user.isAdmin,
-              isGuardian: session.user.isGuardian,
               isFreeUser: session.user.isFreeUser,
               isComfortUser: session.user.isComfortUser,
               isCompanionUser: session.user.isCompanionUser,
               isLegacyUser: session.user.isLegacyUser,
               pets: session.user.pets
-            })
-          )
-
-          dispatch(
-            setAuthState({
-              isAuthenticated: true,
-              id: session.user.id,
-              role: session.user.role || ''
             })
           )
 
@@ -54,23 +44,9 @@ const CustomCallback = () => {
           }
         } catch (error) {
           console.error('Failed to load user data:', error)
-          dispatch(
-            setAuthState({
-              isAuthenticated: false,
-              id: '',
-              role: ''
-            })
-          )
           push('/auth/login?error=profile_load_failed')
         }
       } else if (status === 'unauthenticated') {
-        dispatch(
-          setAuthState({
-            isAuthenticated: false,
-            id: '',
-            role: ''
-          })
-        )
         push('/auth/login?error=auth_failed')
       }
     }

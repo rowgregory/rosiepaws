@@ -2,7 +2,7 @@ import React, { FC } from 'react'
 import { GENDER_OPTIONS, getCurrentBreeds, isPetFormValid, PET_TYPES, SPAY_NEUTER_OPTIONS } from '../lib/constants/pet'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Calendar, FileText, Phone, Shield, Stethoscope, User, Weight } from 'lucide-react'
-import { petCreateTokenCost } from '../lib/constants/token'
+import { petCreateTokenCost, petUpdateTokenCost } from '../lib/constants/token'
 import FixedFooter from '../components/common/forms/FixedFooter'
 import { IForm } from '../types'
 
@@ -26,7 +26,7 @@ const itemVariants: any = {
   }
 }
 
-const PetForm: FC<IForm> = ({ inputs, errors, handleInput, close, handleSubmit, loading }) => {
+const PetForm: FC<IForm> = ({ inputs, errors, handleInput, close, handleSubmit, loading, isUpdating }) => {
   return (
     <form onSubmit={handleSubmit} className="flex-1 flex flex-col min-h-full">
       <div className="overflow-y-auto px-5 pt-9 pb-12 h-[calc(100dvh-132px)]">
@@ -353,10 +353,11 @@ const PetForm: FC<IForm> = ({ inputs, errors, handleInput, close, handleSubmit, 
       <FixedFooter
         inputs={inputs}
         loading={loading}
-        tokens={petCreateTokenCost}
+        tokens={isUpdating ? petUpdateTokenCost : petCreateTokenCost}
         text="Pet"
         close={close}
         func={() => isPetFormValid(inputs)}
+        isUpdating={isUpdating}
       />
     </form>
   )

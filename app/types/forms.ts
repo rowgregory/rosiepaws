@@ -10,4 +10,5 @@ export interface IForm {
   pets?: Pet[]
   handleToggle?: (e: React.ChangeEvent<HTMLInputElement>) => void
   uploadingVideo?: boolean
+  isUpdating?: boolean
 }

@@ -37,7 +37,6 @@ export async function middleware(req: NextRequest) {
       lastName: session.user.lastName,
       role: session.user.role,
       isAdmin: session.user.isAdmin,
-      isGuardian: session.user.isGuardian,
       isFreeUser: session.user.isFreeUser,
       isComfortUser: session.user.isComfortUser,
       isCompanionUser: session.user.isCompanionUser,
@@ -49,7 +48,10 @@ export async function middleware(req: NextRequest) {
   const isPublicRoute = publicRoutes.includes(nextUrl.pathname)
   const isAuthAPIRoute = nextUrl.pathname.startsWith('/api/auth')
   const isProtectedAPIRoute = nextUrl.pathname.startsWith('/api') && !isAuthAPIRoute
-  const isProtectedPageRoute = nextUrl.pathname.startsWith('/guardian') || nextUrl.pathname.startsWith('/admin')
+  const isProtectedPageRoute =
+    nextUrl.pathname.startsWith('/guardian') ||
+    nextUrl.pathname.startsWith('/admin') ||
+    nextUrl.pathname.startsWith('/support')
 
   // Handle page route redirects for logged in users
   if (isLoggedIn && isPublicRoute) {

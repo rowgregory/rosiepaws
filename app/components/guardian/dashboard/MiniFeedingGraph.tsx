@@ -1,3 +1,4 @@
+import { parseFraction } from '@/app/lib/utils'
 import { Utensils } from 'lucide-react'
 import React, { FC } from 'react'
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts'
@@ -8,14 +9,16 @@ const MiniFeedingGraph: FC<{ feedings: any }> = ({ feedings }) => {
   const foodTypeData =
     feedings?.reduce((acc: any, feeding: any) => {
       const existing = acc.find((item: any) => item.type === feeding.type)
+      const amount = parseFraction(feeding.amount)
+
       if (existing) {
         existing.count += 1
-        existing.amount += parseFloat(feeding.amount.replace('/', '.')) || 0
+        existing.amount += amount
       } else {
         acc.push({
           type: feeding.type,
           count: 1,
-          amount: parseFloat(feeding.amount.replace('/', '.')) || 0
+          amount: amount
         })
       }
       return acc
@@ -36,7 +39,7 @@ const MiniFeedingGraph: FC<{ feedings: any }> = ({ feedings }) => {
         </div>
         <div className="text-right">
           <div className="text-2xl font-bold text-green-600">
-            {feedings.reduce((sum: any, item: any) => sum + Number(item.amount), 0)} cups
+            {foodTypeData.reduce((sum: any, item: any) => sum + Number(item.amount), 0)} cups
           </div>
           <div className="text-sm text-gray-500">Today</div>
         </div>

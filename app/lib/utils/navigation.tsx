@@ -55,7 +55,7 @@ export const guardianLinkData = (path: string, zeroPets: boolean) => [
     : [
         {
           icon: Cat,
-          textKey: 'Pets',
+          textKey: 'My Pets',
           linkKey: guardianPetsLink,
           isActive: path === guardianPetsLink
         }

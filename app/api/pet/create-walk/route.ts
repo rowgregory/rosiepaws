@@ -92,7 +92,9 @@ export async function POST(req: NextRequest) {
           description: `Walk creation`,
           metadata: {
             walkId: newWalk.id,
-            feature: 'walk_creation'
+            feature: 'walk_creation',
+            distance: newWalk.distance,
+            duration: newWalk.duration
           }
         }
       })

@@ -5,64 +5,57 @@ import { motion } from 'framer-motion'
 import {
   Heart,
   Calendar,
-  Phone,
-  CheckCircle,
   Pill,
   Utensils,
   Activity,
-  Camera,
-  FileText,
-  Clock,
+  MapPin,
+  Droplets,
+  ChevronRight,
+  TrendingUp,
   AlertTriangle,
-  ArrowRight,
-  Bell
+  Plus,
+  FileText,
+  RefreshCcw,
+  Trash2,
+  Footprints
 } from 'lucide-react'
-import EmergencySignsDrawer from '@/app/drawers/EmergencySignsDrawer'
 import MainActionCard from '@/app/components/guardian/home/MainActionCard'
-import ComingSoonPreviewCards from '@/app/components/guardian/home/ComingSoonPreviewCards'
 import CareResourcesAndInfo from '@/app/components/guardian/home/CareResourcesAndInfo'
 import SupportSection from '@/app/components/guardian/home/SupportSection'
-import Support24Drawer from '@/app/drawers/Support24Drawer'
-import DisabilityEndOfLifeCareDrawer from '@/app/drawers/DisabilityEndOfLifeCareDrawer'
-import ViewGuideDrawer from '@/app/drawers/ViewGuideDrawer'
-import CreateSupportDrawer from '@/app/drawers/ContactSupportDrawer'
-import { RootState, useAppSelector } from '@/app/redux/store'
+import DisabilityEndOfLifeCareDrawer from '@/app/drawers/general/DisabilityEndOfLifeCareDrawer'
+import CreateSupportDrawer from '@/app/drawers/general/ContactSupportDrawer'
+import { RootState, useAppDispatch, useAppSelector } from '@/app/redux/store'
+import EmergencySignsDrawer from '@/app/drawers/general/EmergencySignsDrawer'
+import ViewGuideDrawer from '@/app/drawers/general/ViewGuideDrawer'
+import { calculateHealthStatus } from '@/app/lib/utils/guardian-home'
+import PetProfileSection from '@/app/components/guardian/home/PetProfileSection'
+import TodaysProgressSection from '@/app/components/guardian/home/TodaysProgressSection'
+import {
+  setOpenFeedingDrawer,
+  setOpenMovementDrawer,
+  setOpenPainScoreDrawer,
+  setOpenWalkDrawer,
+  setOpenWaterDrawer
+} from '@/app/redux/features/petSlice'
 
 const Home = () => {
+  const dispatch = useAppDispatch()
   const [currentTime] = useState(new Date())
-  const { zeroPets } = useAppSelector((state: RootState) => state.pet)
+  const { user } = useAppSelector((state: RootState) => state.user)
+  const { zeroPets, feedings, walks, waters, pets, painScores, tokenTransactions } = useAppSelector(
+    (state: RootState) => state.pet
+  )
 
-  // Mock data - replace with real data from your app
-  const todaysTasks = [
-    { id: 1, type: 'medication', title: 'Pain medication for Buddy', time: '2:00 PM', completed: false, urgent: true },
-    { id: 2, type: 'feeding', title: 'Lunch for Luna', time: '12:30 PM', completed: true, urgent: false },
-    { id: 3, type: 'appointment', title: 'Vet check-up - Buddy', time: '4:30 PM', completed: false, urgent: false },
-    { id: 4, type: 'comfort', title: 'Comfort check for Luna', time: '6:00 PM', completed: false, urgent: false }
-  ]
+  const thisWeeksFeedings = feedings.filter(
+    (f) => new Date(f.createdAt) >= new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
+  ).length
 
-  const quickActions = [
-    { icon: <Pill className="w-5 h-5" />, label: 'Log Medication', color: 'from-blue-500 to-blue-600' },
-    { icon: <Utensils className="w-5 h-5" />, label: 'Record Feeding', color: 'from-green-500 to-green-600' },
-    { icon: <Activity className="w-5 h-5" />, label: 'Quality Check', color: 'from-purple-500 to-purple-600' },
-    { icon: <FileText className="w-5 h-5" />, label: 'Add Note', color: 'from-orange-500 to-orange-600' },
-    { icon: <Camera className="w-5 h-5" />, label: 'Photo Memory', color: 'from-pink-500 to-pink-600' },
-    { icon: <Phone className="w-5 h-5" />, label: 'Call Vet', color: 'from-red-500 to-red-600' }
-  ]
+  const thisWeeksWalks = walks.filter(
+    (w) => new Date(w.createdAt) >= new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
+  ).length
 
-  const getTaskIcon = (type: string) => {
-    switch (type) {
-      case 'medication':
-        return <Pill className="w-5 h-5" />
-      case 'feeding':
-        return <Utensils className="w-5 h-5" />
-      case 'appointment':
-        return <Calendar className="w-5 h-5" />
-      case 'comfort':
-        return <Heart className="w-5 h-5" />
-      default:
-        return <CheckCircle className="w-5 h-5" />
-    }
-  }
+  const averageWaterIntake =
+    waters.length > 0 ? waters.reduce((acc, item) => acc + Number(item.milliliters), 0) / waters.length : 0
 
   const getTimeOfDay = () => {
     const hour = currentTime.getHours()
@@ -71,156 +64,348 @@ const Home = () => {
     return 'evening'
   }
 
+  const healthStatus = calculateHealthStatus({
+    feedings,
+    painScores,
+    waters,
+    walks,
+    petType: pets[0]?.type,
+    petAge: Number(pets[0]?.age),
+    petWeight: pets[0]?.weight
+  })
+
   return (
     <>
       <EmergencySignsDrawer />
-      <Support24Drawer />
-      <DisabilityEndOfLifeCareDrawer />
       <ViewGuideDrawer />
+      <DisabilityEndOfLifeCareDrawer />
       <CreateSupportDrawer />
-      <div className="px-6 py-5 max-w-7xl mx-auto bg-gray-50">
+
+      <div className="min-h-dvh bg-gray-50">
         {zeroPets ? (
-          <>
+          <div className="px-6 py-5 max-w-7xl mx-auto min-h-dvh">
             <MainActionCard />
-            <ComingSoonPreviewCards />
-          </>
+          </div>
         ) : (
-          <>
-            {/* Welcome Header */}
+          <div className="p-6 max-w-7xl mx-auto">
+            {/* Professional Header */}
             <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
-              <h1 className="text-3xl font-bold text-gray-800 mb-2">Good {getTimeOfDay()}!</h1>
-              <p className="text-gray-600">Here&apos;s what needs your attention today.</p>
+              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h1 className="text-3xl font-semibold text-gray-900 mb-2">
+                      Good {getTimeOfDay()}, {user?.name || 'Caregiver'}
+                    </h1>
+                    <p className="text-gray-600">
+                      {pets[0]?.name}&apos;s care dashboard •{' '}
+                      {new Date().toLocaleDateString('en-US', {
+                        weekday: 'long',
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                      })}
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <div
+                      className={`inline-flex items-center px-3 py-1 rounded-md text-sm font-medium ${
+                        healthStatus.status === 'Excellent'
+                          ? 'bg-green-100 text-green-800'
+                          : healthStatus.status === 'Good'
+                            ? 'bg-blue-100 text-blue-800'
+                            : healthStatus.status === 'Fair'
+                              ? 'bg-yellow-100 text-yellow-800'
+                              : 'bg-red-100 text-red-800'
+                      }`}
+                    >
+                      <div
+                        className={`w-2 h-2 rounded-full mr-2 ${
+                          healthStatus.status === 'Excellent'
+                            ? 'bg-green-500'
+                            : healthStatus.status === 'Good'
+                              ? 'bg-blue-500'
+                              : healthStatus.status === 'Fair'
+                                ? 'bg-yellow-500'
+                                : 'bg-red-500'
+                        }`}
+                      ></div>
+                      Health Status: {healthStatus.status?.charAt(0).toUpperCase() + healthStatus.status?.slice(1)}
+                    </div>
+                  </div>
+                </div>
+              </div>
             </motion.div>
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              {/* Today's Tasks */}
+
+            {/* Main Grid Layout */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+              {/* Weekly Metrics - 4 columns */}
               <motion.div
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.1 }}
-                className="lg:col-span-2"
+                className="lg:col-span-4"
               >
-                <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
+                <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 h-full">
                   <div className="flex items-center justify-between mb-6">
-                    <h2 className="text-xl font-bold text-gray-800 flex items-center">
-                      <Clock className="w-5 h-5 mr-2 text-rose-500" />
-                      Today&apos;s Care Tasks
-                    </h2>
-                    <span className="text-sm text-gray-500">
-                      {todaysTasks.filter((t) => !t.completed).length} remaining
-                    </span>
+                    <h2 className="text-lg font-semibold text-gray-900">Weekly Summary</h2>
+                    <TrendingUp className="w-5 h-5 text-gray-400" />
                   </div>
 
-                  <div className="space-y-3">
-                    {todaysTasks.map((task) => (
-                      <div
-                        key={task.id}
-                        className={`flex items-center p-4 rounded-xl border-2 transition-all duration-200 ${
-                          task.completed
-                            ? 'bg-green-50 border-green-200'
-                            : task.urgent
-                              ? 'bg-red-50 border-red-200 shadow-sm'
-                              : 'bg-gray-50 border-gray-200 hover:border-rose-200'
-                        }`}
-                      >
-                        <div
-                          className={`p-2 rounded-lg mr-4 ${
-                            task.completed ? 'bg-green-500' : task.urgent ? 'bg-red-500' : 'bg-rose-500'
-                          }`}
-                        >
-                          {task.completed ? (
-                            <CheckCircle className="w-5 h-5 text-white" />
-                          ) : (
-                            <div className="text-white">{getTaskIcon(task.type)}</div>
-                          )}
+                  <div className="space-y-6">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center">
+                        <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center mr-3">
+                          <Utensils className="w-5 h-5 text-blue-600" />
                         </div>
-                        <div className="flex-1">
-                          <h3
-                            className={`font-semibold ${task.completed ? 'text-green-700 line-through' : 'text-gray-800'}`}
-                          >
-                            {task.title}
-                          </h3>
-                          <p className="text-sm text-gray-500 flex items-center">
-                            <Clock className="w-4 h-4 mr-1" />
-                            {task.time}
-                            {task.urgent && !task.completed && (
-                              <span className="ml-2 inline-flex items-center">
-                                <AlertTriangle className="w-4 h-4 text-red-500 mr-1" />
-                                <span className="text-red-600 font-medium">Urgent</span>
-                              </span>
-                            )}
-                          </p>
+                        <div>
+                          <p className="text-sm font-medium text-gray-900">Meals Logged</p>
+                          <p className="text-xs text-gray-500">This week</p>
                         </div>
-                        {!task.completed && (
-                          <button className="px-4 py-2 bg-rose-500 text-white rounded-lg hover:bg-rose-600 transition-colors">
-                            Mark Done
-                          </button>
-                        )}
                       </div>
-                    ))}
+                      <div className="text-right">
+                        <p className="text-2xl font-semibold text-gray-900">{thisWeeksFeedings}</p>
+                        <p className="text-xs text-gray-500">total</p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center">
+                        <div className="w-10 h-10 bg-green-50 rounded-lg flex items-center justify-center mr-3">
+                          <MapPin className="w-5 h-5 text-green-600" />
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-gray-900">Exercise Sessions</p>
+                          <p className="text-xs text-gray-500">This week</p>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-2xl font-semibold text-gray-900">{thisWeeksWalks}</p>
+                        <p className="text-xs text-gray-500">walks</p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center">
+                        <div className="w-10 h-10 bg-cyan-50 rounded-lg flex items-center justify-center mr-3">
+                          <Droplets className="w-5 h-5 text-cyan-600" />
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-gray-900">Water Intake</p>
+                          <p className="text-xs text-gray-500">Daily average</p>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-2xl font-semibold text-gray-900">{averageWaterIntake?.toFixed(0)}</p>
+                        <p className="text-xs text-gray-500">mL</p>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </motion.div>
 
-              {/* Quick Actions */}
+              {/* Daily Progress - 5 columns */}
+
+              <TodaysProgressSection
+                walks={walks}
+                waters={waters}
+                feedings={feedings}
+                painScores={painScores}
+                pets={pets}
+              />
+
+              {/* Quick Actions - 3 columns */}
               <motion.div
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.2 }}
-                className="space-y-6"
+                transition={{ delay: 0.3 }}
+                className="lg:col-span-3"
               >
-                <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
-                  <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center">
-                    <ArrowRight className="w-5 h-5 mr-2 text-rose-500" />
-                    Quick Actions
-                  </h2>
-                  <div className="grid grid-cols-2 gap-3">
-                    {quickActions.map((action, index) => (
+                <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 h-full">
+                  <h2 className="text-lg font-semibold text-gray-900 mb-6">Quick Actions</h2>
+
+                  <div className="space-y-3">
+                    {[
+                      {
+                        label: 'Log Pain Score',
+                        icon: <Heart className="w-5 h-5" />,
+                        urgent: false,
+                        func: setOpenPainScoreDrawer
+                      },
+                      {
+                        label: 'Log Feeding',
+                        icon: <Utensils className="w-5 h-5" />,
+                        urgent: false,
+                        func: setOpenFeedingDrawer
+                      },
+                      {
+                        label: 'Log Walk',
+                        icon: <Footprints className="w-5 h-5" />,
+                        urgent: false,
+                        func: setOpenWalkDrawer
+                      },
+                      {
+                        label: 'Log Water',
+                        icon: <Droplets className="w-5 h-5" />,
+                        urgent: false,
+                        func: setOpenWaterDrawer
+                      },
+                      {
+                        label: 'Log Movement',
+                        icon: <MapPin className="w-5 h-5" />,
+                        urgent: false,
+                        func: setOpenMovementDrawer
+                      }
+                    ].map((action) => (
                       <button
-                        key={index}
-                        className={`p-4 rounded-xl bg-gradient-to-r ${action.color} text-white hover:shadow-lg transition-all duration-200 hover:-translate-y-1`}
+                        onClick={() => dispatch(action.func())}
+                        key={action.label}
+                        className={`w-full flex items-center p-3 rounded-lg border transition-colors duration-200 ${
+                          action.urgent
+                            ? 'border-red-200 bg-red-50 hover:bg-red-100 text-red-700'
+                            : 'border-gray-200 bg-gray-50 hover:bg-gray-100 text-gray-700'
+                        }`}
                       >
-                        <div className="flex flex-col items-center text-center">
+                        <div className={`p-2 rounded-lg mr-3 ${action.urgent ? 'bg-red-100' : 'bg-white'}`}>
                           {action.icon}
-                          <span className="text-sm font-medium mt-2">{action.label}</span>
                         </div>
+                        <span className="text-sm font-medium">{action.label}</span>
+                        <ChevronRight className="w-4 h-4 ml-auto opacity-60" />
                       </button>
                     ))}
                   </div>
                 </div>
+              </motion.div>
 
-                {/* Upcoming Reminders */}
-                <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
-                  <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center">
-                    <Bell className="w-5 h-5 mr-2 text-rose-500" />
-                    Upcoming
-                  </h2>
-                  <div className="space-y-3">
-                    <div className="flex items-center p-3 bg-blue-50 rounded-lg">
-                      <Calendar className="w-4 h-4 text-blue-600 mr-3" />
-                      <div>
-                        <p className="font-medium text-blue-800">Vet Visit</p>
-                        <p className="text-sm text-blue-600">Tomorrow 2:00 PM</p>
-                      </div>
+              {/* Token Usage Activity - 7 columns */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4 }}
+                className="lg:col-span-7"
+              >
+                <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 h-full">
+                  <div className="flex items-center justify-between mb-6">
+                    <h2 className="text-lg font-semibold text-gray-900">Token Activity</h2>
+                    <div className="flex items-center text-sm text-gray-600">
+                      <div className="w-2 h-2 bg-blue-500 rounded-full mr-2"></div>
+                      Current Balance: {user?.tokens?.toLocaleString()} tokens
                     </div>
-                    <div className="flex items-center p-3 bg-purple-50 rounded-lg">
-                      <Pill className="w-4 h-4 text-purple-600 mr-3" />
-                      <div>
-                        <p className="font-medium text-purple-800">Medication Refill</p>
-                        <p className="text-sm text-purple-600">In 3 days</p>
-                      </div>
+                  </div>
+                  <div className="flex-1 overflow-y-auto pr-2 max-h-[400px]">
+                    <div className="space-y-3">
+                      {tokenTransactions.map((transaction) => {
+                        const getIconForType = (type: string) => {
+                          if (type.includes('PAIN_SCORE')) return <Heart className="w-4 h-4" />
+                          if (type.includes('WALK') || type.includes('MOVEMENT')) return <MapPin className="w-4 h-4" />
+                          if (type.includes('MEDICATION')) return <Pill className="w-4 h-4" />
+                          if (type.includes('FEEDING')) return <Utensils className="w-4 h-4" />
+                          if (type.includes('WATER')) return <Droplets className="w-4 h-4" />
+                          if (type.includes('APPOINTMENT')) return <Calendar className="w-4 h-4" />
+                          if (type.includes('BLOOD_SUGAR')) return <Activity className="w-4 h-4" />
+                          if (type.includes('SEIZURE')) return <AlertTriangle className="w-4 h-4" />
+                          if (type.includes('PET_CREATION')) return <Plus className="w-4 h-4" />
+                          if (type.includes('PET_UPDATE')) return <RefreshCcw className="w-4 h-4" />
+                          if (type.includes('DELETE')) return <Trash2 className="w-4 h-4" />
+                          return <FileText className="w-4 h-4" />
+                        }
+
+                        const getColorForType = (type: string) => {
+                          if (type.includes('PAIN_SCORE')) return 'bg-red-100 text-red-600'
+                          if (type.includes('WALK') || type.includes('MOVEMENT')) return 'bg-green-100 text-green-600'
+                          if (type.includes('MEDICATION')) return 'bg-purple-100 text-purple-600'
+                          if (type.includes('FEEDING')) return 'bg-green-100 text-green-600'
+                          if (type.includes('WATER')) return 'bg-blue-100 text-blue-600'
+                          if (type.includes('APPOINTMENT')) return 'bg-violet-100 text-violet-600'
+                          if (type.includes('BLOOD_SUGAR')) return 'bg-orange-100 text-orange-600'
+                          if (type.includes('SEIZURE')) return 'bg-yellow-100 text-yellow-600'
+                          return 'bg-pink-100 text-pink-600'
+                        }
+
+                        return (
+                          <div
+                            key={transaction.id}
+                            className="flex items-center p-4 rounded-lg border border-gray-200 bg-gray-50 hover:bg-gray-100 transition-colors"
+                          >
+                            <div className={`p-2 rounded-lg mr-4 ${getColorForType(transaction.type)}`}>
+                              {getIconForType(transaction.type)}
+                            </div>
+                            <div className="flex-1">
+                              <p className="font-medium text-gray-900">{transaction.description}</p>
+                              <div className="flex items-center text-xs text-gray-500 mt-1">
+                                <span>{transaction.time}</span>
+                                {transaction.metadata && (
+                                  <>
+                                    <span className="mx-2">•</span>
+                                    <span>
+                                      {transaction.metadata.painScore && `Score: ${transaction.metadata.painScore}`}
+                                      {transaction.metadata.duration && `${transaction.metadata.duration}`}
+                                      {transaction.metadata.distance && `${transaction.metadata.distance}`}
+                                      {transaction.metadata.drugName &&
+                                        `${transaction.metadata.drugName} • ${transaction.metadata.dosage}`}
+                                      {transaction.metadata.milliliters && `${transaction.metadata.milliliters}mL`}
+                                      {transaction.metadata.foodType &&
+                                        `${transaction.metadata.foodAmount} cups of ${transaction.metadata.foodType}`}
+                                      {transaction.metadata.petName && `${transaction.metadata.petName}`}
+                                    </span>
+                                  </>
+                                )}
+                              </div>
+                            </div>
+                            <div className="text-right">
+                              <div className="font-semibold text-gray-900">{transaction.amount} tokens</div>
+                              <div className="text-xs text-gray-500 mt-1">
+                                {transaction.type.toLowerCase().replace(/_/g, ' ')}
+                              </div>
+                            </div>
+                          </div>
+                        )
+                      })}
+                    </div>
+                  </div>
+
+                  <div className="mt-4 pt-4 border-t border-gray-200">
+                    <div className="flex items-center justify-end text-sm">
+                      <div className="text-gray-500">Total: {user?.tokensUsed.toLocaleString()} tokens used</div>
                     </div>
                   </div>
                 </div>
               </motion.div>
+
+              {/* Pet Profile - 5 columns */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5 }}
+                className="lg:col-span-5"
+              >
+                <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 h-full">
+                  <PetProfileSection pet={pets[0]} healthStatus={healthStatus} />
+                </div>
+              </motion.div>
             </div>
-          </>
+
+            {/* Bottom Sections */}
+            <div className="mt-8 space-y-6">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.6 }}
+                className="bg-white rounded-lg shadow-sm border border-gray-200 p-6"
+              >
+                <CareResourcesAndInfo />
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.7 }}
+                className="bg-white rounded-lg shadow-sm border border-gray-200 p-6"
+              >
+                <SupportSection />
+              </motion.div>
+            </div>
+          </div>
         )}
-
-        {/* Care Resources & Information */}
-        <CareResourcesAndInfo />
-
-        {/* Support Section */}
-        <SupportSection />
       </div>
     </>
   )

@@ -4,15 +4,13 @@ import { Check, Plus, Settings, LogOut } from 'lucide-react'
 import { RootState, useAppDispatch, useAppSelector } from '@/app/redux/store'
 import { setOpenPetDrawer } from '@/app/redux/features/petSlice'
 import { signOut } from 'next-auth/react'
-import { setAuthState } from '@/app/redux/features/authSlice'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { setCloseUserDropdown } from '@/app/redux/features/appSlice'
 
-const handleSignOut = async (dispatch: any) => {
+const handleSignOut = async () => {
   try {
     // 1. Clear app state
-    dispatch(setAuthState({ isAuthenticated: false, id: '', role: '' }))
     localStorage.clear()
 
     // 2. NextAuth signOut
@@ -52,7 +50,7 @@ const UserDropdownMenu = () => {
     {
       icon: LogOut,
       label: 'Logout',
-      onClick: () => handleSignOut(dispatch),
+      onClick: () => handleSignOut(),
       className: 'hover:bg-gray-50'
     }
   ]

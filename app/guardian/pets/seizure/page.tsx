@@ -15,7 +15,7 @@ import SeizureCard from '@/app/components/guardian/seizure/SeizureCard'
 import { seizureCreateTokenCost } from '@/app/lib/constants/token'
 import { generateSeizurePDFReport } from '@/app/lib/utils/reports/seizure-pdf-report-generator'
 import { setInputs } from '@/app/redux/features/formSlice'
-import SeizureCalendarDrawer from '@/app/drawers/SeizureCalendarDrawer'
+import SeizureCalendarDrawer from '@/app/drawers/general/SeizureCalendarDrawer'
 import { setOpenSeizureCalendarDrawer } from '@/app/redux/features/dashboardSlice'
 
 const Seizure = () => {

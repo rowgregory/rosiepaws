@@ -10,7 +10,6 @@ declare module 'next-auth' {
       firstName?: string
       lastName?: string
       isAdmin?: boolean
-      isGuardian?: boolean
       isSuperUser?: boolean
       isFreeUser?: boolean
       isComfortUser?: boolean
@@ -32,7 +31,6 @@ declare module 'next-auth' {
     firstName?: string
     lastName?: string
     isAdmin?: boolean
-    isGuardian?: boolean
     isSuperUser?: boolean
     isFreeUser?: boolean
     isComfortUser?: boolean
@@ -52,7 +50,6 @@ declare module 'next-auth/jwt' {
     firstName?: string
     lastName?: string
     isAdmin?: boolean
-    isGuardian?: boolean
     isSuperUser?: boolean
     isFreeUser?: boolean
     isComfortUser?: boolean

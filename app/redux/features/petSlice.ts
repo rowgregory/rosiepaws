@@ -33,6 +33,7 @@ export interface PetStatePayload {
   pet: Pet
   zeroPets: boolean
   petDrawer: boolean
+  petUpdateDrawer: boolean
   petCount: number
 
   painScores: PainScore[]
@@ -91,6 +92,8 @@ export interface PetStatePayload {
   zeroMovements: boolean
   movementDrawer: boolean
   movementCount: number
+
+  tokenTransactions: any[]
 }
 
 export const initialPetState: PetStatePayload = {
@@ -104,6 +107,7 @@ export const initialPetState: PetStatePayload = {
   pet: petInitialState,
   zeroPets: true,
   petDrawer: false,
+  petUpdateDrawer: false,
   petCount: 0,
 
   painScores: [],
@@ -159,7 +163,9 @@ export const initialPetState: PetStatePayload = {
   movement: movementInitialState,
   zeroMovements: true,
   movementDrawer: false,
-  movementCount: 0
+  movementCount: 0,
+
+  tokenTransactions: []
 }
 
 interface ErrorPayload {
@@ -184,6 +190,12 @@ export const petSlice = createSlice({
     },
     setClosePetDrawer: (state) => {
       state.petDrawer = false
+    },
+    setOpenPetUpdateDrawer: (state) => {
+      state.petUpdateDrawer = true
+    },
+    setClosePetUpdateDrawer: (state) => {
+      state.petUpdateDrawer = false
     },
     setOpenPainScoreDrawer: (state) => {
       state.painScoreDrawer = true
@@ -252,6 +264,7 @@ export const petSlice = createSlice({
       state.guardianActionMenu = false
     },
 
+    // Pet Actions
     addPetToState: (state, action) => {
       state.pets.push(action.payload)
       state.pet = action.payload
@@ -271,6 +284,7 @@ export const petSlice = createSlice({
       state.zeroPets = state.pets.length === 0
     },
 
+    // Pain Score Actions
     addPainScoreToState: (state, action) => {
       state.painScores.unshift(action.payload)
       state.painScoreCount = state.painScoreCount + 1
@@ -282,6 +296,7 @@ export const petSlice = createSlice({
       }
     },
 
+    // Feeding Actions
     updateFeedingInState: (state, action) => {
       const updatedFeeding = action.payload
       const index = state.feedings.findIndex((feeding: { id: string }) => feeding.id === updatedFeeding.id)
@@ -305,6 +320,7 @@ export const petSlice = createSlice({
       }
     },
 
+    // Blood Sugar Actions
     addBloodSugarToState: (state, action) => {
       state.bloodSugars.unshift(action.payload)
       state.bloodSugarCount = state.bloodSugarCount + 1
@@ -315,6 +331,8 @@ export const petSlice = createSlice({
         state.pet.bloodSugars.unshift(action.payload)
       }
     },
+
+    // Water Actions
     addWaterToState: (state, action) => {
       state.waters.unshift(action.payload)
       state.waterCount = state.waterCount + 1
@@ -325,6 +343,8 @@ export const petSlice = createSlice({
         state.pet.waters.unshift(action.payload)
       }
     },
+
+    // Medication Actions
     addMedicationToState: (state, action) => {
       state.medications.unshift(action.payload)
       state.medicationCount = state.medicationCount + 1
@@ -351,6 +371,8 @@ export const petSlice = createSlice({
         state.pet.medications[index] = updatedMedication
       }
     },
+
+    // Seizure Actions
     addSeizureToState: (state, action) => {
       state.seizures.unshift(action.payload)
       state.seizureCount = state.seizureCount + 1
@@ -361,6 +383,8 @@ export const petSlice = createSlice({
         state.pet.seizures.unshift(action.payload)
       }
     },
+
+    // Walk Actions
     addWalkToState: (state, action) => {
       state.walks.unshift(action.payload)
       state.walkCount = state.walkCount + 1
@@ -385,6 +409,8 @@ export const petSlice = createSlice({
         state.pet.walks[index] = updatedWalk
       }
     },
+
+    // Appointment Actions
     addAppointmentToState: (state, action) => {
       state.appointments.unshift(action.payload)
       state.appointmentCount = state.appointmentCount + 1
@@ -395,6 +421,8 @@ export const petSlice = createSlice({
         state.pet.appointments.unshift(action.payload)
       }
     },
+
+    // Movement Actions
     addMovementToState: (state, action) => {
       state.movements.unshift(action.payload)
       state.movementCount = state.movementCount + 1
@@ -458,6 +486,8 @@ export const petSlice = createSlice({
         state.movement = payload.movements[0]
         state.zeroMovements = payload.movements.length === 0
         state.movementCount = payload.movements.length
+
+        state.tokenTransactions = payload.tokenTransactions
 
         state.loading = false
       })
@@ -562,5 +592,7 @@ export const {
   setOpenMovementDrawer,
   setCloseMovementDrawer,
   addMovementToPet,
-  addMovementToState
+  addMovementToState,
+  setOpenPetUpdateDrawer,
+  setClosePetUpdateDrawer
 } = petSlice.actions

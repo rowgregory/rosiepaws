@@ -10,8 +10,9 @@ import PetSelection from '../components/common/forms/PetSelection'
 import FixedFooter from '../components/common/forms/FixedFooter'
 import { medicationCreateTokenCost } from '../lib/constants/token'
 import Notes from '../components/common/forms/Notes'
+import CareTaskSwitch from '../components/common/forms/CareTaskSwitch'
 
-const MedicationForm = ({ inputs, handleSubmit, close, errors, loading, isUpdating }: any) => {
+const MedicationForm = ({ inputs, handleSubmit, close, errors, loading, isUpdating, handleToggle }: any) => {
   const [drugSearchResults, setDrugSearchResults] = useState<string[]>([])
   const [showDrugSearch, setShowDrugSearch] = useState(false)
   const dispatch = useAppDispatch()
@@ -369,6 +370,8 @@ const MedicationForm = ({ inputs, handleSubmit, close, errors, loading, isUpdati
 
             {/* Notes */}
             <Notes inputs={inputs} handleInput={handleInput} />
+
+            <CareTaskSwitch value={inputs.isCareTask} handleToggle={handleToggle} disabled={loading} />
           </div>
         </div>
 

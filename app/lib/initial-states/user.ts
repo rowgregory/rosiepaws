@@ -6,7 +6,6 @@ export const initialUserState: IUser = {
   role: 'Free', // Default role
   isSuperUser: false, // Default permission
   isAdmin: false, // Default permission
-  isGuardian: false, // Default permission
   isFreeUser: true, // Default user type
   isComfortUser: false, // Default user type
   isCompanionUser: false, // Default user type

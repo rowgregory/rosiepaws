@@ -171,7 +171,6 @@ const usersData = [
     role: 'FREE',
     isSuperUser: false,
     isAdmin: false,
-    isGuardian: false,
     isFreeUser: true,
     isComfortUser: false,
     isCompanionUser: false,
@@ -188,7 +187,6 @@ const usersData = [
     role: 'FREE',
     isSuperUser: false,
     isAdmin: false,
-    isGuardian: false,
     isFreeUser: true,
     isComfortUser: false,
     isCompanionUser: false,
@@ -205,7 +203,6 @@ const usersData = [
     role: 'COMFORT',
     isSuperUser: false,
     isAdmin: false,
-    isGuardian: false,
     isFreeUser: false,
     isComfortUser: true,
     isCompanionUser: false,
@@ -222,7 +219,6 @@ const usersData = [
     role: 'FREE',
     isSuperUser: false,
     isAdmin: false,
-    isGuardian: false,
     isFreeUser: true,
     isComfortUser: false,
     isCompanionUser: false,
@@ -239,7 +235,6 @@ const usersData = [
     role: 'COMPANION',
     isSuperUser: false,
     isAdmin: false,
-    isGuardian: false,
     isFreeUser: false,
     isComfortUser: false,
     isCompanionUser: true,
@@ -256,7 +251,6 @@ const usersData = [
     role: 'ADMIN',
     isSuperUser: false,
     isAdmin: true,
-    isGuardian: false,
     isFreeUser: false,
     isComfortUser: false,
     isCompanionUser: false,
@@ -273,7 +267,6 @@ const usersData = [
     role: 'FREE',
     isSuperUser: false,
     isAdmin: false,
-    isGuardian: true,
     isFreeUser: true,
     isComfortUser: false,
     isCompanionUser: false,
@@ -290,7 +283,6 @@ const usersData = [
     role: 'LEGACY',
     isSuperUser: false,
     isAdmin: false,
-    isGuardian: false,
     isFreeUser: false,
     isComfortUser: false,
     isCompanionUser: false,
@@ -307,7 +299,6 @@ const usersData = [
     role: 'COMFORT',
     isSuperUser: false,
     isAdmin: false,
-    isGuardian: false,
     isFreeUser: false,
     isComfortUser: true,
     isCompanionUser: false,
@@ -324,7 +315,6 @@ const usersData = [
     role: 'ADMIN',
     isSuperUser: true,
     isAdmin: true,
-    isGuardian: false,
     isFreeUser: false,
     isComfortUser: false,
     isCompanionUser: false,
@@ -630,7 +620,6 @@ const destroyData = async () => {
     await prisma.stripeSubscription.deleteMany()
     await prisma.tokenTransaction.deleteMany()
     await prisma.galleryItem.deleteMany()
-    await prisma.blog.deleteMany()
     await prisma.pet.deleteMany()
     await prisma.session.deleteMany()
     await prisma.account.deleteMany()

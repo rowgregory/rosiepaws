@@ -1,6 +1,6 @@
 {
   "name": "rosiepaws",
-  "version": "0.6.22",
+  "version": "0.6.32",
   "private": true,
   "type": "module",
   "scripts": {
@@ -17,6 +17,7 @@
     "@prisma/client": "^5.7.1",
     "@reduxjs/toolkit": "^2.2.4",
     "@types/stripe": "^8.0.416",
+    "@types/ua-parser-js": "^0.7.39",
     "argon2": "^0.41.1",
     "error-stack-parser-es": "^1.0.5",
     "firebase": "^11.9.1",
@@ -36,6 +37,7 @@
     "recharts": "^2.15.3",
     "resend": "^4.6.0",
     "stripe": "^18.2.1",
+    "ua-parser-js": "^2.0.4",
     "uifx": "^2.0.7"
   },
   "devDependencies": {

@@ -109,7 +109,7 @@ export async function POST(req: NextRequest) {
           userId: ownerId,
           amount: -petCreateTokenCost, // Negative for debit
           type: 'PET_CREATION', // You'll need to add this to your enum
-          description: `Pet creation: ${name}`,
+          description: `Pet creation`,
           metadata: {
             petId: newPet.id,
             petName: name,

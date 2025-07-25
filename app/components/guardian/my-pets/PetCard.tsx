@@ -1,10 +1,13 @@
-import { setPet } from '@/app/redux/features/petSlice'
+import { setOpenPetUpdateDrawer, setPet } from '@/app/redux/features/petSlice'
 import { useAppDispatch } from '@/app/redux/store'
 import { Pet } from '@/app/types/entities'
-import { ArrowRight, Calendar, MoreVertical, Shield } from 'lucide-react'
+import { ArrowRight, Calendar, Edit, MoreVertical, Shield, Trash2 } from 'lucide-react'
 import Link from 'next/link'
-import React, { FC } from 'react'
-import { motion } from 'framer-motion'
+import React, { FC, useEffect, useRef, useState } from 'react'
+import { AnimatePresence, motion } from 'framer-motion'
+import { setInputs } from '@/app/redux/features/formSlice'
+import { setCloseAdminConfirmModal, setOpenAdminConfirmModal } from '@/app/redux/features/adminSlice'
+import { useDeletePetMutation } from '@/app/redux/services/petApi'
 
 const getInitials = (name: string) => {
   return name.substring(0, 2).toUpperCase()
@@ -12,6 +15,49 @@ const getInitials = (name: string) => {
 
 const PetCard: FC<{ pet: Pet; index: number }> = ({ pet, index }) => {
   const dispatch = useAppDispatch()
+  const [isOpen, setIsOpen] = useState(false)
+  const [deletePet, { isLoading }] = useDeletePetMutation()
+  const menuRef = useRef(null) as any
+
+  useEffect(() => {
+    const handleClickOutside = (event: { target: any }) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setIsOpen(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
+
+  const handleEdit = () => {
+    dispatch(setOpenPetUpdateDrawer())
+    dispatch(setInputs({ formName: 'petForm', data: { ...pet, type: pet.type.toLowerCase() } }))
+    setIsOpen(false)
+  }
+
+  const handleDelete = () => {
+    dispatch(
+      setOpenAdminConfirmModal({
+        confirmModal: {
+          isOpen: true,
+          title: 'Delete Pet',
+          description: `Deleting this pet will permanently remove all related data, including all logs you've connected to this pet.`,
+          confirmText: 'Delete Pet',
+          onConfirm: async () => {
+            try {
+              await deletePet({ petId: pet.id }).unwrap()
+              dispatch(setCloseAdminConfirmModal())
+            } catch (err: any) {
+              console.log('Error deleting pet: ', err)
+            }
+          },
+          isDestructive: true,
+          isProcessing: isLoading
+        }
+      })
+    )
+  }
 
   return (
     <motion.div
@@ -72,16 +118,46 @@ const PetCard: FC<{ pet: Pet; index: number }> = ({ pet, index }) => {
               </p>
             </motion.div>
           </div>
-          <motion.button
-            className="p-1 text-gray-400 hover:text-gray-600"
-            initial={{ opacity: 0, scale: 0 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: index * 0.1 + 0.5, type: 'spring' }}
-            whileHover={{ scale: 1.2, rotate: 90 }}
-            whileTap={{ scale: 0.9 }}
-          >
-            <MoreVertical className="w-4 h-4" />
-          </motion.button>
+          <div className="relative" ref={menuRef}>
+            <motion.button
+              onClick={() => setIsOpen(!isOpen)}
+              className="p-1 text-gray-400 hover:text-gray-600"
+              initial={{ opacity: 0, scale: 0 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: index * 0.1 + 0.5, type: 'spring' }}
+              whileHover={{ scale: 1.2, rotate: 90 }}
+              whileTap={{ scale: 0.9 }}
+            >
+              <MoreVertical className="w-4 h-4" />
+            </motion.button>
+
+            <AnimatePresence>
+              {isOpen && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.95, y: -10 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.95, y: -10 }}
+                  transition={{ duration: 0.15 }}
+                  className="absolute right-0 top-8 z-40 w-32 bg-white rounded-md shadow-lg border border-gray-200 py-1"
+                >
+                  <button
+                    onClick={handleEdit}
+                    className="flex items-center w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                  >
+                    <Edit className="w-4 h-4 mr-2" />
+                    Edit
+                  </button>
+                  <button
+                    onClick={handleDelete}
+                    className="flex items-center w-full px-3 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
+                  >
+                    <Trash2 className="w-4 h-4 mr-2" />
+                    Delete
+                  </button>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
         </div>
       </motion.div>
 
@@ -108,7 +184,13 @@ const PetCard: FC<{ pet: Pet; index: number }> = ({ pet, index }) => {
           transition={{ delay: index * 0.1 + 0.8, duration: 0.3 }}
         >
           <span className="text-gray-600">Last Visit</span>
-          <span className="text-gray-900 font-medium">{pet.lastVisit?.toLocaleDateString()}</span>
+          {pet.lastVisit ? (
+            <span className="text-gray-900 font-medium">{pet.lastVisit?.toLocaleDateString()}</span>
+          ) : (
+            <Link href="/guardian/pets/appointments" className="hover:text-pink-500 duration-300">
+              Log Appointment
+            </Link>
+          )}
         </motion.div>
       </motion.div>
 
@@ -121,10 +203,12 @@ const PetCard: FC<{ pet: Pet; index: number }> = ({ pet, index }) => {
       >
         <div className="flex items-center justify-between text-xs text-gray-500">
           <div className="flex items-center space-x-4">
-            <motion.div className="flex items-center" whileHover={{ scale: 1.05 }}>
-              <Calendar className="w-3 h-3 mr-1" />
-              <span>Next: {pet.nextVisit?.toLocaleDateString()}</span>
-            </motion.div>
+            {pet.nextVisit && (
+              <motion.div className="flex items-center" whileHover={{ scale: 1.05 }}>
+                <Calendar className="w-3 h-3 mr-1" />
+                <span>Next: {pet.nextVisit?.toLocaleDateString()}</span>
+              </motion.div>
+            )}
             {pet.microchipId && (
               <motion.div
                 className="flex items-center"
@@ -150,7 +234,7 @@ const PetCard: FC<{ pet: Pet; index: number }> = ({ pet, index }) => {
       >
         <Link href="/guardian/dashboard" onClick={() => dispatch(setPet(pet))} className="block w-full">
           <motion.div
-            className="w-full flex items-center justify-center px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            className="w-full flex items-center justify-center px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white focus:outline-none"
             whileHover={{
               backgroundColor: '#f9fafb',
               borderColor: '#9ca3af',

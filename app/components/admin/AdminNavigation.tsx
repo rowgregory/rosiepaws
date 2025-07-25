@@ -1,30 +1,33 @@
 import useCustomPathname from '@/app/hooks/useCustomPathname'
-import React, { MouseEvent } from 'react'
+import React, { MouseEvent, useState } from 'react'
 import { ChevronRight } from 'lucide-react'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
-import { RootState, useAppDispatch, useAppSelector } from '@/app/redux/store'
-import { useLogoutMutation } from '@/app/redux/services/authApi'
-import { setAuthState } from '@/app/redux/features/authSlice'
+import { RootState, useAppSelector } from '@/app/redux/store'
 import { useRouter } from 'next/navigation'
 import Spinner from '../common/Spinner'
 import { adminLinkData } from '@/app/lib/utils'
+import { signOut } from 'next-auth/react'
 
 const AdminNavigation = ({ toggleSidebar, setToggleSidebar }: any) => {
   const path = useCustomPathname()
-  const dispatch = useAppDispatch()
-  const [logout, { isLoading }] = useLogoutMutation()
   const { push } = useRouter()
   const { user } = useAppSelector((state: RootState) => state.user)
   const userEmail = user?.email
+  const [isLoading, setIsLoading] = useState(false)
 
   const handleLogout = async (e: MouseEvent) => {
     e.preventDefault()
 
     try {
-      await logout({}).unwrap()
-      dispatch(setAuthState({ isAuthenticated: false, id: '', role: '' }))
+      setIsLoading(true)
+      await signOut({
+        redirect: false, // Prevent automatic redirect
+        callbackUrl: '/auth/login' // Optional: specify where to redirect after signout
+      })
+
       push('/auth/login')
+      setIsLoading(false)
     } catch {}
   }
 

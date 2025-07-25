@@ -16,9 +16,8 @@ import {
   CreditCardIcon
 } from 'lucide-react'
 import { RootState, useAppDispatch, useAppSelector } from '@/app/redux/store'
-import AdminManagePaymentDrawer from '@/app/drawers/AdminManagePaymentDrawer'
+import ManagePaymentDrawer from '@/app/drawers/admin/ManagePaymentDrawer'
 import { setOpenAdminManagePaymentDrawer } from '@/app/redux/features/adminSlice'
-import AdminConfirmModal from '@/app/modals/AdminConformModal'
 
 const StatusBadge = ({ status }: { status: string }) => {
   const getStatusConfig = (status: string) => {
@@ -95,8 +94,7 @@ const AdminSubscriptions = () => {
 
   return (
     <>
-      <AdminManagePaymentDrawer />
-      <AdminConfirmModal />
+      <ManagePaymentDrawer />
       <div className="bg-gray-50 min-h-screen p-6">
         {/* Header */}
         <div className="mb-8">

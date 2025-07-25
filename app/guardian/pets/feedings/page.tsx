@@ -53,6 +53,10 @@ const Feedings = () => {
     }
   }, [feedings])
 
+  const weeklyFeedings = feedings.filter(
+    (f) => new Date(f.createdAt) >= new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
+  ).length
+
   if (zeroFeedings) {
     return (
       <ZeroLogs
@@ -124,12 +128,7 @@ const Feedings = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-amber-600 text-sm font-medium">Weekly Total</p>
-                  <p className="text-2xl font-bold text-amber-900">
-                    {
-                      feedings.filter((f) => new Date(f.createdAt) >= new Date(Date.now() - 7 * 24 * 60 * 60 * 1000))
-                        .length
-                    }
-                  </p>
+                  <p className="text-2xl font-bold text-amber-900">{weeklyFeedings}</p>
                 </div>
                 <div className="w-10 h-10 bg-amber-200 rounded-lg flex items-center justify-center">
                   <TrendingUp className="w-5 h-5 text-amber-700" />

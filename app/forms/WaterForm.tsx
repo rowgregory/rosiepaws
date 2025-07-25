@@ -30,7 +30,13 @@ const WaterForm: FC<IForm> = ({ inputs, handleInput, close, handleSubmit, loadin
                       : 'border-gray-300 bg-white hover:border-blue-300'
                   }`}
                 >
-                  <input type="radio" name="intakeType" value={type.id} onChange={handleInput} className="hidden" />
+                  <input
+                    type="radio"
+                    name="intakeType"
+                    value={type.id || ''}
+                    onChange={handleInput}
+                    className="hidden"
+                  />
                   <div>
                     <span className="text-2xl mb-1 block">{type.icon}</span>
                     <p className="font-medium text-xs">{type.name}</p>
@@ -49,7 +55,7 @@ const WaterForm: FC<IForm> = ({ inputs, handleInput, close, handleSubmit, loadin
                 <input
                   type="number"
                   name="milliliters"
-                  value={inputs?.milliliters}
+                  value={inputs?.milliliters || 0}
                   onChange={handleInput}
                   placeholder="Enter amount in milliliters"
                   min="0"
@@ -78,7 +84,7 @@ const WaterForm: FC<IForm> = ({ inputs, handleInput, close, handleSubmit, loadin
                   <input
                     type="radio"
                     name="moodRating"
-                    value={index}
+                    value={index || -1}
                     checked={parseInt(inputs?.moodRating) === index}
                     onChange={handleInput}
                     className="sr-only"

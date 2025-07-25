@@ -1,7 +1,7 @@
 import React from 'react'
 import { motion } from 'framer-motion'
-import { BookOpen, Phone } from 'lucide-react'
-import { setOpenContactSupportDrawer, setOpenViewGuideDrawer } from '@/app/redux/features/appSlice'
+import { Phone } from 'lucide-react'
+import { setOpenContactSupportDrawer } from '@/app/redux/features/appSlice'
 import { useAppDispatch } from '@/app/redux/store'
 
 const SupportSection = () => {
@@ -27,15 +27,6 @@ const SupportSection = () => {
         >
           <Phone className="w-4 h-4" />
           Contact Support
-        </motion.button>
-        <motion.button
-          onClick={() => dispatch(setOpenViewGuideDrawer())}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          className="inline-flex items-center gap-2 px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium"
-        >
-          <BookOpen className="w-4 h-4" />
-          View Pet Guide
         </motion.button>
       </div>
     </motion.div>

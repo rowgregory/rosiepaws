@@ -112,7 +112,10 @@ export async function POST(req: NextRequest) {
           description: `Medication creation`,
           metadata: {
             medicationId: newMedication.id,
-            feature: 'medication_creation'
+            feature: 'medication_creation',
+            dosage: newMedication.dosage,
+            dosageUnit: newMedication.dosageUnit,
+            drugName: newMedication.drugName
           }
         }
       })

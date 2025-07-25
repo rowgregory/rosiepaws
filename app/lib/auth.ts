@@ -2,6 +2,17 @@ import prisma from '@/prisma/client'
 import { PrismaAdapter } from '@auth/prisma-adapter'
 import NextAuth from 'next-auth'
 import Google from 'next-auth/providers/google'
+import { createLog } from './api/createLog'
+
+const googleProvider = Google({
+  clientId: process.env.GOOGLE_CLIENT_ID!,
+  clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+  authorization: {
+    params: {
+      prompt: 'select_account'
+    }
+  }
+})
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   debug: false,
@@ -17,15 +28,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     verifyRequest: '/auth/verify-request'
   },
   providers: [
-    Google({
-      clientId: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-      authorization: {
-        params: {
-          prompt: 'select_account'
-        }
-      }
-    }),
+    googleProvider,
     {
       id: 'email',
       name: 'Email',
@@ -174,7 +177,16 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
                 }
               })
 
-              console.log('✅ Linked Google account to existing user')
+              await createLog('info', 'Successfully linked Google account to existing user', {
+                location: ['auth.ts - signIn callback - account linking success'],
+                name: 'GoogleAccountLinkedSuccess',
+                timestamp: new Date().toISOString(),
+                provider: 'google',
+                userEmail: user.email,
+                existingUserId: existingUser.id,
+                accountId: account.providerAccountId,
+                scope: account.scope
+              })
             }
 
             // Update user info from Google profile if name fields are missing
@@ -199,11 +211,33 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             // Set the user.id so the adapter knows to use the existing user
             user.id = existingUser.id
           } else {
-            console.log('👤 New Google user - name will be handled in JWT callback')
+            await createLog('info', 'New Google user detected - will be handled in JWT callback', {
+              location: ['auth.ts - signIn callback - new user detected'],
+              name: 'GoogleNewUserDetected',
+              timestamp: new Date().toISOString(),
+              provider: 'google',
+              userEmail: user.email,
+              userName: user.name,
+              accountId: account.providerAccountId,
+              profileData: {
+                name: profile?.name,
+                picture: profile?.picture,
+                emailVerified: profile?.email_verified
+              }
+            })
           }
         } catch (error) {
-          console.error('❌ Error in Google sign-in callback:', error)
-          // Don't fail the sign-in if linking fails
+          await createLog('error', 'Error in Google sign-in callback', {
+            location: ['auth.ts - signIn callback - Google provider error'],
+            name: 'GoogleSignInCallbackError',
+            timestamp: new Date().toISOString(),
+            provider: 'google',
+            userEmail: user.email,
+            accountId: account.providerAccountId,
+            error: error instanceof Error ? error.message : 'Unknown error',
+            errorStack: error instanceof Error ? error.stack : undefined,
+            errorName: error instanceof Error ? error.name : 'UnknownError'
+          })
         }
       }
 
@@ -222,7 +256,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         session.user.role = token.role
         session.user.isAdmin = token.isAdmin
         session.user.isSuperUser = token.isSuperUser
-        session.user.isGuardian = token.isGuardian
         session.user.isFreeUser = token.isFreeUser
         session.user.isComfortUser = token.isComfortUser
         session.user.isCompanionUser = token.isCompanionUser
@@ -275,7 +308,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           token.role = dbUser.role || undefined
           token.isAdmin = dbUser.isAdmin ?? false
           token.isSuperUser = dbUser.isSuperUser ?? false
-          token.isGuardian = dbUser.isGuardian ?? false
           token.isFreeUser = dbUser.isFreeUser ?? false
           token.isComfortUser = dbUser.isComfortUser ?? false
           token.isCompanionUser = dbUser.isCompanionUser ?? false

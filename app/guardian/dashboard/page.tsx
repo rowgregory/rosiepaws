@@ -1,9 +1,9 @@
 'use client'
 
-import React, { useState, useMemo } from 'react'
+import React, { useState, useMemo, useEffect } from 'react'
 import Spinner from '@/app/components/common/Spinner'
 import LargeFeedingGraph from '@/app/components/guardian/dashboard/LargeFeedingGraph'
-import GuardianPainScoreGraph from '@/app/components/guardian/dashboard/GuardianPainScoreGraph'
+import LargePainScoreGraph from '@/app/components/guardian/dashboard/LargePainScoreGraph'
 import { RootState, useAppDispatch, useAppSelector } from '@/app/redux/store'
 import GuardianMetricCard from '@/app/components/guardian/dashboard/GuardianMetricCard'
 import LargeWaterGraph from '@/app/components/guardian/dashboard/LargeWaterGraph'
@@ -27,7 +27,7 @@ import LargeAppointmentChart from '@/app/components/guardian/dashboard/LargeAppo
 import MiniAppointmentChart from '@/app/components/guardian/dashboard/MiniAppointmentChart'
 import MiniWalkGraph from '@/app/components/guardian/dashboard/MiniWalkGraph'
 import TokenCounter from '@/app/components/guardian/TokenCounter'
-import { ArrowLeftIcon } from 'lucide-react'
+import { Activity, ArrowDown, ArrowLeftIcon, Heart, Plus, Utensils, X } from 'lucide-react'
 import {
   setOpenAppointmentDrawer,
   setOpenBloodSugarDrawer,
@@ -49,7 +49,37 @@ const GuardianDashboard = () => {
   const dispatch = useAppDispatch()
   const { push } = useRouter()
   const [selectedMetric, setSelectedMetric] = useState('overview')
-  const { pet, loading } = useAppSelector((state: RootState) => state.pet)
+  const {
+    pet,
+    loading,
+    zeroFeedings,
+    zeroPainScores,
+    zeroWalks,
+    zeroWaters,
+    zeroMovements,
+    zeroMedications,
+    zeroAppointments,
+    zeroBloodSugars,
+    zeroSeizures
+  } = useAppSelector((state: RootState) => state.pet)
+  const [onboardingBanner, setOnboardingBanner] = useState(false)
+
+  const noData =
+    zeroFeedings &&
+    zeroPainScores &&
+    zeroWalks &&
+    zeroWaters &&
+    zeroMovements &&
+    zeroMedications &&
+    zeroAppointments &&
+    zeroBloodSugars &&
+    zeroSeizures
+
+  useEffect(() => {
+    if (noData) {
+      setOnboardingBanner(true)
+    }
+  }, [noData])
 
   const chartData: IProcessedChartData = useMemo(() => processChartData(pet), [pet])
 
@@ -188,7 +218,7 @@ const GuardianDashboard = () => {
       case 'blood-sugars':
         return <LargeBloodSugarGraph bloodSugarData={chartData?.bloodSugars} />
       case 'pain-scores':
-        return <GuardianPainScoreGraph chartData={chartData?.painScores} />
+        return <LargePainScoreGraph chartData={chartData?.painScores} />
       case 'feedings':
         return <LargeFeedingGraph feedingData={chartData.feedings} />
       case 'waters':
@@ -274,12 +304,73 @@ const GuardianDashboard = () => {
 
   return (
     <div className="bg-gray-50">
-      <div className="sticky top-0 pt-6 pl-6 border-b-1 border-b-gray-300 z-30 bg-white h-24">
+      <div className="sticky top-0 flex items-center pl-6 border-b-1 border-b-gray-300 z-30 bg-white h-24">
         <span className="text-2xl bg-gradient-to-r from-orange-400 via-orange-600 to-pink-600 bg-clip-text text-transparent font-semibold">
           {pet?.name}&apos;s Health Dashboard
         </span>
       </div>
       <div className="h-[calc(100dvh-96px)] mx-auto p-6 space-y-8">
+        {onboardingBanner && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-6 mb-6"
+          >
+            <div className="flex justify-between items-start">
+              <div className="flex-1">
+                <div className="flex items-center space-x-2 mb-2">
+                  <div className="bg-blue-500 rounded-full p-1">
+                    <Heart className="w-4 h-4 text-white" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-gray-900">
+                    Welcome to {pet.name}&apos;s Health Dashboard! 🎉
+                  </h3>
+                </div>
+
+                <p className="text-gray-600 mb-4">
+                  Start tracking {pet.name}&apos;s health by clicking on any of the metric cards below to add your first
+                  data entry.
+                </p>
+
+                <div className="flex flex-wrap gap-2">
+                  <div className="flex items-center space-x-1 bg-white px-3 py-1 rounded-full border border-blue-200">
+                    <Activity className="w-4 h-4 text-blue-500" />
+                    <span className="text-sm text-gray-700">Pain Scores</span>
+                  </div>
+                  <div className="flex items-center space-x-1 bg-white px-3 py-1 rounded-full border border-blue-200">
+                    <Utensils className="w-4 h-4 text-green-500" />
+                    <span className="text-sm text-gray-700">Feedings</span>
+                  </div>
+                  <div className="flex items-center space-x-1 bg-white px-3 py-1 rounded-full border border-blue-200">
+                    <Plus className="w-4 h-4 text-purple-500" />
+                    <span className="text-sm text-gray-700">And more...</span>
+                  </div>
+                </div>
+
+                <div className="mt-4 flex items-center space-x-2">
+                  <motion.div
+                    animate={{ x: [0, 4, 0] }}
+                    transition={{ duration: 1.5, repeat: Infinity }}
+                    className="text-blue-500"
+                  >
+                    <ArrowDown className="w-5 h-5" />
+                  </motion.div>
+                  <span className="text-sm font-medium text-blue-600">
+                    Click any grayed-out card below to get started
+                  </span>
+                </div>
+              </div>
+
+              <button
+                onClick={() => setOnboardingBanner(false)}
+                className="text-gray-400 hover:text-gray-600 transition-colors ml-4"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+          </motion.div>
+        )}
         <>
           <div className="flex gap-3.5 w-[calc(100vw-304px)] overflow-x-auto pb-2 scrollbar-hide">
             {metricsConfigCards(stats).map((metric, index) => {
@@ -312,63 +403,65 @@ const GuardianDashboard = () => {
               )
             })}
           </div>
-          <div className="bg-white rounded-2xl p-8 shadow-xl border border-gray-100">
-            <div className="flex items-center justify-between mb-6">
-              <div>
-                <h2 className="text-2xl font-bold text-gray-900">
-                  {selectedMetric === 'blood-sugar'
-                    ? 'Blood Sugar Monitoring'
-                    : selectedMetric === 'pain-score'
-                      ? 'Pain Score Tracking'
-                      : selectedMetric === 'feedings'
-                        ? 'Feeding History'
-                        : selectedMetric === 'water'
-                          ? 'Water Intake Logs'
-                          : selectedMetric === 'medications'
-                            ? 'Medication Schedule'
-                            : selectedMetric === 'seizures'
-                              ? 'Seizure Events'
-                              : 'Health Overview'}
-                </h2>
-                <p className="text-gray-600 mt-1">
-                  {selectedMetric === 'overview'
-                    ? 'Quick overview of all health metrics'
-                    : `Detailed ${selectedMetric.replace('-', ' ')} data and trends`}
-                </p>
+          {!noData && (
+            <div className="bg-white rounded-2xl p-8 shadow-md border border-gray-100">
+              <div className="flex items-center justify-between mb-6">
+                <div>
+                  <h2 className="text-2xl font-bold text-gray-900">
+                    {selectedMetric === 'blood-sugar'
+                      ? 'Blood Sugar Monitoring'
+                      : selectedMetric === 'pain-score'
+                        ? 'Pain Score Tracking'
+                        : selectedMetric === 'feedings'
+                          ? 'Feeding History'
+                          : selectedMetric === 'water'
+                            ? 'Water Intake Logs'
+                            : selectedMetric === 'medications'
+                              ? 'Medication Schedule'
+                              : selectedMetric === 'seizures'
+                                ? 'Seizure Events'
+                                : 'Health Overview'}
+                  </h2>
+                  <p className="text-gray-600 mt-1">
+                    {selectedMetric === 'overview'
+                      ? 'Quick overview of all health metrics'
+                      : `Detailed ${selectedMetric.replace('-', ' ')} data and trends`}
+                  </p>
+                </div>
+                <div className="flex items-center gap-x-3">
+                  {selectedMetric !== 'overview' && (
+                    <button
+                      onClick={() => {
+                        const config = metricConfigButton[selectedMetric as keyof typeof metricConfigButton]
+                        if (config) {
+                          dispatch(config.action)
+                        }
+                      }}
+                      className="inline-flex items-center gap-x-2 px-4 py-2 bg-gradient-to-r from-pink-500 to-orange-500 hover:from-pink-600 hover:to-orange-600 text-white text-sm font-medium rounded-full shadow-sm transition-all duration-200"
+                    >
+                      Log {metricConfigButton[selectedMetric as keyof typeof metricConfigButton]?.label || ''}
+                      <TokenCounter
+                        tokens={metricConfigButton[selectedMetric as keyof typeof metricConfigButton]?.tokens || 0}
+                      />
+                    </button>
+                  )}
+                  {selectedMetric !== 'overview' && (
+                    <button
+                      onClick={() => setSelectedMetric('overview')}
+                      className={`px-4 py-2 rounded-full font-medium text-sm transition-colors flex items-center gap-x-1.5 ${
+                        selectedMetric === 'overview'
+                          ? 'bg-purple-100 text-purple-700'
+                          : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                      }`}
+                    >
+                      {selectedMetric !== 'overview' && <ArrowLeftIcon size={16} />} Overview
+                    </button>
+                  )}
+                </div>
               </div>
-              <div className="flex items-center gap-x-3">
-                {selectedMetric !== 'overview' && (
-                  <button
-                    onClick={() => {
-                      const config = metricConfigButton[selectedMetric as keyof typeof metricConfigButton]
-                      if (config) {
-                        dispatch(config.action)
-                      }
-                    }}
-                    className="inline-flex items-center gap-x-2 px-4 py-2 bg-gradient-to-r from-pink-500 to-orange-500 hover:from-pink-600 hover:to-orange-600 text-white text-sm font-medium rounded-full shadow-sm transition-all duration-200"
-                  >
-                    Log {metricConfigButton[selectedMetric as keyof typeof metricConfigButton]?.label || ''}
-                    <TokenCounter
-                      tokens={metricConfigButton[selectedMetric as keyof typeof metricConfigButton]?.tokens || 0}
-                    />
-                  </button>
-                )}
-                {selectedMetric !== 'overview' && (
-                  <button
-                    onClick={() => setSelectedMetric('overview')}
-                    className={`px-4 py-2 rounded-full font-medium text-sm transition-colors flex items-center gap-x-1.5 ${
-                      selectedMetric === 'overview'
-                        ? 'bg-purple-100 text-purple-700'
-                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                    }`}
-                  >
-                    {selectedMetric !== 'overview' && <ArrowLeftIcon size={16} />} Overview
-                  </button>
-                )}
-              </div>
+              {renderChart()}
             </div>
-            {renderChart()}
-          </div>
+          )}
         </>
       </div>
     </div>

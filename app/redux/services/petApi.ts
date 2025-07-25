@@ -80,13 +80,25 @@ export const petApi = api.injectEndpoints({
       onQueryStarted: async (_: any, { dispatch, queryFulfilled }: any) => {
         const { data } = await queryFulfilled
         dispatch(updatePetInState(data.pet))
+        dispatch(
+          updateUserTokens({
+            tokens: data.user.tokens,
+            tokensUsed: data.user.tokensUsed
+          })
+        )
       }
     }),
     deletePet: build.mutation({
       query: (body: any) => ({ url: `${BASE_URL}/delete-pet`, method: 'DELETE', body }),
-      onQueryStarted: async (arg: any, { dispatch, queryFulfilled }: any) => {
-        await queryFulfilled
-        dispatch(removePetFromState(arg.id))
+      onQueryStarted: async (_: any, { dispatch, queryFulfilled }: any) => {
+        const { data } = await queryFulfilled
+        dispatch(removePetFromState(data.deletedPet.id))
+        dispatch(
+          updateUserTokens({
+            tokens: data.user.tokens,
+            tokensUsed: data.user.tokensUsed
+          })
+        )
       }
     }),
     createFeeding: build.mutation({
