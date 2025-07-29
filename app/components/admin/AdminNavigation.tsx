@@ -6,8 +6,8 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { RootState, useAppSelector } from '@/app/redux/store'
 import { useRouter } from 'next/navigation'
 import Spinner from '../common/Spinner'
-import { adminLinkData } from '@/app/lib/utils'
 import { signOut } from 'next-auth/react'
+import { adminNavigationLinks } from '@/app/lib/utils'
 
 const AdminNavigation = ({ toggleSidebar, setToggleSidebar }: any) => {
   const path = useCustomPathname()
@@ -91,7 +91,7 @@ const AdminNavigation = ({ toggleSidebar, setToggleSidebar }: any) => {
       {/* Navigation Links */}
       <div className="pt-6 pb-4">
         <nav className={`px-3 space-y-1 ${toggleSidebar ? 'flex flex-col items-center' : ''}`}>
-          {adminLinkData(path).map((link, i) => (
+          {adminNavigationLinks(path, user.isSuperUser).map((link, i) => (
             <motion.div
               key={i}
               initial={{ opacity: 0, y: 10 }}

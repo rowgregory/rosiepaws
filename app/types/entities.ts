@@ -75,6 +75,7 @@ export interface IUser {
   stripeSubscription?: any
   tokenTransactions: any[]
   galleryItems: any[]
+  tickets: any[]
 
   createdAt: Date
   updatedAt: Date
@@ -319,8 +320,21 @@ export interface ITicket {
   email: string
   deviceInfo?: string | null // JSON string in DB
   attachments?: ITicketAttachment[] | null // JSON in DB
-  user?: IUser
+  user: IUser
   userId: string
   createdAt: Date | string
   updatedAt: Date | string
+}
+
+export type LogLevel = 'info' | 'warn' | 'error' | 'debug'
+
+// Union type for all possible metadata
+export type LogMetadata = Record<string, any>
+
+export interface ILog {
+  id: string
+  level: LogLevel // 'info' | 'warn' | 'error' | 'debug'
+  message: string
+  metadata?: LogMetadata | null
+  createdAt: Date | string
 }

@@ -1,8 +1,7 @@
 import React, { FC } from 'react'
 import { motion } from 'framer-motion'
 import { Zap, Video, FileText } from 'lucide-react'
-import { getTimeInfo, getTimeOfDay } from '@/app/lib/utils'
-import { formatDuration, getEmergencyLevel, getSeizureSeverity } from '@/app/lib/utils/seizure'
+import { formatDuration, getEmergencyLevel, getSeizureSeverity, getTimeInfo, getTimeOfDay } from '@/app/lib/utils'
 import { ISeizure } from '@/app/types'
 
 interface ISeizureCard {

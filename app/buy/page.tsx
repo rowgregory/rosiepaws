@@ -19,7 +19,7 @@ import {
   freeTierPrice,
   legacyTierName,
   legacyTierPrice
-} from '../lib/constants/token'
+} from '../lib/constants/public/token'
 
 const Buy = () => {
   const { user } = useAppSelector((state: RootState) => state.user)

@@ -1,4 +1,4 @@
-import { walkCreateTokenCost } from '@/app/lib/constants/token'
+import { walkCreateTokenCost } from '@/app/lib/constants/public/token'
 import prisma from '@/prisma/client'
 import { slicePet } from '@/public/data/api.data'
 import { NextRequest, NextResponse } from 'next/server'

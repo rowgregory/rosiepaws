@@ -48,4 +48,17 @@ const validateMovementForm = (inputs: MovementFormInputs, setErrors: any) => {
   return Object.keys(newErrors).length === 0
 }
 
+export const isMovementFormValid = (inputs: any): boolean => {
+  return !!(
+    inputs?.petId &&
+    inputs?.movementType &&
+    inputs?.activityLevel &&
+    inputs?.timeRecorded &&
+    inputs?.energyBefore &&
+    inputs?.energyAfter &&
+    inputs?.mobility &&
+    inputs?.timeRecorded
+  )
+}
+
 export default validateMovementForm

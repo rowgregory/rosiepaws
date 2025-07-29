@@ -5,18 +5,21 @@ import { motion } from 'framer-motion'
 import { Clock } from 'lucide-react'
 import { RootState, useAppSelector } from '@/app/redux/store'
 import { setOpenWalkDrawer } from '@/app/redux/features/petSlice'
+import ZeroLogs from '@/app/components/guardian/ZeroLogs'
+import CleanHeader from '@/app/components/guardian/navigation/CleanHeader'
 import {
+  calculateAverageMood,
+  calculateTodaysAverageMood,
   calculateTotalDistance,
   getDistanceMiles,
   getDurationMinutes,
+  getMoodData,
   getPaceColor,
+  getTimeInfo,
   getTodaysTotalDistance,
   getTodaysWalks
-} from '@/app/lib/utils/walk'
-import ZeroLogs from '@/app/components/guardian/ZeroLogs'
-import CleanHeader from '@/app/components/guardian/navigation/CleanHeader'
-import { calculateAverageMood, calculateTodaysAverageMood, getMoodData, getTimeInfo } from '@/app/lib/utils'
-import { walkCreateTokenCost } from '@/app/lib/constants/token'
+} from '@/app/lib/utils'
+import { walkCreateTokenCost } from '@/app/lib/constants/public/token'
 
 const Walks = () => {
   const { walks, zeroWalks } = useAppSelector((state: RootState) => state.pet)

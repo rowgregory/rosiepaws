@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { slicePet } from '@/public/data/api.data'
 import { getUserFromHeader } from '@/app/lib/api/getUserFromheader'
 import { validateOwnerAndPet } from '@/app/lib/api/validateOwnerAndPet'
-import { appointmentCreateTokenCost } from '@/app/lib/constants/token'
+import { appointmentCreateTokenCost } from '@/app/lib/constants/public/token'
 import { createLog } from '@/app/lib/api/createLog'
 import { handleApiError } from '@/app/lib/api/handleApiError'
 

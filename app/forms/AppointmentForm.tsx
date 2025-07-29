@@ -1,15 +1,14 @@
 import React, { FC } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { CheckCircle2, Calendar, Clock, Stethoscope, FileText, User, Bell, BellOff } from 'lucide-react'
-import { containerVariants, serviceTypes, timeSlots } from '../lib/constants/appointment'
-import { itemVariants } from '../utils/medication-animations'
-import { isAppointmentFormValid } from '../lib/utils/appointment'
+import { containerVariants, itemVariants, serviceTypes, timeSlots } from '../lib/constants/public/appointment'
+import { isAppointmentFormValid } from '../lib/utils/public/my-pets/appointments/dateUtils'
 import { IForm } from '../types'
 import { useAppDispatch } from '../redux/store'
 import { setInputs } from '../redux/features/formSlice'
 import PetSelection from '../components/common/forms/PetSelection'
 import FixedFooter from '../components/common/forms/FixedFooter'
-import { appointmentCreateTokenCost } from '../lib/constants/token'
+import { appointmentCreateTokenCost } from '../lib/constants/public/token'
 import Notes from '../components/common/forms/Notes'
 
 const AppointmentForm: FC<IForm> = ({ inputs, errors, handleInput, close, handleSubmit, loading, pets }) => {

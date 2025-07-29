@@ -44,7 +44,7 @@ export async function PATCH(req: NextRequest, { params }: { params: any }) {
       return userAuth.response!
     }
 
-    const { ticketId } = params
+    const { ticketId } = await params
     const { status, notes } = await req.json()
 
     // Validate ticketId
@@ -176,15 +176,18 @@ export async function PATCH(req: NextRequest, { params }: { params: any }) {
               email: true,
               name: true
             }
-          }
+          },
+          messages: true
         }
       })
 
+      let newTicketMessage
+
       // Optionally add a system message about the status change
-      if (notes || normalizedStatus === 'closed' || normalizedStatus === 'resolved') {
+      if (notes || normalizedStatus === 'closed' || normalizedStatus === 'resolved' || normalizedStatus === 'open') {
         const systemMessage = notes || `Ticket status changed from ${previousStatus} to ${normalizedStatus}`
 
-        await tx.ticketMessage.create({
+        newTicketMessage = await tx.ticketMessage.create({
           data: {
             ticketId,
             content: systemMessage,
@@ -195,7 +198,7 @@ export async function PATCH(req: NextRequest, { params }: { params: any }) {
         })
       }
 
-      return { updatedTicket }
+      return { updatedTicket, newTicketMessage }
     })
 
     await createLog('info', 'Ticket status updated successfully', {
@@ -219,7 +222,8 @@ export async function PATCH(req: NextRequest, { params }: { params: any }) {
         ticket: result.updatedTicket,
         message: `Ticket status updated from ${previousStatus} to ${normalizedStatus}`,
         previousStatus,
-        newStatus: normalizedStatus
+        newStatus: normalizedStatus,
+        ticketMessage: result.newTicketMessage
       },
       { status: 200 }
     )

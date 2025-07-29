@@ -14,7 +14,7 @@ import {
 } from '@/app/redux/features/petSlice'
 import Link from 'next/link'
 import { Utensils, Pill, Heart, Sparkles, Crown, Zap, Activity, Droplets } from 'lucide-react'
-import { getTodaysBloodSugarLogs } from '@/app/lib/utils/blood-sugar'
+import { getTodaysBloodSugarLogs } from '@/app/lib/utils'
 
 const actions = (hasReachedBloodSugarLimit: boolean, todaysBloodSugarLogs: any) => [
   {

@@ -9,7 +9,7 @@ import { useCreatePetMutation } from '@/app/redux/services/petApi'
 import PetForm from '@/app/forms/PetForm'
 import { Heart } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
-import GuardianPetGuide from '@/app/components/guardian/GuardianPetGuide'
+import GuardianPetGuide from '@/app/components/guardian/form-guides/PetGuide'
 import AnimatedDrawerHeader from '@/app/components/guardian/AnimatedDrawerHeader'
 
 const CreatePetDrawer = () => {

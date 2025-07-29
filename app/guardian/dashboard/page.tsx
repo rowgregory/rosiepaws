@@ -16,13 +16,7 @@ import MiniFeedingGraph from '@/app/components/guardian/dashboard/MiniFeedingGra
 import GuardianMedicationGraph from '@/app/components/guardian/dashboard/GuardianMedicationGraph'
 import LargeSeizureGraph from '@/app/components/guardian/dashboard/LargeSeizureGraph'
 import LargeBloodSugarGraph from '@/app/components/guardian/dashboard/LargeBloodSugarGraph'
-import {
-  getDashboardNextAppointment,
-  IProcessedChartData,
-  metricConfigButton,
-  metricsConfigCards,
-  processChartData
-} from '@/app/lib/utils'
+import { getDashboardNextAppointment, IProcessedChartData, processChartData } from '@/app/lib/utils'
 import LargeAppointmentChart from '@/app/components/guardian/dashboard/LargeAppointmentChart'
 import MiniAppointmentChart from '@/app/components/guardian/dashboard/MiniAppointmentChart'
 import MiniWalkGraph from '@/app/components/guardian/dashboard/MiniWalkGraph'
@@ -44,6 +38,7 @@ import LargeWalkGraph from '@/app/components/guardian/dashboard/LargeWalkGraph'
 import { motion } from 'framer-motion'
 import MiniMovementsGraph from '@/app/components/guardian/dashboard/MiniMovementGraph'
 import LargeMovementsGraph from '@/app/components/guardian/dashboard/LargeMovementGraph'
+import { metricConfigButton, metricsConfigCards } from '@/app/lib/constants/public/dashboard/displayConstants'
 
 const GuardianDashboard = () => {
   const dispatch = useAppDispatch()

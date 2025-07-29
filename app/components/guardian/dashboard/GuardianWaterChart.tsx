@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { ChevronDown, ChevronRight, Droplets, Scale, AlertTriangle, Lightbulb, TrendingUp } from 'lucide-react'
-import { waterGuidanceData, waterTipsData } from '../../../lib/constants/water'
+import { waterGuidanceData, waterTipsData } from '../../../lib/constants/public/water'
 
 const GuardianWaterChart = () => {
   const [expandedCategory, setExpandedCategory] = useState<number | null>(null)

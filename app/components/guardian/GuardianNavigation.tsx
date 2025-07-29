@@ -10,8 +10,8 @@ import useCustomPathname from '@/app/hooks/useCustomPathname'
 import TokenCounter from './TokenCounter'
 import PetDropdownMenu from './navigation/PetDropdownMenu'
 import { setOpenPetDrawer, setPet } from '@/app/redux/features/petSlice'
-import { guardianLinkData } from '@/app/lib/utils'
-import { petCreateTokenCost } from '@/app/lib/constants/token'
+import { petCreateTokenCost } from '@/app/lib/constants/public/token'
+import { publicDashboardLinks } from '@/app/lib/utils'
 
 const GuardianNavigation = () => {
   const path = useCustomPathname()
@@ -20,7 +20,7 @@ const GuardianNavigation = () => {
   const { zeroPets, pet, pets } = useAppSelector((state: RootState) => state.pet)
   const { user } = useAppSelector((state: RootState) => state.user)
   const [petDropdownOpen, setPetDropdownOpen] = useState(false)
-  const linkData = guardianLinkData(path, zeroPets)
+  const linkData = publicDashboardLinks(path, zeroPets)
 
   const handlePetSelect = (selectedPet: any) => {
     dispatch(setPet(selectedPet))

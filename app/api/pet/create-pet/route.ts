@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { parseStack } from 'error-stack-parser-es/lite'
 import { slicePet } from '@/public/data/api.data'
 import { createLog } from '@/app/lib/api/createLog'
-import { petCreateTokenCost } from '@/app/lib/constants/token'
+import { petCreateTokenCost } from '@/app/lib/constants/public/token'
 
 export async function POST(req: NextRequest) {
   try {

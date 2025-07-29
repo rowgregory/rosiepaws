@@ -1,6 +1,6 @@
 import React, { FC } from 'react'
 import { AlertTriangle, Video, Shield, Info, Heart } from 'lucide-react'
-import { emergencySteps, safetyTips } from '@/app/lib/constants/seizure'
+import { emergencySteps, safetyTips } from '@/app/lib/constants/public/seizure'
 
 const GuardianSeizureGuide: FC = () => {
   return (

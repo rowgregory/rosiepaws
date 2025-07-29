@@ -48,4 +48,10 @@ const validateMedicationForm = (inputs: MedicationFormInputs, setErrors: (errors
   return Object.keys(newErrors).length === 0
 }
 
+export const isMedicationFormValid = (inputs: any) => {
+  return (
+    inputs?.petId && inputs?.drugName && inputs?.dosage && inputs?.dosageUnit && inputs?.frequency && inputs?.startDate
+  )
+}
+
 export default validateMedicationForm

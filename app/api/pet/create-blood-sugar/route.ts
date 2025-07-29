@@ -1,7 +1,7 @@
 import prisma from '@/prisma/client'
 import { NextRequest, NextResponse } from 'next/server'
 import { slicePet } from '@/public/data/api.data'
-import { bloodSugarCreateTokenCost } from '@/app/lib/constants/token'
+import { bloodSugarCreateTokenCost } from '@/app/lib/constants/public/token'
 import { createLog } from '@/app/lib/api/createLog'
 import { getUserFromHeader } from '@/app/lib/api/getUserFromheader'
 import { validateOwnerAndPet } from '@/app/lib/api/validateOwnerAndPet'

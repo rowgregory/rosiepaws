@@ -2,13 +2,12 @@ import React, { FC } from 'react'
 import { motion } from 'framer-motion'
 import { IAppointment } from '@/app/types'
 import {
-  formatAppointmentTime,
   getCompletedAppointments,
   getTodaysAppointments,
   getUpcomingAppointments
-} from '@/app/lib/utils/appointment'
-import { serviceTypeConfig } from '@/app/lib/constants/appointment'
-import { getTimeInfo } from '@/app/lib/utils'
+} from '@/app/lib/utils/public/my-pets/appointments/dateUtils'
+import { serviceTypeConfig } from '@/app/lib/constants/public/appointment'
+import { formatDateShort, getTimeInfo } from '@/app/lib/utils'
 
 const QuickOverview: FC<{ appointments: IAppointment[]; nextAppointment: any }> = ({
   appointments,
@@ -38,7 +37,7 @@ const QuickOverview: FC<{ appointments: IAppointment[]; nextAppointment: any }> 
               </div>
               {todaysAppointments.map((apt, idx) => (
                 <div key={idx} className="text-xs text-green-600 bg-green-100 px-2 py-1 rounded">
-                  {apt.pet.name} - {formatAppointmentTime(apt.time)}
+                  {apt.pet.name} - {formatDateShort(apt.time)}
                 </div>
               ))}
             </div>

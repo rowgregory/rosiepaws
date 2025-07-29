@@ -1,10 +1,10 @@
-import { serviceTypeConfig, statusConfig } from '@/app/lib/constants/appointment'
-import { formatAppointmentTime, isAppointmentToday, isPastAppointment } from '@/app/lib/utils/appointment'
+import { serviceTypeConfig, statusConfig } from '@/app/lib/constants/public/appointment'
+import { isAppointmentToday, isPastAppointment } from '@/app/lib/utils/public/my-pets/appointments/dateUtils'
 import { IAppointment } from '@/app/types'
 import React, { FC } from 'react'
 import { motion } from 'framer-motion'
 import { Calendar, Stethoscope } from 'lucide-react'
-import { getTimeInfo } from '@/app/lib/utils'
+import { formatDateShort, getTimeInfo } from '@/app/lib/utils'
 
 const AppointmentCard: FC<{ appointment: IAppointment; index: number }> = ({ appointment, index }) => {
   const serviceConfig = serviceTypeConfig[appointment.serviceType]
@@ -68,7 +68,7 @@ const AppointmentCard: FC<{ appointment: IAppointment; index: number }> = ({ app
         </div>
         <div className="flex justify-between items-center">
           <span className="text-sm text-gray-600">Time</span>
-          <span className="font-semibold text-gray-900">{formatAppointmentTime(appointment.time)}</span>
+          <span className="font-semibold text-gray-900">{formatDateShort(appointment.time)}</span>
         </div>
         <div className="flex justify-between items-center">
           <span className="text-sm text-gray-600">Status</span>

@@ -1,5 +1,3 @@
-import { Variants } from 'framer-motion'
-
 export const MOOD_EMOJIS = ['😴', '😐', '🙂', '😋', '🤤']
 
 export const InputStyle =
@@ -7,41 +5,17 @@ export const InputStyle =
 
 export const CheckboxStyle = 'rounded border-gray-300 text-indigo-600 focus:ring-indigo-500'
 
-export const ITEM_VARIANTS: Variants = {
-  hidden: {
-    opacity: 0,
-    y: 20,
-    scale: 0.95
-  },
-  visible: {
-    opacity: 1,
-    y: 0,
-    scale: 1,
-    transition: {
-      duration: 0.3,
-      ease: [0.4, 0, 0.2, 1] // Custom cubic-bezier
-    }
-  },
-  exit: {
-    opacity: 0,
-    y: -20,
-    scale: 0.95,
-    transition: {
-      duration: 0.2,
-      ease: [0.4, 0, 1, 1]
-    }
-  }
-}
+export const COLORS = ['#1f2937', '#374151', '#4b5563', '#6b7280', '#9ca3af', '#d1d5db', '#e5e7eb', '#f3f4f6']
 
-export * from './blood-sugar'
-export * from './feeding'
-export * from './medication'
-export * from './pain'
-export * from './walk'
-export * from './water'
-export * from './movement'
-export * from './appointment'
-export * from './pet'
-export * from './seizure'
-export * from './info'
-export * from './admin'
+export * from './public/blood-sugar'
+export * from './public/feeding'
+export * from './public/medication'
+export * from './public/pain'
+export * from './public/walk'
+export * from './public/water'
+export * from './public/movement'
+export * from './public/appointment'
+export * from './public/pet'
+export * from './public/seizure'
+export * from './public/info'
+export * from './admin/dashboard'

@@ -5,7 +5,7 @@ import { getUserFromHeader } from '@/app/lib/api/getUserFromheader'
 import { validateFeedingRequiredFields } from '@/app/lib/api/validateFeedingRequiredFields'
 import { validateOwnerAndPet } from '@/app/lib/api/validateOwnerAndPet'
 import { handleApiError } from '@/app/lib/api/handleApiError'
-import { feedingCreateTokenCost } from '@/app/lib/constants/token'
+import { feedingCreateTokenCost } from '@/app/lib/constants/public/token'
 import { createLog } from '@/app/lib/api/createLog'
 
 export async function POST(req: NextRequest) {

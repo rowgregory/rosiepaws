@@ -1,11 +1,9 @@
 interface WaterIntakeFormInputs {
   petId: string
-  intakeType: string // 'milliliters' or 'relative'
-  milliliters: string // string to match form input, will parse to int
-  relativeIntake: string // 'more', 'same', 'less'
+  intakeType: string // 'milliliters'
+  milliliters: string
   timeRecorded: string
-  moodRating: string // string to match form input, will parse to int
-  notes?: string
+  moodRating: string
 }
 
 const validateWaterIntakeForm = (
@@ -18,21 +16,11 @@ const validateWaterIntakeForm = (
     newErrors.petId = 'Please select a pet'
   }
 
-  if (!inputs?.intakeType?.trim()) {
-    newErrors.intakeType = 'Please select a measurement type'
-  }
-
-  if (inputs.intakeType === 'milliliters') {
-    const millilitersNum = Number(inputs.milliliters)
-    if (!inputs.milliliters?.trim()) {
-      newErrors.milliliters = 'Please enter water amount in milliliters'
-    } else if (isNaN(millilitersNum) || millilitersNum < 0 || millilitersNum > 5000) {
-      newErrors.milliliters = 'Amount must be a number between 0 and 5000 mL'
-    }
-  } else if (inputs.intakeType === 'relative') {
-    if (!inputs.relativeIntake?.trim()) {
-      newErrors.relativeIntake = 'Please select a relative intake amount'
-    }
+  const millilitersNum = Number(inputs.milliliters)
+  if (!inputs.milliliters?.trim()) {
+    newErrors.milliliters = 'Please enter water amount in milliliters'
+  } else if (isNaN(millilitersNum) || millilitersNum < 0 || millilitersNum > 5000) {
+    newErrors.milliliters = 'Amount must be a number between 0 and 5000 mL'
   }
 
   if (!inputs?.timeRecorded?.trim()) {
@@ -48,6 +36,10 @@ const validateWaterIntakeForm = (
 
   setErrors(newErrors)
   return Object.keys(newErrors).length === 0
+}
+
+export const isWaterFormValid = (inputs: any) => {
+  return inputs?.petId && inputs?.timeRecorded && inputs?.milliliters && inputs?.moodRating
 }
 
 export default validateWaterIntakeForm

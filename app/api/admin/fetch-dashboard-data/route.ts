@@ -30,7 +30,9 @@ export async function GET(req: NextRequest) {
     const users = await prisma.user.findMany({
       include: {
         pets: true,
-        stripeSubscription: true
+        stripeSubscription: true,
+        tokenTransactions: { orderBy: { createdAt: 'desc' } },
+        tickets: true
       }
     })
     const pets = await prisma.pet.findMany({
@@ -40,7 +42,38 @@ export async function GET(req: NextRequest) {
             email: true,
             role: true
           }
+        },
+        _count: {
+          select: {
+            painScores: true,
+            appointments: true,
+            medications: true,
+            feedings: true,
+            seizures: true,
+            waters: true,
+            bloodSugars: true,
+            walks: true,
+            galleryItems: true,
+            movements: true
+          }
         }
+      }
+    })
+
+    const logs = await prisma.log.findMany({ orderBy: { createdAt: 'desc' } })
+    const settings = await prisma.setting.findFirst()
+    const tickets = await prisma.ticket.findMany({
+      select: {
+        id: true,
+        category: true,
+        priority: true,
+        status: true,
+        description: true,
+        email: true,
+        deviceInfo: true,
+        attachments: true,
+        user: true,
+        messages: true
       }
     })
 
@@ -263,6 +296,10 @@ export async function GET(req: NextRequest) {
     // 13. Summary Statistics
     const summaryStats = {
       totalUsers: users.length,
+      freeUsers: users.filter((u) => u.isFreeUser).length,
+      comfortUsers: users.filter((u) => u.isComfortUser).length,
+      companionUsers: users.filter((u) => u.isCompanionUser).length,
+      lecacyUsers: users.filter((u) => u.isLegacyUser).length,
       totalPets: pets.length,
       totalSubscriptions: subscriptions.length,
       activeSubscriptions: subscriptions.filter((s) => s.status === 'active').length,
@@ -282,7 +319,9 @@ export async function GET(req: NextRequest) {
         subscriptions,
         users,
         pets,
-
+        logs,
+        settings,
+        tickets,
         // Chart-ready data
         charts: {
           revenueByMonth: revenueData,

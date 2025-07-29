@@ -1,11 +1,5 @@
 import { drawerVariants, overlayVariants, SeizureSeverity } from '@/app/lib/constants'
-import {
-  changeMonth,
-  formatSeizureDate,
-  formatDateReadable,
-  getCalendarDays,
-  getSeverityColor
-} from '@/app/lib/utils/seizure'
+import { changeMonth, formatDateShort, formatSeizureDate, getCalendarDays, getSeverityColor } from '@/app/lib/utils'
 import { setCloseSeizureCalendarDrawer } from '@/app/redux/features/dashboardSlice'
 import { RootState, useAppDispatch, useAppSelector } from '@/app/redux/store'
 import { ISeizure } from '@/app/types'
@@ -203,7 +197,7 @@ const SeizureCalendarDrawer: React.FC = () => {
                       transition={{ duration: 0.2 }}
                       className="mb-4"
                     >
-                      <div className="font-medium mb-2">{formatDateReadable(date)}</div>
+                      <div className="font-medium mb-2">{formatDateShort(date)}</div>
                       {seizures.map((seizure) => (
                         <motion.div
                           key={seizure.id}

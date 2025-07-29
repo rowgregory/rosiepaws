@@ -10,7 +10,7 @@ import CleanHeader from '@/app/components/guardian/navigation/CleanHeader'
 import ZeroLogs from '@/app/components/guardian/ZeroLogs'
 import { IBloodSugar } from '@/app/types'
 import BloodSugarCard from '@/app/components/guardian/blood-sugar/BloodSugarCard'
-import { bloodSugarCreateTokenCost } from '@/app/lib/constants/token'
+import { bloodSugarCreateTokenCost } from '@/app/lib/constants/public/token'
 
 const BloodSugar = () => {
   const { zeroBloodSugars, bloodSugars } = useAppSelector((state: RootState) => state.pet)

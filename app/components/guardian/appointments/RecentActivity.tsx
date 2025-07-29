@@ -1,7 +1,7 @@
 import React, { FC } from 'react'
 import { motion } from 'framer-motion'
 import { IAppointment } from '@/app/types'
-import { serviceTypeConfig, statusConfig } from '@/app/lib/constants/appointment'
+import { serviceTypeConfig, statusConfig } from '@/app/lib/constants/public/appointment'
 import { getTimeInfo } from '@/app/lib/utils'
 
 const RecentActivity: FC<{ appointments: IAppointment[] }> = ({ appointments }) => {

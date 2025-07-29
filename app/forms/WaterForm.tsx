@@ -1,13 +1,14 @@
 import React, { FC } from 'react'
-import { INTAKE_TYPES } from '../lib/constants/water'
-import { getWaterMoodDescription, isWaterFormValid } from '@/app/lib/utils/water'
+import { INTAKE_TYPES } from '../lib/constants/public/water'
 import { MOOD_EMOJIS } from '@/app/lib/constants'
 import { IForm } from '../types'
 import PetSelection from '../components/common/forms/PetSelection'
 import FixedFooter from '../components/common/forms/FixedFooter'
-import { waterCreateTokenCost } from '../lib/constants/token'
+import { waterCreateTokenCost } from '../lib/constants/public/token'
 import Notes from '../components/common/forms/Notes'
 import TimeRecorded from '../components/common/forms/TimeRecorded'
+import { getWaterMoodDescription } from '../lib/utils'
+import { isWaterFormValid } from '../validations/validateWaterForm'
 
 const WaterForm: FC<IForm> = ({ inputs, handleInput, close, handleSubmit, loading, pets, errors }) => {
   return (

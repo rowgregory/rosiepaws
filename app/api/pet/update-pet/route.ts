@@ -4,7 +4,7 @@ import { slicePet } from '@/public/data/api.data'
 import { createLog } from '@/app/lib/api/createLog'
 import { getUserFromHeader } from '@/app/lib/api/getUserFromheader'
 import { validateOwnerAndPet } from '@/app/lib/api/validateOwnerAndPet'
-import { petUpdateTokenCost } from '@/app/lib/constants/token'
+import { petUpdateTokenCost } from '@/app/lib/constants/public/token'
 import { handleApiError } from '@/app/lib/api/handleApiError'
 
 export async function PUT(req: NextRequest) {

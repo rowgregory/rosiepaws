@@ -1,4 +1,4 @@
-import Title from '@/app/components/admin/Title'
+import Title from '@/app/components/admin/common/Title'
 import React from 'react'
 
 const Newsletter = () => {

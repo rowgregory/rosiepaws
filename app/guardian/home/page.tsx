@@ -27,7 +27,6 @@ import CreateSupportDrawer from '@/app/drawers/general/ContactSupportDrawer'
 import { RootState, useAppDispatch, useAppSelector } from '@/app/redux/store'
 import EmergencySignsDrawer from '@/app/drawers/general/EmergencySignsDrawer'
 import ViewGuideDrawer from '@/app/drawers/general/ViewGuideDrawer'
-import { calculateHealthStatus } from '@/app/lib/utils/guardian-home'
 import PetProfileSection from '@/app/components/guardian/home/PetProfileSection'
 import TodaysProgressSection from '@/app/components/guardian/home/TodaysProgressSection'
 import {
@@ -37,6 +36,7 @@ import {
   setOpenWalkDrawer,
   setOpenWaterDrawer
 } from '@/app/redux/features/petSlice'
+import { calculateHealthStatus } from '@/app/lib/utils'
 
 const Home = () => {
   const dispatch = useAppDispatch()

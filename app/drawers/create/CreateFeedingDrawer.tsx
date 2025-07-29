@@ -7,7 +7,7 @@ import { useCreateFeedingMutation } from '@/app/redux/services/petApi'
 import { setCloseFeedingDrawer } from '@/app/redux/features/petSlice'
 import FeedingForm from '@/app/forms/FeedingForm'
 import validateFeedingForm from '@/app/validations/validateFeedingForm'
-import GuardianFeedingChart from '@/app/components/guardian/dashboard/GuardianFeedingChart'
+import FeedingGuide from '@/app/components/guardian/form-guides/FeedingGuide'
 import AnimatedDrawerHeader from '@/app/components/guardian/AnimatedDrawerHeader'
 
 const CreateFeedingDrawer = () => {
@@ -86,7 +86,7 @@ const CreateFeedingDrawer = () => {
                 loading={isLoading}
               />
 
-              <GuardianFeedingChart />
+              <FeedingGuide />
             </div>
           </motion.div>
         </>

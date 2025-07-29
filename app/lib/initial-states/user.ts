@@ -32,6 +32,7 @@ export const initialUserState: IUser = {
   stripeSubscription: undefined, // StripeSubscription? relationship
   tokenTransactions: [], // TokenTransaction[] relationship
   galleryItems: [], // GalleryItem[] relationship
+  tickets: [], // Ticket[] relationship
 
   createdAt: new Date(), // Current timestamp
   updatedAt: new Date() // Current timestamp

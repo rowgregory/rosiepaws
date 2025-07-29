@@ -11,7 +11,7 @@ import CleanHeader from '@/app/components/guardian/navigation/CleanHeader'
 import PainScoreCard from '@/app/components/guardian/pain/PainScoreCard'
 import { getTimeInfo, getTodaysPainScores } from '@/app/lib/utils'
 import { getPainConfig } from '@/app/lib/constants'
-import { painScoreCreateTokenCost } from '@/app/lib/constants/token'
+import { painScoreCreateTokenCost } from '@/app/lib/constants/public/token'
 
 const PainScoring = () => {
   const { zeroPainScores, painScores } = useAppSelector((state: RootState) => state.pet)

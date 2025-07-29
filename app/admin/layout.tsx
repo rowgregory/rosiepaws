@@ -3,10 +3,10 @@
 import React, { FC } from 'react'
 import { ChildrenProps } from '../types/common'
 import AdminNavigation from '../components/admin/AdminNavigation'
-import { useFetchDashboardDataQuery } from '../redux/services/adminApi'
+import { useFetchAdminDashboardDataQuery } from '../redux/services/adminApi'
 
 const AdminLayout: FC<ChildrenProps> = ({ children }) => {
-  useFetchDashboardDataQuery(undefined)
+  useFetchAdminDashboardDataQuery(undefined)
   return (
     <>
       <div className="flex">

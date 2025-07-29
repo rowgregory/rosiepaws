@@ -5,12 +5,13 @@ import { ChangeEvent, useState } from 'react'
 import { RootState, useAppDispatch, useAppSelector } from '@/app/redux/store'
 import { Bell, Pill, Plus, Search, X } from 'lucide-react'
 import { COMMON_MEDICATIONS, DOSAGE_UNITS, FREQUENCIES, TIME_ZONE_OPTIONS } from '../lib/constants'
-import { getDefaultReminderTimes, isMedicationFormValid } from '../lib/utils'
+import { getDefaultReminderTimes } from '../lib/utils'
 import PetSelection from '../components/common/forms/PetSelection'
 import FixedFooter from '../components/common/forms/FixedFooter'
-import { medicationCreateTokenCost } from '../lib/constants/token'
+import { medicationCreateTokenCost } from '../lib/constants/public/token'
 import Notes from '../components/common/forms/Notes'
 import CareTaskSwitch from '../components/common/forms/CareTaskSwitch'
+import { isMedicationFormValid } from '../validations/validateMedicationForm'
 
 const MedicationForm = ({ inputs, handleSubmit, close, errors, loading, isUpdating, handleToggle }: any) => {
   const [drugSearchResults, setDrugSearchResults] = useState<string[]>([])

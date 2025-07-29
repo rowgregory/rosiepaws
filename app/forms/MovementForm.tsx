@@ -15,10 +15,10 @@ import {
 } from '../lib/constants'
 import PetSelection from '../components/common/forms/PetSelection'
 import FixedFooter from '../components/common/forms/FixedFooter'
-import { movementCreateTokenCost } from '../lib/constants/token'
+import { movementCreateTokenCost } from '../lib/constants/public/token'
 import TimeRecorded from '../components/common/forms/TimeRecorded'
 import Notes from '../components/common/forms/Notes'
-import { isMovementFormValid } from '../lib/utils'
+import { isMovementFormValid } from '../validations/validateMovementForm'
 
 const MovementForm: FC<IForm> = ({ inputs, errors, handleInput, close, handleSubmit, loading, handleToggle }) => {
   const { pets } = useAppSelector((state: RootState) => state.pet)

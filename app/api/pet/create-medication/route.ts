@@ -1,5 +1,5 @@
 import { createLog } from '@/app/lib/api/createLog'
-import { medicationCreateTokenCost } from '@/app/lib/constants/token'
+import { medicationCreateTokenCost } from '@/app/lib/constants/public/token'
 import prisma from '@/prisma/client'
 import { slicePet } from '@/public/data/api.data'
 import { parseStack } from 'error-stack-parser-es/lite'

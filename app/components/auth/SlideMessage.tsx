@@ -1,17 +1,24 @@
 import React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { RootState, useAppDispatch, useAppSelector } from '@/app/redux/store'
+import { setCloseSlideMessage } from '@/app/redux/features/appSlice'
+import { Check, X } from 'lucide-react'
 
-const SlideMessage = ({ showMessage, setShowMessage, message }: any) => {
+const SlideMessage = ({ message, type = 'Success!' }: { message: string; type: string }) => {
+  const dispatch = useAppDispatch()
+  const { slideMessage } = useAppSelector((state: RootState) => state.app)
+  const onClose = () => dispatch(setCloseSlideMessage())
+
   return (
     <AnimatePresence>
-      {showMessage && (
+      {slideMessage && (
         <>
           {/* Overlay */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            onClick={() => setShowMessage(false)}
+            onClick={onClose}
             className="fixed inset-0 bg-black bg-opacity-30 z-40"
           />
 
@@ -29,7 +36,7 @@ const SlideMessage = ({ showMessage, setShowMessage, message }: any) => {
           >
             {/* Close Button */}
             <button
-              onClick={() => setShowMessage(false)}
+              onClick={onClose}
               className="absolute top-3 right-3 text-gray-400 hover:text-gray-600 transition-colors"
             >
               <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
@@ -46,20 +53,20 @@ const SlideMessage = ({ showMessage, setShowMessage, message }: any) => {
               <div className="flex items-start space-x-3">
                 {/* Icon */}
                 <div className="flex-shrink-0 mt-1">
-                  <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-                    <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                      <path
-                        fillRule="evenodd"
-                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
+                  <div
+                    className={`w-8 h-8 ${type === 'Error' ? 'bg-red-100' : 'bg-green-100'} rounded-full flex items-center justify-center`}
+                  >
+                    {type === 'Error' ? (
+                      <X className="text-red-600 w-5 h-5" />
+                    ) : (
+                      <Check className="text-green-600 w-5 h-5" />
+                    )}
                   </div>
                 </div>
 
                 {/* Text Content */}
                 <div className="flex-1">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-1">Success!</h3>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-1">{type}</h3>
                   <p className="text-gray-600 text-sm leading-relaxed">{message}</p>
                 </div>
               </div>
@@ -67,7 +74,7 @@ const SlideMessage = ({ showMessage, setShowMessage, message }: any) => {
               {/* Optional Action */}
               <div className="mt-4 pt-4 border-t border-gray-100">
                 <button
-                  onClick={() => setShowMessage(false)}
+                  onClick={onClose}
                   className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-2 px-4 rounded-md transition-colors duration-200 text-sm"
                 >
                   Dismiss

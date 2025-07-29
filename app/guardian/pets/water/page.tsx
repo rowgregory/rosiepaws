@@ -3,7 +3,7 @@
 import CleanHeader from '@/app/components/guardian/navigation/CleanHeader'
 import WaterLogCard from '@/app/components/guardian/water/WaterLogCard'
 import ZeroLogs from '@/app/components/guardian/ZeroLogs'
-import { waterCreateTokenCost } from '@/app/lib/constants/token'
+import { waterCreateTokenCost } from '@/app/lib/constants/public/token'
 import {
   determineRelativeIntake,
   getIntakeData,

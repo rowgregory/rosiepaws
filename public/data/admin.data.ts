@@ -5,6 +5,8 @@ export const blogLink = '/admin/blog'
 export const journalLink = '/admin/journal'
 export const usersLink = '/admin/users'
 export const settingsLink = '/admin/settings'
+export const logsLink = '/admin/logs'
+export const ticketsLink = '/admin/tickets'
 
 export const guardianPetsLink = '/guardian/pets/my-pets'
 export const guardianDashboardLink = '/guardian/dashboard'

@@ -51,6 +51,7 @@ export interface AppStatePayload {
   viewGuideDrawer: boolean
   contactSupportDrawer: boolean
   authErrorDrawer: boolean
+  slideMessage: boolean
 }
 
 const mediaDataInitialState: ModalUploaderPayload = {
@@ -91,16 +92,12 @@ const initialAppState: AppStatePayload = {
   disabilityEndOfLifeCareDrawer: false,
   viewGuideDrawer: false,
   contactSupportDrawer: false,
-  authErrorDrawer: false
+  authErrorDrawer: false,
+  slideMessage: false
 }
 
 interface FetchAppDataPayload {
   photoGalleryImagesCount: number
-}
-
-interface FetchDashboardDataPayload {
-  usersCount: number
-  logCount: number
 }
 
 interface ErrorPayload {
@@ -219,6 +216,12 @@ export const appSlice = createSlice({
     },
     setCloseAuthErrorDrawer: (state) => {
       state.authErrorDrawer = false
+    },
+    setOpenSlideMessage: (state) => {
+      state.slideMessage = true
+    },
+    setCloseSlideMessage: (state) => {
+      state.slideMessage = false
     }
   },
   extraReducers: (builder) => {
@@ -229,16 +232,6 @@ export const appSlice = createSlice({
         (state, action) => {
           state.success = true
           state.photoGalleryImagesCount = action.payload.photoGalleryImagesCount
-          state.loading = false
-        }
-      )
-      .addMatcher(
-        (action): action is PayloadAction<FetchDashboardDataPayload> =>
-          action.type === appApi.endpoints.fetchDashboardData.matchFulfilled,
-        (state, action) => {
-          state.success = true
-          state.usersCount = action.payload.usersCount
-          state.logCount = action.payload.logCount
           state.loading = false
         }
       )
@@ -287,5 +280,7 @@ export const {
   setOpenContactSupportDrawer,
   setCloseContactSupporteDrawer,
   setOpenAuthErrorDrawer,
-  setCloseAuthErrorDrawer
+  setCloseAuthErrorDrawer,
+  setOpenSlideMessage,
+  setCloseSlideMessage
 } = appSlice.actions

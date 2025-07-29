@@ -47,7 +47,7 @@ export async function POST(req: NextRequest, { params }: { params: any }) {
       return userAuth.response!
     }
 
-    const { ticketId } = params
+    const { ticketId } = await params
     const { content, attachments = [], authorEmail, authorName } = await req.json()
 
     // Validate ticketId

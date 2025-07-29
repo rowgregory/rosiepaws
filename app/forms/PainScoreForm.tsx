@@ -3,15 +3,15 @@
 import React, { FC } from 'react'
 import { RootState, useAppSelector } from '../redux/store'
 import { CheckCircle2 } from 'lucide-react'
-import { PAIN_LEVELS } from '../lib/constants/pain'
-import { isPainScoreFormValid } from '@/app/lib/utils/pain'
+import { PAIN_LEVELS } from '../lib/constants/public/pain'
 import PetSelection from '../components/common/forms/PetSelection'
 import FixedFooter from '../components/common/forms/FixedFooter'
-import { painScoreCreateTokenCost } from '../lib/constants/token'
+import { painScoreCreateTokenCost } from '../lib/constants/public/token'
 import { IForm } from '../types'
 import Notes from '../components/common/forms/Notes'
 import TimeRecorded from '../components/common/forms/TimeRecorded'
 import { InputStyle } from '../lib/constants'
+import { isPainScoreFormValid } from '../validations/validatePainScoreForm'
 
 const PainScoreForm: FC<IForm> = ({ inputs, errors, handleInput, close, handleSubmit, loading }) => {
   const { pets } = useAppSelector((state: RootState) => state.pet)

@@ -78,6 +78,10 @@ const formInitialState = {
   ticketForm: {
     inputs: { category: '', priority: '', subject: '', email: '', description: '', deviceInfo: '', attachments: [] },
     errors: movementInitialState
+  },
+  settingsForm: {
+    inputs: { backupFrequency: 'daily' },
+    errors: { backupFrequency: '' }
   }
 } as any
 
@@ -100,6 +104,7 @@ const formSlice = createSlice({
     setInputs: (state, { payload }: PayloadAction<SetInputProps>) => {
       const { formName, data } = payload
       if (!state[formName]) state[formName] = { inputs: {}, errors: {}, submitted: false }
+
       state[formName].inputs = { ...state[formName].inputs, ...data }
     },
     setErrors: (state, { payload }: PayloadAction<SetErrorsProps>) => {

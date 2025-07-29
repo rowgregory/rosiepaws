@@ -4,7 +4,7 @@ import { Activity, ArrowRight, Calendar, Camera, Clock, FileText, Heart, PawPrin
 import { useAppDispatch } from '@/app/redux/store'
 import { setOpenPetDrawer } from '@/app/redux/features/petSlice'
 import TokenCounter from '../TokenCounter'
-import { petCreateTokenCost } from '@/app/lib/constants/token'
+import { petCreateTokenCost } from '@/app/lib/constants/public/token'
 
 const MainActionCard = () => {
   const dispatch = useAppDispatch()

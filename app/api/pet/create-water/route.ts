@@ -2,7 +2,7 @@ import prisma from '@/prisma/client'
 import { NextRequest, NextResponse } from 'next/server'
 import { parseStack } from 'error-stack-parser-es/lite'
 import { slicePet } from '@/public/data/api.data'
-import { waterCreateTokenCost } from '@/app/lib/constants/token'
+import { waterCreateTokenCost } from '@/app/lib/constants/public/token'
 import { createLog } from '@/app/lib/api/createLog'
 
 export async function POST(req: NextRequest) {

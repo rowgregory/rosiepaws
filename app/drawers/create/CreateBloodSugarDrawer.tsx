@@ -8,7 +8,7 @@ import { useCreateBloodSugarMutation } from '@/app/redux/services/petApi'
 import validateBloodSugarForm from '@/app/validations/validateBloodSugarForm'
 import AnimatedDrawerHeader from '@/app/components/guardian/AnimatedDrawerHeader'
 import BloodSugarForm from '@/app/forms/BloodSugarForm'
-import GuardianBloodSugarGuide from '@/app/components/guardian/blood-sugar/GuardianBloodSugarGuide'
+import BloodSugarGuide from '@/app/components/guardian/form-guides/BloodSugarGuide'
 
 const CreateBloodSugarDrawer = () => {
   const { bloodSugarDrawer } = useAppSelector((state: RootState) => state.pet)
@@ -88,7 +88,7 @@ const CreateBloodSugarDrawer = () => {
                 handleSubmit={handleAddBoodSugar}
                 loading={isLoading}
               />
-              <GuardianBloodSugarGuide />
+              <BloodSugarGuide />
             </div>
           </motion.div>
         </>

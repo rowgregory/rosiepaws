@@ -1,8 +1,8 @@
 import React, { FC } from 'react'
 import { Clock } from 'lucide-react'
-import { formatDate, formatDateFull } from '@/app/lib/utils/pain'
 import { motion } from 'framer-motion'
 import { PainScore } from '@/app/types/entities'
+import { formatDateLong, formatDateShort } from '@/app/lib/utils'
 
 interface IPainScoreCard {
   painScore: PainScore
@@ -88,10 +88,10 @@ const PainScoreCard: FC<IPainScoreCard> = ({ painScore, index, config, IconCompo
       >
         <div className="flex items-center justify-center space-x-1 text-xs text-gray-500">
           <Clock className="w-3 h-3" />
-          <span>{formatDate(new Date(painScore?.timeRecorded) || painScore?.createdAt)}</span>
+          <span>{formatDateShort(new Date(painScore?.timeRecorded) || painScore?.createdAt)}</span>
         </div>
         <div className="text-center text-xs text-gray-400 mt-1">
-          {formatDateFull(new Date(painScore?.timeRecorded) || painScore?.createdAt)}
+          {formatDateLong(new Date(painScore?.timeRecorded) || painScore?.createdAt)}
         </div>
       </motion.div>
 

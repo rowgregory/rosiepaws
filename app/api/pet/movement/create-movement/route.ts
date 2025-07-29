@@ -1,6 +1,6 @@
 import { getUserFromHeader } from '@/app/lib/api/getUserFromheader'
 import { validateMovementRequiredFields } from '@/app/lib/api/validateMovementRequiredFields'
-import { movementCreateTokenCost } from '@/app/lib/constants/token'
+import { movementCreateTokenCost } from '@/app/lib/constants/public/token'
 import prisma from '@/prisma/client'
 import { slicePet } from '@/public/data/api.data'
 import { NextRequest, NextResponse } from 'next/server'

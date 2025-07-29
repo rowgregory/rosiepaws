@@ -4,7 +4,7 @@ import React, { FC } from 'react'
 import { ChildrenProps } from '@/app/types/common'
 import Link from 'next/link'
 import useCustomPathname from '@/app/hooks/useCustomPathname'
-import { petLinks } from '@/app/lib/utils'
+import { publicPetLinks } from '@/app/lib/utils'
 
 const GuardianPetsLayout: FC<ChildrenProps> = ({ children }) => {
   const path = useCustomPathname()
@@ -16,7 +16,7 @@ const GuardianPetsLayout: FC<ChildrenProps> = ({ children }) => {
           Pets
         </span>
         <div className="flex items-center gap-x-4">
-          {petLinks(path).map((link, i) => (
+          {publicPetLinks(path).map((link, i) => (
             <Link
               key={i}
               href={link.linkKey || ''}

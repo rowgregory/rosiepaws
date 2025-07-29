@@ -1,30 +1,13 @@
 import React, { FC } from 'react'
-import { GENDER_OPTIONS, getCurrentBreeds, isPetFormValid, PET_TYPES, SPAY_NEUTER_OPTIONS } from '../lib/constants/pet'
+import { GENDER_OPTIONS, PET_TYPES, SPAY_NEUTER_OPTIONS } from '../lib/constants/public/pet'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Calendar, FileText, Phone, Shield, Stethoscope, User, Weight } from 'lucide-react'
-import { petCreateTokenCost, petUpdateTokenCost } from '../lib/constants/token'
+import { petCreateTokenCost, petUpdateTokenCost } from '../lib/constants/public/token'
 import FixedFooter from '../components/common/forms/FixedFooter'
 import { IForm } from '../types'
-
-const containerVariants: any = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.1,
-      delayChildren: 0.1
-    }
-  }
-}
-
-const itemVariants: any = {
-  hidden: { opacity: 0, y: 20 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.3 }
-  }
-}
+import { getCurrentBreeds } from '../lib/utils'
+import { containerVariants, itemVariants } from '../lib/constants'
+import { isPetFormValid } from '../validations/validatePetForm'
 
 const PetForm: FC<IForm> = ({ inputs, errors, handleInput, close, handleSubmit, loading, isUpdating }) => {
   return (

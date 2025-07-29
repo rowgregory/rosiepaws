@@ -19,6 +19,7 @@ export const ticketApi = api.injectEndpoints({
         method: 'POST',
         body
       }),
+      invalidatesTags: ['Admin', 'Ticket'],
       onQueryStarted: async (_: any, { dispatch, queryFulfilled }: any) => {
         const { data } = await queryFulfilled
         const newMessage = data.message
@@ -30,7 +31,8 @@ export const ticketApi = api.injectEndpoints({
         url: `${BASE_URL}/${body.ticketId}/status`,
         method: 'PATCH',
         body
-      })
+      }),
+      invalidatesTags: ['Admin', 'Ticket']
     }),
     fetchTicketById: build.query({
       query: (ticketId) => `${BASE_URL}/${ticketId}`

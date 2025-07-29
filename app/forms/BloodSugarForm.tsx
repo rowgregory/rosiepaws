@@ -2,14 +2,14 @@ import React, { FC } from 'react'
 import { motion } from 'framer-motion'
 import { RootState, useAppSelector } from '@/app/redux/store'
 import GuardianNumberWheel from '@/app/components/guardian/GuardianNumberWheel'
-import { getBloodSugarRange2, isBloodSugarFormValid } from '@/app/lib/utils/blood-sugar'
 import { IForm } from '../types'
 import PetSelection from '../components/common/forms/PetSelection'
 import FixedFooter from '../components/common/forms/FixedFooter'
-import { bloodSugarCreateTokenCost } from '../lib/constants/token'
+import { bloodSugarCreateTokenCost } from '../lib/constants/public/token'
 import Notes from '../components/common/forms/Notes'
 import TimeRecorded from '../components/common/forms/TimeRecorded'
 import { mealRelationOptions, measurementUnitOptions, symptomsOptions } from '../lib/constants'
+import { getBloodSugarRange2, isBloodSugarFormValid } from '../lib/utils'
 
 const BloodSugarForm: FC<IForm> = ({ inputs, handleInput, close, handleSubmit, loading, errors }) => {
   const { pets } = useAppSelector((state: RootState) => state.pet)

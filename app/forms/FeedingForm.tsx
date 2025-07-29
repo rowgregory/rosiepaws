@@ -1,14 +1,15 @@
 import React, { FC } from 'react'
 import { RootState, useAppSelector } from '../redux/store'
-import { AMOUNTS, FOOD_TYPES, POPULAR_BRANDS } from '@/app/lib/constants/feeding'
-import { getFeedingMoodDescription, isFeedingFormValid } from '@/app/lib/utils/feeding'
+import { AMOUNTS, FOOD_TYPES, POPULAR_BRANDS } from '@/app/lib/constants/public/feeding'
+import { isFeedingFormValid } from '@/app/lib/utils/public/my-pets/feedings/statsUtils'
 import { MOOD_EMOJIS } from '@/app/lib/constants'
 import { IForm } from '../types'
 import FixedFooter from '../components/common/forms/FixedFooter'
-import { feedingCreateTokenCost } from '../lib/constants/token'
+import { feedingCreateTokenCost } from '../lib/constants/public/token'
 import PetSelection from '../components/common/forms/PetSelection'
 import Notes from '../components/common/forms/Notes'
 import TimeRecorded from '../components/common/forms/TimeRecorded'
+import { getFeedingMoodDescription } from '../lib/utils'
 
 const FeedingForm: FC<IForm> = ({ inputs, handleInput, close, handleSubmit, loading, errors }) => {
   const { pets } = useAppSelector((state: RootState) => state.pet)

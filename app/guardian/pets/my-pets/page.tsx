@@ -7,7 +7,7 @@ import CleanHeader from '@/app/components/guardian/navigation/CleanHeader'
 import ZeroLogs from '@/app/components/guardian/ZeroLogs'
 import PetCard from '@/app/components/guardian/my-pets/PetCard'
 import { Pet } from '@/app/types/entities'
-import { petCreateTokenCost } from '@/app/lib/constants/token'
+import { petCreateTokenCost } from '@/app/lib/constants/public/token'
 
 const MyPets = () => {
   const { zeroPets, pets } = useAppSelector((state: RootState) => state.pet)

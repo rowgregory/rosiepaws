@@ -7,15 +7,14 @@ import { setOpenMovementDrawer } from '@/app/redux/features/petSlice'
 import { RootState, useAppSelector } from '@/app/redux/store'
 import {
   getRecentMovements,
-  getTodaysMovements,
-  getWeeklyMovementStats,
   getMovementsByType,
   getAverageActivity
-} from '@/app/lib/utils/movement'
+} from '@/app/lib/utils/public/my-pets/movements/statUtils'
 import ZeroLogs from '@/app/components/guardian/ZeroLogs'
 import CleanHeader from '@/app/components/guardian/navigation/CleanHeader'
 import { MovementCard } from '@/app/components/guardian/movements/MovementCard'
 import { IMovement } from '@/app/types'
+import { getTodaysMovements, getWeeklyMovementStats } from '@/app/lib/utils'
 
 const MovementTracking = () => {
   const { zeroMovements, movements } = useAppSelector((state: RootState) => state.pet)

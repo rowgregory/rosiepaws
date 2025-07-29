@@ -1,4 +1,4 @@
-import Title from '@/app/components/admin/Title'
+import Title from '@/app/components/admin/common/Title'
 import { Plus } from 'lucide-react'
 import React from 'react'
 

@@ -2,9 +2,8 @@ import React, { FC } from 'react'
 import { CheckCircle2 } from 'lucide-react'
 import { RootState, useAppSelector } from '@/app/redux/store'
 import { motion } from 'framer-motion'
-import { getWalkMoodDescription, isWalkFormValid } from '@/app/lib/utils/walk'
 import {
-  ITEM_VARIANTS,
+  itemVariants,
   MOOD_EMOJIS,
   WALK_CONTAINER_VARIANTS,
   WALK_DISTRACTION_LEVELS,
@@ -13,9 +12,11 @@ import {
 import { IForm } from '../types'
 import PetSelection from '../components/common/forms/PetSelection'
 import FixedFooter from '../components/common/forms/FixedFooter'
-import { walkCreateTokenCost } from '../lib/constants/token'
+import { walkCreateTokenCost } from '../lib/constants/public/token'
 import Notes from '../components/common/forms/Notes'
 import TimeRecorded from '../components/common/forms/TimeRecorded'
+import { getWalkMoodDescription } from '../lib/utils'
+import { isWalkFormValid } from '../validations/validateWalkForm'
 
 const WalkForm: FC<IForm> = ({ inputs, handleInput, close, handleSubmit, loading, errors }) => {
   const { pets } = useAppSelector((state: RootState) => state.pet)
@@ -28,7 +29,7 @@ const WalkForm: FC<IForm> = ({ inputs, handleInput, close, handleSubmit, loading
           <PetSelection pets={pets} inputs={inputs} errors={errors} handleInput={handleInput} formName="walkForm" />
 
           {/* Distance Input */}
-          <motion.div variants={ITEM_VARIANTS} className="space-y-3">
+          <motion.div variants={itemVariants} className="space-y-3">
             <label className="text-sm font-medium text-gray-700">Distance</label>
             <div className="relative">
               <input
@@ -63,7 +64,7 @@ const WalkForm: FC<IForm> = ({ inputs, handleInput, close, handleSubmit, loading
           </motion.div>
 
           {/* Duration Input */}
-          <motion.div variants={ITEM_VARIANTS} className="space-y-3">
+          <motion.div variants={itemVariants} className="space-y-3">
             <label className="text-sm font-medium text-gray-700">Duration</label>
             <div className="relative">
               <input
@@ -102,7 +103,7 @@ const WalkForm: FC<IForm> = ({ inputs, handleInput, close, handleSubmit, loading
 
           {/* Interactive Summary */}
           {(inputs?.distance || inputs?.minutes) && (
-            <motion.div variants={ITEM_VARIANTS} className="bg-green-50 border border-green-200 rounded-xl p-4">
+            <motion.div variants={itemVariants} className="bg-green-50 border border-green-200 rounded-xl p-4">
               <div className="flex items-center justify-between">
                 <div>
                   <h4 className="font-medium text-green-900">Walk Summary</h4>
@@ -136,7 +137,7 @@ const WalkForm: FC<IForm> = ({ inputs, handleInput, close, handleSubmit, loading
           )}
 
           {/* Pace */}
-          <motion.div variants={ITEM_VARIANTS} className="space-y-3">
+          <motion.div variants={itemVariants} className="space-y-3">
             <label className="text-sm font-medium text-gray-700">Pace</label>
             <div className="grid grid-cols-1 gap-2">
               {WALK_PACE_OPTIONS.map((pace) => (
@@ -161,7 +162,7 @@ const WalkForm: FC<IForm> = ({ inputs, handleInput, close, handleSubmit, loading
           </motion.div>
 
           {/* Distraction Level */}
-          <motion.div variants={ITEM_VARIANTS} className="space-y-3">
+          <motion.div variants={itemVariants} className="space-y-3">
             <label className="text-sm font-medium text-gray-700">Distraction Level</label>
             <div className="grid grid-cols-1 gap-2">
               {WALK_DISTRACTION_LEVELS.map((distraction) => (
@@ -196,7 +197,7 @@ const WalkForm: FC<IForm> = ({ inputs, handleInput, close, handleSubmit, loading
           </motion.div>
 
           {/* Mood Rating */}
-          <motion.div variants={ITEM_VARIANTS} className="space-y-3">
+          <motion.div variants={itemVariants} className="space-y-3">
             <h3 className="text-lg font-semibold text-gray-800 flex items-center">
               <span className="mr-2">🚶</span>
               How did they enjoy the walk?

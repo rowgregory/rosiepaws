@@ -6,14 +6,13 @@ import { signIn } from 'next-auth/react'
 import Link from 'next/link'
 import AuthErrorDrawer from '@/app/drawers/general/AuthErrorDrawer'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { setOpenAuthErrorDrawer } from '@/app/redux/features/appSlice'
+import { setOpenAuthErrorDrawer, setOpenSlideMessage } from '@/app/redux/features/appSlice'
 import { useAppDispatch } from '@/app/redux/store'
 import SlideMessage from '@/app/components/auth/SlideMessage'
 
 const Login = () => {
   const [email, setEmail] = useState('')
   const [isLoading, setIsLoading] = useState(false)
-  const [showMessage, setShowMessage] = useState(false)
   const searchParams = useSearchParams()
   const dispatch = useAppDispatch()
   const router = useRouter()
@@ -51,7 +50,7 @@ const Login = () => {
       })
 
       if (result?.ok) {
-        setShowMessage(true)
+        dispatch(setOpenSlideMessage())
       } else {
       }
     } catch (error) {
@@ -72,11 +71,7 @@ const Login = () => {
 
   return (
     <>
-      <SlideMessage
-        showMessage={showMessage}
-        setShowMessage={setShowMessage}
-        message="Your magic link has been sent successfully."
-      />
+      <SlideMessage message="Your magic link has been sent successfully." type="Success!" />
       <AuthErrorDrawer />
       <div className="min-h-dvh p-10 flex bg-gradient-to-tr from-red-100 via-pink-100 to-orange-100">
         {/* Left Side - Login Form */}

@@ -1,8 +1,12 @@
 {
   "crons": [
     {
-      "path": "/api/pet/check-med-reminders",
+      "path": "/api/cron/check-med-reminders",
       "schedule": "* * * * *"
+    },
+    {
+      "path": "/api/cron/backup",
+      "schedule": "0 * * * *"
     }
   ]
 }

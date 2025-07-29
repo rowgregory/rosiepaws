@@ -53,4 +53,16 @@ const validateWalkForm = (inputs: WalkFormInputs, setErrors: (errors: Record<str
   return Object.keys(newErrors).length === 0
 }
 
+export const isWalkFormValid = (inputs: any) => {
+  return (
+    inputs?.petId &&
+    inputs?.distance &&
+    inputs?.duration &&
+    inputs?.pace &&
+    inputs?.distraction &&
+    inputs?.moodRating !== undefined &&
+    inputs?.timeRecorded
+  )
+}
+
 export default validateWalkForm

@@ -9,13 +9,14 @@ interface PictureProps {
   onClick?: MouseEventHandler<HTMLImageElement>
   width?: number
   height?: number
+  onError?: any
 }
 
-const Picture: FC<PictureProps> = ({ src, alt, className, priority = false, onClick, width, height }) => {
+const Picture: FC<PictureProps> = ({ src, alt, className, priority = false, onClick, width, height, onError }) => {
   return (
     <Image
       onClick={onClick}
-      src={src || '/images/sqysh.png'}
+      src={src ?? '/images/sqysh.png'}
       alt={alt || 'Rosie Paws'}
       width={width || '0'}
       height={height || '0'}
@@ -24,6 +25,7 @@ const Picture: FC<PictureProps> = ({ src, alt, className, priority = false, onCl
       loading={priority ? 'eager' : 'lazy'}
       sizes="100vw"
       unoptimized
+      onError={onError}
     />
   )
 }

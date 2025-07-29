@@ -22,7 +22,6 @@ export const validatePainScoreForm = (inputs: PainScoreInputs, setErrors: any) =
   return Object.keys(newErrors).length === 0
 }
 
-export const isPainScoreFormValid = (inputs: PainScoreInputs) => {
-  const score = Number(inputs.score)
-  return !isNaN(score) && score >= 0 && score <= 4
+export const isPainScoreFormValid = (inputs: any) => {
+  return inputs?.petId && inputs?.score && inputs?.timeRecorded
 }
