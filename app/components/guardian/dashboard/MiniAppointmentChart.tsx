@@ -3,10 +3,12 @@ import { Calendar, Clock, User, FileText } from 'lucide-react'
 
 const MiniAppointmentsList: FC<{ appointments: any }> = ({ appointments }) => {
   if (appointments?.length === 0 || appointments === null || appointments === undefined) return
-  const sortedAppointments =
-    appointments?.sort((a: any, b: any) => {
-      return new Date(b.date).getTime() - new Date(a.date).getTime()
-    }) || []
+
+  const sortedAppointments = appointments
+    ? [...appointments].sort((a: any, b: any) => {
+        return new Date(a.date).getTime() - new Date(b.date).getTime()
+      })
+    : []
 
   const totalAppointments = appointments?.length || 0
   const upcomingCount =

@@ -12,12 +12,12 @@ export const validateSeizureForm = (inputs: SeizureInputs, setErrors: any) => {
   if (!inputs?.petId?.trim()) {
     newErrors.petId = 'Pet is required'
   }
-
+  console.log(inputs.duration)
   // Duration validation
   if (inputs?.duration !== undefined && inputs?.duration !== null) {
     const duration = Number(inputs.duration)
-    if (isNaN(duration) || duration < 0 || duration > 60) {
-      newErrors.duration = 'Duration must be between 0 and 60 minutes'
+    if (isNaN(duration) || duration < 0 || duration > 300) {
+      newErrors.duration = 'Duration must be between 0 and 5 minutes'
     }
   }
 

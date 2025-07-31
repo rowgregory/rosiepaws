@@ -94,10 +94,24 @@ export interface PetStatePayload {
   movementCount: number
 
   tokenTransactions: any[]
+  chartData: {
+    painScores: any[]
+    feedings: any[]
+    walks: any[]
+    waters: any[]
+    movements: any[]
+    medications: any[]
+    appointments: any[]
+    bloodSugars: any[]
+    seizures: any[]
+  }
+  stats: any
+  noLogs: boolean
+  onboardingBanner: boolean
 }
 
 export const initialPetState: PetStatePayload = {
-  loading: false,
+  loading: true,
   success: false,
   error: '',
   message: '',
@@ -165,7 +179,21 @@ export const initialPetState: PetStatePayload = {
   movementDrawer: false,
   movementCount: 0,
 
-  tokenTransactions: []
+  tokenTransactions: [],
+  chartData: {
+    painScores: [],
+    feedings: [],
+    walks: [],
+    waters: [],
+    movements: [],
+    medications: [],
+    appointments: [],
+    bloodSugars: [],
+    seizures: []
+  },
+  stats: {},
+  noLogs: true,
+  onboardingBanner: true
 }
 
 interface ErrorPayload {
@@ -197,66 +225,60 @@ export const petSlice = createSlice({
     setClosePetUpdateDrawer: (state) => {
       state.petUpdateDrawer = false
     },
-    setOpenPainScoreDrawer: (state) => {
-      state.painScoreDrawer = true
-    },
-    setClosePainScoreDrawer: (state) => {
-      state.painScoreDrawer = false
-    },
-    setOpenWaterDrawer: (state) => {
-      state.waterDrawer = true
-    },
-    setCloseWaterDrawer: (state) => {
-      state.waterDrawer = false
-    },
-    setOpenFeedingDrawer: (state) => {
-      state.feedingDrawer = true
-    },
-    setCloseFeedingDrawer: (state) => {
-      state.feedingDrawer = false
-    },
-    setOpenWalkDrawer: (state) => {
-      state.walkDrawer = true
-    },
-    setCloseWalkDrawer: (state) => {
-      state.walkDrawer = false
-    },
-    setOpenBloodSugarDrawer: (state) => {
-      state.bloodSugarDrawer = true
-    },
-    setCloseBloodSugarDrawer: (state) => {
-      state.bloodSugarDrawer = false
-    },
-    setOpenMedicationDrawer: (state) => {
-      state.medicationDrawer = true
-    },
-    setCloseMedicationDrawer: (state) => {
-      state.medicationDrawer = false
-    },
-    setOpenAppointmentDrawer: (state) => {
-      state.appointmentDrawer = true
-    },
-    setCloseAppointmentDrawer: (state) => {
-      state.appointmentDrawer = false
-    },
-    setOpenUpdateMedicationDrawer: (state) => {
-      state.updateMedicationDrawer = true
-    },
-    setCloseUpdateMedicationDrawer: (state) => {
-      state.updateMedicationDrawer = false
-    },
-    setOpenSeizureDrawer: (state) => {
-      state.seizureDrawer = true
-    },
-    setCloseSeizureDrawer: (state) => {
-      state.seizureDrawer = false
-    },
-    setOpenMovementDrawer: (state) => {
-      state.movementDrawer = true
-    },
-    setCloseMovementDrawer: (state) => {
-      state.movementDrawer = false
-    },
+    // setOpenWaterDrawer: (state) => {
+    //   state.waterDrawer = true
+    // },
+    // setCloseWaterDrawer: (state) => {
+    //   state.waterDrawer = false
+    // },
+    // setOpenFeedingDrawer: (state) => {
+    //   state.feedingDrawer = true
+    // },
+    // setCloseFeedingDrawer: (state) => {
+    //   state.feedingDrawer = false
+    // },
+    // setOpenWalkDrawer: (state) => {
+    //   state.walkDrawer = true
+    // },
+    // setCloseWalkDrawer: (state) => {
+    //   state.walkDrawer = false
+    // },
+    // setOpenBloodSugarDrawer: (state) => {
+    //   state.bloodSugarDrawer = true
+    // },
+    // setCloseBloodSugarDrawer: (state) => {
+    //   state.bloodSugarDrawer = false
+    // },
+    // setOpenMedicationDrawer: (state) => {
+    //   state.medicationDrawer = true
+    // },
+    // setCloseMedicationDrawer: (state) => {
+    //   state.medicationDrawer = false
+    // },
+    // setOpenAppointmentDrawer: (state) => {
+    //   state.appointmentDrawer = true
+    // },
+    // setCloseAppointmentDrawer: (state) => {
+    //   state.appointmentDrawer = false
+    // },
+    // setOpenUpdateMedicationDrawer: (state) => {
+    //   state.updateMedicationDrawer = true
+    // },
+    // setCloseUpdateMedicationDrawer: (state) => {
+    //   state.updateMedicationDrawer = false
+    // },
+    // setOpenSeizureDrawer: (state) => {
+    //   state.seizureDrawer = true
+    // },
+    // setCloseSeizureDrawer: (state) => {
+    //   state.seizureDrawer = false
+    // },
+    // setOpenMovementDrawer: (state) => {
+    //   state.movementDrawer = true
+    // },
+    // setCloseMovementDrawer: (state) => {
+    //   state.movementDrawer = false
+    // },
     setOpenGuardianActionMenu: (state) => {
       state.guardianActionMenu = true
     },
@@ -293,6 +315,13 @@ export const petSlice = createSlice({
     addPainScoreToPet: (state, action) => {
       if (state.pet && Array.isArray(state.pet.painScores)) {
         state.pet.painScores.unshift(action.payload)
+      }
+    },
+    updatePainScoreInState: (state, action) => {
+      const updatedPainScore = action.payload
+      const index = state.painScores.findIndex((painScore: { id: string }) => painScore.id === updatedPainScore.id)
+      if (index !== -1) {
+        state.painScores[index] = updatedPainScore
       }
     },
 
@@ -432,6 +461,11 @@ export const petSlice = createSlice({
       if (state.pet && Array.isArray(state.pet.movements)) {
         state.pet.movements.unshift(action.payload)
       }
+    },
+    setSelectedPetWithChartData: (state, action) => {
+      state.pet = action.payload.pet
+      state.chartData = action.payload.chartData
+      state.stats = action.payload.stats
     }
   },
   extraReducers: (builder) => {
@@ -488,6 +522,20 @@ export const petSlice = createSlice({
         state.movementCount = payload.movements.length
 
         state.tokenTransactions = payload.tokenTransactions
+        console.log('PAYLOAD: ', payload)
+        state.chartData = payload.chartData
+        state.stats = payload.stats
+        state.noLogs =
+          state.zeroFeedings &&
+          state.zeroPainScores &&
+          state.zeroWalks &&
+          state.zeroWaters &&
+          state.zeroMovements &&
+          state.zeroMedications &&
+          state.zeroAppointments &&
+          state.zeroBloodSugars &&
+          state.zeroSeizures
+        state.onboardingBanner = state.noLogs
 
         state.loading = false
       })
@@ -501,30 +549,27 @@ export const petSlice = createSlice({
         state.success = true
         state.loading = false
       })
-      .addMatcher(petApi.endpoints.createPainScore.matchFulfilled, (state) => {
-        state.loading = false
-      })
-      .addMatcher(petApi.endpoints.createFeeding.matchFulfilled, (state) => {
-        state.loading = false
-      })
-      .addMatcher(petApi.endpoints.createBloodSugar.matchFulfilled, (state) => {
-        state.loading = false
-      })
-      .addMatcher(petApi.endpoints.createMedication.matchFulfilled, (state) => {
-        state.loading = false
-      })
-      .addMatcher(petApi.endpoints.updateMedication.matchFulfilled, (state) => {
-        state.loading = false
-      })
-      .addMatcher(petApi.endpoints.createSeizure.matchFulfilled, (state) => {
-        state.loading = false
-      })
-      .addMatcher(petApi.endpoints.createWalk.matchFulfilled, (state) => {
-        state.loading = false
-      })
-      .addMatcher(petApi.endpoints.createAppointment.matchFulfilled, (state) => {
-        state.loading = false
-      })
+      // .addMatcher(petApi.endpoints.createFeeding.matchFulfilled, (state) => {
+      //   state.loading = false
+      // })
+      // .addMatcher(petApi.endpoints.createBloodSugar.matchFulfilled, (state) => {
+      //   state.loading = false
+      // })
+      // .addMatcher(petApi.endpoints.createMedication.matchFulfilled, (state) => {
+      //   state.loading = false
+      // })
+      // .addMatcher(petApi.endpoints.updateMedication.matchFulfilled, (state) => {
+      //   state.loading = false
+      // })
+      // .addMatcher(petApi.endpoints.createSeizure.matchFulfilled, (state) => {
+      //   state.loading = false
+      // })
+      // .addMatcher(petApi.endpoints.createWalk.matchFulfilled, (state) => {
+      //   state.loading = false
+      // })
+      // .addMatcher(petApi.endpoints.createAppointment.matchFulfilled, (state) => {
+      //   state.loading = false
+      // })
       .addMatcher(
         (action): action is { type: string; payload: ErrorPayload } =>
           action.type.endsWith('/rejected') && action.payload?.data?.sliceName === 'petApi',
@@ -548,18 +593,16 @@ export const {
   updatePetInState,
   removePetFromState,
   addPainScoreToState,
-  setOpenPainScoreDrawer,
-  setClosePainScoreDrawer,
   setOpenGuardianActionMenu,
   setCloseGuardianActionMenu,
-  setOpenWaterDrawer,
-  setCloseWaterDrawer,
-  setOpenFeedingDrawer,
-  setCloseFeedingDrawer,
-  setOpenBloodSugarDrawer,
-  setCloseBloodSugarDrawer,
-  setOpenMedicationDrawer,
-  setCloseMedicationDrawer,
+  // setOpenWaterDrawer,
+  // setCloseWaterDrawer,
+  // setOpenFeedingDrawer,
+  // setCloseFeedingDrawer,
+  // setOpenBloodSugarDrawer,
+  // setCloseBloodSugarDrawer,
+  // setOpenMedicationDrawer,
+  // setCloseMedicationDrawer,
   addPainScoreToPet,
   updateFeedingInState,
   removeFeedingFromState,
@@ -569,30 +612,32 @@ export const {
   addBloodSugarToPet,
   addWaterToState,
   addWaterToPet,
-  setOpenSeizureDrawer,
-  setCloseSeizureDrawer,
+  // setOpenSeizureDrawer,
+  // setCloseSeizureDrawer,
   addMedicationToPet,
   addMedicationToState,
   updateMedicationInState,
   updateMedicationInPet,
-  setCloseUpdateMedicationDrawer,
-  setOpenUpdateMedicationDrawer,
+  // setCloseUpdateMedicationDrawer,
+  // setOpenUpdateMedicationDrawer,
   addSeizureToState,
   addSeizureToPet,
-  setOpenWalkDrawer,
-  setCloseWalkDrawer,
-  setOpenAppointmentDrawer,
-  setCloseAppointmentDrawer,
+  // setOpenWalkDrawer,
+  // setCloseWalkDrawer,
+  // setOpenAppointmentDrawer,
+  // setCloseAppointmentDrawer,
   addWalkToState,
   addWalkToPet,
   addAppointmentToState,
   addAppointmentToPet,
   updateWalkInPet,
   updateWalkInState,
-  setOpenMovementDrawer,
-  setCloseMovementDrawer,
+  // setOpenMovementDrawer,
+  // setCloseMovementDrawer,
   addMovementToPet,
   addMovementToState,
   setOpenPetUpdateDrawer,
-  setClosePetUpdateDrawer
+  setClosePetUpdateDrawer,
+  updatePainScoreInState,
+  setSelectedPetWithChartData
 } = petSlice.actions

@@ -1,6 +1,4 @@
 import React from 'react'
-import { useCreateWaterMutation } from '@/app/redux/services/petApi'
-import { setCloseWaterDrawer } from '@/app/redux/features/petSlice'
 import validateWaterIntakeForm from '@/app/validations/validateWaterForm'
 import { RootState, useAppDispatch, useAppSelector } from '@/app/redux/store'
 import { clearInputs, createFormActions } from '@/app/redux/features/formSlice'
@@ -9,15 +7,16 @@ import GuardianWaterChart from '@/app/components/guardian/dashboard/GuardianWate
 import { AnimatePresence, motion } from 'framer-motion'
 import AnimatedDrawerHeader from '@/app/components/guardian/AnimatedDrawerHeader'
 import { Droplets } from 'lucide-react'
+import { setCloseWaterCreateDrawer } from '@/app/redux/features/waterSlice'
+import { useCreateWaterMutation } from '@/app/redux/services/waterApi'
 
 const CreateWaterDrawer = () => {
   const dispatch = useAppDispatch()
   const { waterForm } = useAppSelector((state: RootState) => state.form)
-  const { pets, waterDrawer } = useAppSelector((state: RootState) => state.pet)
+  const { waterCreateDrawer } = useAppSelector((state: RootState) => state.water)
   const [createWater, { isLoading }] = useCreateWaterMutation()
   const { setErrors, handleInput } = createFormActions('waterForm', dispatch)
-
-  const closeWaterDrawer = () => dispatch(setCloseWaterDrawer())
+  const closeWaterCreateDrawer = () => dispatch(setCloseWaterCreateDrawer())
 
   const handleSubmit = async (e: { preventDefault: () => void }) => {
     e.preventDefault()
@@ -35,12 +34,12 @@ const CreateWaterDrawer = () => {
 
     // Reset form
     dispatch(clearInputs({ formName: 'waterForm' }))
-    closeWaterDrawer()
+    closeWaterCreateDrawer()
   }
 
   return (
     <AnimatePresence>
-      {waterDrawer && (
+      {waterCreateDrawer && (
         <>
           {/* Backdrop */}
           <motion.div
@@ -48,7 +47,7 @@ const CreateWaterDrawer = () => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="fixed inset-0 bg-black/20 backdrop-blur-sm z-50"
-            onClick={closeWaterDrawer}
+            onClick={closeWaterCreateDrawer}
           />
 
           {/* Drawer */}
@@ -68,7 +67,7 @@ const CreateWaterDrawer = () => {
               title="Add Water Intake"
               subtitle="Track your pet’s daily hydration"
               Icon={Droplets}
-              closeDrawer={closeWaterDrawer}
+              closeDrawer={closeWaterCreateDrawer}
               color="text-blue-500"
               iconGradient="from-blue-500 to-cyan-500"
             />
@@ -77,10 +76,9 @@ const CreateWaterDrawer = () => {
                 inputs={waterForm?.inputs}
                 errors={waterForm?.errors}
                 handleInput={handleInput}
-                close={closeWaterDrawer}
+                close={closeWaterCreateDrawer}
                 handleSubmit={handleSubmit}
                 loading={isLoading}
-                pets={pets}
               />
 
               <GuardianWaterChart />

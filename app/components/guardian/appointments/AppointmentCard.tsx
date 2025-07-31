@@ -3,8 +3,13 @@ import { isAppointmentToday, isPastAppointment } from '@/app/lib/utils/public/my
 import { IAppointment } from '@/app/types'
 import React, { FC } from 'react'
 import { motion } from 'framer-motion'
-import { Calendar, Stethoscope } from 'lucide-react'
-import { formatDateShort, getTimeInfo } from '@/app/lib/utils'
+import { Calendar, Stethoscope, Trash2 } from 'lucide-react'
+import { getTimeInfo } from '@/app/lib/utils'
+import { useAppDispatch } from '@/app/redux/store'
+import { useDeleteAppointmentMutation } from '@/app/redux/services/appointmentApi'
+import { setCloseAdminConfirmModal, setOpenAdminConfirmModal } from '@/app/redux/features/adminSlice'
+import { setOpenAppointmentUpdateDrawer } from '@/app/redux/features/appointmentSlice'
+import { setInputs } from '@/app/redux/features/formSlice'
 
 const AppointmentCard: FC<{ appointment: IAppointment; index: number }> = ({ appointment, index }) => {
   const serviceConfig = serviceTypeConfig[appointment.serviceType]
@@ -12,14 +17,41 @@ const AppointmentCard: FC<{ appointment: IAppointment; index: number }> = ({ app
   const appointmentDate = new Date(appointment.date)
   const isPast = isPastAppointment(appointment)
   const isToday = isAppointmentToday(appointment)
+  const dispatch = useAppDispatch()
+  const [deleteAppointment] = useDeleteAppointmentMutation()
+  const onCloseConfirmModal = () => dispatch(setCloseAdminConfirmModal())
+
+  const handleDelete = (e: { stopPropagation: () => void }) => {
+    e.stopPropagation()
+
+    dispatch(
+      setOpenAdminConfirmModal({
+        confirmModal: {
+          isOpen: true,
+          title: 'Delete Appointment',
+          description: `Deleting will permanently remove this appointment from your pet.`,
+          confirmText: 'Delete Appointment',
+          onConfirm: async () => {
+            await deleteAppointment({ appointmentId: appointment.id }).unwrap()
+            onCloseConfirmModal()
+          },
+          isDestructive: true
+        }
+      })
+    )
+  }
 
   return (
     <motion.div
+      onClick={() => {
+        dispatch(setOpenAppointmentUpdateDrawer())
+        dispatch(setInputs({ formName: 'appointmentForm', data: appointment }))
+      }}
       key={appointment.id}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.05 }}
-      className={`bg-white rounded-xl shadow-sm border p-5 hover:shadow-md transition-all hover:scale-105 relative ${
+      className={`bg-white rounded-xl shadow-sm border p-5 hover:shadow-md transition-all hover:scale-105 relative cursor-pointer ${
         isPast
           ? 'opacity-75 border-gray-200'
           : isToday
@@ -53,7 +85,18 @@ const AppointmentCard: FC<{ appointment: IAppointment; index: number }> = ({ app
           </div>
           <span className="font-medium text-gray-900">{appointment?.pet?.name}</span>
         </div>
-        <span className="text-xl">{serviceConfig.icon}</span>
+
+        <motion.button
+          onClick={handleDelete}
+          className="absolute top-3 right-3 w-8 h-8 bg-red-50 hover:bg-red-100 rounded-lg flex items-center justify-center transition-opacity duration-200 z-10"
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: index * 0.1 + 0.1 }}
+        >
+          <Trash2 className="w-4 h-4 text-red-500" />
+        </motion.button>
       </div>
 
       {/* Appointment Details */}
@@ -68,7 +111,7 @@ const AppointmentCard: FC<{ appointment: IAppointment; index: number }> = ({ app
         </div>
         <div className="flex justify-between items-center">
           <span className="text-sm text-gray-600">Time</span>
-          <span className="font-semibold text-gray-900">{formatDateShort(appointment.time)}</span>
+          <span className="font-semibold text-gray-900">{appointment.time}</span>
         </div>
         <div className="flex justify-between items-center">
           <span className="text-sm text-gray-600">Status</span>

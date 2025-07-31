@@ -1,6 +1,6 @@
 import React from 'react'
 import { motion } from 'framer-motion'
-import { Clock, MapPin, AlertTriangle } from 'lucide-react'
+import { Clock, MapPin, AlertTriangle, Trash2 } from 'lucide-react'
 import { IMovement } from '@/app/types'
 import {
   getActivityLevelColor,
@@ -9,6 +9,11 @@ import {
   getMovementTypeIcon,
   getPainTrend
 } from '@/app/lib/utils'
+import { useAppDispatch } from '@/app/redux/store'
+import { useDeleteMovementMutation } from '@/app/redux/services/movementApi'
+import { setCloseAdminConfirmModal, setOpenAdminConfirmModal } from '@/app/redux/features/adminSlice'
+import { setOpenMovementUpdateDrawer } from '@/app/redux/features/movementSlice'
+import { setInputs } from '@/app/redux/features/formSlice'
 
 interface MovementCardProps {
   movement: IMovement
@@ -23,19 +28,58 @@ export const MovementCard: React.FC<MovementCardProps> = ({ movement, index, sho
   const energyTrend = getEnergyTrend(movement)
   const concerningSigns = getConcerningSigns(movement)
   const isOld = showAll && new Date(movement.timeRecorded) < new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
+  const dispatch = useAppDispatch()
+  const [deleteMovement] = useDeleteMovementMutation()
+  const onCloseConfirmModal = () => dispatch(setCloseAdminConfirmModal())
+
+  const handleDelete = (e: { stopPropagation: () => void }) => {
+    e.stopPropagation()
+
+    dispatch(
+      setOpenAdminConfirmModal({
+        confirmModal: {
+          isOpen: true,
+          title: 'Delete Movement',
+          description: `Deleting will permanently remove this movement from your pet.`,
+          confirmText: 'Delete Movement',
+          onConfirm: async () => {
+            await deleteMovement({ movementId: movement.id }).unwrap()
+            onCloseConfirmModal()
+          },
+          isDestructive: true
+        }
+      })
+    )
+  }
 
   return (
     <motion.div
+      onClick={() => {
+        dispatch(setOpenMovementUpdateDrawer())
+        dispatch(setInputs({ formName: 'movementForm', data: movement }))
+      }}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.1 }}
-      className={`bg-white rounded-xl shadow-sm border hover:shadow-md transition-all duration-200 overflow-hidden ${
+      className={`bg-white rounded-xl shadow-sm border hover:shadow-md transition-all duration-200 overflow-hidden cursor-pointer relative group ${
         isOld ? 'opacity-75 border-gray-200' : 'border-gray-100'
       }`}
     >
+      {/* Delete button - top right */}
+      <motion.button
+        onClick={handleDelete}
+        className="absolute top-3 right-3 w-8 h-8 bg-red-50 hover:bg-red-100 rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10"
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.9 }}
+      >
+        <Trash2 className="w-4 h-4 text-red-500" />
+      </motion.button>
+
       {/* Header */}
       <div className="p-4 border-b border-gray-100">
-        <div className="flex items-start justify-between">
+        <div className="flex items-start justify-between pr-10">
+          {' '}
+          {/* Add pr-10 for delete button space */}
           <div className="flex items-center space-x-3">
             <div className={`p-2 rounded-lg bg-gray-50 ${typeInfo.color}`}>
               <TypeIcon className="w-5 h-5" />
@@ -50,11 +94,10 @@ export const MovementCard: React.FC<MovementCardProps> = ({ movement, index, sho
               <p className="text-xs text-gray-500">{movement.pet?.name}</p>
             </div>
           </div>
-
           {/* Activity Level Badge */}
           {movement.activityLevel && (
             <span
-              className={`px-2 py-1 rounded-full text-xs font-medium border ${getActivityLevelColor(movement.activityLevel)}`}
+              className={`px-2 py-1 rounded-full text-xs font-medium border text-center ${getActivityLevelColor(movement.activityLevel)}`}
             >
               {movement.activityLevel.replace('_', ' ').toLowerCase()}
             </span>

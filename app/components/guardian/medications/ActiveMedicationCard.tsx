@@ -1,11 +1,11 @@
 import React, { FC } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { setOpenUpdateMedicationDrawer } from '@/app/redux/features/petSlice'
 import { useAppDispatch } from '@/app/redux/store'
 import { setInputs } from '@/app/redux/features/formSlice'
 import { IMedication } from '@/app/types'
 import { formatTimeRemaining, getNextDoseTime } from '@/app/lib/utils'
 import { itemVariants } from '@/app/lib/constants'
+import { setOpenMedicationUpdateDrawer } from '@/app/redux/features/medicationSlice'
 
 const containerVariants = {
   hidden: {
@@ -45,7 +45,7 @@ const ActiveMedicationCard: FC<IActiveMedicationCard> = ({
         key={medication.id}
         onClick={() => {
           dispatch(setInputs({ formName: 'medicationForm', data: medication }))
-          dispatch(setOpenUpdateMedicationDrawer())
+          dispatch(setOpenMedicationUpdateDrawer())
         }}
         className="bg-white rounded-lg border border-gray-200 p-6 cursor-pointer overflow-hidden relative"
         variants={itemVariants}

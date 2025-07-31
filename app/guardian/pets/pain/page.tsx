@@ -2,24 +2,23 @@
 
 import React from 'react'
 import { motion } from 'framer-motion'
-import { setOpenPainScoreDrawer } from '@/app/redux/features/petSlice'
 import { RootState, useAppSelector } from '@/app/redux/store'
 import { PainScore } from '@/app/types/entities'
-// import { getPainConfig } from '@/app/lib/utils/pain'
 import ZeroLogs from '@/app/components/guardian/ZeroLogs'
 import CleanHeader from '@/app/components/guardian/navigation/CleanHeader'
 import PainScoreCard from '@/app/components/guardian/pain/PainScoreCard'
-import { getTimeInfo, getTodaysPainScores } from '@/app/lib/utils'
+import { getAveragePainScore, getTimeInfo, getTodaysPainScores } from '@/app/lib/utils'
 import { getPainConfig } from '@/app/lib/constants'
 import { painScoreCreateTokenCost } from '@/app/lib/constants/public/token'
+import { setOpenPainScoreCreateDrawer } from '@/app/redux/features/painScoreSlice'
+import LatestPainScore from '@/app/components/guardian/pain/LatestPainScore'
 
 const PainScoring = () => {
-  const { zeroPainScores, painScores } = useAppSelector((state: RootState) => state.pet)
+  const { zeroPainScores, painScores } = useAppSelector((state: RootState) => state.painScore)
+
   const todaysPainScores = getTodaysPainScores(painScores || [])
   const todaysPainScoresCount = todaysPainScores?.length
-  const averagePainScore = (
-    todaysPainScores.reduce((sum, score) => sum + score.score, 0) / todaysPainScoresCount
-  ).toFixed(1)
+  const averagePainScore = getAveragePainScore(todaysPainScores, todaysPainScoresCount)
 
   if (zeroPainScores) {
     return (
@@ -28,7 +27,7 @@ const PainScoring = () => {
         title="No pain scores added yet"
         subtitle="Monitor and track your pet's pain levels to ensure their comfort and wellbeing."
         tokens={painScoreCreateTokenCost}
-        func={setOpenPainScoreDrawer}
+        func={setOpenPainScoreCreateDrawer}
       />
     )
   }
@@ -37,46 +36,12 @@ const PainScoring = () => {
     <div className="h-[calc(100dvh-96px)]">
       <div className="mx-auto px-6 space-y-8">
         {/* Header */}
-        <CleanHeader btnText="Log Pain Score" func={setOpenPainScoreDrawer} tokens={painScoreCreateTokenCost} />
+        <CleanHeader btnText="Log Pain Score" func={setOpenPainScoreCreateDrawer} tokens={painScoreCreateTokenCost} />
+
         <div className="grid grid-cols-1 xl:grid-cols-4 gap-6">
           <div className="xl:col-span-3 space-y-6">
             {/* Latest Pain Score Highlight */}
-            {painScores.length > 0 && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden"
-              >
-                <div className="p-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <h2 className="text-xl font-semibold text-gray-800">Latest Pain Score</h2>
-                    <span className="text-sm text-gray-500">Most recent</span>
-                  </div>
-
-                  {(() => {
-                    const latest = painScores[0]
-                    const scoreData = getPainConfig(latest?.score || 0)
-                    const ScoreIcon = scoreData.icon
-
-                    return (
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <h3 className="text-lg font-semibold text-gray-900">{latest?.pet?.name}</h3>
-                          <p className="text-sm text-gray-500">{getTimeInfo(latest?.createdAt)?.relative}</p>
-                        </div>
-
-                        <div className="flex items-center space-x-6">
-                          <div className={`flex items-center space-x-2 px-4 py-2 rounded-full ${scoreData.color}`}>
-                            <ScoreIcon className="w-4 h-4" />
-                            <span className="font-medium">{latest?.score}</span>
-                          </div>
-                        </div>
-                      </div>
-                    )
-                  })()}
-                </div>
-              </motion.div>
-            )}
+            <LatestPainScore painScore={painScores[0]} />
 
             {/* All Pain Scores Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -108,69 +73,66 @@ const PainScoring = () => {
               <h3 className="text-lg font-semibold text-gray-800 mb-4">Overview</h3>
               <div className="space-y-4">
                 {/* Today's Stats Section */}
-                {todaysPainScoresCount > 0 && (
-                  <div className="bg-blue-50 rounded-lg p-3 border border-blue-200">
-                    <h4 className="text-sm font-semibold text-blue-900 mb-2">Today&apos;s Activity</h4>
-                    <div className="space-y-2">
-                      <div className="flex justify-between">
-                        <span className="text-sm text-blue-700">Pain Scores Today</span>
-                        <span className="font-semibold text-blue-900">{todaysPainScoresCount}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-sm text-blue-700">Average Pain Score</span>
-                        <span className="font-semibold text-blue-900">{averagePainScore}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-sm text-blue-700">Latest Pain Score</span>
-                        <span
-                          className={`font-semibold ${
-                            todaysPainScores[todaysPainScoresCount - 1]?.score >= 3
-                              ? 'text-red-600'
-                              : todaysPainScores[todaysPainScoresCount - 1]?.score >= 2
-                                ? 'text-yellow-600'
-                                : 'text-green-600'
-                          }`}
-                        >
-                          {todaysPainScores[todaysPainScoresCount - 1]?.score}/4
-                        </span>
-                      </div>
 
-                      {/* Pain Score Trend Indicator */}
-                      {todaysPainScoresCount >= 2 && (
-                        <div className="flex justify-between items-center mt-2 pt-2 border-t border-blue-200">
-                          <span className="text-sm text-blue-700">Pain Trend</span>
-                          <div className="flex items-center">
-                            {(() => {
-                              const latest = todaysPainScores[todaysPainScoresCount - 1]?.score
-                              const previous = todaysPainScores[todaysPainScoresCount - 2]?.score
-                              const trend = latest - previous
-
-                              if (trend > 0) {
-                                return (
-                                  <span className="text-red-600 text-sm font-semibold flex items-center">
-                                    ↗ Increasing
-                                  </span>
-                                )
-                              } else if (trend < 0) {
-                                return (
-                                  <span className="text-green-600 text-sm font-semibold flex items-center">
-                                    ↘ Decreasing
-                                  </span>
-                                )
-                              } else {
-                                return (
-                                  <span className="text-blue-600 text-sm font-semibold flex items-center">
-                                    → Stable
-                                  </span>
-                                )
-                              }
-                            })()}
-                          </div>
-                        </div>
-                      )}
+                <div className="bg-blue-50 rounded-lg p-3 border border-blue-200">
+                  <h4 className="text-sm font-semibold text-blue-900 mb-2">Today&apos;s Activity</h4>
+                  <div className="space-y-2">
+                    <div className="flex justify-between">
+                      <span className="text-sm text-blue-700">Pain Scores Today</span>
+                      <span className="font-semibold text-blue-900">{todaysPainScoresCount}</span>
                     </div>
+                    <div className="flex justify-between">
+                      <span className="text-sm text-blue-700">Average Pain Score</span>
+                      <span className="font-semibold text-blue-900">{averagePainScore}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-sm text-blue-700">Latest Pain Score</span>
+                      <span
+                        className={`font-semibold ${
+                          todaysPainScores[0]?.score >= 3
+                            ? 'text-red-600'
+                            : todaysPainScores[0]?.score >= 2
+                              ? 'text-yellow-600'
+                              : 'text-green-600'
+                        }`}
+                      >
+                        {todaysPainScores[0]?.score}/4
+                      </span>
+                    </div>
+
+                    {/* Pain Score Trend Indicator */}
+                    {todaysPainScoresCount >= 2 && (
+                      <div className="flex justify-between items-center mt-2 pt-2 border-t border-blue-200">
+                        <span className="text-sm text-blue-700">Pain Trend</span>
+                        <div className="flex items-center">
+                          {(() => {
+                            const latest = todaysPainScores[0]?.score
+                            const previous = todaysPainScores[1]?.score
+                            const trend = latest - previous
+
+                            if (trend > 0) {
+                              return (
+                                <span className="text-red-600 text-sm font-semibold flex items-center">
+                                  ↗ Increasing
+                                </span>
+                              )
+                            } else if (trend < 0) {
+                              return (
+                                <span className="text-green-600 text-sm font-semibold flex items-center">
+                                  ↘ Decreasing
+                                </span>
+                              )
+                            } else {
+                              return (
+                                <span className="text-blue-600 text-sm font-semibold flex items-center">→ Stable</span>
+                              )
+                            }
+                          })()}
+                        </div>
+                      </div>
+                    )}
                   </div>
-                )}
+                </div>
 
                 {/* Overall Stats */}
                 <div className="space-y-3">
@@ -222,9 +184,10 @@ const PainScoring = () => {
                 <h3 className="text-lg font-semibold text-gray-800">Recent Pain Scores</h3>
               </div>
               <div className="divide-y divide-gray-100 max-h-80 overflow-y-auto">
-                {painScores.slice(0, 8).map((painScore, index) => {
+                {painScores.map((painScore, index) => {
                   const getPainData = (score: number) => {
-                    if (score >= 3) return { color: 'bg-red-100 text-red-800', label: 'Severe' }
+                    if (score >= 4) return { color: 'bg-red-100 text-red-800', label: 'Extreme' }
+                    if (score >= 3) return { color: 'bg-orange-100 text-orange-800', label: 'Severe' }
                     if (score >= 2) return { color: 'bg-yellow-100 text-yellow-800', label: 'Moderate' }
                     if (score >= 1) return { color: 'bg-blue-100 text-blue-800', label: 'Mild' }
                     return { color: 'bg-green-100 text-green-800', label: 'None' }

@@ -29,14 +29,12 @@ import EmergencySignsDrawer from '@/app/drawers/general/EmergencySignsDrawer'
 import ViewGuideDrawer from '@/app/drawers/general/ViewGuideDrawer'
 import PetProfileSection from '@/app/components/guardian/home/PetProfileSection'
 import TodaysProgressSection from '@/app/components/guardian/home/TodaysProgressSection'
-import {
-  setOpenFeedingDrawer,
-  setOpenMovementDrawer,
-  setOpenPainScoreDrawer,
-  setOpenWalkDrawer,
-  setOpenWaterDrawer
-} from '@/app/redux/features/petSlice'
 import { calculateHealthStatus } from '@/app/lib/utils'
+import { setOpenPainScoreCreateDrawer } from '@/app/redux/features/painScoreSlice'
+import { setOpenFeedingCreateDrawer } from '@/app/redux/features/feedingSlice'
+import { setOpenWalkCreateDrawer } from '@/app/redux/features/walkSlice'
+import { setOpenWaterCreateDrawer } from '@/app/redux/features/waterSlice'
+import { setOpenMovementCreateDrawer } from '@/app/redux/features/movementSlice'
 
 const Home = () => {
   const dispatch = useAppDispatch()
@@ -229,31 +227,31 @@ const Home = () => {
                         label: 'Log Pain Score',
                         icon: <Heart className="w-5 h-5" />,
                         urgent: false,
-                        func: setOpenPainScoreDrawer
+                        func: setOpenPainScoreCreateDrawer
                       },
                       {
                         label: 'Log Feeding',
                         icon: <Utensils className="w-5 h-5" />,
                         urgent: false,
-                        func: setOpenFeedingDrawer
+                        func: setOpenFeedingCreateDrawer
                       },
                       {
                         label: 'Log Walk',
                         icon: <Footprints className="w-5 h-5" />,
                         urgent: false,
-                        func: setOpenWalkDrawer
+                        func: setOpenWalkCreateDrawer
                       },
                       {
                         label: 'Log Water',
                         icon: <Droplets className="w-5 h-5" />,
                         urgent: false,
-                        func: setOpenWaterDrawer
+                        func: setOpenWaterCreateDrawer
                       },
                       {
                         label: 'Log Movement',
                         icon: <MapPin className="w-5 h-5" />,
                         urgent: false,
-                        func: setOpenMovementDrawer
+                        func: setOpenMovementCreateDrawer
                       }
                     ].map((action) => (
                       <button
@@ -333,22 +331,6 @@ const Home = () => {
                               <p className="font-medium text-gray-900">{transaction.description}</p>
                               <div className="flex items-center text-xs text-gray-500 mt-1">
                                 <span>{transaction.time}</span>
-                                {transaction.metadata && (
-                                  <>
-                                    <span className="mx-2">•</span>
-                                    <span>
-                                      {transaction.metadata.painScore && `Score: ${transaction.metadata.painScore}`}
-                                      {transaction.metadata.duration && `${transaction.metadata.duration}`}
-                                      {transaction.metadata.distance && `${transaction.metadata.distance}`}
-                                      {transaction.metadata.drugName &&
-                                        `${transaction.metadata.drugName} • ${transaction.metadata.dosage}`}
-                                      {transaction.metadata.milliliters && `${transaction.metadata.milliliters}mL`}
-                                      {transaction.metadata.foodType &&
-                                        `${transaction.metadata.foodAmount} cups of ${transaction.metadata.foodType}`}
-                                      {transaction.metadata.petName && `${transaction.metadata.petName}`}
-                                    </span>
-                                  </>
-                                )}
                               </div>
                             </div>
                             <div className="text-right">

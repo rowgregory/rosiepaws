@@ -2,19 +2,17 @@ import { ISeizure } from '@/app/types'
 
 // Helper function to format duration from seconds
 export const formatDuration = (seconds: number) => {
-  if (seconds < 60) {
+  const wholeMinutes = Math.floor(seconds / 60)
+  const remainingSeconds = seconds % 60
+
+  if (wholeMinutes === 0) {
     return `${seconds}s`
-  } else if (seconds < 3600) {
-    const minutes = Math.floor(seconds / 60)
-    const remainingSeconds = seconds % 60
-    return remainingSeconds > 0 ? `${minutes}m ${remainingSeconds}s` : `${minutes}m`
+  } else if (remainingSeconds === 0) {
+    return `${wholeMinutes}m`
   } else {
-    const hours = Math.floor(seconds / 3600)
-    const minutes = Math.floor((seconds % 3600) / 60)
-    return minutes > 0 ? `${hours}h ${minutes}m` : `${hours}h`
+    return `${wholeMinutes}m ${remainingSeconds}s`
   }
 }
-
 // Helper function to calculate seizure frequency and patterns
 export const getSeizureFrequency = (seizures: ISeizure[]) => {
   if (seizures.length === 0) {

@@ -10,14 +10,12 @@ import PetSelection from '../components/common/forms/PetSelection'
 import FixedFooter from '../components/common/forms/FixedFooter'
 import { medicationCreateTokenCost } from '../lib/constants/public/token'
 import Notes from '../components/common/forms/Notes'
-import CareTaskSwitch from '../components/common/forms/CareTaskSwitch'
 import { isMedicationFormValid } from '../validations/validateMedicationForm'
 
-const MedicationForm = ({ inputs, handleSubmit, close, errors, loading, isUpdating, handleToggle }: any) => {
+const MedicationForm = ({ inputs, handleSubmit, close, errors, loading, isUpdating }: any) => {
   const [drugSearchResults, setDrugSearchResults] = useState<string[]>([])
   const [showDrugSearch, setShowDrugSearch] = useState(false)
   const dispatch = useAppDispatch()
-  const { pets } = useAppSelector((state: RootState) => state.pet)
   const { medicationForm } = useAppSelector((state: RootState) => state.form)
 
   const handleDrugSearch = (searchTerm: string) => {
@@ -115,13 +113,7 @@ const MedicationForm = ({ inputs, handleSubmit, close, errors, loading, isUpdati
         <div className="overflow-y-auto px-5 pt-9 pb-12 h-[calc(100dvh-132px)]">
           <div className="space-y-6">
             {/* Pet Selection */}
-            <PetSelection
-              pets={pets}
-              handleInput={handleInput}
-              inputs={inputs}
-              errors={errors}
-              formName="medicationForm"
-            />
+            <PetSelection handleInput={handleInput} inputs={inputs} errors={errors} formName="medicationForm" />
 
             {/* Drug Input Type Selection */}
             <div className="space-y-3">
@@ -371,8 +363,6 @@ const MedicationForm = ({ inputs, handleSubmit, close, errors, loading, isUpdati
 
             {/* Notes */}
             <Notes inputs={inputs} handleInput={handleInput} />
-
-            <CareTaskSwitch value={inputs.isCareTask} handleToggle={handleToggle} disabled={loading} />
           </div>
         </div>
 

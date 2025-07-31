@@ -1,18 +1,16 @@
 import React, { FC } from 'react'
 import { motion } from 'framer-motion'
-import { RootState, useAppSelector } from '@/app/redux/store'
 import GuardianNumberWheel from '@/app/components/guardian/GuardianNumberWheel'
 import { IForm } from '../types'
 import PetSelection from '../components/common/forms/PetSelection'
 import FixedFooter from '../components/common/forms/FixedFooter'
-import { bloodSugarCreateTokenCost } from '../lib/constants/public/token'
+import { bloodSugarCreateTokenCost, bloodSugarUpdateTokenCost } from '../lib/constants/public/token'
 import Notes from '../components/common/forms/Notes'
 import TimeRecorded from '../components/common/forms/TimeRecorded'
 import { mealRelationOptions, measurementUnitOptions, symptomsOptions } from '../lib/constants'
 import { getBloodSugarRange2, isBloodSugarFormValid } from '../lib/utils'
 
-const BloodSugarForm: FC<IForm> = ({ inputs, handleInput, close, handleSubmit, loading, errors }) => {
-  const { pets } = useAppSelector((state: RootState) => state.pet)
+const BloodSugarForm: FC<IForm> = ({ inputs, handleInput, close, handleSubmit, loading, errors, isUpdating }) => {
   const value = parseFloat(inputs?.value) || 0
   const currentRange = getBloodSugarRange2(value)
 
@@ -21,13 +19,7 @@ const BloodSugarForm: FC<IForm> = ({ inputs, handleInput, close, handleSubmit, l
       <div className="overflow-y-auto px-5 pt-9 pb-12 h-[calc(100dvh-132px)]">
         <div className="space-y-6">
           {/* Pet Selection */}
-          <PetSelection
-            pets={pets}
-            handleInput={handleInput}
-            inputs={inputs}
-            errors={errors}
-            formName="bloodSugarForm"
-          />
+          <PetSelection handleInput={handleInput} inputs={inputs} errors={errors} formName="bloodSugarForm" />
 
           {/* Measurement Unit Selection */}
           <div className="space-y-3">
@@ -255,10 +247,11 @@ const BloodSugarForm: FC<IForm> = ({ inputs, handleInput, close, handleSubmit, l
       <FixedFooter
         inputs={inputs}
         loading={loading}
-        tokens={bloodSugarCreateTokenCost}
+        tokens={isUpdating ? bloodSugarUpdateTokenCost : bloodSugarCreateTokenCost}
         text="Blood Sugar"
         close={close}
         func={() => isBloodSugarFormValid(inputs)}
+        isUpdating={isUpdating}
       />
     </form>
   )

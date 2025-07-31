@@ -8,24 +8,21 @@ import { useAppDispatch } from '../redux/store'
 import { setInputs } from '../redux/features/formSlice'
 import PetSelection from '../components/common/forms/PetSelection'
 import FixedFooter from '../components/common/forms/FixedFooter'
-import { appointmentCreateTokenCost } from '../lib/constants/public/token'
+import { appointmentCreateTokenCost, appointmentUpdateTokenCost } from '../lib/constants/public/token'
 import Notes from '../components/common/forms/Notes'
+import { dateToInputFormat } from '../lib/utils'
 
-const AppointmentForm: FC<IForm> = ({ inputs, errors, handleInput, close, handleSubmit, loading, pets }) => {
+const AppointmentForm: FC<IForm> = ({ inputs, errors, handleInput, close, handleSubmit, loading, isUpdating }) => {
   const dispatch = useAppDispatch()
+
+  console.log(inputs)
 
   return (
     <form onSubmit={handleSubmit} className="flex-1 flex flex-col min-h-full">
       <div className="overflow-y-auto px-5 pt-9 pb-12 h-[calc(100dvh-132px)]">
         <motion.div variants={containerVariants} initial="hidden" animate="visible" className="space-y-6">
           {/* Pet Selection */}
-          <PetSelection
-            pets={pets}
-            inputs={inputs}
-            errors={errors}
-            handleInput={handleInput}
-            formName="appointmentForm"
-          />
+          <PetSelection inputs={inputs} errors={errors} handleInput={handleInput} formName="appointmentForm" />
 
           {/* Date Selection */}
           <motion.div variants={itemVariants} className="space-y-3">
@@ -37,7 +34,7 @@ const AppointmentForm: FC<IForm> = ({ inputs, errors, handleInput, close, handle
               whileFocus={{ scale: 1.02 }}
               type="date"
               name="date"
-              value={inputs?.date || ''}
+              value={dateToInputFormat(inputs?.date) || ''}
               onChange={handleInput}
               min={new Date().toISOString().split('T')[0]}
               className={`w-full p-3 border rounded-lg focus:outline-none transition-all ${
@@ -330,10 +327,11 @@ const AppointmentForm: FC<IForm> = ({ inputs, errors, handleInput, close, handle
       <FixedFooter
         inputs={inputs}
         loading={loading}
-        tokens={appointmentCreateTokenCost}
+        tokens={isUpdating ? appointmentUpdateTokenCost : appointmentCreateTokenCost}
         text="Appointment"
         close={close}
         func={() => isAppointmentFormValid(inputs)}
+        isUpdating={isUpdating}
       />
     </form>
   )

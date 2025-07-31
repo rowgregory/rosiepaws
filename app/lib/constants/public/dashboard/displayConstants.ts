@@ -1,15 +1,4 @@
 import {
-  setOpenAppointmentDrawer,
-  setOpenBloodSugarDrawer,
-  setOpenFeedingDrawer,
-  setOpenMedicationDrawer,
-  setOpenMovementDrawer,
-  setOpenPainScoreDrawer,
-  setOpenSeizureDrawer,
-  setOpenWalkDrawer,
-  setOpenWaterDrawer
-} from '@/app/redux/features/petSlice'
-import {
   appointmentCreateTokenCost,
   bloodSugarCreateTokenCost,
   feedingCreateTokenCost,
@@ -20,52 +9,60 @@ import {
   walkCreateTokenCost,
   waterCreateTokenCost
 } from '@/app/lib/constants/public/token'
-
 import { Activity, Calendar, Droplets, Footprints, Heart, Navigation, Pill, Utensils, Zap } from 'lucide-react'
+import { setOpenPainScoreCreateDrawer } from '@/app/redux/features/painScoreSlice'
+import { setOpenBloodSugarCreateDrawer } from '@/app/redux/features/bloodSugarSlice'
+import { setOpenFeedingCreateDrawer } from '@/app/redux/features/feedingSlice'
+import { setOpenWaterCreateDrawer } from '@/app/redux/features/waterSlice'
+import { setOpenMedicationCreateDrawer } from '@/app/redux/features/medicationSlice'
+import { setOpenSeizureCreateDrawer } from '@/app/redux/features/seizureSlice'
+import { setOpenAppointmentCreateDrawer } from '@/app/redux/features/appointmentSlice'
+import { setOpenMovementCreateDrawer } from '@/app/redux/features/movementSlice'
+import { setOpenWalkCreateDrawer } from '@/app/redux/features/walkSlice'
 
 export const metricConfigButton = {
   'blood-sugars': {
-    action: setOpenBloodSugarDrawer(),
+    action: setOpenBloodSugarCreateDrawer(),
     label: 'Blood Sugar',
     tokens: bloodSugarCreateTokenCost
   },
   'pain-scores': {
-    action: setOpenPainScoreDrawer(),
+    action: setOpenPainScoreCreateDrawer(),
     label: 'Pain Score',
     tokens: painScoreCreateTokenCost
   },
   feedings: {
-    action: setOpenFeedingDrawer(),
+    action: setOpenFeedingCreateDrawer(),
     label: 'Feeding',
     tokens: feedingCreateTokenCost
   },
   waters: {
-    action: setOpenWaterDrawer(),
+    action: setOpenWaterCreateDrawer(),
     label: 'Water Intake',
     tokens: waterCreateTokenCost
   },
   medications: {
-    action: setOpenMedicationDrawer(),
+    action: setOpenMedicationCreateDrawer(),
     label: 'Medication',
     tokens: medicationCreateTokenCost
   },
   seizures: {
-    action: setOpenSeizureDrawer(),
+    action: setOpenSeizureCreateDrawer(),
     label: 'Seizure',
     tokens: seizureCreateTokenCost
   },
   appointments: {
-    action: setOpenAppointmentDrawer(),
+    action: setOpenAppointmentCreateDrawer(),
     label: 'Appointment',
     tokens: appointmentCreateTokenCost
   },
   movements: {
-    action: setOpenMovementDrawer(),
+    action: setOpenMovementCreateDrawer(),
     label: 'Movement',
     tokens: movementCreateTokenCost
   },
   walks: {
-    action: setOpenWalkDrawer(),
+    action: setOpenWalkCreateDrawer(),
     label: 'Walk',
     tokens: walkCreateTokenCost
   }

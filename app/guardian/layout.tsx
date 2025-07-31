@@ -19,6 +19,14 @@ import CreateWalkDrawer from '../drawers/create/CreateWalkDrawer'
 import CreateAppointmentDrawer from '../drawers/create/CreateAppointmentDrawer'
 import CreateMovementDrawer from '../drawers/create/CreateMovementDrawer'
 import UpdatePetDrawer from '../drawers/update/UpdatePetDrawer'
+import UpdatePainScoreDrawer from '../drawers/update/UpdatePainScoreDrawer'
+import UpdateFeedingDrawer from '../drawers/update/UpdateFeedingDrawer'
+import UpdateWaterDrawer from '../drawers/update/UpdateWaterDrawer'
+import UpdateWalkDrawer from '../drawers/update/UpdateWalkDrawer'
+import UpdateMovementDrawer from '../drawers/update/UpdateMovementDrawer'
+import UpdateAppointmentDrawer from '../drawers/update/UpdateAppointmentDrawer'
+import UpdateBloodSugarDrawer from '../drawers/update/UpdateBloodSugarDrawer'
+import UpdateSeizureDrawer from '../drawers/update/UpdateSeizureDrawer'
 
 const GuardianLayout: FC<ChildrenProps> = ({ children }) => {
   useFetchMyPetsQuery({})
@@ -28,15 +36,23 @@ const GuardianLayout: FC<ChildrenProps> = ({ children }) => {
       <CreatePetDrawer />
       <UpdatePetDrawer />
       <CreatePainScoreDrawer />
+      <UpdatePainScoreDrawer />
       <CreateFeedingDrawer />
-      <CreateBloodSugarDrawer />
+      <UpdateFeedingDrawer />
       <CreateWaterDrawer />
-      <CreateMedicationDrawer />
-      <CreateSeizureDrawer />
+      <UpdateWaterDrawer />
       <CreateWalkDrawer />
-      <CreateAppointmentDrawer />
+      <UpdateWalkDrawer />
       <CreateMovementDrawer />
+      <UpdateMovementDrawer />
+      <CreateAppointmentDrawer />
+      <UpdateAppointmentDrawer />
+      <CreateMedicationDrawer />
       <UpdateMedicationDrawer />
+      <CreateBloodSugarDrawer />
+      <UpdateBloodSugarDrawer />
+      <CreateSeizureDrawer />
+      <UpdateSeizureDrawer />
       <GuardianActionMenu />
       <NotificationDrawer />
 

@@ -1,25 +1,22 @@
 import React, { FC } from 'react'
-import { RootState, useAppSelector } from '../redux/store'
 import { AMOUNTS, FOOD_TYPES, POPULAR_BRANDS } from '@/app/lib/constants/public/feeding'
-import { isFeedingFormValid } from '@/app/lib/utils/public/my-pets/feedings/statsUtils'
 import { MOOD_EMOJIS } from '@/app/lib/constants'
 import { IForm } from '../types'
 import FixedFooter from '../components/common/forms/FixedFooter'
-import { feedingCreateTokenCost } from '../lib/constants/public/token'
+import { feedingCreateTokenCost, feedingUpdateTokenCost } from '../lib/constants/public/token'
 import PetSelection from '../components/common/forms/PetSelection'
 import Notes from '../components/common/forms/Notes'
 import TimeRecorded from '../components/common/forms/TimeRecorded'
 import { getFeedingMoodDescription } from '../lib/utils'
+import { isFeedingFormValid } from '../validations/validateFeedingForm'
 
-const FeedingForm: FC<IForm> = ({ inputs, handleInput, close, handleSubmit, loading, errors }) => {
-  const { pets } = useAppSelector((state: RootState) => state.pet)
-
+const FeedingForm: FC<IForm> = ({ inputs, handleInput, close, handleSubmit, loading, errors, isUpdating }) => {
   return (
     <form onSubmit={handleSubmit} className="flex-1 flex flex-col min-h-full">
       <div className="overflow-y-auto px-5 pt-9 pb-12 h-[calc(100dvh-132px)]">
         <div className="space-y-6">
           {/* Pet Selection */}
-          <PetSelection pets={pets} inputs={inputs} errors={errors} handleInput={handleInput} formName="feedingForm" />
+          <PetSelection inputs={inputs} errors={errors} handleInput={handleInput} formName="feedingForm" />
 
           <div className="space-y-3">
             <label className="text-sm font-medium text-gray-700">Food Type</label>
@@ -139,10 +136,11 @@ const FeedingForm: FC<IForm> = ({ inputs, handleInput, close, handleSubmit, load
       <FixedFooter
         inputs={inputs}
         loading={loading}
-        tokens={feedingCreateTokenCost}
+        tokens={isUpdating ? feedingUpdateTokenCost : feedingCreateTokenCost}
         text="Feeding"
         close={close}
         func={() => isFeedingFormValid(inputs)}
+        isUpdating={isUpdating}
       />
     </form>
   )

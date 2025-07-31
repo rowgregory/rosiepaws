@@ -2,7 +2,7 @@ import React, { FC } from 'react'
 import { motion } from 'framer-motion'
 import { serviceTypeConfig, statusConfig } from '@/app/lib/constants/public/appointment'
 import { Stethoscope } from 'lucide-react'
-import { formatAppointmentDate, formatDateShort } from '@/app/lib/utils'
+import { formatAppointmentDate } from '@/app/lib/utils'
 
 const NextAppointment: FC<{ nextAppointment: any }> = ({ nextAppointment }) => {
   return (
@@ -27,7 +27,7 @@ const NextAppointment: FC<{ nextAppointment: any }> = ({ nextAppointment }) => {
 
           <div className="flex items-center space-x-6">
             <div className="text-center">
-              <div className="text-2xl font-bold text-gray-900">{formatDateShort(nextAppointment.time)}</div>
+              <div className="text-2xl font-bold text-gray-900">{nextAppointment.time}</div>
               <div className="text-sm text-gray-500">time</div>
             </div>
             <div className="text-center">

@@ -7,8 +7,8 @@ export interface DateFormatOptions {
   fallback?: string
 }
 
-export const formatDate = (date: DateInput, options: DateFormatOptions = {}): string => {
-  const { style = 'medium', includeTime = false, fallback = 'Never' } = options
+export const formatDate = (date: DateInput, options: DateFormatOptions & { includeSeconds?: boolean } = {}): string => {
+  const { style = 'medium', includeTime = false, includeSeconds = false, fallback = 'Never' } = options
 
   if (!date) return fallback
 
@@ -49,6 +49,10 @@ export const formatDate = (date: DateInput, options: DateFormatOptions = {}): st
         hour: 'numeric',
         minute: '2-digit'
       }
+      // Add seconds to full style if requested
+      if (includeSeconds) {
+        formatOptions.second = '2-digit'
+      }
       break
     case 'month-day':
       formatOptions = {
@@ -61,9 +65,15 @@ export const formatDate = (date: DateInput, options: DateFormatOptions = {}): st
   if (includeTime && style !== 'full') {
     formatOptions.hour = 'numeric'
     formatOptions.minute = '2-digit'
+    if (includeSeconds) {
+      formatOptions.second = '2-digit'
+    }
   }
 
-  return new Intl.DateTimeFormat('en-US', formatOptions).format(dateObj)
+  return new Intl.DateTimeFormat('en-US', {
+    ...formatOptions,
+    timeZone: 'America/New_York'
+  }).format(dateObj)
 }
 
 // Convenience functions
@@ -74,6 +84,37 @@ export const formatDateLong = (date: DateInput) => formatDate(date, { style: 'lo
 export const formatDateTime = (date: DateInput) => formatDate(date, { style: 'medium', includeTime: true })
 
 export const formatAppointmentDate = (date: DateInput) => formatDate(date, { style: 'long' })
+
+export const formatForDateTimeLocal = (isoString: string) => {
+  if (!isoString) return ''
+
+  const date = new Date(isoString)
+  // Format as local time
+  const localISOString = new Date(date.getTime() - date.getTimezoneOffset() * 60000).toISOString()
+  return localISOString.slice(0, 19) // Remove Z and milliseconds
+}
+
+export const dateToInputFormat = (date: string | number | Date | null | undefined): string => {
+  // Handle null/undefined
+  if (!date) {
+    return new Date().toISOString().split('T')[0]
+  }
+
+  try {
+    const d = new Date(date)
+
+    // Check if date is valid
+    if (isNaN(d.getTime())) {
+      console.warn('Invalid date provided to dateToInputFormat:', date)
+      return new Date().toISOString().split('T')[0] // Return today's date as fallback
+    }
+
+    return d.toISOString().split('T')[0]
+  } catch (error) {
+    console.error('Error in dateToInputFormat:', error, 'Input was:', date)
+    return new Date().toISOString().split('T')[0] // Return today's date as fallback
+  }
+}
 
 // formatDate(date)                               "Jan 15, 2024"
 // formatDate(date, { style: 'short' })          "Jan 15, 2024"
@@ -109,15 +150,6 @@ export const formatTime = (date: DateInput, options: { fallback?: string } = {})
 // formatTime('invalid-date')            // "Invalid time"
 
 // ===============================================================================
-
-export const getQuickTimes = () => [
-  { label: 'Just now', value: getLocalISOString(new Date()) },
-  { label: '1 hour ago', value: getLocalISOString(new Date(Date.now() - 60 * 60 * 1000)) },
-  { label: '2 hours ago', value: getLocalISOString(new Date(Date.now() - 2 * 60 * 60 * 1000)) },
-  { label: '3 hours ago', value: getLocalISOString(new Date(Date.now() - 3 * 60 * 60 * 1000)) }
-]
-
-export const QUICK_TIMES = getQuickTimes()
 
 export const getTimeOfDay = (timeString: string) => {
   const time = new Date(timeString)

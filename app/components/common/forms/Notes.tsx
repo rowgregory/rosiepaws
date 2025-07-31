@@ -8,7 +8,7 @@ const Notes: FC<{ inputs: any; handleInput: any }> = ({ inputs, handleInput }) =
       </label>
       <textarea
         name="notes"
-        value={inputs?.notes}
+        value={inputs?.notes || ''}
         onChange={handleInput}
         placeholder="Any additional observations about the session..."
         rows={3}

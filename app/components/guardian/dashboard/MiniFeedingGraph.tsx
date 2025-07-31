@@ -8,21 +8,25 @@ const MiniFeedingGraph: FC<{ feedings: any }> = ({ feedings }) => {
 
   const foodTypeData =
     feedings?.reduce((acc: any, feeding: any) => {
-      const existing = acc.find((item: any) => item.type === feeding.type)
-      const amount = parseFraction(feeding.amount)
+      const existing = acc.find((item: any) => item.foodType === feeding.foodType)
+      const amount = parseFraction(feeding.foodAmount)
+      console.log(amount)
 
       if (existing) {
         existing.count += 1
         existing.amount += amount
+        existing.feedings.push(feeding) // Keep track of individual feedings
       } else {
         acc.push({
-          type: feeding.type,
+          foodType: feeding.foodType,
           count: 1,
-          amount: amount
+          amount: amount,
+          feedings: [feeding]
         })
       }
       return acc
     }, []) || []
+  console.log('foodTypeData: ', foodTypeData)
 
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
@@ -79,7 +83,7 @@ const MiniFeedingGraph: FC<{ feedings: any }> = ({ feedings }) => {
                 boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
               }}
               formatter={(value, name, props) => {
-                const foodType = props.payload.type.replace('_', ' ')
+                const foodType = props.payload?.foodType?.replace?.('_', ' ')
                 return [`${value} ${foodType}`, 'Count']
               }}
               labelFormatter={(label) =>
@@ -106,12 +110,12 @@ const MiniFeedingGraph: FC<{ feedings: any }> = ({ feedings }) => {
             '#166534' // green-800
           ]
           return (
-            <div key={item.type} className="flex items-center space-x-2 text-sm">
+            <div key={index} className="flex items-center space-x-2 text-sm">
               <div
                 className="w-3 h-3 rounded-full"
                 style={{ backgroundColor: greenColors[index % greenColors.length] }}
               ></div>
-              <span className="capitalize">{item.type.replace('_', ' + ')}</span>
+              <span className="capitalize">{item?.foodType?.replace?.('_', ' + ')}</span>
             </div>
           )
         })}

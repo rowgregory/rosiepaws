@@ -8,9 +8,10 @@ export interface ClientPageProps {
   children: ReactNode
 }
 
-export interface ErrorType {
+export interface ErrorPayload {
   data: {
     message: string
+    sliceName: string
   }
 }
 

@@ -1,4 +1,4 @@
-import { setOpenPetUpdateDrawer, setPet } from '@/app/redux/features/petSlice'
+import { setOpenPetUpdateDrawer, setSelectedPetWithChartData } from '@/app/redux/features/petSlice'
 import { useAppDispatch } from '@/app/redux/store'
 import { Pet } from '@/app/types/entities'
 import { ArrowRight, Calendar, Edit, MoreVertical, Shield, Trash2 } from 'lucide-react'
@@ -8,6 +8,8 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { setInputs } from '@/app/redux/features/formSlice'
 import { setCloseAdminConfirmModal, setOpenAdminConfirmModal } from '@/app/redux/features/adminSlice'
 import { useDeletePetMutation } from '@/app/redux/services/petApi'
+import { processChartDataForPet } from '@/app/lib/utils/public/dashboard/processChartData'
+import { calculatePetStats } from '@/app/lib/utils/public/dashboard/calculatePetStats'
 
 const getInitials = (name: string) => {
   return name.substring(0, 2).toUpperCase()
@@ -232,7 +234,21 @@ const PetCard: FC<{ pet: Pet; index: number }> = ({ pet, index }) => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: index * 0.1 + 1.2, duration: 0.4 }}
       >
-        <Link href="/guardian/dashboard" onClick={() => dispatch(setPet(pet))} className="block w-full">
+        <Link
+          href="/guardian/dashboard"
+          onClick={() => {
+            const chartData = processChartDataForPet(pet)
+            const stats = calculatePetStats(pet, chartData)
+            dispatch(
+              setSelectedPetWithChartData({
+                pet,
+                chartData,
+                stats
+              })
+            )
+          }}
+          className="block w-full"
+        >
           <motion.div
             className="w-full flex items-center justify-center px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white focus:outline-none"
             whileHover={{

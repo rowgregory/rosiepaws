@@ -3,7 +3,6 @@
 import React from 'react'
 import { Activity, MapPin } from 'lucide-react'
 import { motion } from 'framer-motion'
-import { setOpenMovementDrawer } from '@/app/redux/features/petSlice'
 import { RootState, useAppSelector } from '@/app/redux/store'
 import {
   getRecentMovements,
@@ -15,6 +14,8 @@ import CleanHeader from '@/app/components/guardian/navigation/CleanHeader'
 import { MovementCard } from '@/app/components/guardian/movements/MovementCard'
 import { IMovement } from '@/app/types'
 import { getTodaysMovements, getWeeklyMovementStats } from '@/app/lib/utils'
+import { movementCreateTokenCost } from '@/app/lib/constants/public/token'
+import { setOpenMovementCreateDrawer } from '@/app/redux/features/movementSlice'
 
 const MovementTracking = () => {
   const { zeroMovements, movements } = useAppSelector((state: RootState) => state.pet)
@@ -28,8 +29,8 @@ const MovementTracking = () => {
         btnText="Log Movement"
         title="No movements logged yet"
         subtitle="Track your pet's mobility, exercise, and daily activities to monitor their health and progress."
-        tokens={200}
-        func={setOpenMovementDrawer}
+        tokens={movementCreateTokenCost}
+        func={setOpenMovementCreateDrawer}
       />
     )
   }
@@ -38,7 +39,7 @@ const MovementTracking = () => {
     <div className="h-[calc(100dvh-96px)]">
       <div className="mx-auto px-6 space-y-8">
         {/* Header */}
-        <CleanHeader btnText="Log Movement" func={setOpenMovementDrawer} tokens={200} />
+        <CleanHeader btnText="Log Movement" func={setOpenMovementCreateDrawer} tokens={movementCreateTokenCost} />
 
         <div className="grid grid-cols-1 xl:grid-cols-4 gap-6">
           <div className="xl:col-span-3 space-y-6">

@@ -13,10 +13,11 @@ const MiniMovementsGraph = ({ movements }: any) => {
       ?.reduce((total: number, movement: any) => total + (movement.durationMinutes || 0), 0) || 0
 
   // Sort movements chronologically
-  const sortedMovements =
-    movements?.sort((a: any, b: any) => {
-      return new Date(a.timeRecorded).getTime() - new Date(b.timeRecorded).getTime()
-    }) || []
+  const sortedMovements = movements
+    ? [...movements].sort((a: any, b: any) => {
+        return new Date(a.timeRecorded).getTime() - new Date(b.timeRecorded).getTime()
+      })
+    : []
 
   // Group movements by type and calculate metrics
   const movementTypes = sortedMovements.reduce((acc: any, movement: any) => {

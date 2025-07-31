@@ -1,33 +1,24 @@
 'use client'
 
 import React, { FC } from 'react'
-import { RootState, useAppSelector } from '../redux/store'
 import { CheckCircle2 } from 'lucide-react'
 import { PAIN_LEVELS } from '../lib/constants/public/pain'
 import PetSelection from '../components/common/forms/PetSelection'
 import FixedFooter from '../components/common/forms/FixedFooter'
-import { painScoreCreateTokenCost } from '../lib/constants/public/token'
+import { painScoreCreateTokenCost, painScoreUpdateTokenCost } from '../lib/constants/public/token'
 import { IForm } from '../types'
 import Notes from '../components/common/forms/Notes'
 import TimeRecorded from '../components/common/forms/TimeRecorded'
 import { InputStyle } from '../lib/constants'
 import { isPainScoreFormValid } from '../validations/validatePainScoreForm'
 
-const PainScoreForm: FC<IForm> = ({ inputs, errors, handleInput, close, handleSubmit, loading }) => {
-  const { pets } = useAppSelector((state: RootState) => state.pet)
-
+const PainScoreForm: FC<IForm> = ({ inputs, errors, handleInput, close, handleSubmit, loading, isUpdating }) => {
   return (
     <form onSubmit={handleSubmit} className="flex-1 flex flex-col min-h-full">
       <div className="overflow-y-auto px-5 pt-9 pb-12 h-[calc(100dvh-132px)]">
         <div className="space-y-6">
           {/* Pet Selection */}
-          <PetSelection
-            pets={pets}
-            inputs={inputs}
-            errors={errors}
-            handleInput={handleInput}
-            formName="painScoreForm"
-          />
+          <PetSelection inputs={inputs} errors={errors} handleInput={handleInput} formName="painScoreForm" />
 
           {/* Pain Score Selection */}
           <div className="space-y-3">
@@ -138,10 +129,11 @@ const PainScoreForm: FC<IForm> = ({ inputs, errors, handleInput, close, handleSu
       <FixedFooter
         inputs={inputs}
         loading={loading}
-        tokens={painScoreCreateTokenCost}
+        tokens={isUpdating ? painScoreUpdateTokenCost : painScoreCreateTokenCost}
         text="Pain Score"
         close={close}
         func={() => isPainScoreFormValid(inputs)}
+        isUpdating={isUpdating}
       />
     </form>
   )

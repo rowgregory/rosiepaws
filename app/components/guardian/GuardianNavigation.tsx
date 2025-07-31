@@ -9,9 +9,11 @@ import UserDropdownMenu from './navigation/UserDropdownMenu'
 import useCustomPathname from '@/app/hooks/useCustomPathname'
 import TokenCounter from './TokenCounter'
 import PetDropdownMenu from './navigation/PetDropdownMenu'
-import { setOpenPetDrawer, setPet } from '@/app/redux/features/petSlice'
+import { setOpenPetDrawer, setSelectedPetWithChartData } from '@/app/redux/features/petSlice'
 import { petCreateTokenCost } from '@/app/lib/constants/public/token'
 import { publicDashboardLinks } from '@/app/lib/utils'
+import { processChartDataForPet } from '@/app/lib/utils/public/dashboard/processChartData'
+import { calculatePetStats } from '@/app/lib/utils/public/dashboard/calculatePetStats'
 
 const GuardianNavigation = () => {
   const path = useCustomPathname()
@@ -23,9 +25,17 @@ const GuardianNavigation = () => {
   const linkData = publicDashboardLinks(path, zeroPets)
 
   const handlePetSelect = (selectedPet: any) => {
-    dispatch(setPet(selectedPet))
     setPetDropdownOpen(false)
     push('/guardian/dashboard')
+    const chartData = processChartDataForPet(selectedPet)
+    const stats = calculatePetStats(selectedPet, chartData)
+    dispatch(
+      setSelectedPetWithChartData({
+        pet: selectedPet,
+        chartData,
+        stats
+      })
+    )
   }
 
   return (

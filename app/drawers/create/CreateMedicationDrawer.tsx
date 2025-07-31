@@ -3,21 +3,21 @@
 import React, { MouseEvent } from 'react'
 import { RootState, useAppDispatch, useAppSelector } from '@/app/redux/store'
 import { clearInputs, createFormActions } from '@/app/redux/features/formSlice'
-import { setCloseMedicationDrawer } from '@/app/redux/features/petSlice'
 import MedicationForm from '@/app/forms/MedicationForm'
 import validateMedicationForm from '@/app/validations/validateMedicationForm'
-import { useCreateMedicationMutation } from '@/app/redux/services/petApi'
 import GuardianMedicationChart from '@/app/components/guardian/medications/GuardianMedicationGuildlines'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Pill } from 'lucide-react'
 import AnimatedDrawerHeader from '@/app/components/guardian/AnimatedDrawerHeader'
+import { useCreateMedicationMutation } from '@/app/redux/services/medicationApi'
+import { setCloseMedicationCreateDrawer } from '@/app/redux/features/medicationSlice'
 
 const CreateMedicationDrawer = () => {
   const { medicationDrawer } = useAppSelector((state: RootState) => state.pet)
   const { medicationForm } = useAppSelector((state: RootState) => state.form)
   const dispatch = useAppDispatch()
   const { handleInput, setErrors } = createFormActions('medicationForm', dispatch)
-  const closeMedicationDrawer = () => dispatch(setCloseMedicationDrawer())
+  const closeMedicationDrawer = () => dispatch(setCloseMedicationCreateDrawer())
   const [createMedication, { isLoading }] = useCreateMedicationMutation()
 
   const handleAddMedication = async (e: MouseEvent) => {

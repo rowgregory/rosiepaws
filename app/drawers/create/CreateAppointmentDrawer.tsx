@@ -1,23 +1,23 @@
 import React from 'react'
-import { setCloseAppointmentDrawer } from '@/app/redux/features/petSlice'
 import { RootState, useAppDispatch, useAppSelector } from '@/app/redux/store'
 import { clearInputs, createFormActions } from '../../redux/features/formSlice'
 import AppointmentForm from '../../forms/AppointmentForm'
 import { AnimatePresence, motion } from 'framer-motion'
 import AnimatedDrawerHeader from '../../components/guardian/AnimatedDrawerHeader'
 import { Calendar } from 'lucide-react'
-import { useCreateAppointmentMutation } from '../../redux/services/petApi'
 import validateAppointmentForm from '../../validations/validateAppointmentForm'
 import AppointmentTips from '../../components/guardian/appointments/AppointmentTips'
+import { useCreateAppointmentMutation } from '@/app/redux/services/appointmentApi'
+import { setCloseAppointmentCreateDrawer } from '@/app/redux/features/appointmentSlice'
 
 const CreateAppointmentDrawer = () => {
   const dispatch = useAppDispatch()
   const { appointmentForm } = useAppSelector((state: RootState) => state.form)
-  const { pets, appointmentDrawer } = useAppSelector((state: RootState) => state.pet)
+  const { appointmentCreateDrawer } = useAppSelector((state: RootState) => state.appointment)
   const [createAppointment, { isLoading }] = useCreateAppointmentMutation()
   const { setErrors, handleInput } = createFormActions('appointmentForm', dispatch)
 
-  const closeAppointmentDrawer = () => dispatch(setCloseAppointmentDrawer())
+  const closeAppointmentDrawer = () => dispatch(setCloseAppointmentCreateDrawer())
 
   const handleSubmit = async (e: { preventDefault: () => void }) => {
     e.preventDefault()
@@ -43,7 +43,7 @@ const CreateAppointmentDrawer = () => {
 
   return (
     <AnimatePresence>
-      {appointmentDrawer && (
+      {appointmentCreateDrawer && (
         <>
           {/* Backdrop */}
           <motion.div
@@ -83,7 +83,6 @@ const CreateAppointmentDrawer = () => {
                 close={closeAppointmentDrawer}
                 handleSubmit={handleSubmit}
                 loading={isLoading}
-                pets={pets}
               />
 
               <AppointmentTips />

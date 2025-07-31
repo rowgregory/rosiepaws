@@ -1,9 +1,3 @@
-export const isFeedingFormValid = (inputs: any) => {
-  return (
-    inputs?.petId && inputs?.foodType && inputs?.foodAmount && inputs?.timeRecorded && inputs.moodRating && inputs.brand
-  )
-}
-
 // Helper function to convert food amounts to numeric values (in cups)
 export const convertToNumeric = (amount: string): number => {
   const conversions: { [key: string]: number } = {
@@ -27,9 +21,9 @@ export const processFeedingDataByTime = (feedingData: any[]) => {
     .map((feeding) => ({
       date: feeding.date,
       time: feeding.time,
-      amount: convertToNumeric(feeding.amount),
-      cups: `${convertToNumeric(feeding.amount)} cups`,
-      type: feeding.type,
+      amount: convertToNumeric(feeding.foodAmount),
+      cups: `${convertToNumeric(feeding.foodAmount)} cups`,
+      type: feeding.foodType,
       displayTime: new Date(`${feeding.date} ${feeding.time}`).toLocaleTimeString([], {
         hour: 'numeric',
         minute: '2-digit',

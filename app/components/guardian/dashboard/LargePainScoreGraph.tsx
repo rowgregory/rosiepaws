@@ -3,19 +3,21 @@
 import React, { FC } from 'react'
 import { ResponsiveContainer, XAxis, YAxis, Line, Tooltip, CartesianGrid, Area, AreaChart } from 'recharts'
 import { Activity } from 'lucide-react'
-import { getPainScoreColor } from '@/app/lib/utils'
+import { formatDate, getPainScoreColor } from '@/app/lib/utils'
 
 const LargePainScoreGraph: FC<{ chartData: any }> = ({ chartData }) => {
-  const formatDate = (dateStr: string) => {
+  const formatDateForTick = (dateStr: string) => {
     const date = new Date(dateStr)
     return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
   }
 
-  const latestScore = chartData?.[chartData.length - 1]?.score ?? '--'
+  const latestScore = chartData?.[0]?.score ?? '--'
   const averageScore =
     chartData?.length > 0
       ? (chartData.reduce((sum: number, item: any) => sum + item.score, 0) / chartData.length).toFixed(1)
       : '--'
+
+  const reversed = [...chartData]?.reverse()
 
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
@@ -38,7 +40,7 @@ const LargePainScoreGraph: FC<{ chartData: any }> = ({ chartData }) => {
 
       {/* Chart */}
       <ResponsiveContainer width="100%" height={300}>
-        <AreaChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+        <AreaChart data={reversed} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
           <defs>
             <linearGradient id="painGradient" x1="0" y1="0" x2="0" y2="1">
               <stop offset="50%" stopColor="#f04843" stopOpacity={0.3} />
@@ -57,7 +59,7 @@ const LargePainScoreGraph: FC<{ chartData: any }> = ({ chartData }) => {
             dataKey="date"
             tickLine={false}
             axisLine={false}
-            tickFormatter={formatDate}
+            tickFormatter={formatDateForTick}
             tick={{ fontSize: 12 }}
             interval={0}
           />
@@ -146,8 +148,8 @@ const LargePainScoreGraph: FC<{ chartData: any }> = ({ chartData }) => {
         <div className="mt-6">
           <h4 className="font-medium text-gray-700 mb-4">Recent Pain Assessments</h4>
           <div className="space-y-3">
-            {chartData
-              ?.slice(-3)
+            {reversed
+              ?.slice(0, 10)
               .map((pain: any, index: number) => (
                 <div key={index} className="p-4 rounded-lg border border-gray-200 bg-gray-50">
                   <div className="flex items-start justify-between">
@@ -155,7 +157,7 @@ const LargePainScoreGraph: FC<{ chartData: any }> = ({ chartData }) => {
                       <div className="flex items-center space-x-2 mb-2">
                         <span className={`font-semibold ${getPainScoreColor(pain.score)}`}>{pain.score}/4</span>
                         <span className="text-sm text-gray-500">
-                          {formatDate(pain.date)} {pain.time}
+                          {formatDate(pain?.timeRecorded, { style: 'full', includeSeconds: true })}
                         </span>
                       </div>
 

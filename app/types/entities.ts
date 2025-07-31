@@ -271,6 +271,7 @@ export interface IWalk {
 }
 
 export interface IMovement {
+  id: any
   petId: string
   movementType: string
   durationMinutes: number

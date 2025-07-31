@@ -3,19 +3,19 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { Heart } from 'lucide-react'
 import { RootState, useAppDispatch, useAppSelector } from '@/app/redux/store'
 import { clearInputs, createFormActions } from '@/app/redux/features/formSlice'
-import { setCloseBloodSugarDrawer } from '@/app/redux/features/petSlice'
-import { useCreateBloodSugarMutation } from '@/app/redux/services/petApi'
 import validateBloodSugarForm from '@/app/validations/validateBloodSugarForm'
 import AnimatedDrawerHeader from '@/app/components/guardian/AnimatedDrawerHeader'
 import BloodSugarForm from '@/app/forms/BloodSugarForm'
 import BloodSugarGuide from '@/app/components/guardian/form-guides/BloodSugarGuide'
+import { setCloseBloodSugarCreateDrawer } from '@/app/redux/features/bloodSugarSlice'
+import { useCreateBloodSugarMutation } from '@/app/redux/services/bloodSugarApi'
 
 const CreateBloodSugarDrawer = () => {
-  const { bloodSugarDrawer } = useAppSelector((state: RootState) => state.pet)
+  const { bloodSugarCreateDrawer } = useAppSelector((state: RootState) => state.bloodSugar)
   const { bloodSugarForm } = useAppSelector((state: RootState) => state.form)
   const dispatch = useAppDispatch()
   const { handleInput, setErrors } = createFormActions('bloodSugarForm', dispatch)
-  const closeBloodSugarDrawer = () => dispatch(setCloseBloodSugarDrawer())
+  const closeBloodSugarDrawer = () => dispatch(setCloseBloodSugarCreateDrawer())
   const [createBoodSugar, { isLoading }] = useCreateBloodSugarMutation()
 
   const handleAddBoodSugar = async (e: MouseEvent) => {
@@ -44,7 +44,7 @@ const CreateBloodSugarDrawer = () => {
 
   return (
     <AnimatePresence>
-      {bloodSugarDrawer && (
+      {bloodSugarCreateDrawer && (
         <>
           {/* Backdrop */}
           <motion.div

@@ -1,37 +1,75 @@
-import { getMoodColor, getMoodEmoji, getTimeInfo, getWaterIntakeConfig } from '@/app/lib/utils'
+import { getMoodColor, getMoodEmoji, getTimeInfo } from '@/app/lib/utils'
+import { setCloseAdminConfirmModal, setOpenAdminConfirmModal } from '@/app/redux/features/adminSlice'
+import { setInputs } from '@/app/redux/features/formSlice'
+import { setOpenWaterUpdateDrawer } from '@/app/redux/features/waterSlice'
+import { useDeleteWaterMutation } from '@/app/redux/services/waterApi'
+import { useAppDispatch } from '@/app/redux/store'
 import { IWater } from '@/app/types'
 import { motion } from 'framer-motion'
+import { Droplets, Trash2 } from 'lucide-react'
 
 interface WaterLogCardProps {
   waterLog: IWater
   index: number
-  config: ReturnType<typeof getWaterIntakeConfig>
-  IconComponent: React.ComponentType<any>
 }
 
-const WaterLogCard: React.FC<WaterLogCardProps> = ({ waterLog, index, config, IconComponent }) => {
+const WaterLogCard: React.FC<WaterLogCardProps> = ({ waterLog, index }) => {
+  const dispatch = useAppDispatch()
+  const [deleteWater] = useDeleteWaterMutation(undefined)
+  const onCloseConfirmModal = () => dispatch(setCloseAdminConfirmModal())
+
+  const handleDelete = (e: React.MouseEvent) => {
+    e.stopPropagation()
+
+    dispatch(
+      setOpenAdminConfirmModal({
+        confirmModal: {
+          isOpen: true,
+          title: 'Delete Water',
+          description: `Deleting will permanently remove this water from your pet.`,
+          confirmText: 'Delete Water',
+          onConfirm: async () => {
+            await deleteWater({ waterId: waterLog.id }).unwrap()
+            onCloseConfirmModal()
+          },
+          isDestructive: true
+        }
+      })
+    )
+  }
+
   return (
     <motion.div
+      onClick={() => {
+        dispatch(setOpenWaterUpdateDrawer())
+        dispatch(setInputs({ formName: 'waterForm', data: waterLog }))
+      }}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.05 }}
-      className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow"
+      className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow relative group cursor-pointer"
     >
+      {/* Delete button */}
+      <motion.button
+        onClick={handleDelete}
+        className="absolute top-3 right-3 w-7 h-7 bg-red-50 hover:bg-red-100 rounded-lg flex items-center justify-center duration-200 z-10"
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.9 }}
+      >
+        <Trash2 className="w-3.5 h-3.5 text-red-500" />
+      </motion.button>
+
       <div className="p-4">
         {/* Header */}
-        <div className="flex items-start justify-between mb-3">
+        <div className="flex items-start justify-between mb-3 pr-8">
           <div className="flex items-center space-x-2">
             <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-              <span className="text-sm">💧</span>
+              <Droplets className="w-4 h-4 text-blue-500" />
             </div>
             <div>
               <h3 className="font-semibold text-gray-900 text-sm">{waterLog.pet?.name}</h3>
               <p className="text-xs text-gray-500">{getTimeInfo(waterLog.createdAt)?.relative}</p>
             </div>
-          </div>
-          <div className={`flex items-center space-x-1 px-2 py-1 rounded-full text-xs ${config.color}`}>
-            <IconComponent className="w-3 h-3" />
-            <span className="font-medium capitalize">Exact</span>
           </div>
         </div>
 
@@ -75,16 +113,6 @@ const WaterLogCard: React.FC<WaterLogCardProps> = ({ waterLog, index, config, Ic
               <p className="text-sm text-gray-800 bg-gray-50 p-2 rounded-lg">&quot;{waterLog.notes}&quot;</p>
             </div>
           )}
-        </div>
-
-        {/* Footer */}
-        <div className="mt-4 pt-3 border-t border-gray-100">
-          <div className="flex items-center justify-between">
-            <div className={`px-2 py-1 rounded-full text-[12px] text-center ${config.bgColor} ${config.textColor}`}>
-              {config.description}
-            </div>
-            <button className="text-xs text-gray-500 hover:text-gray-700 transition-colors">View Details</button>
-          </div>
         </div>
       </div>
     </motion.div>

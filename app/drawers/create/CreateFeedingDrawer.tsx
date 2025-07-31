@@ -3,19 +3,19 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { Utensils } from 'lucide-react'
 import { RootState, useAppDispatch, useAppSelector } from '@/app/redux/store'
 import { clearInputs, createFormActions } from '@/app/redux/features/formSlice'
-import { useCreateFeedingMutation } from '@/app/redux/services/petApi'
-import { setCloseFeedingDrawer } from '@/app/redux/features/petSlice'
 import FeedingForm from '@/app/forms/FeedingForm'
 import validateFeedingForm from '@/app/validations/validateFeedingForm'
 import FeedingGuide from '@/app/components/guardian/form-guides/FeedingGuide'
 import AnimatedDrawerHeader from '@/app/components/guardian/AnimatedDrawerHeader'
+import { setCloseFeedingCreateDrawer } from '@/app/redux/features/feedingSlice'
+import { useCreateFeedingMutation } from '@/app/redux/services/feedingApi'
 
 const CreateFeedingDrawer = () => {
-  const { feedingDrawer } = useAppSelector((state: RootState) => state.pet)
   const { feedingForm } = useAppSelector((state: RootState) => state.form)
+  const { feedingCreateDrawer } = useAppSelector((state: RootState) => state.feeding)
   const dispatch = useAppDispatch()
   const { handleInput, setErrors } = createFormActions('feedingForm', dispatch)
-  const closeFeedingDrawer = () => dispatch(setCloseFeedingDrawer())
+  const closeFeedingDrawer = () => dispatch(setCloseFeedingCreateDrawer())
   const [createFeeding, { isLoading }] = useCreateFeedingMutation()
 
   const handleAddFeeding = async (e: MouseEvent) => {
@@ -33,8 +33,7 @@ const CreateFeedingDrawer = () => {
         brand: feedingForm.inputs.brand,
         ingredients: feedingForm.inputs.ingredients,
         moodRating: Number(feedingForm.inputs.moodRating),
-        timeRecorded: new Date(feedingForm.inputs.timeRecorded),
-        isCareTask: feedingForm.inputs.isCareTask
+        timeRecorded: new Date(feedingForm.inputs.timeRecorded)
       }).unwrap()
 
       closeFeedingDrawer()
@@ -44,7 +43,7 @@ const CreateFeedingDrawer = () => {
 
   return (
     <AnimatePresence>
-      {feedingDrawer && (
+      {feedingCreateDrawer && (
         <>
           {/* Backdrop */}
           <motion.div

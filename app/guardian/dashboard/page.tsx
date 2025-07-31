@@ -1,7 +1,6 @@
 'use client'
 
-import React, { useState, useMemo, useEffect } from 'react'
-import Spinner from '@/app/components/common/Spinner'
+import React, { useState } from 'react'
 import LargeFeedingGraph from '@/app/components/guardian/dashboard/LargeFeedingGraph'
 import LargePainScoreGraph from '@/app/components/guardian/dashboard/LargePainScoreGraph'
 import { RootState, useAppDispatch, useAppSelector } from '@/app/redux/store'
@@ -16,214 +15,51 @@ import MiniFeedingGraph from '@/app/components/guardian/dashboard/MiniFeedingGra
 import GuardianMedicationGraph from '@/app/components/guardian/dashboard/GuardianMedicationGraph'
 import LargeSeizureGraph from '@/app/components/guardian/dashboard/LargeSeizureGraph'
 import LargeBloodSugarGraph from '@/app/components/guardian/dashboard/LargeBloodSugarGraph'
-import { getDashboardNextAppointment, IProcessedChartData, processChartData } from '@/app/lib/utils'
 import LargeAppointmentChart from '@/app/components/guardian/dashboard/LargeAppointmentChart'
 import MiniAppointmentChart from '@/app/components/guardian/dashboard/MiniAppointmentChart'
 import MiniWalkGraph from '@/app/components/guardian/dashboard/MiniWalkGraph'
 import TokenCounter from '@/app/components/guardian/TokenCounter'
-import { Activity, ArrowDown, ArrowLeftIcon, Heart, Plus, Utensils, X } from 'lucide-react'
-import {
-  setOpenAppointmentDrawer,
-  setOpenBloodSugarDrawer,
-  setOpenFeedingDrawer,
-  setOpenMedicationDrawer,
-  setOpenMovementDrawer,
-  setOpenPainScoreDrawer,
-  setOpenSeizureDrawer,
-  setOpenWalkDrawer,
-  setOpenWaterDrawer
-} from '@/app/redux/features/petSlice'
+import { Activity, ArrowDown, ArrowLeftIcon, ArrowRightIcon, Heart, Plus, Utensils } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import LargeWalkGraph from '@/app/components/guardian/dashboard/LargeWalkGraph'
 import { motion } from 'framer-motion'
 import MiniMovementsGraph from '@/app/components/guardian/dashboard/MiniMovementGraph'
 import LargeMovementsGraph from '@/app/components/guardian/dashboard/LargeMovementGraph'
 import { metricConfigButton, metricsConfigCards } from '@/app/lib/constants/public/dashboard/displayConstants'
+import { setOpenPainScoreCreateDrawer } from '@/app/redux/features/painScoreSlice'
+import Link from 'next/link'
+import { setOpenFeedingCreateDrawer } from '@/app/redux/features/feedingSlice'
+import { setOpenWaterCreateDrawer } from '@/app/redux/features/waterSlice'
+import { setOpenWalkCreateDrawer } from '@/app/redux/features/walkSlice'
+import { setOpenMedicationCreateDrawer } from '@/app/redux/features/medicationSlice'
+import { setOpenMovementCreateDrawer } from '@/app/redux/features/movementSlice'
+import { setOpenAppointmentCreateDrawer } from '@/app/redux/features/appointmentSlice'
+import { setOpenBloodSugarCreateDrawer } from '@/app/redux/features/bloodSugarSlice'
+import { setOpenSeizureCreateDrawer } from '@/app/redux/features/seizureSlice'
+import { getTodaysBloodSugarLogs } from '@/app/lib/utils'
 
 const GuardianDashboard = () => {
   const dispatch = useAppDispatch()
   const { push } = useRouter()
   const [selectedMetric, setSelectedMetric] = useState('overview')
-  const {
-    pet,
-    loading,
-    zeroFeedings,
-    zeroPainScores,
-    zeroWalks,
-    zeroWaters,
-    zeroMovements,
-    zeroMedications,
-    zeroAppointments,
-    zeroBloodSugars,
-    zeroSeizures
-  } = useAppSelector((state: RootState) => state.pet)
-  const [onboardingBanner, setOnboardingBanner] = useState(false)
-
-  const noData =
-    zeroFeedings &&
-    zeroPainScores &&
-    zeroWalks &&
-    zeroWaters &&
-    zeroMovements &&
-    zeroMedications &&
-    zeroAppointments &&
-    zeroBloodSugars &&
-    zeroSeizures
-
-  useEffect(() => {
-    if (noData) {
-      setOnboardingBanner(true)
-    }
-  }, [noData])
-
-  const chartData: IProcessedChartData = useMemo(() => processChartData(pet), [pet])
-
-  // Calculate quick stats
-  const stats = useMemo(() => {
-    if (!pet || !chartData) return {}
-
-    const now = new Date()
-    const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
-
-    const { painScores, feedings, waters, walks, medications, movements, appointments, bloodSugars, seizures } =
-      chartData
-
-    const weekPain = painScores?.filter((item) => new Date(item.date) >= weekAgo) || []
-    const weekFeeding = feedings?.filter((item) => new Date(item.date) >= weekAgo) || []
-    const weekWater = waters?.filter((item) => new Date(item.date) >= weekAgo) || []
-    const weekWalks = walks?.filter((item) => new Date(item.date) >= weekAgo) || []
-    const weekMovements = movements?.filter((item) => new Date(item.date) >= weekAgo) || []
-    const nextAppointment = getDashboardNextAppointment(appointments)
-    const weekBloodSugars = bloodSugars?.filter((item) => new Date(item.date) >= weekAgo) || []
-    const weekSeizures = seizures?.filter((item) => new Date(item.date) >= weekAgo) || []
-
-    return {
-      painScores: {
-        mostRecent: painScores.length > 0 ? painScores[painScores.length - 1].score : 0, // Most recent record score
-        average:
-          weekPain.length > 0 ? Math.round(weekPain.reduce((sum, item) => sum + item.score, 0) / weekPain.length) : 0,
-        trend:
-          weekPain.length >= 2 ? (weekPain[weekPain.length - 1].score > weekPain[0].score ? 'up' : 'down') : 'stable',
-        hasPainScores: (painScores?.length || 0) > 0,
-        totalLogs: painScores?.length || 0
-      },
-      feedings: {
-        mostRecent: feedings.length > 0 ? feedings[feedings.length - 1].foodAmount : 0,
-        average:
-          weekFeeding.length > 0
-            ? Math.round(weekFeeding.reduce((sum, item) => sum + parseInt(item.foodAmount), 0) / weekFeeding.length)
-            : 0,
-        trend:
-          weekFeeding.length >= 2
-            ? weekFeeding[weekFeeding.length - 1].moodRating > weekFeeding[0].moodRating
-              ? 'up'
-              : 'down'
-            : 'stable',
-        hasFeedings: (feedings?.length || 0) > 0,
-        totalLogs: feedings?.length || 0
-      },
-      waters: {
-        mostRecent: waters.length > 0 ? waters[0].milliliters : 0,
-        average:
-          weekWater.length > 0
-            ? Math.round(weekWater.reduce((sum, item) => sum + Number(item.milliliters || 0), 0) / weekWater.length)
-            : 0,
-        trend:
-          weekWater.length >= 2
-            ? weekWater[weekWater.length - 1].milliliters || 0 > weekWater[0].milliliters || 0
-              ? 'up'
-              : 'down'
-            : 'stable',
-        hasWaters: (waters?.length || 0) > 0,
-        totalLogs: waters?.length || 0
-      },
-      walks: {
-        mostRecent: walks.length > 0 ? walks[0].distance : 0,
-        average:
-          weekWalks.length > 0
-            ? Math.round(weekWalks.reduce((sum, item) => sum + Number(item.distance || 0), 0) / weekWalks.length)
-            : 0,
-        trend: weekWalks.length >= 2 ? (weekWalks[weekWalks.length - 1].distance ? 'up' : 'down') : 'stable',
-        hasWalks: (walks?.length || 0) > 0,
-        totalLogs: walks?.length || 0
-      },
-      movements: {
-        mostRecent: movements.length > 0 ? movements[0].durationMinutes : 0,
-        average:
-          weekMovements.length > 0
-            ? Math.round(
-                weekMovements.reduce((sum, item) => sum + Number(item.durationMinutes || 0), 0) / weekMovements.length
-              )
-            : 0,
-        trend:
-          weekMovements.length >= 2
-            ? weekMovements[weekMovements.length - 1].durationMinutes
-              ? 'up'
-              : 'down'
-            : 'stable',
-        hasMovements: (movements?.length || 0) > 0,
-        totalLogs: movements?.length || 0
-      },
-      medications: {
-        mostRecent: medications.length > 0 ? medications?.[0]?.drugName : 0,
-        hasMedications: (medications?.length || 0) > 0,
-        totalLogs: medications?.length || 0,
-        dosage: medications?.[0]?.dosage,
-        dosageUnit: medications?.[0]?.dosageUnit
-      },
-      appointments: {
-        mostRecent:
-          appointments.length > 0
-            ? nextAppointment.serviceType?.charAt(0).toUpperCase() + nextAppointment.serviceType?.slice(1).toLowerCase()
-            : '--',
-        average: 0,
-        trend: '--',
-        hasAppointments: (appointments?.length || 0) > 0,
-        totalLogs: appointments?.length || 0,
-        date: nextAppointment?.date,
-        time: nextAppointment?.time
-      },
-      bloodSugars: {
-        mostRecent: bloodSugars.length > 0 ? bloodSugars[0]?.value : 0,
-        average:
-          weekBloodSugars.length > 0
-            ? Math.round(
-                weekBloodSugars.reduce((sum, item) => sum + Number(item.value || 0), 0) / weekBloodSugars.length
-              )
-            : 0,
-        trend:
-          weekBloodSugars.length >= 2 ? (weekBloodSugars[weekBloodSugars.length - 1].value ? 'up' : 'down') : 'stable',
-        hasBloodSugars: (bloodSugars?.length || 0) > 0 || false,
-        totalLogs: bloodSugars?.length || 0
-      },
-
-      seizures: {
-        mostRecent: seizures.length > 0 ? seizures[0]?.duration : 0,
-        average:
-          weekBloodSugars.length > 0 ? weekSeizures.reduce((sum, seizure) => sum + Number(seizure.duration), 0) : 0,
-        trend: weekSeizures.length >= 2 ? (weekSeizures[weekSeizures.length - 1].duration ? 'up' : 'down') : 'stable',
-        hasSeizures: (seizures?.length || 0) > 0 || false,
-        totalLogs: seizures?.length || 0
-      }
-    }
-  }, [pet, chartData])
+  const { pet, loading, chartData, stats, onboardingBanner, noLogs } = useAppSelector((state: RootState) => state.pet)
 
   const renderChart = () => {
     switch (selectedMetric) {
       case 'blood-sugars':
-        return <LargeBloodSugarGraph bloodSugarData={chartData?.bloodSugars} />
+        return <LargeBloodSugarGraph bloodSugarData={chartData.bloodSugars} />
       case 'pain-scores':
         return <LargePainScoreGraph chartData={chartData?.painScores} />
       case 'feedings':
-        return <LargeFeedingGraph feedingData={chartData.feedings} />
+        return <LargeFeedingGraph feedingData={chartData?.feedings} />
       case 'waters':
-        return <LargeWaterGraph waterData={chartData.waters} petWeight={pet?.weight || 20} />
+        return <LargeWaterGraph waterData={chartData?.waters} petWeight={pet?.weight || 20} />
       case 'walks':
-        return <LargeWalkGraph walks={chartData.walks} petWeight={pet?.weight || 20} />
+        return <LargeWalkGraph walks={chartData?.walks} petWeight={pet?.weight || 20} />
       case 'appointments':
-        return <LargeAppointmentChart appointments={chartData.appointments} />
+        return <LargeAppointmentChart appointments={chartData?.appointments} />
       case 'medications':
-        return <GuardianMedicationGraph medicationData={chartData.medications} />
+        return <GuardianMedicationGraph medicationData={chartData?.medications} />
       case 'seizures':
         return <LargeSeizureGraph seizures={chartData?.seizures} />
       case 'movements':
@@ -238,20 +74,12 @@ const GuardianDashboard = () => {
             <MiniWalkGraph walks={chartData?.walks} />
             <MiniMovementsGraph movements={chartData?.movements} />
             <MiniMedicationChart medications={chartData?.medications} />
-            <MiniAppointmentChart appointments={chartData.appointments} />
+            <MiniAppointmentChart appointments={chartData?.appointments} />
             <MiniBloodSugarGraph bloodSugars={chartData?.bloodSugars} />
-            <MiniSeizureChart seizures={chartData.seizures} />
+            <MiniSeizureChart seizures={chartData?.seizures} />
           </div>
         )
     }
-  }
-
-  if (loading) {
-    return (
-      <div className="w-full flex items-center justify-center pt-12">
-        <Spinner fill="fill-indigo-500" track="text-white" wAndH="w-8 h-8" />
-      </div>
-    )
   }
 
   const handleMetricClick = (metric: any) => {
@@ -263,18 +91,19 @@ const GuardianDashboard = () => {
 
     // Handle metrics with no data - open drawer and navigate
     const noDataActions: Record<string, { drawer: any; route: string }> = {
-      'pain-scores': { drawer: setOpenPainScoreDrawer(), route: '/guardian/pets/pain' },
-      feedings: { drawer: setOpenFeedingDrawer(), route: '/guardian/pets/feedings' },
-      waters: { drawer: setOpenWaterDrawer(), route: '/guardian/pets/water' },
-      walks: { drawer: setOpenWalkDrawer(), route: '/guardian/pets/walks' },
-      medications: { drawer: setOpenMedicationDrawer(), route: '/guardian/pets/medication' },
-      movements: { drawer: setOpenMovementDrawer(), route: '/guardian/pets/movements' },
-      appointments: { drawer: setOpenAppointmentDrawer(), route: '/guardian/pets/appointments' },
-      'blood-sugars': { drawer: setOpenBloodSugarDrawer(), route: '/guardian/pets/blood-sugar' },
-      seizures: { drawer: setOpenSeizureDrawer(), route: '/guardian/pets/seizure' }
+      'pain-scores': { drawer: setOpenPainScoreCreateDrawer(), route: '/guardian/pets/pain' },
+      feedings: { drawer: setOpenFeedingCreateDrawer(), route: '/guardian/pets/feedings' },
+      waters: { drawer: setOpenWaterCreateDrawer(), route: '/guardian/pets/water' },
+      walks: { drawer: setOpenWalkCreateDrawer(), route: '/guardian/pets/walks' },
+      medications: { drawer: setOpenMedicationCreateDrawer(), route: '/guardian/pets/medication' },
+      movements: { drawer: setOpenMovementCreateDrawer(), route: '/guardian/pets/movements' },
+      appointments: { drawer: setOpenAppointmentCreateDrawer(), route: '/guardian/pets/appointments' },
+      'blood-sugars': { drawer: setOpenBloodSugarCreateDrawer(), route: '/guardian/pets/blood-sugar' },
+      seizures: { drawer: setOpenSeizureCreateDrawer(), route: '/guardian/pets/seizure' }
     }
 
     const metricAction = noDataActions[metric.id]
+
     const hasData = [
       'pain-scores',
       'feedings',
@@ -356,13 +185,6 @@ const GuardianDashboard = () => {
                   </span>
                 </div>
               </div>
-
-              <button
-                onClick={() => setOnboardingBanner(false)}
-                className="text-gray-400 hover:text-gray-600 transition-colors ml-4"
-              >
-                <X className="w-5 h-5" />
-              </button>
             </div>
           </motion.div>
         )}
@@ -398,8 +220,10 @@ const GuardianDashboard = () => {
               )
             })}
           </div>
-          {!noData && (
-            <div className="bg-white rounded-2xl p-8 shadow-md border border-gray-100">
+          {!noLogs && (
+            <div
+              className={`${!loading ? 'border-gray-100 bg-white' : 'border-gray-200 bg-gray-50 opacity-60'} rounded-2xl p-8 shadow-md border`}
+            >
               <div className="flex items-center justify-between mb-6">
                 <div>
                   <h2 className="text-2xl font-bold text-gray-900">
@@ -425,32 +249,77 @@ const GuardianDashboard = () => {
                 </div>
                 <div className="flex items-center gap-x-3">
                   {selectedMetric !== 'overview' && (
-                    <button
-                      onClick={() => {
-                        const config = metricConfigButton[selectedMetric as keyof typeof metricConfigButton]
-                        if (config) {
-                          dispatch(config.action)
+                    <>
+                      <button
+                        onClick={() => {
+                          const config = metricConfigButton[selectedMetric as keyof typeof metricConfigButton]
+                          console.log(config)
+                          const todaysBloodSugars = getTodaysBloodSugarLogs(chartData.bloodSugars || [])
+                          const todaysBloodSugarsCount = todaysBloodSugars?.length
+                          const dailyLimit = 4
+                          const remainingReadings = Math.max(0, dailyLimit - todaysBloodSugarsCount)
+                          const canAddMore = remainingReadings > 0
+                          if (config && canAddMore) {
+                            dispatch(config.action)
+                          }
+                        }}
+                        className="inline-flex items-center gap-x-2 px-4 py-2 bg-gradient-to-r from-pink-500 to-orange-500 hover:from-pink-600 hover:to-orange-600 text-white text-sm font-medium rounded-full shadow-sm transition-all duration-200"
+                      >
+                        Log {metricConfigButton[selectedMetric as keyof typeof metricConfigButton]?.label || ''}
+                        <TokenCounter
+                          tokens={metricConfigButton[selectedMetric as keyof typeof metricConfigButton]?.tokens || 0}
+                        />
+                      </button>
+
+                      <button
+                        onClick={() => setSelectedMetric('overview')}
+                        className={`px-4 py-2 rounded-full font-medium text-sm transition-colors flex items-center gap-x-1.5 bg-gray-100 text-gray-600 hover:bg-gray-200`}
+                      >
+                        <ArrowLeftIcon size={16} /> Overview
+                      </button>
+                      <Link
+                        href={
+                          selectedMetric === 'blood-sugars'
+                            ? '/guardian/pets/blood-sugar'
+                            : selectedMetric === 'pain-score'
+                              ? '/guardian/pets/pain'
+                              : selectedMetric === 'feedings'
+                                ? '/guardian/pets/feedings'
+                                : selectedMetric === 'water'
+                                  ? '/guardian/pets/water'
+                                  : selectedMetric === 'medications'
+                                    ? '/guardian/pets/medications'
+                                    : selectedMetric === 'seizures'
+                                      ? '/guardian/pets/seizures'
+                                      : selectedMetric === 'movements'
+                                        ? '/guardian/pets/movements'
+                                        : selectedMetric === 'walks'
+                                          ? '/guardian/pets/walks'
+                                          : '/guardian/pets/appointments'
                         }
-                      }}
-                      className="inline-flex items-center gap-x-2 px-4 py-2 bg-gradient-to-r from-pink-500 to-orange-500 hover:from-pink-600 hover:to-orange-600 text-white text-sm font-medium rounded-full shadow-sm transition-all duration-200"
-                    >
-                      Log {metricConfigButton[selectedMetric as keyof typeof metricConfigButton]?.label || ''}
-                      <TokenCounter
-                        tokens={metricConfigButton[selectedMetric as keyof typeof metricConfigButton]?.tokens || 0}
-                      />
-                    </button>
-                  )}
-                  {selectedMetric !== 'overview' && (
-                    <button
-                      onClick={() => setSelectedMetric('overview')}
-                      className={`px-4 py-2 rounded-full font-medium text-sm transition-colors flex items-center gap-x-1.5 ${
-                        selectedMetric === 'overview'
-                          ? 'bg-purple-100 text-purple-700'
-                          : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                      }`}
-                    >
-                      {selectedMetric !== 'overview' && <ArrowLeftIcon size={16} />} Overview
-                    </button>
+                        className={`px-4 py-2 rounded-full font-medium text-sm transition-colors flex items-center gap-x-1.5 bg-gray-100 text-gray-600 hover:bg-gray-200`}
+                      >
+                        View All{' '}
+                        {selectedMetric === 'blood-sugars'
+                          ? 'Blood Sugars'
+                          : selectedMetric === 'pain-score'
+                            ? 'Pain Scores'
+                            : selectedMetric === 'feedings'
+                              ? 'Feedings'
+                              : selectedMetric === 'water'
+                                ? 'Waters'
+                                : selectedMetric === 'medications'
+                                  ? 'Medications'
+                                  : selectedMetric === 'seizures'
+                                    ? 'Seizures'
+                                    : selectedMetric === 'movements'
+                                      ? 'Movements'
+                                      : selectedMetric === 'walks'
+                                        ? 'Walks'
+                                        : 'Appointments'}{' '}
+                        <ArrowRightIcon size={16} />
+                      </Link>
+                    </>
                   )}
                 </div>
               </div>

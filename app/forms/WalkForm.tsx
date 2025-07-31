@@ -1,6 +1,5 @@
 import React, { FC } from 'react'
 import { CheckCircle2 } from 'lucide-react'
-import { RootState, useAppSelector } from '@/app/redux/store'
 import { motion } from 'framer-motion'
 import {
   itemVariants,
@@ -12,21 +11,19 @@ import {
 import { IForm } from '../types'
 import PetSelection from '../components/common/forms/PetSelection'
 import FixedFooter from '../components/common/forms/FixedFooter'
-import { walkCreateTokenCost } from '../lib/constants/public/token'
+import { walkCreateTokenCost, walkUpdateTokenCost } from '../lib/constants/public/token'
 import Notes from '../components/common/forms/Notes'
 import TimeRecorded from '../components/common/forms/TimeRecorded'
 import { getWalkMoodDescription } from '../lib/utils'
 import { isWalkFormValid } from '../validations/validateWalkForm'
 
-const WalkForm: FC<IForm> = ({ inputs, handleInput, close, handleSubmit, loading, errors }) => {
-  const { pets } = useAppSelector((state: RootState) => state.pet)
-
+const WalkForm: FC<IForm> = ({ inputs, handleInput, close, handleSubmit, loading, errors, isUpdating }) => {
   return (
     <form onSubmit={handleSubmit} className="flex-1 flex flex-col min-h-full">
       <div className="overflow-y-auto px-5 pt-9 pb-12 h-[calc(100dvh-132px)]">
         <motion.div variants={WALK_CONTAINER_VARIANTS} initial="hidden" animate="visible" className="space-y-6">
           {/* Pet Selection */}
-          <PetSelection pets={pets} inputs={inputs} errors={errors} handleInput={handleInput} formName="walkForm" />
+          <PetSelection inputs={inputs} errors={errors} handleInput={handleInput} formName="walkForm" />
 
           {/* Distance Input */}
           <motion.div variants={itemVariants} className="space-y-3">
@@ -237,10 +234,11 @@ const WalkForm: FC<IForm> = ({ inputs, handleInput, close, handleSubmit, loading
       <FixedFooter
         inputs={inputs}
         loading={loading}
-        tokens={walkCreateTokenCost}
+        tokens={isUpdating ? walkUpdateTokenCost : walkCreateTokenCost}
         text="Walk"
         close={close}
         func={() => isWalkFormValid(inputs)}
+        isUpdating={isUpdating}
       />
     </form>
   )

@@ -1,21 +1,21 @@
 import React from 'react'
 import { RootState, useAppDispatch, useAppSelector } from '@/app/redux/store'
 import { clearInputs, createFormActions } from '@/app/redux/features/formSlice'
-import { setCloseWalkDrawer } from '@/app/redux/features/petSlice'
-import { useCreateWalkMutation } from '@/app/redux/services/petApi'
 import { TreePine } from 'lucide-react'
 import { AnimatePresence, motion } from 'framer-motion'
 import AnimatedDrawerHeader from '@/app/components/guardian/AnimatedDrawerHeader'
 import WalkForm from '@/app/forms/WalkForm'
 import validateWalkForm from '@/app/validations/validateWalkForm'
 import GuardianWalkGuide from '@/app/components/guardian/walks/GuardianWalkGuide'
+import { setCloseWalkCreateDrawer } from '@/app/redux/features/walkSlice'
+import { useCreateWalkMutation } from '@/app/redux/services/walkApi'
 
 const CreateWalkDrawer = () => {
-  const { walkDrawer } = useAppSelector((state: RootState) => state.pet)
+  const { walkCreateDrawer } = useAppSelector((state: RootState) => state.walk)
   const { walkForm } = useAppSelector((state: RootState) => state.form)
   const dispatch = useAppDispatch()
   const { handleInput, setErrors } = createFormActions('walkForm', dispatch)
-  const closeWalkDrawer = () => dispatch(setCloseWalkDrawer())
+  const closeWalkDrawer = () => dispatch(setCloseWalkCreateDrawer())
   const [createWalk, { isLoading }] = useCreateWalkMutation()
 
   const handleAddWalk = async (e: MouseEvent) => {
@@ -44,7 +44,7 @@ const CreateWalkDrawer = () => {
 
   return (
     <AnimatePresence>
-      {walkDrawer && (
+      {walkCreateDrawer && (
         <>
           {/* Backdrop */}
           <motion.div

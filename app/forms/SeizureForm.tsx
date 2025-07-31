@@ -1,15 +1,15 @@
 import React, { FC, useState } from 'react'
 import { AlertTriangle, Clock, Video, Upload, X, Brain, Activity, Zap, Timer } from 'lucide-react'
-import { RootState, useAppSelector } from '@/app/redux/store'
 import PetSelection from '../components/common/forms/PetSelection'
 import { isSeizureFormValid } from '../validations/validateSeizureForm'
 import { IForm } from '../types'
 import FixedFooter from '../components/common/forms/FixedFooter'
-import { seizureCreateTokenCost } from '../lib/constants/public/token'
+import { seizureCreateTokenCost, seizureUpdateTokenCost } from '../lib/constants/public/token'
 import Notes from '../components/common/forms/Notes'
 import TimeRecorded from '../components/common/forms/TimeRecorded'
 import { AnimatePresence, motion } from 'framer-motion'
 import { commonTriggers, containerVariants, itemVariants, seizureTypeOptions, severityOptions } from '../lib/constants'
+import { formatDuration } from '../lib/utils'
 
 const SeizureForm: FC<IForm> = ({
   inputs,
@@ -18,9 +18,9 @@ const SeizureForm: FC<IForm> = ({
   close,
   handleSubmit,
   loading,
-  uploadingVideo = false
+  uploadingVideo = false,
+  isUpdating
 }) => {
-  const { pets } = useAppSelector((state: RootState) => state.pet)
   const [selectedVideo, setSelectedVideo] = useState<File | null>(null)
   const [videoPreview, setVideoPreview] = useState<string | null>(null)
   const duration = parseFloat(inputs?.duration) || 0
@@ -59,13 +59,7 @@ const SeizureForm: FC<IForm> = ({
         <div className="space-y-6">
           {/* Pet Selection */}
           <motion.div variants={itemVariants}>
-            <PetSelection
-              pets={pets}
-              inputs={inputs}
-              errors={errors}
-              handleInput={handleInput}
-              formName="seizureForm"
-            />
+            <PetSelection inputs={inputs} errors={errors} handleInput={handleInput} formName="seizureForm" />
           </motion.div>
 
           {/* Seizure Type */}
@@ -152,16 +146,20 @@ const SeizureForm: FC<IForm> = ({
               {/* Duration Display */}
               <div className="text-center">
                 <motion.div
-                  key={duration}
+                  key={inputs?.duration || 0}
                   initial={{ scale: 0.8, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
                   className={`text-3xl font-bold transition-colors ${
-                    duration >= 5 ? 'text-red-600' : duration >= 2 ? 'text-orange-600' : 'text-indigo-600'
+                    (inputs?.duration || 0) >= 300 // 5 minutes in seconds
+                      ? 'text-red-600'
+                      : (inputs?.duration || 0) >= 120 // 2 minutes in seconds
+                        ? 'text-orange-600'
+                        : 'text-indigo-600'
                   }`}
                 >
-                  {duration}
+                  {formatDuration(inputs?.duration || 0)}
                 </motion.div>
-                <div className="text-sm text-gray-500">minutes</div>
+                <div className="text-sm text-gray-500">duration</div>
               </div>
 
               {/* Slider */}
@@ -169,8 +167,17 @@ const SeizureForm: FC<IForm> = ({
                 <input
                   type="range"
                   name="duration"
-                  value={inputs?.duration || 0}
-                  onChange={handleInput}
+                  value={(inputs?.duration || 0) / 60} // Convert seconds to minutes for slider
+                  onChange={(e) => {
+                    const minutesValue = parseFloat(e.target.value)
+                    const secondsValue = Math.round(minutesValue * 60) // Convert minutes to seconds
+                    handleInput({
+                      target: {
+                        name: 'duration',
+                        value: secondsValue
+                      }
+                    })
+                  }}
                   min="0"
                   max="5"
                   step="0.1"
@@ -189,6 +196,7 @@ const SeizureForm: FC<IForm> = ({
                   <span>4</span>
                   <span className="text-red-500 font-medium">5</span>
                 </div>
+                <div className="text-center text-xs text-gray-500 mt-1">minutes</div>
               </div>
             </div>
 
@@ -416,10 +424,11 @@ const SeizureForm: FC<IForm> = ({
       <FixedFooter
         inputs={inputs}
         loading={loading || uploadingVideo}
-        tokens={seizureCreateTokenCost}
+        tokens={isUpdating ? seizureUpdateTokenCost : seizureCreateTokenCost}
         text="Seizure"
         close={close}
         func={() => isSeizureFormValid(inputs)}
+        isUpdating={isUpdating}
       />
     </motion.form>
   )

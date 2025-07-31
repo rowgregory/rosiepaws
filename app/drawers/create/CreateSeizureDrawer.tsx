@@ -1,23 +1,23 @@
 import React, { useState } from 'react'
 import { RootState, useAppDispatch, useAppSelector } from '@/app/redux/store'
 import { clearInputs, createFormActions } from '@/app/redux/features/formSlice'
-import { setCloseSeizureDrawer } from '@/app/redux/features/petSlice'
 import { AlertTriangle } from 'lucide-react'
 import { AnimatePresence, motion } from 'framer-motion'
 import SeizureForm from '@/app/forms/SeizureForm'
 import { validateSeizureForm } from '@/app/validations/validateSeizureForm'
-import { useCreateSeizureMutation } from '@/app/redux/services/petApi'
 import AnimatedDrawerHeader from '@/app/components/guardian/AnimatedDrawerHeader'
 import GuardianSeizureGuide from '@/app/components/guardian/seizure/GuardianSeizureGuide'
 import { uploadFileToFirebase } from '@/app/utils/firebase-helpers'
+import { setCloseSeizureCreateDrawer } from '@/app/redux/features/seizureSlice'
+import { useCreateSeizureMutation } from '@/app/redux/services/seizureApi'
 
 const CreateSeizureDrawer = () => {
-  const { seizureDrawer } = useAppSelector((state: RootState) => state.pet)
+  const { seizureCreateDrawer } = useAppSelector((state: RootState) => state.seizure)
   const { seizureForm } = useAppSelector((state: RootState) => state.form)
   const dispatch = useAppDispatch()
   const { handleInput, setErrors, handleUploadProgress } = createFormActions('seizureForm', dispatch)
-  const closeSeizureDrawer = () => dispatch(setCloseSeizureDrawer())
-  const [createSeizure, { isLoading }] = useCreateSeizureMutation()
+  const closeSeizureCreateDrawer = () => dispatch(setCloseSeizureCreateDrawer())
+  const [createSeizure] = useCreateSeizureMutation()
   const [loading, setLoading] = useState(false)
 
   const handleAddSeizure = async (e: MouseEvent) => {
@@ -54,7 +54,7 @@ const CreateSeizureDrawer = () => {
         recoveryTime: Number(seizureForm.inputs.recoveryTime)
       }).unwrap()
 
-      dispatch(closeSeizureDrawer())
+      dispatch(closeSeizureCreateDrawer())
       dispatch(clearInputs({ formName: 'seizureForm' }))
     } finally {
       setLoading(false)
@@ -63,7 +63,7 @@ const CreateSeizureDrawer = () => {
 
   return (
     <AnimatePresence>
-      {seizureDrawer && (
+      {seizureCreateDrawer && (
         <>
           {/* Backdrop */}
           <motion.div
@@ -72,7 +72,7 @@ const CreateSeizureDrawer = () => {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
             className="fixed inset-0 bg-black/20 backdrop-blur-sm z-50"
-            onClick={closeSeizureDrawer}
+            onClick={closeSeizureCreateDrawer}
           />
 
           {/* Drawer */}
@@ -92,7 +92,7 @@ const CreateSeizureDrawer = () => {
               title="Seizure Tracking"
               subtitle="Monitor and log seizure activity"
               Icon={AlertTriangle}
-              closeDrawer={closeSeizureDrawer}
+              closeDrawer={closeSeizureCreateDrawer}
               color="text-yellow-500"
               iconGradient="from-yellow-500 to-orange-500"
             />
@@ -103,9 +103,9 @@ const CreateSeizureDrawer = () => {
                 inputs={seizureForm.inputs}
                 errors={seizureForm.errors}
                 handleInput={handleInput}
-                close={closeSeizureDrawer}
+                close={closeSeizureCreateDrawer}
                 handleSubmit={handleAddSeizure}
-                loading={isLoading || loading}
+                loading={loading}
               />
               <GuardianSeizureGuide />
             </div>

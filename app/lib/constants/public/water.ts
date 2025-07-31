@@ -4,8 +4,6 @@ export const pets = [
   { id: '3', name: 'Luna', type: 'DOG' }
 ]
 
-export const INTAKE_TYPES = [{ id: 'milliliters', name: 'Exact Amount', icon: '📏', description: 'Record in mL' }]
-
 export const waterGuidanceData = [
   {
     category: 'Dogs',

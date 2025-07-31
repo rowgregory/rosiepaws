@@ -45,8 +45,11 @@ const validateWalkForm = (inputs: WalkFormInputs, setErrors: (errors: Record<str
   }
 
   // Mood rating validation
-  if (!inputs?.moodRating?.trim()) {
-    newErrors.moodRating = 'Please select a mood'
+  const moodRating = Number(inputs?.moodRating)
+  if (inputs?.moodRating === undefined || inputs?.moodRating === null || inputs?.moodRating === '') {
+    newErrors.moodRating = 'Please select a mood rating'
+  } else if (![0, 1, 2, 3, 4].includes(moodRating)) {
+    newErrors.moodRating = 'Please select a mood rating between 0 and 4'
   }
 
   setErrors(newErrors)

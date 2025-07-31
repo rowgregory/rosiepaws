@@ -3,9 +3,7 @@
 import React from 'react'
 import { Clock, Pill } from 'lucide-react'
 import { motion } from 'framer-motion'
-import { setOpenMedicationDrawer } from '@/app/redux/features/petSlice'
 import { RootState, useAppSelector } from '@/app/redux/store'
-
 import ZeroLogs from '@/app/components/guardian/ZeroLogs'
 import CleanHeader from '@/app/components/guardian/navigation/CleanHeader'
 import { MedicationCard } from '@/app/components/guardian/medications/MedicationCard'
@@ -18,6 +16,7 @@ import {
   getUpcomingReminders,
   getUpcomingTime
 } from '@/app/lib/utils'
+import { setOpenMedicationCreateDrawer } from '@/app/redux/features/medicationSlice'
 
 const MedicationIntake = () => {
   const { zeroMedications, medications } = useAppSelector((state: RootState) => state.pet)
@@ -31,7 +30,7 @@ const MedicationIntake = () => {
         title="No medications added yet"
         subtitle="Track your pet's medications, set reminders, and monitor dosage schedules."
         tokens={medicationCreateTokenCost}
-        func={setOpenMedicationDrawer}
+        func={setOpenMedicationCreateDrawer}
       />
     )
   }
@@ -40,7 +39,7 @@ const MedicationIntake = () => {
     <div className="h-[calc(100dvh-96px)]">
       <div className="mx-auto px-6 space-y-8">
         {/* Header */}
-        <CleanHeader btnText="Add Medication" func={setOpenMedicationDrawer} tokens={medicationCreateTokenCost} />
+        <CleanHeader btnText="Add Medication" func={setOpenMedicationCreateDrawer} tokens={medicationCreateTokenCost} />
         <div className="grid grid-cols-1 xl:grid-cols-4 gap-6">
           <div className="xl:col-span-3 space-y-6">
             {/* Alert Section for Upcoming Only */}

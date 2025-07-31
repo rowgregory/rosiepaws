@@ -1,6 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { ChangeEvent } from 'react'
-import { UserProps } from './userSlice'
 import { petInitialState } from '@/app/lib/initial-states/pet'
 import { painScoreInitialErrorState, painScoreInitialState } from '@/app/lib/initial-states/pain-score'
 import { feedingInitialState } from '@/app/lib/initial-states/feeding'
@@ -131,11 +130,23 @@ const formSlice = createSlice({
 
       const form = state[formName]
 
+      let processedValue = value
+
+      // Handle datetime-local inputs specially
+      if (name === 'timeRecorded' && value && typeof value === 'string') {
+        // Check if it's a datetime-local format (no Z at the end)
+        if (value.match(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2})?$/) && !value.endsWith('Z')) {
+          // Convert local datetime to UTC
+          const localDate = new Date(value)
+          processedValue = localDate.toISOString()
+        }
+      }
+
       state[formName] = {
         ...form,
         inputs: {
           ...form?.inputs,
-          [name]: value
+          [name]: processedValue
         },
         errors: {
           ...form?.errors
@@ -200,7 +211,7 @@ const formSlice = createSlice({
 })
 
 export const createFormActions = (formName: string, dispatch: any) => ({
-  setInputs: (data: UserProps | any) => dispatch(formSlice.actions.setInputs({ formName, data })),
+  setInputs: (data: any) => dispatch(formSlice.actions.setInputs({ formName, data })),
   clearInputs: () => dispatch(formSlice.actions.clearInputs({ formName })),
   setErrors: (errors: Errors) => dispatch(formSlice.actions.setErrors({ formName, errors })),
   setSubmitted: (submitted: boolean) => dispatch(formSlice.actions.setSubmitted({ formName, submitted })),

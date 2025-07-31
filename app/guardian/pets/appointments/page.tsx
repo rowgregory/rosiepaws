@@ -2,7 +2,6 @@
 
 import React from 'react'
 import { RootState, useAppSelector } from '@/app/redux/store'
-import { setOpenAppointmentDrawer } from '@/app/redux/features/petSlice'
 import ZeroLogs from '@/app/components/guardian/ZeroLogs'
 import CleanHeader from '@/app/components/guardian/navigation/CleanHeader'
 import { getNextAppointment } from '@/app/lib/utils/public/my-pets/appointments/dateUtils'
@@ -11,6 +10,7 @@ import NextAppointment from '@/app/components/guardian/appointments/NextAppointm
 import QuickOverview from '@/app/components/guardian/appointments/QuickOverview'
 import RecentActivity from '@/app/components/guardian/appointments/RecentActivity'
 import { appointmentCreateTokenCost } from '@/app/lib/constants/public/token'
+import { setOpenAppointmentCreateDrawer } from '@/app/redux/features/appointmentSlice'
 
 const Appointments = () => {
   const { appointments, zeroAppointments } = useAppSelector((state: RootState) => state.pet)
@@ -23,7 +23,7 @@ const Appointments = () => {
         title="No appointments"
         subtitle="Add your pet's first appointment to keep track of their health and wellness visits."
         tokens={appointmentCreateTokenCost}
-        func={setOpenAppointmentDrawer}
+        func={setOpenAppointmentCreateDrawer}
       />
     )
   }
@@ -33,7 +33,11 @@ const Appointments = () => {
       <div className="h-[calc(100dvh-96px)]">
         <div className="mx-auto px-6 space-y-8">
           {/* Header */}
-          <CleanHeader btnText="Log Appointment" func={setOpenAppointmentDrawer} tokens={appointmentCreateTokenCost} />
+          <CleanHeader
+            btnText="Log Appointment"
+            func={setOpenAppointmentCreateDrawer}
+            tokens={appointmentCreateTokenCost}
+          />
           <div className="grid grid-cols-1 xl:grid-cols-4 gap-6">
             <div className="xl:col-span-3 space-y-6">
               {/* Next Appointment Highlight */}

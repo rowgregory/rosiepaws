@@ -9,13 +9,8 @@ export const userApi = api.injectEndpoints({
     fetchUsers: build.query({
       query: () => `${BASE_URL}/fetch-users`
     }),
-    updateUserRole: build.mutation({
-      query: (body: any) => ({ url: `${BASE_URL}/update-user-role`, method: 'PUT', body }),
-      invalidatesTags: (_: any, __: any, arg: { id: string }) => [{ type: 'User', id: arg.id }]
-    }),
-    updateUserProfile: build.mutation({
-      query: (body: any) => ({ url: `${BASE_URL}/update-user-profile`, method: 'PUT', body }),
-      invalidatesTags: (_: any, __: any, arg: { id: string }) => [{ type: 'User', id: arg.id }]
+    fetchMe: build.query({
+      query: () => `${BASE_URL}/me`
     }),
     deleteUser: build.mutation({
       query: (body: any) => ({ url: `${BASE_URL}/delete-user`, method: 'DELETE', body }),
@@ -27,5 +22,4 @@ export const userApi = api.injectEndpoints({
   })
 })
 
-export const { useFetchUsersQuery, useUpdateUserRoleMutation, useUpdateUserProfileMutation, useDeleteUserMutation } =
-  userApi
+export const { useFetchUsersQuery, useFetchMeQuery, useDeleteUserMutation } = userApi

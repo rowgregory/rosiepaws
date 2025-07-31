@@ -1,10 +1,9 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { motion } from 'framer-motion'
 import { AlertTriangle, Video, FileText, Phone } from 'lucide-react'
 import { RootState, useAppDispatch, useAppSelector } from '@/app/redux/store'
-import { setOpenSeizureDrawer, setPet } from '@/app/redux/features/petSlice'
 import VideoModal from '@/app/modals/VideoModal'
 import CleanHeader from '@/app/components/guardian/navigation/CleanHeader'
 import {
@@ -23,9 +22,10 @@ import { generateSeizurePDFReport } from '@/app/lib/utils/reports/seizure-pdf-re
 import { setInputs } from '@/app/redux/features/formSlice'
 import SeizureCalendarDrawer from '@/app/drawers/general/SeizureCalendarDrawer'
 import { setOpenSeizureCalendarDrawer } from '@/app/redux/features/dashboardSlice'
+import { setOpenSeizureCreateDrawer } from '@/app/redux/features/seizureSlice'
 
 const Seizure = () => {
-  const { zeroSeizures, seizures, pet, pets } = useAppSelector((state: RootState) => state.pet)
+  const { zeroSeizures, seizures, pet } = useAppSelector((state: RootState) => state.pet)
   const todaysSeizures = getTodaysSeizures(seizures || [])
   const todaysSeizuresCount = todaysSeizures?.length
   const latestSeizure = seizures?.length > 0 ? seizures[0] : null
@@ -37,12 +37,6 @@ const Seizure = () => {
     date?: string
   } | null>(null)
   const dispatch = useAppDispatch()
-
-  useEffect(() => {
-    if (pets) {
-      dispatch(setPet(pets[0]))
-    }
-  }, [dispatch, pets])
 
   const handleDownload = async () => {
     try {
@@ -74,10 +68,12 @@ const Seizure = () => {
         title="No seizures recorded"
         subtitle="Track seizure episodes to monitor patterns and help your veterinarian provide better care."
         tokens={seizureCreateTokenCost}
-        func={setOpenSeizureDrawer}
+        func={setOpenSeizureCreateDrawer}
       />
     )
   }
+
+  console.log(seizures)
 
   return (
     <>
@@ -89,10 +85,10 @@ const Seizure = () => {
         seizureDate={selectedVideo?.date}
       />
       <SeizureCalendarDrawer />
-      <div className="h-[calc(100dvh-96px)]">
+      <div className="min-h-[calc(100dvh-96px)] pb-20">
         <div className="mx-auto px-6 space-y-8">
           {/* Header */}
-          <CleanHeader btnText="Log Seizure" func={setOpenSeizureDrawer} tokens={seizureCreateTokenCost} />
+          <CleanHeader btnText="Log Seizure" func={setOpenSeizureCreateDrawer} tokens={seizureCreateTokenCost} />
 
           {/* Alert for Recent Activity */}
           {todaysSeizuresCount > 0 && (
@@ -332,7 +328,7 @@ const Seizure = () => {
                           }
                         })
                       )
-                      dispatch(setOpenSeizureDrawer())
+                      dispatch(setOpenSeizureCreateDrawer())
                     }}
                     className="w-full bg-red-600 text-white rounded-lg py-2 px-4 hover:bg-red-700 transition-colors text-sm"
                   >

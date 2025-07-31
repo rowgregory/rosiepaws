@@ -1,8 +1,13 @@
 import React, { FC } from 'react'
-import { Clock } from 'lucide-react'
+import { Clock, Trash2 } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { PainScore } from '@/app/types/entities'
-import { formatDateLong, formatDateShort } from '@/app/lib/utils'
+import { formatDate } from '@/app/lib/utils'
+import { useAppDispatch } from '@/app/redux/store'
+import { setOpenPainScoreUpdateDrawer } from '@/app/redux/features/painScoreSlice'
+import { setInputs } from '@/app/redux/features/formSlice'
+import { useDeletePainScoreMutation } from '@/app/redux/services/painScoreApi'
+import { setCloseAdminConfirmModal, setOpenAdminConfirmModal } from '@/app/redux/features/adminSlice'
 
 interface IPainScoreCard {
   painScore: PainScore
@@ -12,21 +17,61 @@ interface IPainScoreCard {
 }
 
 const PainScoreCard: FC<IPainScoreCard> = ({ painScore, index, config, IconComponent }) => {
+  const dispatch = useAppDispatch()
+  const [deletePainScore] = useDeletePainScoreMutation()
+  const onCloseConfirmModal = () => dispatch(setCloseAdminConfirmModal())
+
+  const handleDelete = async (e: { stopPropagation: () => void }) => {
+    e.stopPropagation()
+
+    dispatch(
+      setOpenAdminConfirmModal({
+        confirmModal: {
+          isOpen: true,
+          title: 'Delete Pain Score',
+          description: `Deleting will permanently remove this pain score from your pet`,
+          confirmText: 'Delete Pain Score',
+          onConfirm: async () => {
+            await deletePainScore({ painScoreId: painScore.id }).unwrap()
+            onCloseConfirmModal()
+          },
+          isDestructive: true
+        }
+      })
+    )
+  }
+
   return (
     <motion.div
+      onClick={() => {
+        dispatch(setOpenPainScoreUpdateDrawer())
+        dispatch(setInputs({ formName: 'painScoreForm', data: painScore }))
+      }}
       key={painScore?.id}
-      className="bg-white rounded-xl border border-gray-200 p-5 cursor-pointer group"
+      className="bg-white rounded-xl border border-gray-200 p-5 cursor-pointer group relative"
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ delay: index * 0.1, duration: 0.3 }}
       whileHover={{
         y: -4,
         boxShadow: '0 12px 24px rgba(0, 0, 0, 0.1)',
-        // borderColor: config.borderColor?.replace('border-', '') || '#d1d5db',
         transition: { duration: 0.2 }
       }}
       whileTap={{ scale: 0.96 }}
     >
+      {/* Delete button */}
+      <motion.button
+        onClick={handleDelete}
+        className="absolute top-3 right-3 w-8 h-8 bg-red-50 hover:bg-red-100 rounded-lg flex items-center justify-center transition-opacity duration-200 z-10"
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.9 }}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: index * 0.1 + 0.1 }}
+      >
+        <Trash2 className="w-4 h-4 text-red-500" />
+      </motion.button>
+
       {/* Header with pain level */}
       <motion.div
         className="text-center mb-4"
@@ -88,17 +133,14 @@ const PainScoreCard: FC<IPainScoreCard> = ({ painScore, index, config, IconCompo
       >
         <div className="flex items-center justify-center space-x-1 text-xs text-gray-500">
           <Clock className="w-3 h-3" />
-          <span>{formatDateShort(new Date(painScore?.timeRecorded) || painScore?.createdAt)}</span>
-        </div>
-        <div className="text-center text-xs text-gray-400 mt-1">
-          {formatDateLong(new Date(painScore?.timeRecorded) || painScore?.createdAt)}
+          <span>{formatDate(painScore?.timeRecorded, { style: 'full', includeSeconds: true })}</span>
         </div>
       </motion.div>
 
       {/* Critical indicator */}
       {painScore?.score >= 4 && (
         <motion.div
-          className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full"
+          className="absolute top-2 left-2 w-2 h-2 bg-red-500 rounded-full"
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
           transition={{ delay: index * 0.1 + 0.6, type: 'spring' }}

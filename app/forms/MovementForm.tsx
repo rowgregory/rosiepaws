@@ -1,7 +1,6 @@
 import { FC } from 'react'
 import { CheckCircle2 } from 'lucide-react'
 import { IForm } from '../types'
-import { RootState, useAppSelector } from '../redux/store'
 import {
   ACTIVITY_LEVELS,
   ASSISTANCE_TYPES,
@@ -15,20 +14,27 @@ import {
 } from '../lib/constants'
 import PetSelection from '../components/common/forms/PetSelection'
 import FixedFooter from '../components/common/forms/FixedFooter'
-import { movementCreateTokenCost } from '../lib/constants/public/token'
+import { movementCreateTokenCost, movementUpdateTokenCost } from '../lib/constants/public/token'
 import TimeRecorded from '../components/common/forms/TimeRecorded'
 import Notes from '../components/common/forms/Notes'
 import { isMovementFormValid } from '../validations/validateMovementForm'
 
-const MovementForm: FC<IForm> = ({ inputs, errors, handleInput, close, handleSubmit, loading, handleToggle }) => {
-  const { pets } = useAppSelector((state: RootState) => state.pet)
-
+const MovementForm: FC<IForm> = ({
+  inputs,
+  errors,
+  handleInput,
+  close,
+  handleSubmit,
+  loading,
+  handleToggle,
+  isUpdating
+}) => {
   return (
     <form onSubmit={handleSubmit} className="flex-1 flex flex-col min-h-full">
       <div className="overflow-y-auto px-5 pt-9 pb-12 h-[calc(100dvh-132px)]">
         <div className="space-y-6">
           {/* Pet Selection */}
-          <PetSelection pets={pets} inputs={inputs} errors={errors} handleInput={handleInput} formName="movementForm" />
+          <PetSelection inputs={inputs} errors={errors} handleInput={handleInput} formName="movementForm" />
 
           {/* Movement Type Selection */}
           <div className="space-y-3">
@@ -48,7 +54,7 @@ const MovementForm: FC<IForm> = ({ inputs, errors, handleInput, close, handleSub
                   <input
                     type="radio"
                     name="movementType"
-                    value={type.value}
+                    value={type.value || ''}
                     onChange={handleInput}
                     className="hidden"
                   />
@@ -123,7 +129,7 @@ const MovementForm: FC<IForm> = ({ inputs, errors, handleInput, close, handleSub
                   <input
                     type="radio"
                     name="activityLevel"
-                    value={level.value}
+                    value={level.value || ''}
                     onChange={handleInput}
                     className="hidden"
                   />
@@ -175,7 +181,7 @@ const MovementForm: FC<IForm> = ({ inputs, errors, handleInput, close, handleSub
               <label className="text-sm font-medium text-gray-700">Energy Before</label>
               <select
                 name="energyBefore"
-                value={inputs?.energyBefore}
+                value={inputs?.energyBefore || ''}
                 onChange={handleInput}
                 className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 ${
                   errors?.energyBefore ? 'border-red-500 bg-red-50' : 'border-gray-300'
@@ -194,7 +200,7 @@ const MovementForm: FC<IForm> = ({ inputs, errors, handleInput, close, handleSub
               <label className="text-sm font-medium text-gray-700">Energy After</label>
               <select
                 name="energyAfter"
-                value={inputs?.energyAfter}
+                value={inputs?.energyAfter || ''}
                 onChange={handleInput}
                 className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 ${
                   errors?.energyAfter ? 'border-red-500 bg-red-50' : 'border-gray-300'
@@ -284,7 +290,7 @@ const MovementForm: FC<IForm> = ({ inputs, errors, handleInput, close, handleSub
               <label className="text-sm font-medium text-gray-700">Mobility Level</label>
               <select
                 name="mobility"
-                value={inputs?.mobility}
+                value={inputs?.mobility || ''}
                 onChange={handleInput}
                 className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 ${
                   errors?.mobility ? 'border-red-500 bg-red-50' : 'border-gray-300'
@@ -303,7 +309,7 @@ const MovementForm: FC<IForm> = ({ inputs, errors, handleInput, close, handleSub
               <label className="text-sm font-medium text-gray-700">
                 Assistance Type <span className="text-gray-500 font-normal">(optional)</span>
               </label>
-              <select name="assistance" value={inputs?.assistance} onChange={handleInput} className={InputStyle}>
+              <select name="assistance" value={inputs?.assistance || ''} onChange={handleInput} className={InputStyle}>
                 <option value="">Select assistance...</option>
                 {ASSISTANCE_TYPES.map((type) => (
                   <option key={type.value} value={type.value}>
@@ -373,7 +379,7 @@ const MovementForm: FC<IForm> = ({ inputs, errors, handleInput, close, handleSub
                 <label className="text-sm font-medium text-gray-700">
                   Panting Level <span className="text-gray-500 font-normal">(optional)</span>
                 </label>
-                <select name="panting" value={inputs?.panting} onChange={handleInput} className={InputStyle}>
+                <select name="panting" value={inputs?.panting || ''} onChange={handleInput} className={InputStyle}>
                   <option value="">Select panting level...</option>
                   {PANTING_LEVELS.map((level) => (
                     <option key={level.value} value={level.value}>
@@ -451,10 +457,11 @@ const MovementForm: FC<IForm> = ({ inputs, errors, handleInput, close, handleSub
       <FixedFooter
         inputs={inputs}
         loading={loading}
-        tokens={movementCreateTokenCost}
+        tokens={isUpdating ? movementUpdateTokenCost : movementCreateTokenCost}
         text="Movement"
         close={close}
         func={() => isMovementFormValid(inputs)}
+        isUpdating={isUpdating}
       />
     </form>
   )

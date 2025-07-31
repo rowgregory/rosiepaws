@@ -23,7 +23,7 @@ export function validateFeedingRequiredFields({
   brand,
   moodRating
 }: RequiredFieldsOptions): RequiredFieldsResult {
-  if (!petId || !foodAmount || !foodType || !timeRecorded || !brand || !moodRating) {
+  if (!petId || !foodAmount || !foodType || !timeRecorded || !brand || ![0, 1, 2, 3, 4].includes(moodRating)) {
     return {
       success: false,
       response: NextResponse.json(

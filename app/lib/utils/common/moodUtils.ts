@@ -4,18 +4,19 @@ import { Smile, Meh, Frown, Heart, AlertTriangle } from 'lucide-react'
 export const getMoodEmoji = (rating: string) => {
   const moodRating = parseInt(rating)
   switch (moodRating) {
+    case 0:
+      return '😴'
     case 1:
-      return '😰'
+      return '😐'
     case 2:
-      return '😔'
+      return '🙂'
     case 3:
-      return '😐'
+      return '😋'
     case 4:
-      return '😊'
-    case 5:
-      return '🤗'
+      return '🤤'
+
     default:
-      return '😐'
+      return '🤗'
   }
 }
 

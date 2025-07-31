@@ -4,6 +4,7 @@ import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'rec
 
 const MiniPainScoreGraph = ({ painScores }: any) => {
   if (painScores?.length === 0 || painScores === null || painScores === undefined) return
+  const reversed = [...painScores]?.reverse()
 
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
@@ -19,14 +20,14 @@ const MiniPainScoreGraph = ({ painScores }: any) => {
           </div>
         </div>
         <div className="text-right">
-          <div className="text-2xl font-bold text-red-600">{painScores?.slice(-1)[0]?.score ?? '--'}</div>
+          <div className="text-2xl font-bold text-red-600">{painScores[0]?.score ?? '--'}</div>
           <div className="text-sm text-gray-500">Latest Score</div>
         </div>
       </div>
 
       {/* Chart */}
       <ResponsiveContainer width="100%" height={200}>
-        <AreaChart data={painScores?.slice(-7)}>
+        <AreaChart data={reversed?.slice(-7)}>
           <defs>
             <linearGradient id="painGradient" x1="0" y1="0" x2="0" y2="1">
               <stop offset="50%" stopColor="#f04843" stopOpacity={0.3} />

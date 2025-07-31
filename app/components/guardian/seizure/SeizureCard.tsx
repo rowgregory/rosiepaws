@@ -1,8 +1,13 @@
 import React, { FC } from 'react'
 import { motion } from 'framer-motion'
-import { Zap, Video, FileText } from 'lucide-react'
+import { Zap, Video, FileText, Trash2 } from 'lucide-react'
 import { formatDuration, getEmergencyLevel, getSeizureSeverity, getTimeInfo, getTimeOfDay } from '@/app/lib/utils'
 import { ISeizure } from '@/app/types'
+import { useAppDispatch } from '@/app/redux/store'
+import { useDeleteSeizureMutation } from '@/app/redux/services/seizureApi'
+import { setCloseAdminConfirmModal, setOpenAdminConfirmModal } from '@/app/redux/features/adminSlice'
+import { setOpenSeizureUpdateDrawer } from '@/app/redux/features/seizureSlice'
+import { setInputs } from '@/app/redux/features/formSlice'
 
 interface ISeizureCard {
   seizure: ISeizure
@@ -14,14 +19,53 @@ interface ISeizureCard {
 
 export const SeizureCard: FC<ISeizureCard> = ({ seizure, index, severity, SeverityIcon, setSelectedVideo }) => {
   const emergencyLevel = getEmergencyLevel(seizure.duration)
+  const dispatch = useAppDispatch()
+  const [deleteSeizure] = useDeleteSeizureMutation()
+  const onCloseConfirmModal = () => dispatch(setCloseAdminConfirmModal())
+
+  const handleDelete = (e: { stopPropagation: () => void }) => {
+    e.stopPropagation()
+
+    dispatch(
+      setOpenAdminConfirmModal({
+        confirmModal: {
+          isOpen: true,
+          title: 'Delete Seizure',
+          description: `Deleting will permanently remove this seizure from your pet.`,
+          confirmText: 'Delete Seizure',
+          onConfirm: async () => {
+            await deleteSeizure({ seizureId: seizure.id }).unwrap()
+            onCloseConfirmModal()
+          },
+          isDestructive: true
+        }
+      })
+    )
+  }
 
   return (
     <motion.div
+      onClick={() => {
+        dispatch(setOpenSeizureUpdateDrawer())
+        dispatch(setInputs({ formName: 'seizureForm', data: seizure }))
+      }}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.05 }}
-      className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow"
+      className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow relative cursor-pointer"
     >
+      {/* Delete button */}
+      <motion.button
+        onClick={handleDelete}
+        className="absolute top-3 right-3 w-8 h-8 bg-red-50 hover:bg-red-100 rounded-lg flex items-center justify-center transition-opacity duration-200 z-10"
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.9 }}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: index * 0.1 + 0.1 }}
+      >
+        <Trash2 className="w-4 h-4 text-red-500" />
+      </motion.button>
       <div className="p-4">
         {/* Header */}
         <div className="flex items-start justify-between mb-3">
@@ -31,12 +75,12 @@ export const SeizureCard: FC<ISeizureCard> = ({ seizure, index, severity, Severi
             </div>
             <div>
               <h3 className="font-semibold text-gray-900 text-sm">{seizure.pet?.name}</h3>
-              <p className="text-xs text-gray-500">{getTimeInfo(seizure.createdAt)?.relative}</p>
+              <p className="text-xs text-gray-500 mb-1.5">{getTimeInfo(seizure.createdAt)?.relative}</p>
+              <div className={`flex items-center space-x-1 px-2 py-1 rounded-full text-xs ${severity.color}`}>
+                <SeverityIcon className="w-3 h-3" />
+                <span className="font-medium">{severity.label}</span>
+              </div>
             </div>
-          </div>
-          <div className={`flex items-center space-x-1 px-2 py-1 rounded-full text-xs ${severity.color}`}>
-            <SeverityIcon className="w-3 h-3" />
-            <span className="font-medium">{severity.label}</span>
           </div>
         </div>
 

@@ -11,13 +11,14 @@ import {
   getTodaysWaterLogs,
   getWaterIntakeConfig
 } from '@/app/lib/utils'
-import { setOpenWaterDrawer } from '@/app/redux/features/petSlice'
+import { setOpenWaterCreateDrawer } from '@/app/redux/features/waterSlice'
 import { RootState, useAppSelector } from '@/app/redux/store'
 import { IWater } from '@/app/types'
 import { motion } from 'framer-motion'
 
 const Water = () => {
   const { zeroWaters, waters } = useAppSelector((state: RootState) => state.pet)
+
   const todaysWaterLogs = getTodaysWaterLogs(waters || [])
   const todaysWaterLogsCount = todaysWaterLogs?.length
   const totalWaterIntake = todaysWaterLogs.reduce((sum, log) => sum + parseInt(log.milliliters), 0)
@@ -26,14 +27,14 @@ const Water = () => {
       ? (todaysWaterLogs.reduce((sum, log) => sum + parseInt(log.moodRating), 0) / todaysWaterLogsCount).toFixed(1)
       : '0.0'
 
-  if (zeroWaters) {
+  if (!waters || waters?.length === 0 || zeroWaters) {
     return (
       <ZeroLogs
         btnText="Add water log"
         title="No water intake logged yet"
         subtitle="Track your pet's daily water consumption to ensure proper hydration and health."
-        tokens={15}
-        func={setOpenWaterDrawer}
+        tokens={waterCreateTokenCost}
+        func={setOpenWaterCreateDrawer}
       />
     )
   }
@@ -42,81 +43,62 @@ const Water = () => {
     <div className="h-[calc(100dvh-96px)]">
       <div className="mx-auto px-6 space-y-8">
         {/* Header */}
-        <CleanHeader btnText="Log Water Intake" func={setOpenWaterDrawer} tokens={waterCreateTokenCost} />
+        <CleanHeader btnText="Log Water Intake" func={setOpenWaterCreateDrawer} tokens={waterCreateTokenCost} />
         <div className="grid grid-cols-1 xl:grid-cols-4 gap-6">
           <div className="xl:col-span-3 space-y-6">
             {/* Latest Water Log Highlight */}
-            {waters.length > 0 && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden"
-              >
-                <div className="p-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <h2 className="text-xl font-semibold text-gray-800">Latest Water Log</h2>
-                    <span className="text-sm text-gray-500">Most recent</span>
-                  </div>
 
-                  {(() => {
-                    const latest = waters[0]
-                    const previous = waters[1] // Get the second most recent entry
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden"
+            >
+              <div className="p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-xl font-semibold text-gray-800">Latest Water Log</h2>
+                  <span className="text-sm text-gray-500">Most recent</span>
+                </div>
 
-                    const relativeIntakeStatus = determineRelativeIntake(
-                      parseInt(latest?.milliliters) || 0,
-                      parseInt(previous?.milliliters) || null
-                    )
+                {(() => {
+                  const latest = waters[0]
+                  const previous = waters[1] // Get the second most recent entry
 
-                    const intakeData = getWaterIntakeConfig(relativeIntakeStatus)
-                    const IntakeIcon = intakeData.icon
+                  const relativeIntakeStatus = determineRelativeIntake(
+                    parseInt(latest?.milliliters) || 0,
+                    parseInt(previous?.milliliters) || null
+                  )
 
-                    return (
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <h3 className="text-lg font-semibold text-gray-900">{latest?.pet?.name}</h3>
-                          <p className="text-sm text-gray-500">{getTimeInfo(latest?.createdAt)?.relative}</p>
+                  const intakeData = getWaterIntakeConfig(relativeIntakeStatus)
+                  const IntakeIcon = intakeData.icon
+
+                  return (
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h3 className="text-lg font-semibold text-gray-900">{latest?.pet?.name}</h3>
+                        <p className="text-sm text-gray-500">{getTimeInfo(latest?.createdAt)?.relative}</p>
+                      </div>
+
+                      <div className="flex items-center space-x-6">
+                        <div className="text-right">
+                          <div className="text-2xl font-bold text-blue-600">{latest?.milliliters}ml</div>
+                          <div className="text-sm text-gray-500">{latest?.intakeType}</div>
                         </div>
-
-                        <div className="flex items-center space-x-6">
-                          <div className="text-right">
-                            <div className="text-2xl font-bold text-blue-600">{latest?.milliliters}ml</div>
-                            <div className="text-sm text-gray-500">{latest?.intakeType}</div>
-                          </div>
-                          <div className={`flex items-center space-x-2 px-4 py-2 rounded-full ${intakeData.color}`}>
-                            <IntakeIcon className="w-4 h-4" />
-                            <span className="font-medium capitalize">{relativeIntakeStatus}</span>
-                          </div>
+                        <div className={`flex items-center space-x-2 px-4 py-2 rounded-full ${intakeData.color}`}>
+                          <IntakeIcon className="w-4 h-4" />
+                          <span className="font-medium capitalize">{relativeIntakeStatus}</span>
                         </div>
                       </div>
-                    )
-                  })()}
-                </div>
-              </motion.div>
-            )}
+                    </div>
+                  )
+                })()}
+              </div>
+            </motion.div>
 
             {/* All Water Logs Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {waters?.map((waterLog: IWater, index: number) => {
-                const latest = waters[0]
-                const previous = waters[1] // Get the second most recent entry
-
-                const relativeIntakeStatus = determineRelativeIntake(
-                  parseInt(latest?.milliliters) || 0,
-                  parseInt(previous?.milliliters) || null
-                )
-                const config = getWaterIntakeConfig(relativeIntakeStatus)
-                const IconComponent = config.icon
-
-                return (
-                  <WaterLogCard
-                    key={waterLog.id}
-                    waterLog={waterLog}
-                    index={index}
-                    config={config}
-                    IconComponent={IconComponent}
-                  />
-                )
-              })}
+              {waters?.map((waterLog: IWater, index: number) => (
+                <WaterLogCard key={waterLog.id} waterLog={waterLog} index={index} />
+              ))}
             </div>
           </div>
 

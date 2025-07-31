@@ -1,28 +1,24 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import { RootState, useAppDispatch, useAppSelector } from '@/app/redux/store'
-import { clearInputs, createFormActions, setInputs } from '@/app/redux/features/formSlice'
-import { setCloseWalkDrawer } from '@/app/redux/features/petSlice'
-import { useUpdateWalkMutation } from '@/app/redux/services/petApi'
+import { clearInputs, createFormActions } from '@/app/redux/features/formSlice'
 import { TreePine } from 'lucide-react'
 import { AnimatePresence, motion } from 'framer-motion'
 import AnimatedDrawerHeader from '@/app/components/guardian/AnimatedDrawerHeader'
 import WalkForm from '@/app/forms/WalkForm'
 import validateWalkForm from '@/app/validations/validateWalkForm'
 import GuardianWalkGuide from '@/app/components/guardian/walks/GuardianWalkGuide'
+import { setCloseWalkUpdateDrawer } from '@/app/redux/features/walkSlice'
+import { useUpdateWalkMutation } from '@/app/redux/services/walkApi'
 
 const UpdateWalkDrawer = () => {
-  const { walkDrawer } = useAppSelector((state: RootState) => state.pet)
   const { walkForm } = useAppSelector((state: RootState) => state.form)
+  const { walkUpdateDrawer } = useAppSelector((state: RootState) => state.walk)
   const dispatch = useAppDispatch()
   const { handleInput, setErrors } = createFormActions('walkForm', dispatch)
-  const closeWalkDrawer = () => dispatch(setCloseWalkDrawer())
+  const closeWalkUpdateDrawer = () => dispatch(setCloseWalkUpdateDrawer())
   const [updateWalk, { isLoading }] = useUpdateWalkMutation()
 
-  useEffect(() => {
-    dispatch(setInputs({ formName: 'walkForm', data: walkForm?.inputs }))
-  }, [dispatch, walkForm?.inputs])
-
-  const handleAddWalk = async (e: MouseEvent) => {
+  const handleAddWalk = async (e: { preventDefault: () => void }) => {
     e.preventDefault()
 
     const isValid = validateWalkForm(walkForm.inputs, setErrors)
@@ -33,14 +29,15 @@ const UpdateWalkDrawer = () => {
         walkId: walkForm.inputs.id,
         petId: walkForm.inputs.petId,
         distance: walkForm.inputs.distance,
+        duration: walkForm.inputs.duration,
         pace: walkForm.inputs.pace,
         distraction: walkForm.inputs.distraction,
-        timeRecorded: walkForm.inputs.timeRecorded,
-        moodRating: walkForm.inputs.moodRating,
+        timeRecorded: new Date(walkForm.inputs.timeRecorded),
+        moodRating: Number(walkForm.inputs.moodRating),
         notes: walkForm.inputs.notes
       }).unwrap()
 
-      closeWalkDrawer()
+      closeWalkUpdateDrawer()
       dispatch(clearInputs({ formName: 'walkForm' }))
     } finally {
     }
@@ -48,15 +45,15 @@ const UpdateWalkDrawer = () => {
 
   return (
     <AnimatePresence>
-      {walkDrawer && (
+      {walkUpdateDrawer && (
         <>
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
-            className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40"
-            onClick={closeWalkDrawer}
+            className="fixed inset-0 bg-black/20 backdrop-blur-sm z-50"
+            onClick={closeWalkUpdateDrawer}
           />
           <motion.div
             initial={{ x: '100%' }}
@@ -73,7 +70,7 @@ const UpdateWalkDrawer = () => {
               title="Log Walk"
               subtitle="Track your pet's exercise, pace, and mood"
               Icon={TreePine}
-              closeDrawer={closeWalkDrawer}
+              closeDrawer={closeWalkUpdateDrawer}
               color="text-lime-500"
               iconGradient="from-lime-500 to-yellow-500"
             />
@@ -82,9 +79,10 @@ const UpdateWalkDrawer = () => {
                 inputs={walkForm?.inputs}
                 errors={walkForm?.errors}
                 handleInput={handleInput}
-                close={closeWalkDrawer}
+                close={closeWalkUpdateDrawer}
                 handleSubmit={handleAddWalk}
                 loading={isLoading}
+                isUpdating={true}
               />
               <GuardianWalkGuide />
             </div>

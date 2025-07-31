@@ -3,6 +3,7 @@ import { petInitialState } from './pet'
 
 export const movementInitialState: IMovement = {
   // Basic Info
+  id: '',
   petId: '',
   timeRecorded: '',
 

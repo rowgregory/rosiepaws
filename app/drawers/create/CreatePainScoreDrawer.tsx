@@ -1,8 +1,8 @@
 import React, { MouseEvent } from 'react'
 import { RootState, useAppDispatch, useAppSelector } from '@/app/redux/store'
 import { clearInputs, createFormActions } from '@/app/redux/features/formSlice'
-import { useCreatePainScoreMutation } from '@/app/redux/services/petApi'
-import { setClosePainScoreDrawer } from '@/app/redux/features/petSlice'
+import { useCreatePainScoreMutation } from '@/app/redux/services/painScoreApi'
+import { setClosePainScoreCreateDrawer } from '@/app/redux/features/painScoreSlice'
 import { validatePainScoreForm } from '@/app/validations/validatePainScoreForm'
 import PainScoreForm from '@/app/forms/PainScoreForm'
 import GuardianPainAssessmentChart from '@/app/components/guardian/pain/GuardianPainAssessmentChart'
@@ -11,11 +11,11 @@ import { Activity } from 'lucide-react'
 import AnimatedDrawerHeader from '@/app/components/guardian/AnimatedDrawerHeader'
 
 const CreatePainScoreDrawer = () => {
-  const { painScoreDrawer } = useAppSelector((state: RootState) => state.pet)
+  const { painScoreCreateDrawer } = useAppSelector((state: RootState) => state.painScore)
   const { painScoreForm } = useAppSelector((state: RootState) => state.form)
   const dispatch = useAppDispatch()
   const { handleInput, setErrors } = createFormActions('painScoreForm', dispatch)
-  const closePainScoreDrawer = () => dispatch(setClosePainScoreDrawer())
+  const onClose = () => dispatch(setClosePainScoreCreateDrawer())
   const [createPainScore, { isLoading }] = useCreatePainScoreMutation()
 
   const handleAddPainScore = async (e: MouseEvent) => {
@@ -36,14 +36,14 @@ const CreatePainScoreDrawer = () => {
         notes: painScoreForm.inputs.notes
       }).unwrap()
 
-      closePainScoreDrawer()
+      onClose()
       dispatch(clearInputs({ formName: 'painScoreForm' }))
     } catch {}
   }
 
   return (
     <AnimatePresence>
-      {painScoreDrawer && (
+      {painScoreCreateDrawer && (
         <>
           {/* Backdrop */}
           <motion.div
@@ -51,7 +51,7 @@ const CreatePainScoreDrawer = () => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="fixed inset-0 bg-black/20 backdrop-blur-sm z-50"
-            onClick={closePainScoreDrawer}
+            onClick={onClose}
           />
 
           {/* Drawer */}
@@ -71,7 +71,7 @@ const CreatePainScoreDrawer = () => {
               title="Pain Score Assesment"
               subtitle="Asses your pet's pain level"
               Icon={Activity}
-              closeDrawer={closePainScoreDrawer}
+              closeDrawer={onClose}
               color="text-red-500"
               iconGradient="from-red-500 to-orange-500"
             />
@@ -81,7 +81,7 @@ const CreatePainScoreDrawer = () => {
                 inputs={painScoreForm?.inputs}
                 errors={painScoreForm?.errors}
                 handleInput={handleInput}
-                close={closePainScoreDrawer}
+                close={onClose}
                 handleSubmit={handleAddPainScore}
                 loading={isLoading}
               />

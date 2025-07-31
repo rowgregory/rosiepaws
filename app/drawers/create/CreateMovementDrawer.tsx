@@ -5,17 +5,17 @@ import MovementForm from '@/app/forms/MovementForm'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Activity } from 'lucide-react'
 import AnimatedDrawerHeader from '@/app/components/guardian/AnimatedDrawerHeader'
-import { setCloseMovementDrawer } from '@/app/redux/features/petSlice'
-import { useCreateMovementMutation } from '@/app/redux/services/petApi'
 import validateMovementForm from '@/app/validations/validateMovementForm'
 import MovementAssessmentGuide from '@/app/components/guardian/movements/MovementAssessmentGuide'
+import { setCloseMovementCreateDrawer } from '@/app/redux/features/movementSlice'
+import { useCreateMovementMutation } from '@/app/redux/services/movementApi'
 
 const CreateMovementDrawer = () => {
-  const { movementDrawer } = useAppSelector((state: RootState) => state.pet)
   const { movementForm } = useAppSelector((state: RootState) => state.form)
+  const { movementCreateDrawer } = useAppSelector((state: RootState) => state.movement)
   const dispatch = useAppDispatch()
   const { handleInput, setErrors, handleToggle } = createFormActions('movementForm', dispatch)
-  const closeMovementDrawer = () => dispatch(setCloseMovementDrawer())
+  const closeMovementDrawer = () => dispatch(setCloseMovementCreateDrawer())
   const [createMovement, { isLoading }] = useCreateMovementMutation()
 
   const handleAddMovement = async (e: { preventDefault: () => void }) => {
@@ -60,7 +60,7 @@ const CreateMovementDrawer = () => {
 
   return (
     <AnimatePresence>
-      {movementDrawer && (
+      {movementCreateDrawer && (
         <>
           {/* Backdrop */}
           <motion.div

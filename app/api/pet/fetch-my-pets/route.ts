@@ -4,6 +4,8 @@ import { parseStack } from 'error-stack-parser-es/lite'
 import { slicePet } from '@/public/data/api.data'
 import { createLog } from '@/app/lib/api/createLog'
 import { getUserFromHeader } from '@/app/lib/api/getUserFromheader'
+import { processChartDataForPet } from '@/app/lib/utils/public/dashboard/processChartData'
+import { calculatePetStats } from '@/app/lib/utils/public/dashboard/calculatePetStats'
 
 export async function GET(req: NextRequest) {
   try {
@@ -86,7 +88,8 @@ export async function GET(req: NextRequest) {
     const walks = pets.flatMap((pet) => pet.walks || [])
     const appointments = pets.flatMap((pet) => pet.appointments || [])
     const movements = pets.flatMap((pet) => pet.movements || [])
-
+    const chartData = processChartDataForPet(pets[0])
+    const stats = calculatePetStats(pets[0], chartData)
     return NextResponse.json(
       {
         pets,
@@ -101,6 +104,8 @@ export async function GET(req: NextRequest) {
         movements,
         user: owner,
         tokenTransactions,
+        chartData,
+        stats,
         sliceName: slicePet
       },
       { status: 200 }

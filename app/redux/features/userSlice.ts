@@ -1,7 +1,7 @@
 import { Reducer, createSlice } from '@reduxjs/toolkit'
 import { userApi } from '../services/userApi'
 
-export interface UserProps {
+export interface IUser {
   id: string
   firstName: string
   lastName: string
@@ -21,7 +21,7 @@ export interface UserProps {
   updatedAt: Date
 }
 
-const userState: UserProps = {
+const userState: IUser = {
   id: '',
   firstName: '',
   lastName: '',
@@ -45,8 +45,8 @@ export interface UserStatePayload {
   loading: boolean
   error: any
   success: boolean
-  users: UserProps[]
-  user: UserProps
+  users: IUser[]
+  user: IUser
   usersCount: number
   noUsers: boolean
 }
@@ -97,13 +97,10 @@ export const userSlice = createSlice({
         state.users = payload.users
         state.loading = false
       })
-      .addMatcher(userApi.endpoints.updateUserRole.matchFulfilled, (state) => {
+      .addMatcher(userApi.endpoints.fetchMe.matchFulfilled, (state, { payload }: any) => {
         state.success = true
         state.loading = false
-      })
-      .addMatcher(userApi.endpoints.updateUserProfile.matchFulfilled, (state) => {
-        state.success = true
-        state.loading = false
+        state.user = payload
       })
       .addMatcher(userApi.endpoints.deleteUser.matchFulfilled, (state) => {
         state.success = true

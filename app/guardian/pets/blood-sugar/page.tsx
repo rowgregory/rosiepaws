@@ -4,13 +4,13 @@ import React from 'react'
 import { motion } from 'framer-motion'
 import { AlertTriangle } from 'lucide-react'
 import { RootState, useAppSelector } from '@/app/redux/store'
-import { setOpenBloodSugarDrawer } from '@/app/redux/features/petSlice'
 import { getBloodSugarStatus, getNextReadingSuggestion, getTimeInfo, getTodaysBloodSugarLogs } from '@/app/lib/utils'
 import CleanHeader from '@/app/components/guardian/navigation/CleanHeader'
 import ZeroLogs from '@/app/components/guardian/ZeroLogs'
 import { IBloodSugar } from '@/app/types'
 import BloodSugarCard from '@/app/components/guardian/blood-sugar/BloodSugarCard'
 import { bloodSugarCreateTokenCost } from '@/app/lib/constants/public/token'
+import { setOpenBloodSugarCreateDrawer } from '@/app/redux/features/bloodSugarSlice'
 
 const BloodSugar = () => {
   const { zeroBloodSugars, bloodSugars } = useAppSelector((state: RootState) => state.pet)
@@ -34,7 +34,7 @@ const BloodSugar = () => {
         title="No blood sugar logs yet"
         subtitle="Track your pet's blood glucose levels to monitor their health and diabetes management."
         tokens={bloodSugarCreateTokenCost}
-        func={setOpenBloodSugarDrawer}
+        func={setOpenBloodSugarCreateDrawer}
       />
     )
   }
@@ -45,7 +45,7 @@ const BloodSugar = () => {
         {/* Header */}
         <CleanHeader
           btnText={canAddMore ? 'Log Blood Sugar' : 'Daily Limit Reached'}
-          func={canAddMore ? setOpenBloodSugarDrawer : null}
+          func={canAddMore ? setOpenBloodSugarCreateDrawer : null}
           tokens={bloodSugarCreateTokenCost}
         />
 

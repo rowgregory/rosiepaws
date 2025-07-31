@@ -25,6 +25,8 @@ export const getDurationMinutes = (duration: string): number => {
 
 // Calculate total distance for multiple walks
 export const calculateTotalDistance = (walks: IWalk[]): number => {
+  if (!walks) return 0
+
   return walks.reduce((total, walk) => {
     return total + getDistanceMiles(walk.distance)
   }, 0)
@@ -32,6 +34,7 @@ export const calculateTotalDistance = (walks: IWalk[]): number => {
 
 // Calculate today's total distance
 export const getTodaysTotalDistance = (walks: IWalk[]): number => {
+  if (!walks) return 0
   const today = new Date().toLocaleDateString()
   const todaysWalks = walks.filter((walk) => {
     const walkDate = new Date(walk.timeRecorded).toLocaleDateString()

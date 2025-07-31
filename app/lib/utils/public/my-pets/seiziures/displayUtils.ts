@@ -2,6 +2,7 @@ import { SeizureSeverity } from '@/app/lib/constants'
 import { AlertCircle, AlertTriangle, Clock, Shield, Zap } from 'lucide-react'
 
 export const getSeizureSeverity = (duration?: number) => {
+  console.log(duration)
   if (!duration) {
     return {
       icon: Clock,
@@ -15,6 +16,7 @@ export const getSeizureSeverity = (duration?: number) => {
   }
 
   if (duration < 30) {
+    // Less than 30 seconds
     return {
       icon: Shield,
       color: 'bg-green-100 text-green-800 border-green-200',
@@ -25,7 +27,7 @@ export const getSeizureSeverity = (duration?: number) => {
       priority: 'low'
     }
   } else if (duration <= 120) {
-    // 2 minutes
+    // Up to 2 minutes (120 seconds)
     return {
       icon: AlertTriangle,
       color: 'bg-yellow-100 text-yellow-800 border-yellow-200',
@@ -35,8 +37,8 @@ export const getSeizureSeverity = (duration?: number) => {
       description: 'Moderate duration seizure',
       priority: 'medium'
     }
-  } else if (duration <= 300) {
-    // 5 minutes
+  } else if (duration <= 299) {
+    // Up to 5 minutes (300 seconds)
     return {
       icon: AlertCircle,
       color: 'bg-orange-100 text-orange-800 border-orange-200',
@@ -47,6 +49,7 @@ export const getSeizureSeverity = (duration?: number) => {
       priority: 'high'
     }
   } else {
+    // Over 5 minutes (300+ seconds)
     return {
       icon: Zap,
       color: 'bg-red-100 text-red-800 border-red-200',
@@ -61,10 +64,10 @@ export const getSeizureSeverity = (duration?: number) => {
 
 export const getEmergencyLevel = (duration?: number) => {
   if (!duration) return { level: 'Monitor', color: 'text-gray-600' }
-  if (duration < 30) return { level: 'Normal', color: 'text-green-600' }
-  if (duration <= 120) return { level: 'Monitor closely', color: 'text-yellow-600' }
-  if (duration <= 300) return { level: 'Contact vet', color: 'text-orange-600' }
-  return { level: 'EMERGENCY', color: 'text-red-600' }
+  if (duration < 30) return { level: 'Normal', color: 'text-green-600' } // Less than 30 seconds
+  if (duration <= 120) return { level: 'Monitor closely', color: 'text-yellow-600' } // Up to 2 minutes
+  if (duration <= 299) return { level: 'Contact vet', color: 'text-orange-600' } // Up to 5 minutes
+  return { level: 'EMERGENCY', color: 'text-red-600' } // Over 5 minutes
 }
 
 // Get background color based on seizure severity

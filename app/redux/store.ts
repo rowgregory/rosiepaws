@@ -13,6 +13,15 @@ import { formReducer } from './features/formSlice'
 import { stripeReducer } from './features/stripeSlice'
 import { adminReducer } from './features/adminSlice'
 import { ticketReducer } from './features/ticketSlice'
+import { painScoreReducer } from './features/painScoreSlice'
+import { feedingReducer } from './features/feedingSlice'
+import { waterReducer } from './features/waterSlice'
+import { walkReducer } from './features/walkSlice'
+import { movementReducer } from './features/movementSlice'
+import { appointmentReducer } from './features/appointmentSlice'
+import { medicationReducer } from './features/medicationSlice'
+import { bloodSugarReducer } from './features/bloodSugarSlice'
+import { seizureReducer } from './features/seizureSlice'
 
 const rootReducer = combineReducers({
   app: appReducer,
@@ -24,6 +33,15 @@ const rootReducer = combineReducers({
   stripe: stripeReducer,
   admin: adminReducer,
   ticket: ticketReducer,
+  painScore: painScoreReducer,
+  feeding: feedingReducer,
+  water: waterReducer,
+  walk: walkReducer,
+  movement: movementReducer,
+  appointment: appointmentReducer,
+  medication: medicationReducer,
+  bloodSugar: bloodSugarReducer,
+  seizure: seizureReducer,
   [api.reducerPath]: api.reducer
 })
 

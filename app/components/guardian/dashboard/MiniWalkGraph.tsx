@@ -6,11 +6,14 @@ import { getDistanceMiles, getDurationMinutes, getTodaysTotalDistance } from '@/
 const MiniWalkGraph = ({ walks }: any) => {
   if (walks?.length === 0 || walks === null || walks === undefined) return
 
+  console.log(walks)
+
   // Sort walks chronologically for chart
-  const sortedWalks =
-    walks?.sort((a: any, b: any) => {
-      return new Date(a.timeRecorded).getTime() - new Date(b.timeRecorded).getTime()
-    }) || []
+  const sortedWalks = walks
+    ? [...walks].sort((a: any, b: any) => {
+        return new Date(a.timeRecorded).getTime() - new Date(b.timeRecorded).getTime()
+      })
+    : []
 
   // Prepare chart data (last 10 walks for better scatter visualization)
   const chartData = sortedWalks.slice(-7).map((walk: any, index: number) => {

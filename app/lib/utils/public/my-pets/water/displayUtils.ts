@@ -45,8 +45,10 @@ export const getWaterIntakeConfig = (relativeIntake: string) => {
 
 export const getMoodColor = (rating: string) => {
   const moodRating = parseInt(rating)
-  if (moodRating >= 4) return 'text-green-600'
-  if (moodRating >= 3) return 'text-yellow-600'
+  if (moodRating >= 4) return 'text-blue-600'
+  if (moodRating >= 3) return 'text-green-600'
+  if (moodRating >= 2) return 'text-yellow-600'
+  if (moodRating >= 1) return 'text-orange-600'
   return 'text-red-600'
 }
 

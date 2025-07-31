@@ -3,17 +3,17 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { itemVariants } from '@/app/lib/constants/public/appointment'
 import { CheckCircle2, PawPrint } from 'lucide-react'
 import { Pet } from '@/app/types'
-import { useAppDispatch } from '@/app/redux/store'
+import { RootState, useAppDispatch, useAppSelector } from '@/app/redux/store'
 import { setInputs } from '@/app/redux/features/formSlice'
 
-const PetSelection: FC<{ pets: Pet[] | undefined; inputs: any; errors: any; handleInput: any; formName: string }> = ({
-  pets,
+const PetSelection: FC<{ inputs: any; errors: any; handleInput: any; formName: string }> = ({
   inputs,
   errors,
   handleInput,
   formName
 }) => {
   const dispatch = useAppDispatch()
+  const { pets } = useAppSelector((state: RootState) => state.pet)
 
   useEffect(() => {
     if (pets?.length !== undefined && pets?.length === 1) {

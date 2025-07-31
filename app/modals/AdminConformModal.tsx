@@ -1,13 +1,29 @@
 import { motion, AnimatePresence } from 'framer-motion'
-import { X } from 'lucide-react'
+import { Loader2, X } from 'lucide-react'
 import { RootState, useAppDispatch, useAppSelector } from '../redux/store'
 import { setCloseAdminConfirmModal } from '../redux/features/adminSlice'
-import Spinner from '../components/common/Spinner'
 
 const AdminConfirmModal = () => {
   const dispatch = useAppDispatch()
   const onClose = () => dispatch(setCloseAdminConfirmModal())
   const { confirmModal } = useAppSelector((state: RootState) => state.admin)
+  const { loading: loadingPainScore } = useAppSelector((state: RootState) => state.painScore)
+  const { loading: loadingFeeding } = useAppSelector((state: RootState) => state.feeding)
+  const { loading: loadingWater } = useAppSelector((state: RootState) => state.water)
+  const { loading: loadingWalk } = useAppSelector((state: RootState) => state.walk)
+  const { loading: loadingMovement } = useAppSelector((state: RootState) => state.movement)
+  const { loading: loadingAppointment } = useAppSelector((state: RootState) => state.appointment)
+  const { loading: loadingBloodSugar } = useAppSelector((state: RootState) => state.bloodSugar)
+  const { loading: loadingSeizure } = useAppSelector((state: RootState) => state.seizure)
+  const loading =
+    loadingPainScore ||
+    loadingFeeding ||
+    loadingWater ||
+    loadingWalk ||
+    loadingMovement ||
+    loadingAppointment ||
+    loadingBloodSugar ||
+    loadingSeizure
 
   return (
     <AnimatePresence>
@@ -46,7 +62,7 @@ const AdminConfirmModal = () => {
                   confirmModal.isDestructive ? 'bg-red-600 hover:bg-red-700' : 'bg-blue-600 hover:bg-blue-700'
                 }`}
               >
-                {confirmModal.isProcessing ? <Spinner /> : confirmModal.confirmText}
+                {loading ? <Loader2 className="w-4 h-4 mr-1 animate-spin" /> : confirmModal.confirmText}
               </button>
             </div>
           </motion.div>
