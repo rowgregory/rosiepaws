@@ -51,6 +51,7 @@ const parseWeightToPounds = (weight: string | number): number => {
   }
 }
 
+// Remove this!!
 export const calculateHealthStatus = (metrics: HealthMetrics): HealthStatus => {
   const { feedings, painScores, waters, walks, petType = 'dog', petAge = 5, petWeight = 50 } = metrics
 
@@ -265,3 +266,8 @@ export const calculateHealthStatus = (metrics: HealthMetrics): HealthStatus => {
     recommendations: recommendations.slice(0, 3) // Limit to top 3 recommendations
   }
 }
+
+// all viewable
+// posters
+// ebooks - longest - download cost more tokens
+// documents
