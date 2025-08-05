@@ -15,6 +15,7 @@ const AdminConfirmModal = () => {
   const { loading: loadingAppointment } = useAppSelector((state: RootState) => state.appointment)
   const { loading: loadingBloodSugar } = useAppSelector((state: RootState) => state.bloodSugar)
   const { loading: loadingSeizure } = useAppSelector((state: RootState) => state.seizure)
+  const { loading: loadingMedia } = useAppSelector((state: RootState) => state.media)
   const loading =
     loadingPainScore ||
     loadingFeeding ||
@@ -23,7 +24,8 @@ const AdminConfirmModal = () => {
     loadingMovement ||
     loadingAppointment ||
     loadingBloodSugar ||
-    loadingSeizure
+    loadingSeizure ||
+    loadingMedia
 
   return (
     <AnimatePresence>

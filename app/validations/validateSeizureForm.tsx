@@ -12,7 +12,7 @@ export const validateSeizureForm = (inputs: SeizureInputs, setErrors: any) => {
   if (!inputs?.petId?.trim()) {
     newErrors.petId = 'Pet is required'
   }
-  console.log(inputs.duration)
+
   // Duration validation
   if (inputs?.duration !== undefined && inputs?.duration !== null) {
     const duration = Number(inputs.duration)

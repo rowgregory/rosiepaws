@@ -15,8 +15,6 @@ import { dateToInputFormat } from '../lib/utils'
 const AppointmentForm: FC<IForm> = ({ inputs, errors, handleInput, close, handleSubmit, loading, isUpdating }) => {
   const dispatch = useAppDispatch()
 
-  console.log(inputs)
-
   return (
     <form onSubmit={handleSubmit} className="flex-1 flex flex-col min-h-full">
       <div className="overflow-y-auto px-5 pt-9 pb-12 h-[calc(100dvh-132px)]">

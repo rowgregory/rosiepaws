@@ -10,7 +10,7 @@ import { storage } from '../lib/config/firebaseConfig'
 export const uploadFileToFirebase = async (
   file: File,
   onProgress: (progress: number) => void = () => {},
-  type: 'image' | 'video' = 'image'
+  type: 'image' | 'video' | 'document' | 'poster' | 'ebook' = 'image'
 ): Promise<string> => {
   if (!file) {
     throw new Error('No file provided')
@@ -45,7 +45,10 @@ export const uploadFileToFirebase = async (
   })
 }
 
-export const deleteFileFromFirebase = async (fileName: string, type: 'image' | 'video' = 'image'): Promise<void> => {
+export const deleteFileFromFirebase = async (
+  fileName: string,
+  type: 'image' | 'video' | 'document' | 'poster' | 'ebook' = 'image'
+): Promise<void> => {
   if (!fileName) {
     throw new Error('No file name provided')
   }

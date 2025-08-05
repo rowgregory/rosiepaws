@@ -117,8 +117,7 @@ const TicketDetailPage = () => {
 
       setNewMessage('')
       setAttachments([])
-    } catch (error) {
-      console.error('Error sending message:', error)
+    } catch {
     } finally {
       setIsSubmitting(false)
     }

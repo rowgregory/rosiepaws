@@ -81,6 +81,10 @@ const formInitialState = {
   settingsForm: {
     inputs: { backupFrequency: 'daily' },
     errors: { backupFrequency: '' }
+  },
+  mediaForm: {
+    inputs: { uploadingFiles: [] },
+    errors: {}
   }
 } as any
 

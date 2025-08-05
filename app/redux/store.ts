@@ -22,6 +22,7 @@ import { appointmentReducer } from './features/appointmentSlice'
 import { medicationReducer } from './features/medicationSlice'
 import { bloodSugarReducer } from './features/bloodSugarSlice'
 import { seizureReducer } from './features/seizureSlice'
+import { mediaReducer } from './features/mediaSlice'
 
 const rootReducer = combineReducers({
   app: appReducer,
@@ -42,6 +43,7 @@ const rootReducer = combineReducers({
   medication: medicationReducer,
   bloodSugar: bloodSugarReducer,
   seizure: seizureReducer,
+  media: mediaReducer,
   [api.reducerPath]: api.reducer
 })
 

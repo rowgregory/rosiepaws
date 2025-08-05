@@ -35,23 +35,12 @@ export const adminApi = api.injectEndpoints({
         body
       }),
       onQueryStarted: async (_: any, { dispatch, queryFulfilled }: any) => {
-        try {
-          const { data } = await queryFulfilled
-          const user = data.user
-          const tokenTransaction = data.transaction
+        const { data } = await queryFulfilled
+        const user = data.user
+        const tokenTransaction = data.transaction
 
-          dispatch(updateUserInUsers(user))
-          dispatch(addTokenTransactionToUser({ userId: user.id, transaction: tokenTransaction }))
-        } catch (error: any) {
-          console.log('Error in RTK Query:', error)
-
-          // Handle different error types here
-          if (error?.error?.status === 'PARSING_ERROR') {
-            console.log('Caught parsing error in RTK Query')
-            // You could dispatch an error action here
-            // dispatch(setErrorMessage('Service temporarily unavailable'))
-          }
-        }
+        dispatch(updateUserInUsers(user))
+        dispatch(addTokenTransactionToUser({ userId: user.id, transaction: tokenTransaction }))
       }
     })
   })

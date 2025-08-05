@@ -10,7 +10,6 @@ const MiniFeedingGraph: FC<{ feedings: any }> = ({ feedings }) => {
     feedings?.reduce((acc: any, feeding: any) => {
       const existing = acc.find((item: any) => item.foodType === feeding.foodType)
       const amount = parseFraction(feeding.foodAmount)
-      console.log(amount)
 
       if (existing) {
         existing.count += 1
@@ -26,7 +25,6 @@ const MiniFeedingGraph: FC<{ feedings: any }> = ({ feedings }) => {
       }
       return acc
     }, []) || []
-  console.log('foodTypeData: ', foodTypeData)
 
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">

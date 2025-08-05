@@ -522,7 +522,6 @@ export const petSlice = createSlice({
         state.movementCount = payload.movements.length
 
         state.tokenTransactions = payload.tokenTransactions
-        console.log('PAYLOAD: ', payload)
         state.chartData = payload.chartData
         state.stats = payload.stats
         state.noLogs =

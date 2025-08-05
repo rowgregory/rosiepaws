@@ -1,7 +1,7 @@
 import { Heart } from 'lucide-react'
 import React from 'react'
 
-const PetProfileSection = ({ pet, healthStatus }: any) => {
+const PetProfileSection = ({ pet }: any) => {
   return (
     <>
       <h2 className="text-lg font-semibold text-gray-900 mb-4">Pet Profile</h2>
@@ -24,35 +24,6 @@ const PetProfileSection = ({ pet, healthStatus }: any) => {
           <span className="font-medium text-gray-800">
             <span>{pet.lastVisit?.toLocaleDateString() ?? '--'}</span>
           </span>
-        </div>
-        <div className="space-y-4">
-          <div className="flex justify-between">
-            <span className="text-gray-600">Health status</span>
-            <span className={`font-medium ${healthStatus.color}`}>
-              {healthStatus.status} ({healthStatus.score}%)
-            </span>
-          </div>
-
-          {/* Optional: Show insights */}
-          <div className="space-y-2">
-            {healthStatus.insights.map((insight: string, index: number) => (
-              <p key={index} className="text-sm text-gray-600">
-                • {insight}
-              </p>
-            ))}
-          </div>
-
-          {/* Optional: Show recommendations */}
-          {healthStatus.recommendations.length > 0 && (
-            <div className="bg-blue-50 p-3 rounded-lg">
-              <p className="text-sm font-medium text-blue-900 mb-1">Recommendations:</p>
-              {healthStatus.recommendations.map((rec: string, index: number) => (
-                <p key={index} className="text-sm text-blue-700">
-                  • {rec}
-                </p>
-              ))}
-            </div>
-          )}
         </div>
       </div>
     </>

@@ -79,7 +79,7 @@ export async function GET(req: NextRequest) {
     }
 
     const backupData = await generateBackupData()
-    console.log('backup data: ', backupData)
+
     const adminEmails = [
       // process.env.JACI_EMAIL || 'info@rosiepawsapp.com',
       process.env.SUPER_USER || 'sqysh@sqysh.io'

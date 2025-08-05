@@ -253,7 +253,7 @@ const GuardianDashboard = () => {
                       <button
                         onClick={() => {
                           const config = metricConfigButton[selectedMetric as keyof typeof metricConfigButton]
-                          console.log(config)
+
                           const todaysBloodSugars = getTodaysBloodSugarLogs(chartData.bloodSugars || [])
                           const todaysBloodSugarsCount = todaysBloodSugars?.length
                           const dailyLimit = 4

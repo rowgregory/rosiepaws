@@ -6,9 +6,10 @@ import {
   subscriptionsLink,
   logsLink,
   usersLink,
-  ticketsLink
+  ticketsLink,
+  mediaLibraryLink
 } from '@/public/data/admin.data'
-import { LayoutDashboard, CreditCard, LogOut, Settings, Dog, Logs, Users, Tickets } from 'lucide-react'
+import { LayoutDashboard, CreditCard, LogOut, Settings, Dog, Logs, Users, Tickets, Library } from 'lucide-react'
 
 export const adminNavigationLinks = (path: string, isSuperUser: boolean) => [
   {
@@ -28,6 +29,12 @@ export const adminNavigationLinks = (path: string, isSuperUser: boolean) => [
     textKey: 'Pets',
     linkKey: petsLink,
     isActive: path === petsLink
+  },
+  {
+    icon: Library,
+    textKey: 'Media Library',
+    linkKey: mediaLibraryLink,
+    isActive: path === mediaLibraryLink
   },
   {
     icon: Users,

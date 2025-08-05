@@ -5,7 +5,7 @@ import Header from './components/header/Header'
 import useSyncUserToRedux from './hooks/useSyncUserToRedux'
 import useCustomPathname from './hooks/useCustomPathname'
 import Footer from './components/footer/Footer'
-import AdminConfirmModal from './modals/AdminConformModal'
+import AdminConfirmModal from './modals/AdminConfirmModal'
 
 const PageWrapper: FC<{ children: ReactNode; user: any }> = ({ children, user }) => {
   const path = useCustomPathname()

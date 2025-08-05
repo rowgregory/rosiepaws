@@ -58,8 +58,23 @@ enum PetType {
 }
 
 enum MediaType {
-  IMAGE
+  POSTER
+  EBOOK
+  DOCUMENT
   VIDEO
+  IMAGE
+}
+
+enum MediaColor {
+  BLUE
+  PURPLE
+  GREEN
+  ORANGE
+  RED
+  INDIGO
+  PINK
+  YELLOW
+  GRAY
 }
 
 enum AppointmentType {
@@ -622,4 +637,37 @@ model Setting {
   value     String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model Media {
+  id         String     @id @default(cuid())
+  title      String     @db.VarChar(255)
+  type       MediaType
+  format     String     @db.VarChar(10)
+  size       String     @db.VarChar(20) // Stored as string like "2.4 MB"
+  sizeBytes  BigInt? // Optional: actual file size in bytes for sorting/filtering
+  uploadDate DateTime   @default(now())
+  views      Int        @default(0)
+  downloads  Int        @default(0)
+  thumbnail  String?    @db.Text // URL or base64 encoded thumbnail
+  color      MediaColor @default(BLUE)
+
+  // File storage information
+  fileName String @db.VarChar(255) // Original filename
+  filePath String @db.Text // Storage path or URL
+  mimeType String @db.VarChar(100) // MIME type like "application/pdf"
+
+  // Metadata
+  description String?  @db.Text
+  tags        String[] // Array of tags for better organization
+  isActive    Boolean  @default(true)
+
+  // Audit fields
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Indexes
+  @@index([type])
+  @@index([uploadDate])
+  @@index([isActive])
 }

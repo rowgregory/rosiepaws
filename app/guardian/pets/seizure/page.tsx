@@ -73,8 +73,6 @@ const Seizure = () => {
     )
   }
 
-  console.log(seizures)
-
   return (
     <>
       <VideoModal

@@ -29,7 +29,6 @@ import EmergencySignsDrawer from '@/app/drawers/general/EmergencySignsDrawer'
 import ViewGuideDrawer from '@/app/drawers/general/ViewGuideDrawer'
 import PetProfileSection from '@/app/components/guardian/home/PetProfileSection'
 import TodaysProgressSection from '@/app/components/guardian/home/TodaysProgressSection'
-import { calculateHealthStatus } from '@/app/lib/utils'
 import { setOpenPainScoreCreateDrawer } from '@/app/redux/features/painScoreSlice'
 import { setOpenFeedingCreateDrawer } from '@/app/redux/features/feedingSlice'
 import { setOpenWalkCreateDrawer } from '@/app/redux/features/walkSlice'
@@ -62,16 +61,6 @@ const Home = () => {
     return 'evening'
   }
 
-  const healthStatus = calculateHealthStatus({
-    feedings,
-    painScores,
-    waters,
-    walks,
-    petType: pets[0]?.type,
-    petAge: Number(pets[0]?.age),
-    petWeight: pets[0]?.weight
-  })
-
   return (
     <>
       <EmergencySignsDrawer />
@@ -103,32 +92,6 @@ const Home = () => {
                         day: 'numeric'
                       })}
                     </p>
-                  </div>
-                  <div className="text-right">
-                    <div
-                      className={`inline-flex items-center px-3 py-1 rounded-md text-sm font-medium ${
-                        healthStatus.status === 'Excellent'
-                          ? 'bg-green-100 text-green-800'
-                          : healthStatus.status === 'Good'
-                            ? 'bg-blue-100 text-blue-800'
-                            : healthStatus.status === 'Fair'
-                              ? 'bg-yellow-100 text-yellow-800'
-                              : 'bg-red-100 text-red-800'
-                      }`}
-                    >
-                      <div
-                        className={`w-2 h-2 rounded-full mr-2 ${
-                          healthStatus.status === 'Excellent'
-                            ? 'bg-green-500'
-                            : healthStatus.status === 'Good'
-                              ? 'bg-blue-500'
-                              : healthStatus.status === 'Fair'
-                                ? 'bg-yellow-500'
-                                : 'bg-red-500'
-                        }`}
-                      ></div>
-                      Health Status: {healthStatus.status?.charAt(0).toUpperCase() + healthStatus.status?.slice(1)}
-                    </div>
                   </div>
                 </div>
               </div>
@@ -361,7 +324,7 @@ const Home = () => {
                 className="lg:col-span-5"
               >
                 <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 h-full">
-                  <PetProfileSection pet={pets[0]} healthStatus={healthStatus} />
+                  <PetProfileSection pet={pets[0]} />
                 </div>
               </motion.div>
             </div>

@@ -4,7 +4,8 @@ import {
   guardianPetsLink,
   guardianGalleryLink,
   guardianSettingsLink,
-  guardianInfoLink
+  guardianInfoLink,
+  guardianResourcesLink
 } from '@/public/data/admin.data'
 import {
   LayoutDashboard,
@@ -22,7 +23,8 @@ import {
   PawPrint,
   Calendar,
   Footprints,
-  Navigation
+  Navigation,
+  Archive
 } from 'lucide-react'
 
 interface PetLink {
@@ -71,6 +73,12 @@ export const publicDashboardLinks = (path: string, zeroPets: boolean) => [
           isActive: path === guardianGalleryLink
         }
       ]),
+  {
+    icon: Archive,
+    textKey: 'Resources',
+    linkKey: guardianResourcesLink,
+    isActive: path === guardianResourcesLink
+  },
   {
     icon: Settings,
     textKey: 'Settings',

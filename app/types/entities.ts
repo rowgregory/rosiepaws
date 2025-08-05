@@ -339,3 +339,52 @@ export interface ILog {
   metadata?: LogMetadata | null
   createdAt: Date | string
 }
+
+export enum MediaType {
+  POSTER = 'POSTER',
+  EBOOK = 'EBOOK',
+  DOCUMENT = 'DOCUMENT',
+  VIDEO = 'VIDEO',
+  AUDIO = 'AUDIO'
+}
+
+export enum MediaColor {
+  BLUE = 'BLUE',
+  PURPLE = 'PURPLE',
+  GREEN = 'GREEN',
+  ORANGE = 'ORANGE',
+  RED = 'RED',
+  INDIGO = 'INDIGO',
+  PINK = 'PINK',
+  YELLOW = 'YELLOW',
+  GRAY = 'GRAY'
+}
+
+export interface IMedia {
+  id: string
+  title: string
+  type: MediaType
+  format: string
+  size: string // Human readable size like "2.4 MB"
+  sizeBytes?: string // Actual file size in bytes (as string for BigInt compatibility)
+  uploadDate: string // ISO date string
+  views: number
+  downloads: number
+  thumbnail?: string // URL or base64 encoded thumbnail
+  color: MediaColor
+
+  // File storage information
+  fileName: string // Original filename
+  filePath: string // Storage path or Firebase URL
+  mimeType: string // MIME type like "application/pdf"
+
+  // Metadata
+  description?: string
+  tags: string[] // Array of tags for organization
+  isActive: boolean
+
+  // Audit fields
+  createdAt: string // ISO date string
+  updatedAt: string // ISO date string
+  deletedAt?: string // ISO date string for soft delete
+}
