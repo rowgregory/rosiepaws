@@ -107,6 +107,7 @@ export async function DELETE(req: NextRequest, { params }: any) {
 
     return NextResponse.json({
       sliceName: sliceMedication,
+      medication: result.deleletedMedication,
       user: {
         tokens: result.updatedUser.tokens,
         tokensUsed: result.updatedUser.tokensUsed

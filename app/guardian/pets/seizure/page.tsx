@@ -22,10 +22,11 @@ import { generateSeizurePDFReport } from '@/app/lib/utils/reports/seizure-pdf-re
 import { setInputs } from '@/app/redux/features/formSlice'
 import SeizureCalendarDrawer from '@/app/drawers/general/SeizureCalendarDrawer'
 import { setOpenSeizureCalendarDrawer } from '@/app/redux/features/dashboardSlice'
-import { setOpenSeizureCreateDrawer } from '@/app/redux/features/seizureSlice'
+import { setOpenSeizureDrawer } from '@/app/redux/features/seizureSlice'
+import { useInitialAnimation } from '@/app/hooks/useInitialAnimation'
 
 const Seizure = () => {
-  const { zeroSeizures, seizures, pet } = useAppSelector((state: RootState) => state.pet)
+  const { zeroSeizures, seizures } = useAppSelector((state: RootState) => state.seizure)
   const todaysSeizures = getTodaysSeizures(seizures || [])
   const todaysSeizuresCount = todaysSeizures?.length
   const latestSeizure = seizures?.length > 0 ? seizures[0] : null
@@ -37,6 +38,8 @@ const Seizure = () => {
     date?: string
   } | null>(null)
   const dispatch = useAppDispatch()
+
+  const shouldAnimate = useInitialAnimation(seizures)
 
   const handleDownload = async () => {
     try {
@@ -50,7 +53,7 @@ const Seizure = () => {
 
       // Generate filename with date
       const today = new Date().toISOString().split('T')[0]
-      const filename = `${pet?.name}_Seizure_Report_${today}.pdf`
+      const filename = `Seizure_Report_${today}.pdf`
 
       // Download the PDF
       doc.save(filename)
@@ -68,7 +71,8 @@ const Seizure = () => {
         title="No seizures recorded"
         subtitle="Track seizure episodes to monitor patterns and help your veterinarian provide better care."
         tokens={seizureCreateTokenCost}
-        func={setOpenSeizureCreateDrawer}
+        func={setOpenSeizureDrawer}
+        formName="seizureForm"
       />
     )
   }
@@ -86,7 +90,12 @@ const Seizure = () => {
       <div className="min-h-[calc(100dvh-96px)] pb-20">
         <div className="mx-auto px-6 space-y-8">
           {/* Header */}
-          <CleanHeader btnText="Log Seizure" func={setOpenSeizureCreateDrawer} tokens={seizureCreateTokenCost} />
+          <CleanHeader
+            btnText="Log Seizure"
+            func={setOpenSeizureDrawer}
+            tokens={seizureCreateTokenCost}
+            formName="seizureForm"
+          />
 
           {/* Alert for Recent Activity */}
           {todaysSeizuresCount > 0 && (
@@ -200,6 +209,7 @@ const Seizure = () => {
                       severity={severity}
                       SeverityIcon={SeverityIcon}
                       setSelectedVideo={setSelectedVideo}
+                      shouldAnimate={shouldAnimate}
                     />
                   )
                 })}
@@ -225,11 +235,11 @@ const Seizure = () => {
                           <span className="text-sm text-red-700">Episodes Today</span>
                           <span className="font-semibold text-red-900">{todaysSeizuresCount}</span>
                         </div>
-                        {todaysSeizures.some((s) => s.duration) && (
+                        {todaysSeizures?.some((s) => s.duration) && (
                           <div className="flex justify-between">
                             <span className="text-sm text-red-700">Total Duration</span>
                             <span className="font-semibold text-red-900">
-                              {formatDuration(todaysSeizures.reduce((sum, s) => sum + (s.duration || 0), 0))}
+                              {formatDuration(todaysSeizures?.reduce((sum, s) => sum + (s.duration || 0), 0))}
                             </span>
                           </div>
                         )}
@@ -241,7 +251,7 @@ const Seizure = () => {
                   <div className="space-y-3">
                     <div className="flex justify-between">
                       <span className="text-sm text-gray-600">Total Episodes</span>
-                      <span className="font-semibold text-gray-900">{seizures.length}</span>
+                      <span className="font-semibold text-gray-900">{seizures?.length}</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-sm text-gray-600">This Week</span>
@@ -326,7 +336,7 @@ const Seizure = () => {
                           }
                         })
                       )
-                      dispatch(setOpenSeizureCreateDrawer())
+                      dispatch(setOpenSeizureDrawer())
                     }}
                     className="w-full bg-red-600 text-white rounded-lg py-2 px-4 hover:bg-red-700 transition-colors text-sm"
                   >

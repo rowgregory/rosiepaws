@@ -10,7 +10,8 @@ export const userApi = api.injectEndpoints({
       query: () => `${BASE_URL}/fetch-users`
     }),
     fetchMe: build.query({
-      query: () => `${BASE_URL}/me`
+      query: () => `${BASE_URL}/me`,
+      providesTags: ['User', 'Pain-Score']
     }),
     deleteUser: build.mutation({
       query: (body: any) => ({ url: `${BASE_URL}/delete-user`, method: 'DELETE', body }),

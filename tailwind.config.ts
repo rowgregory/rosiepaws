@@ -48,11 +48,7 @@ export default {
       height: {},
       maxHeight: {},
       fontFamily: {
-        inter: ['var(--font-inter)'],
-        barlowcondensed: ['var(--font-barlow-condensed)'],
-        satisfy: ['var(--font-satisfy)'],
-        merrieweather: ['var(--font-merrieweather)'],
-        sora: ['var(--font-sora)']
+        inter: ['var(--font-inter)']
       }
     }
   },

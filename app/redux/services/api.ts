@@ -29,13 +29,14 @@ export const api = createApi({
     'Pain-Score',
     'Feeding',
     'Water',
-    'Walk',
+    'Vital-Signs',
     'Movement',
     'Appointment',
     'Blood-Sugar',
     'Seizure',
     'Medication',
-    'Media'
+    'Media',
+    'Vet'
   ],
   endpoints: () => ({})
 })

@@ -1,7 +1,7 @@
 import React, { FC, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Heart, PawPrint, Info, Sparkles, Award, ChevronRight, Star } from 'lucide-react'
-import { BREED_CATEGORIES, PET_STATS, PET_TIPS } from '@/app/lib/constants'
+import { Heart, Info, Sparkles, Award, ChevronRight } from 'lucide-react'
+import { PET_STATS, PET_TIPS } from '@/app/lib/constants'
 
 export const tabVariants = {
   hidden: { opacity: 0, y: 20 },
@@ -10,14 +10,14 @@ export const tabVariants = {
 }
 
 const PetGuide: FC = () => {
-  const [activeTab, setActiveTab] = useState<'tips' | 'breeds' | 'stats'>('tips')
+  const [activeTab, setActiveTab] = useState<'tips' | 'stats'>('tips')
 
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.5 }}
-      className="w-full max-w-md bg-white shadow-xl shadow-slate-900/10 border border-slate-200/60 overflow-hidden"
+      className="flex flex-col flex-1 w-full max-w-md bg-white shadow-xl shadow-slate-900/10 border border-slate-200/60 overflow-hidden"
     >
       {/* Header */}
       <div className="relative bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 p-6 text-white">
@@ -39,7 +39,6 @@ const PetGuide: FC = () => {
       <div className="flex bg-slate-50 border-b border-slate-200">
         {[
           { id: 'tips', label: 'Tips', icon: <Sparkles className="w-4 h-4" /> },
-          { id: 'breeds', label: 'Breeds', icon: <PawPrint className="w-4 h-4" /> },
           { id: 'stats', label: 'Stats', icon: <Award className="w-4 h-4" /> }
         ].map((tab) => (
           <button
@@ -91,50 +90,6 @@ const PetGuide: FC = () => {
                       <p className="text-xs text-slate-600 leading-relaxed">{tip.description}</p>
                     </div>
                     <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-slate-600 transition-colors" />
-                  </div>
-                </motion.div>
-              ))}
-            </motion.div>
-          )}
-
-          {activeTab === 'breeds' && (
-            <motion.div
-              key="breeds"
-              variants={tabVariants}
-              initial="hidden"
-              animate="visible"
-              exit="exit"
-              className="space-y-6"
-            >
-              {BREED_CATEGORIES.map((category, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.15 }}
-                  className="space-y-3"
-                >
-                  <div className="flex items-center gap-3">
-                    <div
-                      className={`w-10 h-10 rounded-xl bg-gradient-to-r ${category.color} flex items-center justify-center text-lg shadow-lg`}
-                    >
-                      {category.type}
-                    </div>
-                    <h4 className="font-semibold text-slate-900">{category.label}</h4>
-                  </div>
-                  <div className="grid grid-cols-2 gap-2">
-                    {category.breeds.map((breed, breedIndex) => (
-                      <motion.div
-                        key={breed}
-                        initial={{ opacity: 0, scale: 0.9 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ delay: index * 0.15 + breedIndex * 0.05 }}
-                        className="group flex items-center gap-2 p-3 bg-slate-50 hover:bg-white rounded-lg border border-slate-200 hover:border-slate-300 hover:shadow-sm transition-all duration-200 cursor-pointer"
-                      >
-                        <Star className="w-3 h-3 text-amber-400 opacity-0 group-hover:opacity-100 transition-opacity" />
-                        <span className="text-sm font-medium text-slate-700 group-hover:text-slate-900">{breed}</span>
-                      </motion.div>
-                    ))}
                   </div>
                 </motion.div>
               ))}

@@ -4,7 +4,7 @@ export interface ChartData {
   painScores: any[]
   feedings: any[]
   waters: any[]
-  walks: any[]
+  vitalSigns: any[]
   medications: any[]
   movements: any[]
   appointments: any[]
@@ -34,11 +34,11 @@ interface PetStats {
     hasWaters: boolean
     totalLogs: number
   }
-  walks: {
+  vitalSigns: {
     mostRecent: number
     average: number
     trend: 'up' | 'down' | 'stable'
-    hasWalks: boolean
+    hasVitalSigns: boolean
     totalLogs: number
   }
   movements: {
@@ -102,11 +102,11 @@ const emptyState: PetStats = {
     hasWaters: false,
     totalLogs: 0
   },
-  walks: {
+  vitalSigns: {
     mostRecent: 0,
     average: 0,
     trend: 'up',
-    hasWalks: false,
+    hasVitalSigns: false,
     totalLogs: 0
   },
   movements: {
@@ -154,12 +154,13 @@ export const calculatePetStats = (pet: any, chartData: ChartData): PetStats => {
   const now = new Date()
   const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
 
-  const { painScores, feedings, waters, walks, medications, movements, appointments, bloodSugars, seizures } = chartData
+  const { painScores, feedings, waters, vitalSigns, medications, movements, appointments, bloodSugars, seizures } =
+    chartData
 
   const weekPain = painScores?.filter((item) => new Date(item.date) >= weekAgo) || []
   const weekFeeding = feedings?.filter((item) => new Date(item.date) >= weekAgo) || []
   const weekWater = waters?.filter((item) => new Date(item.date) >= weekAgo) || []
-  const weekWalks = walks?.filter((item) => new Date(item.date) >= weekAgo) || []
+  const weekVitalSigns = vitalSigns?.filter((item) => new Date(item.date) >= weekAgo) || []
   const weekMovements = movements?.filter((item) => new Date(item.date) >= weekAgo) || []
   const nextAppointment = getDashboardNextAppointment(appointments)
   const weekBloodSugars = bloodSugars?.filter((item) => new Date(item.date) >= weekAgo) || []
@@ -200,15 +201,17 @@ export const calculatePetStats = (pet: any, chartData: ChartData): PetStats => {
       hasWaters: (waters?.length || 0) > 0,
       totalLogs: waters?.length || 0
     },
-    walks: {
-      mostRecent: walks.length > 0 ? walks[0].distance : 0,
+    vitalSigns: {
+      mostRecent: vitalSigns.length > 0 ? vitalSigns[0].heartRate : 0,
       average:
-        weekWalks.length > 0
-          ? Math.round(weekWalks.reduce((sum, item) => sum + Number(item.distance || 0), 0) / weekWalks.length)
+        weekVitalSigns.length > 0
+          ? Math.round(
+              weekVitalSigns.reduce((sum, item) => sum + Number(item.heartRate || 0), 0) / weekVitalSigns.length
+            )
           : 0,
-      trend: weekWalks.length >= 2 ? (weekWalks[0].distance ? 'up' : 'down') : 'stable',
-      hasWalks: (walks?.length || 0) > 0,
-      totalLogs: walks?.length || 0
+      trend: weekVitalSigns.length >= 2 ? (weekVitalSigns[0].heartRate ? 'up' : 'down') : 'stable',
+      hasVitalSigns: (vitalSigns?.length || 0) > 0,
+      totalLogs: vitalSigns?.length || 0
     },
     movements: {
       mostRecent: movements.length > 0 ? movements[0].durationMinutes : 0,
@@ -232,7 +235,8 @@ export const calculatePetStats = (pet: any, chartData: ChartData): PetStats => {
     appointments: {
       mostRecent:
         appointments.length > 0
-          ? nextAppointment.serviceType?.charAt(0).toUpperCase() + nextAppointment.serviceType?.slice(1).toLowerCase()
+          ? nextAppointment.serviceType?.charAt(0)?.toUpperCase() +
+            nextAppointment?.serviceType?.slice(1)?.toLowerCase()
           : '--',
       average: 0,
       trend: '--',

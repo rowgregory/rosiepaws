@@ -66,7 +66,6 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
   // Map price ID to plan name (customize this based on your plans)
   const planMapping: Record<string, { name: string; userRole: string }> = {
     [`${process.env.STRIPE_COMFORT_MONTHLY_PRICE_ID}`]: { name: 'COMFORT', userRole: 'COMFORT' },
-    [`${process.env.STRIPE_COMPANION_MONTHLY_PRICE_ID}`]: { name: 'COMPANION', userRole: 'COMPANION' },
     [`${process.env.STRIPE_LEGACY_MONTHLY_PRICE_ID}`]: { name: 'LEGACY', userRole: 'LECACY' }
   }
 
@@ -122,7 +121,6 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
     data: {
       isFreeUser: planInfo.userRole === 'Free',
       isComfortUser: planInfo.userRole === 'Comfort',
-      isCompanionUser: planInfo.userRole === 'Companion',
       isLegacyUser: planInfo.userRole === 'Legacy',
       role: planInfo.userRole
     }

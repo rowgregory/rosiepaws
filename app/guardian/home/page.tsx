@@ -17,7 +17,7 @@ import {
   FileText,
   RefreshCcw,
   Trash2,
-  Footprints
+  Hospital
 } from 'lucide-react'
 import MainActionCard from '@/app/components/guardian/home/MainActionCard'
 import CareResourcesAndInfo from '@/app/components/guardian/home/CareResourcesAndInfo'
@@ -29,30 +29,32 @@ import EmergencySignsDrawer from '@/app/drawers/general/EmergencySignsDrawer'
 import ViewGuideDrawer from '@/app/drawers/general/ViewGuideDrawer'
 import PetProfileSection from '@/app/components/guardian/home/PetProfileSection'
 import TodaysProgressSection from '@/app/components/guardian/home/TodaysProgressSection'
-import { setOpenPainScoreCreateDrawer } from '@/app/redux/features/painScoreSlice'
-import { setOpenFeedingCreateDrawer } from '@/app/redux/features/feedingSlice'
-import { setOpenWalkCreateDrawer } from '@/app/redux/features/walkSlice'
-import { setOpenWaterCreateDrawer } from '@/app/redux/features/waterSlice'
-import { setOpenMovementCreateDrawer } from '@/app/redux/features/movementSlice'
+import { setOpenPainDrawer } from '@/app/redux/features/painSlice'
+import { setOpenFeedingDrawer } from '@/app/redux/features/feedingSlice'
+import { setOpenWaterDrawer } from '@/app/redux/features/waterSlice'
+import { setOpenMovementDrawer } from '@/app/redux/features/movementSlice'
+import { setOpenNeedToUpgradeDrawer } from '@/app/redux/features/dashboardSlice'
+import { setOpenVitalSignsDrawer } from '@/app/redux/features/vitalSignsSlice'
 
 const Home = () => {
   const dispatch = useAppDispatch()
   const [currentTime] = useState(new Date())
   const { user } = useAppSelector((state: RootState) => state.user)
-  const { zeroPets, feedings, walks, waters, pets, painScores, tokenTransactions } = useAppSelector(
-    (state: RootState) => state.pet
-  )
+  const { zeroPets, pet, pets } = useAppSelector((state: RootState) => state.pet)
+  const { tokenTransactions } = useAppSelector((state: RootState) => state.user)
 
-  const thisWeeksFeedings = feedings.filter(
+  const thisWeeksFeedings = pet?.feedings?.filter(
     (f) => new Date(f.createdAt) >= new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
   ).length
 
-  const thisWeeksWalks = walks.filter(
+  const thisWeeksVitalSigns = pet?.vitalSigns?.filter(
     (w) => new Date(w.createdAt) >= new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
   ).length
 
   const averageWaterIntake =
-    waters.length > 0 ? waters.reduce((acc, item) => acc + Number(item.milliliters), 0) / waters.length : 0
+    pet?.waters?.length > 0
+      ? pet?.waters?.reduce((acc, item) => acc + Number(item.milliliters), 0) / pet?.waters?.length
+      : 0
 
   const getTimeOfDay = () => {
     const hour = currentTime.getHours()
@@ -67,7 +69,6 @@ const Home = () => {
       <ViewGuideDrawer />
       <DisabilityEndOfLifeCareDrawer />
       <CreateSupportDrawer />
-
       <div className="min-h-dvh bg-gray-50">
         {zeroPets ? (
           <div className="px-6 py-5 max-w-7xl mx-auto min-h-dvh">
@@ -81,17 +82,8 @@ const Home = () => {
                 <div className="flex items-center justify-between">
                   <div>
                     <h1 className="text-3xl font-semibold text-gray-900 mb-2">
-                      Good {getTimeOfDay()}, {user?.name || 'Caregiver'}
+                      Good {getTimeOfDay()}, {user?.firstName || 'Caregiver'}
                     </h1>
-                    <p className="text-gray-600">
-                      {pets[0]?.name}&apos;s care dashboard •{' '}
-                      {new Date().toLocaleDateString('en-US', {
-                        weekday: 'long',
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric'
-                      })}
-                    </p>
                   </div>
                 </div>
               </div>
@@ -140,8 +132,8 @@ const Home = () => {
                         </div>
                       </div>
                       <div className="text-right">
-                        <p className="text-2xl font-semibold text-gray-900">{thisWeeksWalks}</p>
-                        <p className="text-xs text-gray-500">walks</p>
+                        <p className="text-2xl font-semibold text-gray-900">{thisWeeksVitalSigns}</p>
+                        <p className="text-xs text-gray-500">vital signs</p>
                       </div>
                     </div>
 
@@ -167,10 +159,9 @@ const Home = () => {
               {/* Daily Progress - 5 columns */}
 
               <TodaysProgressSection
-                walks={walks}
-                waters={waters}
-                feedings={feedings}
-                painScores={painScores}
+                waters={pet?.waters}
+                feedings={pet?.feedings}
+                painScores={pet?.painScores}
                 pets={pets}
               />
 
@@ -190,31 +181,31 @@ const Home = () => {
                         label: 'Log Pain Score',
                         icon: <Heart className="w-5 h-5" />,
                         urgent: false,
-                        func: setOpenPainScoreCreateDrawer
+                        func: setOpenPainDrawer
                       },
                       {
                         label: 'Log Feeding',
                         icon: <Utensils className="w-5 h-5" />,
                         urgent: false,
-                        func: setOpenFeedingCreateDrawer
+                        func: setOpenFeedingDrawer
                       },
                       {
-                        label: 'Log Walk',
-                        icon: <Footprints className="w-5 h-5" />,
+                        label: 'Log Vital Signs',
+                        icon: <Hospital className="w-5 h-5" />,
                         urgent: false,
-                        func: setOpenWalkCreateDrawer
+                        func: setOpenVitalSignsDrawer
                       },
                       {
                         label: 'Log Water',
                         icon: <Droplets className="w-5 h-5" />,
                         urgent: false,
-                        func: setOpenWaterCreateDrawer
+                        func: setOpenWaterDrawer
                       },
                       {
                         label: 'Log Movement',
                         icon: <MapPin className="w-5 h-5" />,
                         urgent: false,
-                        func: setOpenMovementCreateDrawer
+                        func: user?.isFreeUser ? setOpenNeedToUpgradeDrawer : setOpenMovementDrawer
                       }
                     ].map((action) => (
                       <button
@@ -254,10 +245,10 @@ const Home = () => {
                   </div>
                   <div className="flex-1 overflow-y-auto pr-2 max-h-[400px]">
                     <div className="space-y-3">
-                      {tokenTransactions.map((transaction) => {
+                      {tokenTransactions?.map((transaction) => {
                         const getIconForType = (type: string) => {
                           if (type.includes('PAIN_SCORE')) return <Heart className="w-4 h-4" />
-                          if (type.includes('WALK') || type.includes('MOVEMENT')) return <MapPin className="w-4 h-4" />
+                          if (type.includes('MOVEMENT')) return <MapPin className="w-4 h-4" />
                           if (type.includes('MEDICATION')) return <Pill className="w-4 h-4" />
                           if (type.includes('FEEDING')) return <Utensils className="w-4 h-4" />
                           if (type.includes('WATER')) return <Droplets className="w-4 h-4" />
@@ -272,7 +263,7 @@ const Home = () => {
 
                         const getColorForType = (type: string) => {
                           if (type.includes('PAIN_SCORE')) return 'bg-red-100 text-red-600'
-                          if (type.includes('WALK') || type.includes('MOVEMENT')) return 'bg-green-100 text-green-600'
+                          if (type.includes('MOVEMENT')) return 'bg-green-100 text-green-600'
                           if (type.includes('MEDICATION')) return 'bg-purple-100 text-purple-600'
                           if (type.includes('FEEDING')) return 'bg-green-100 text-green-600'
                           if (type.includes('WATER')) return 'bg-blue-100 text-blue-600'
@@ -310,7 +301,7 @@ const Home = () => {
 
                   <div className="mt-4 pt-4 border-t border-gray-200">
                     <div className="flex items-center justify-end text-sm">
-                      <div className="text-gray-500">Total: {user?.tokensUsed.toLocaleString()} tokens used</div>
+                      <div className="text-gray-500">Total: {user?.tokensUsed?.toLocaleString()} tokens used</div>
                     </div>
                   </div>
                 </div>

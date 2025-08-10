@@ -32,7 +32,6 @@ const CustomerDetailsDrawer = () => {
   const getUserTypeInfo = (user: any) => {
     if (user.isSuperUser) return { type: 'Super User', icon: Crown, color: 'red' }
     if (user.isAdmin) return { type: 'Admin', icon: Shield, color: 'purple' }
-    if (user.isCompanionUser) return { type: 'Companion', icon: Heart, color: 'blue' }
     if (user.isComfortUser) return { type: 'Comfort', icon: Star, color: 'green' }
     if (user.isLegacyUser) return { type: 'Legacy', icon: Clock, color: 'yellow' }
     return { type: 'Free', icon: User, color: 'gray' }

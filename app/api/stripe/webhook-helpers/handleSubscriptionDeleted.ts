@@ -30,7 +30,6 @@ async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
     data: {
       isFreeUser: true,
       isComfortUser: false,
-      isCompanionUser: false,
       isLegacyUser: false,
       role: 'Free'
     }

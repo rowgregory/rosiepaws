@@ -1,381 +1,551 @@
 'use client'
 
-import React, { useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { Edit3, Save, X, CheckCircle2, Phone, Stethoscope, PhoneCall, Navigation } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { useSelector, useDispatch } from 'react-redux'
+import {
+  useGetVetQuery,
+  useCreateVetMutation,
+  useUpdateVetMutation,
+  useDeleteVetMutation
+} from '@/app/redux/services/vetApi'
+import {
+  selectIsEditingVet,
+  selectVetOperationStatus,
+  selectHasUnsavedChanges,
+  setEditingVet,
+  setFormDirty,
+  resetOperationStatus
+} from '@/app/redux/features/vetSlice'
+import { VetFormData } from '@/app/types/vet'
 
 const VeterinarianProfile = () => {
-  const [isEditing, setIsEditing] = useState(false)
-  const [loading, setLoading] = useState(false)
-  const [successMessage, setSuccessMessage] = useState('')
-  const [errors, setErrors] = useState<Record<string, string>>({})
-  const [formData, setFormData] = useState({
-    vetName: 'Dr. Sarah Johnson',
-    clinicName: 'Happy Paws Veterinary Clinic',
-    phone: '(555) 123-4567',
-    emergencyPhone: '(555) 987-6543',
-    email: 'info@happypawsvet.com',
-    address: '123 Main Street, Springfield, IL 62701',
-    website: 'https://happypawsvet.com',
-    hours: 'Mon-Fri: 8:00 AM - 6:00 PM, Sat: 9:00 AM - 4:00 PM',
-    notes: "Ask for Dr. Johnson specifically. They know our pet's history well."
-  })
+  const dispatch = useDispatch()
 
-  const handleInputChange = (field: string, value: string) => {
+  // RTK Query hooks - no userId needed since it's grabbed from header
+  const { data: vetResponse, isLoading: isLoadingVet, error: vetError } = useGetVetQuery()
+  const [createVet] = useCreateVetMutation()
+  const [updateVet] = useUpdateVetMutation()
+  const [deleteVet] = useDeleteVetMutation()
+
+  // Redux state selectors
+  const isEditingVet = useSelector(selectIsEditingVet)
+  const operationStatus = useSelector(selectVetOperationStatus)
+  const hasUnsavedChanges = useSelector(selectHasUnsavedChanges)
+
+  // Local form state
+  const [formData, setFormData] = useState<VetFormData>({
+    vetName: '',
+    clinicName: '',
+    phone: '',
+    emergencyPhone: '',
+    email: '',
+    address: '',
+    website: '',
+    hours: '',
+    notes: ''
+  })
+  const [errors, setErrors] = useState<Record<string, string>>({})
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false)
+
+  // Derived state
+  const hasVet = !!vetResponse?.vet
+  const vetData = vetResponse?.vet
+  const isLoading = operationStatus.isCreating || operationStatus.isUpdating || operationStatus.isDeleting
+
+  // Populate form when vet data is loaded
+  useEffect(() => {
+    if (vetData) {
+      const newFormData = {
+        vetName: vetData.vetName || '',
+        clinicName: vetData.clinicName || '',
+        phone: vetData.phone || '',
+        emergencyPhone: vetData.emergencyPhone || '',
+        email: vetData.email || '',
+        address: vetData.address || '',
+        website: vetData.website || '',
+        hours: vetData.hours || '',
+        notes: vetData.notes || ''
+      }
+      setFormData(newFormData)
+    }
+  }, [vetData])
+
+  // Handle success message display
+  useEffect(() => {
+    if (operationStatus.lastOperationSuccess) {
+      setShowSuccessMessage(true)
+      const timer = setTimeout(() => {
+        setShowSuccessMessage(false)
+        dispatch(resetOperationStatus())
+      }, 5000)
+      return () => clearTimeout(timer)
+    }
+  }, [operationStatus.lastOperationSuccess, dispatch])
+
+  // Clear errors when operation succeeds
+  useEffect(() => {
+    if (operationStatus.lastOperationSuccess) {
+      setErrors({})
+    }
+  }, [operationStatus.lastOperationSuccess])
+
+  const handleInputChange = (field: keyof VetFormData, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }))
+    dispatch(setFormDirty(true))
+
+    // Clear field-specific error
     if (errors[field]) {
       setErrors((prev) => ({ ...prev, [field]: '' }))
     }
   }
 
+  const validateForm = (): boolean => {
+    const newErrors: Record<string, string> = {}
+
+    if (!formData.vetName.trim()) {
+      newErrors.name = 'Veterinarian name is required'
+    }
+    if (!formData.clinicName.trim()) {
+      newErrors.clinicName = 'Clinic name is required'
+    }
+    if (!formData.phone.trim()) {
+      newErrors.phone = 'Phone number is required'
+    }
+
+    setErrors(newErrors)
+    return Object.keys(newErrors).length === 0
+  }
+
   const handleSave = async () => {
-    setLoading(true)
-    // Simulate API call
-    setTimeout(() => {
-      setLoading(false)
-      setIsEditing(false)
-      setSuccessMessage('Veterinarian information updated successfully!')
-      setTimeout(() => setSuccessMessage(''), 5000)
-    }, 1500)
+    if (!validateForm()) return
+
+    try {
+      if (hasVet) {
+        // Update existing vet - just pass the form data
+        await updateVet(formData).unwrap()
+      } else {
+        // Create new vet - just pass the form data
+        await createVet(formData).unwrap()
+      }
+    } catch (error: any) {
+      setErrors({
+        general: error?.data?.message || 'Failed to save veterinarian information'
+      })
+    }
+  }
+
+  const handleCancel = () => {
+    if (hasUnsavedChanges) {
+      const confirmCancel = confirm('You have unsaved changes. Are you sure you want to cancel?')
+      if (!confirmCancel) return
+    }
+
+    if (hasVet && vetData) {
+      // Reset to original data
+      setFormData({
+        vetName: vetData.vetName || '',
+        clinicName: vetData.clinicName || '',
+        phone: vetData.phone || '',
+        emergencyPhone: vetData.emergencyPhone || '',
+        email: vetData.email || '',
+        address: vetData.address || '',
+        website: vetData.website || '',
+        hours: vetData.hours || '',
+        notes: vetData.notes || ''
+      })
+    }
+
+    dispatch(setEditingVet(false))
+    setErrors({})
+  }
+
+  const handleEdit = () => {
+    dispatch(setEditingVet(true))
+  }
+
+  const handleDelete = async () => {
+    const confirmDelete = confirm(
+      'Are you sure you want to delete your veterinarian information? This action cannot be undone.'
+    )
+    if (!confirmDelete) return
+
+    try {
+      // No parameters needed - userId grabbed from header
+      await deleteVet().unwrap()
+    } catch (error: any) {
+      setErrors({
+        general: error?.data?.message || 'Failed to delete veterinarian information'
+      })
+    }
   }
 
   const handleCall = (phoneNumber: string) => {
-    window.location.href = `tel:${phoneNumber}`
+    const cleanPhone = phoneNumber.replace(/[^\d+]/g, '')
+    window.location.href = `tel:${cleanPhone}`
   }
 
   const handleDirections = () => {
-    const encodedAddress = encodeURIComponent(formData.address)
+    const encodedAddress = encodeURIComponent(formData?.address ?? '')
     window.open(`https://maps.google.com/?q=${encodedAddress}`, '_blank')
   }
 
-  return (
-    <div className="h-full">
-      <div className="max-w-4xl mx-auto px-6 py-8">
-        {/* Success Message */}
-        <AnimatePresence>
-          {successMessage && (
-            <motion.div
-              initial={{ opacity: 0, y: -10, scale: 0.95 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: -10, scale: 0.95 }}
-              className="mb-6 p-4 bg-green-50 border border-green-200 rounded-xl flex items-center gap-3 shadow-sm"
-            >
-              <div className="flex items-center justify-center w-8 h-8 bg-green-100 rounded-full">
-                <CheckCircle2 className="w-5 h-5 text-green-600" />
-              </div>
-              <span className="text-sm font-medium text-green-700">{successMessage}</span>
-            </motion.div>
-          )}
-        </AnimatePresence>
+  const handleWebsite = () => {
+    const url = formData?.website?.startsWith('http') ? formData.website : `https://${formData.website}`
+    window.open(url, '_blank')
+  }
 
-        {/* Veterinarian Information Card */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden"
+  const getSuccessMessage = () => {
+    switch (operationStatus.lastOperation) {
+      case 'create':
+        return 'Veterinarian profile created successfully!'
+      case 'update':
+        return 'Veterinarian information updated successfully!'
+      case 'delete':
+        return 'Veterinarian information deleted successfully!'
+      default:
+        return 'Operation completed successfully!'
+    }
+  }
+
+  // Loading state
+  if (isLoadingVet) {
+    return (
+      <div className="flex items-center justify-center p-8">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+        <span className="ml-2">Loading veterinarian information...</span>
+      </div>
+    )
+  }
+
+  // Error state
+  if (vetError) {
+    return (
+      <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
+        <p className="text-red-600">Failed to load veterinarian information. Please try again.</p>
+        <button
+          onClick={() => window.location.reload()}
+          className="mt-2 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
         >
-          {/* Header */}
-          <div className="p-6 border-b border-gray-100">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="flex items-center justify-center w-10 h-10 bg-emerald-100 rounded-xl">
-                  <Stethoscope className="w-5 h-5 text-emerald-600" />
-                </div>
-                <div>
-                  <h2 className="text-xl font-semibold text-gray-900">My Veterinarian</h2>
-                  <p className="text-sm text-gray-600">Manage your veterinarian&apos;s contact information</p>
-                </div>
-              </div>
-              <motion.button
-                onClick={() => setIsEditing(!isEditing)}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                className="flex items-center gap-2 px-4 py-2 text-sm text-blue-600 hover:bg-blue-50 rounded-xl transition-colors font-medium"
-              >
-                <Edit3 className="w-4 h-4" />
-                {isEditing ? 'Cancel' : 'Edit Information'}
-              </motion.button>
+          Retry
+        </button>
+      </div>
+    )
+  }
+
+  return (
+    <div className="max-w-4xl mx-auto p-6">
+      <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+        {/* Header */}
+        <div className="bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-2xl font-bold text-white">
+                {hasVet ? 'Your Veterinarian' : 'Add Veterinarian Information'}
+              </h2>
+              <p className="text-blue-100 mt-1">
+                {hasVet ? 'Manage your veterinary care information' : "Let's set up your veterinarian details"}
+              </p>
+              {hasUnsavedChanges && <p className="text-yellow-200 text-sm mt-1">⚠️ You have unsaved changes</p>}
             </div>
-          </div>
-
-          <div className="p-6">
-            {/* Quick Actions */}
-            {!isEditing && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 }}
-                className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8"
-              >
-                <motion.button
-                  onClick={() => handleCall(formData.phone)}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  className="flex items-center gap-3 p-4 bg-green-50 border border-green-200 rounded-xl hover:bg-green-100 transition-colors"
+            {hasVet && !isEditingVet && (
+              <div className="flex gap-2">
+                <button
+                  onClick={handleEdit}
+                  className="px-4 py-2 bg-white/20 text-white rounded-lg hover:bg-white/30 transition-colors"
                 >
-                  <div className="flex items-center justify-center w-10 h-10 bg-green-500 rounded-xl">
-                    <PhoneCall className="w-5 h-5 text-white" />
-                  </div>
-                  <div className="text-left">
-                    <p className="font-medium text-green-900">Call Clinic</p>
-                    <p className="text-sm text-green-700">{formData.phone}</p>
-                  </div>
-                </motion.button>
-
-                <motion.button
-                  onClick={handleDirections}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  className="flex items-center gap-3 p-4 bg-blue-50 border border-blue-200 rounded-xl hover:bg-blue-100 transition-colors"
+                  Edit Information
+                </button>
+                <button
+                  onClick={handleDelete}
+                  disabled={isLoading}
+                  className="px-4 py-2 bg-red-500/80 text-white rounded-lg hover:bg-red-500 transition-colors disabled:opacity-50"
                 >
-                  <div className="flex items-center justify-center w-10 h-10 bg-blue-500 rounded-xl">
-                    <Navigation className="w-5 h-5 text-white" />
-                  </div>
-                  <div className="text-left">
-                    <p className="font-medium text-blue-900">Get Directions</p>
-                    <p className="text-sm text-blue-700">Open in Maps</p>
-                  </div>
-                </motion.button>
-
-                <motion.button
-                  onClick={() => handleCall(formData.emergencyPhone)}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  className="flex items-center gap-3 p-4 bg-red-50 border border-red-200 rounded-xl hover:bg-red-100 transition-colors"
-                >
-                  <div className="flex items-center justify-center w-10 h-10 bg-red-500 rounded-xl">
-                    <Phone className="w-5 h-5 text-white" />
-                  </div>
-                  <div className="text-left">
-                    <p className="font-medium text-red-900">Emergency</p>
-                    <p className="text-sm text-red-700">{formData.emergencyPhone}</p>
-                  </div>
-                </motion.button>
-              </motion.div>
+                  Delete
+                </button>
+              </div>
             )}
+          </div>
+        </div>
 
-            <div className="space-y-8">
-              {/* Veterinarian Information */}
-              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-                <h3 className="text-lg font-semibold text-gray-900 mb-6 flex items-center gap-2">
-                  <div className="w-2 h-2 bg-emerald-500 rounded-full"></div>
-                  Veterinarian Details
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-3">Veterinarian Name</label>
-                    <input
-                      type="text"
-                      value={formData.vetName}
-                      onChange={(e) => handleInputChange('vetName', e.target.value)}
-                      disabled={!isEditing}
-                      className={`w-full px-4 py-3 border rounded-xl text-sm transition-all ${
-                        isEditing
-                          ? 'border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white'
-                          : 'border-gray-200 bg-gray-50 text-gray-600'
-                      }`}
-                      placeholder="Dr. Jane Smith"
-                    />
-                  </div>
+        {/* Success Message */}
+        {showSuccessMessage && (
+          <div className="mx-6 mt-4 p-4 bg-green-50 border border-green-200 rounded-lg">
+            <p className="text-green-600 font-medium">{getSuccessMessage()}</p>
+          </div>
+        )}
 
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-3">Clinic Name</label>
-                    <input
-                      type="text"
-                      value={formData.clinicName}
-                      onChange={(e) => handleInputChange('clinicName', e.target.value)}
-                      disabled={!isEditing}
-                      className={`w-full px-4 py-3 border rounded-xl text-sm transition-all ${
-                        isEditing
-                          ? 'border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white'
-                          : 'border-gray-200 bg-gray-50 text-gray-600'
-                      }`}
-                      placeholder="Happy Paws Veterinary"
-                    />
-                  </div>
+        {/* General Error */}
+        {errors.general && (
+          <div className="mx-6 mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+            <p className="text-red-600 font-medium">{errors.general}</p>
+          </div>
+        )}
+
+        {/* Content - Form and Display sections remain the same */}
+        <div className="p-6">
+          {isEditingVet || !hasVet ? (
+            /* Edit Form - Same as before but form submission calls handleSave() */
+            <form
+              onSubmit={(e) => {
+                e.preventDefault()
+                handleSave()
+              }}
+            >
+              {/* Form fields remain exactly the same... */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* All form fields here - same as previous version */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Veterinarian Name *</label>
+                  <input
+                    type="text"
+                    value={formData.vetName}
+                    onChange={(e) => handleInputChange('vetName', e.target.value)}
+                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                      errors.name ? 'border-red-300' : 'border-gray-300'
+                    }`}
+                    placeholder="Dr. Sarah Johnson"
+                    disabled={isLoading}
+                  />
+                  {errors.name && <p className="mt-1 text-sm text-red-600">{errors.name}</p>}
                 </div>
-              </motion.div>
+                {/* Rest of form fields... */}
+              </div>
 
-              {/* Contact Information */}
-              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
-                <h3 className="text-lg font-semibold text-gray-900 mb-6 flex items-center gap-2">
-                  <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                  Contact Information
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-3">Phone Number</label>
-                    <input
-                      type="tel"
-                      value={formData.phone}
-                      onChange={(e) => handleInputChange('phone', e.target.value)}
-                      disabled={!isEditing}
-                      className={`w-full px-4 py-3 border rounded-xl text-sm transition-all ${
-                        isEditing
-                          ? 'border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white'
-                          : 'border-gray-200 bg-gray-50 text-gray-600'
-                      }`}
-                      placeholder="(555) 123-4567"
-                    />
-                  </div>
+              {/* Clinic Name */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Clinic Name *</label>
+                <input
+                  type="text"
+                  value={formData.clinicName}
+                  onChange={(e) => handleInputChange('clinicName', e.target.value)}
+                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                    errors.clinicName ? 'border-red-300' : 'border-gray-300'
+                  }`}
+                  placeholder="Happy Paws Veterinary Clinic"
+                  disabled={isLoading}
+                />
+                {errors.clinicName && <p className="mt-1 text-sm text-red-600">{errors.clinicName}</p>}
+              </div>
 
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-3">Emergency Number</label>
-                    <input
-                      type="tel"
-                      value={formData.emergencyPhone}
-                      onChange={(e) => handleInputChange('emergencyPhone', e.target.value)}
-                      disabled={!isEditing}
-                      className={`w-full px-4 py-3 border rounded-xl text-sm transition-all ${
-                        isEditing
-                          ? 'border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white'
-                          : 'border-gray-200 bg-gray-50 text-gray-600'
-                      }`}
-                      placeholder="(555) 987-6543"
-                    />
-                  </div>
+              {/* Phone */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Phone Number *</label>
+                <input
+                  type="tel"
+                  value={formData.phone}
+                  onChange={(e) => handleInputChange('phone', e.target.value)}
+                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                    errors.phone ? 'border-red-300' : 'border-gray-300'
+                  }`}
+                  placeholder="(555) 123-4567"
+                  disabled={isLoading}
+                />
+                {errors.phone && <p className="mt-1 text-sm text-red-600">{errors.phone}</p>}
+              </div>
 
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-3">Email Address</label>
-                    <input
-                      type="email"
-                      value={formData.email}
-                      onChange={(e) => handleInputChange('email', e.target.value)}
-                      disabled={!isEditing}
-                      className={`w-full px-4 py-3 border rounded-xl text-sm transition-all ${
-                        isEditing
-                          ? 'border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white'
-                          : 'border-gray-200 bg-gray-50 text-gray-600'
-                      }`}
-                      placeholder="info@vetclinic.com"
-                    />
-                  </div>
+              {/* Emergency Phone */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Emergency Phone</label>
+                <input
+                  type="tel"
+                  value={formData.emergencyPhone}
+                  onChange={(e) => handleInputChange('emergencyPhone', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="(555) 987-6543"
+                  disabled={isLoading}
+                />
+              </div>
 
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-3">Website</label>
-                    <input
-                      type="url"
-                      value={formData.website}
-                      onChange={(e) => handleInputChange('website', e.target.value)}
-                      disabled={!isEditing}
-                      className={`w-full px-4 py-3 border rounded-xl text-sm transition-all ${
-                        isEditing
-                          ? 'border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white'
-                          : 'border-gray-200 bg-gray-50 text-gray-600'
-                      }`}
-                      placeholder="https://vetclinic.com"
-                    />
-                  </div>
-                </div>
-              </motion.div>
+              {/* Email */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                <input
+                  type="email"
+                  value={formData.email}
+                  onChange={(e) => handleInputChange('email', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="info@happypawsvet.com"
+                  disabled={isLoading}
+                />
+              </div>
 
-              {/* Location & Hours */}
-              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
-                <h3 className="text-lg font-semibold text-gray-900 mb-6 flex items-center gap-2">
-                  <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
-                  Location & Hours
-                </h3>
-                <div className="space-y-6">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-3">Clinic Address</label>
-                    <textarea
-                      value={formData.address}
-                      onChange={(e) => handleInputChange('address', e.target.value)}
-                      disabled={!isEditing}
-                      rows={2}
-                      className={`w-full px-4 py-3 border rounded-xl text-sm transition-all resize-none ${
-                        isEditing
-                          ? 'border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white'
-                          : 'border-gray-200 bg-gray-50 text-gray-600'
-                      }`}
-                      placeholder="123 Main Street, City, State 12345"
-                    />
-                  </div>
+              {/* Website */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Website</label>
+                <input
+                  type="url"
+                  value={formData.website}
+                  onChange={(e) => handleInputChange('website', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="https://happypawsvet.com"
+                  disabled={isLoading}
+                />
+              </div>
 
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-3">Office Hours</label>
-                    <textarea
-                      value={formData.hours}
-                      onChange={(e) => handleInputChange('hours', e.target.value)}
-                      disabled={!isEditing}
-                      rows={2}
-                      className={`w-full px-4 py-3 border rounded-xl text-sm transition-all resize-none ${
-                        isEditing
-                          ? 'border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white'
-                          : 'border-gray-200 bg-gray-50 text-gray-600'
-                      }`}
-                      placeholder="Mon-Fri: 8:00 AM - 6:00 PM"
-                    />
-                  </div>
-                </div>
-              </motion.div>
+              {/* Address */}
+              <div className="md:col-span-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2">Address</label>
+                <input
+                  type="text"
+                  value={formData.address}
+                  onChange={(e) => handleInputChange('address', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="123 Main Street, Springfield, IL 62701"
+                  disabled={isLoading}
+                />
+              </div>
+
+              {/* Hours */}
+              <div className="md:col-span-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2">Office Hours</label>
+                <input
+                  type="text"
+                  value={formData.hours}
+                  onChange={(e) => handleInputChange('hours', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="Mon-Fri: 8:00 AM - 6:00 PM, Sat: 9:00 AM - 4:00 PM"
+                  disabled={isLoading}
+                />
+              </div>
 
               {/* Notes */}
-              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }}>
-                <h3 className="text-lg font-semibold text-gray-900 mb-6 flex items-center gap-2">
-                  <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
-                  Additional Notes
-                </h3>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-3">Notes & Special Instructions</label>
-                  <textarea
-                    value={formData.notes}
-                    onChange={(e) => handleInputChange('notes', e.target.value)}
-                    disabled={!isEditing}
-                    rows={3}
-                    className={`w-full px-4 py-3 border rounded-xl text-sm transition-all resize-none ${
-                      isEditing
-                        ? 'border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white'
-                        : 'border-gray-200 bg-gray-50 text-gray-600'
-                    }`}
-                    placeholder="Any special notes about your veterinarian or clinic preferences..."
-                  />
-                </div>
-              </motion.div>
+              <div className="md:col-span-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2">Notes</label>
+                <textarea
+                  value={formData.notes}
+                  onChange={(e) => handleInputChange('notes', e.target.value)}
+                  rows={3}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="Any special notes about your veterinarian..."
+                  disabled={isLoading}
+                />
+              </div>
 
               {/* Action Buttons */}
-              <AnimatePresence>
-                {isEditing && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: 20 }}
-                    className="flex flex-col sm:flex-row gap-3 pt-6 border-t border-gray-200"
+              <div className="flex gap-4 mt-8">
+                <button
+                  type="submit"
+                  disabled={isLoading}
+                  className="flex-1 md:flex-none px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                >
+                  {isLoading ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      {operationStatus.isCreating ? 'Creating...' : 'Updating...'}
+                    </>
+                  ) : hasVet ? (
+                    'Update Information'
+                  ) : (
+                    'Save Veterinarian'
+                  )}
+                </button>
+
+                {hasVet && (
+                  <button
+                    type="button"
+                    onClick={handleCancel}
+                    disabled={isLoading}
+                    className="px-6 py-3 bg-gray-500 text-white rounded-lg hover:bg-gray-600 disabled:opacity-50"
                   >
-                    <motion.button
-                      onClick={handleSave}
-                      disabled={loading}
-                      whileHover={{ scale: loading ? 1 : 1.02 }}
-                      whileTap={{ scale: loading ? 1 : 0.98 }}
-                      className="flex items-center justify-center gap-3 bg-emerald-600 text-white px-6 py-3 rounded-xl hover:bg-emerald-700 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed font-medium"
-                    >
-                      {loading ? (
-                        <>
-                          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                          Saving Information...
-                        </>
-                      ) : (
-                        <>
-                          <Save className="w-4 h-4" />
-                          Save Information
-                        </>
-                      )}
-                    </motion.button>
-                    <motion.button
-                      onClick={() => setIsEditing(false)}
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      className="flex items-center justify-center gap-2 border border-gray-300 text-gray-700 px-6 py-3 rounded-xl hover:bg-gray-50 transition-colors font-medium"
-                    >
-                      <X className="w-4 h-4" />
-                      Cancel
-                    </motion.button>
-                  </motion.div>
+                    Cancel
+                  </button>
                 )}
-              </AnimatePresence>
+              </div>
+            </form>
+          ) : (
+            /* Display Mode */
+            <div className="space-y-6">
+              {/* Contact Info */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">Contact Information</h3>
+                  <div className="space-y-3">
+                    <div>
+                      <span className="text-sm text-gray-500">Veterinarian</span>
+                      <p className="font-medium">{formData.vetName}</p>
+                    </div>
+                    <div>
+                      <span className="text-sm text-gray-500">Clinic</span>
+                      <p className="font-medium">{formData.clinicName}</p>
+                    </div>
+                    {formData.email && (
+                      <div>
+                        <span className="text-sm text-gray-500">Email</span>
+                        <p className="font-medium">{formData.email}</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">Quick Actions</h3>
+                  <div className="space-y-2">
+                    <button
+                      onClick={() => handleCall(formData.phone)}
+                      className="w-full px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+                    >
+                      📞 Call {formData.phone}
+                    </button>
+
+                    {formData.emergencyPhone && (
+                      <button
+                        onClick={() => handleCall(formData.emergencyPhone ?? '')}
+                        className="w-full px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                      >
+                        🚨 Emergency {formData.emergencyPhone}
+                      </button>
+                    )}
+
+                    {formData.address && (
+                      <button
+                        onClick={handleDirections}
+                        className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                      >
+                        🗺️ Get Directions
+                      </button>
+                    )}
+
+                    {formData.website && (
+                      <button
+                        onClick={handleWebsite}
+                        className="w-full px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+                      >
+                        🌐 Visit Website
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Additional Info */}
+              {(formData.address || formData.hours || formData.notes) && (
+                <div className="border-t pt-6">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Additional Information</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {formData.address && (
+                      <div>
+                        <span className="text-sm text-gray-500">Address</span>
+                        <p className="font-medium">{formData.address}</p>
+                      </div>
+                    )}
+                    {formData.hours && (
+                      <div>
+                        <span className="text-sm text-gray-500">Hours</span>
+                        <p className="font-medium">{formData.hours}</p>
+                      </div>
+                    )}
+                    {formData.notes && (
+                      <div className="md:col-span-2">
+                        <span className="text-sm text-gray-500">Notes</span>
+                        <p className="font-medium">{formData.notes}</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
-          </div>
-        </motion.div>
+          )}
+        </div>
       </div>
     </div>
   )

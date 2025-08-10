@@ -2,15 +2,17 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Loader2, X } from 'lucide-react'
 import { RootState, useAppDispatch, useAppSelector } from '../redux/store'
 import { setCloseAdminConfirmModal } from '../redux/features/adminSlice'
+import TokensSVG from '@/public/svg/TokensSVG'
 
 const AdminConfirmModal = () => {
   const dispatch = useAppDispatch()
   const onClose = () => dispatch(setCloseAdminConfirmModal())
   const { confirmModal } = useAppSelector((state: RootState) => state.admin)
+  const { loading: loadingPet } = useAppSelector((state: RootState) => state.pet)
   const { loading: loadingPainScore } = useAppSelector((state: RootState) => state.painScore)
   const { loading: loadingFeeding } = useAppSelector((state: RootState) => state.feeding)
   const { loading: loadingWater } = useAppSelector((state: RootState) => state.water)
-  const { loading: loadingWalk } = useAppSelector((state: RootState) => state.walk)
+  const { loading: loadingVitalSigns } = useAppSelector((state: RootState) => state.vitalSigns)
   const { loading: loadingMovement } = useAppSelector((state: RootState) => state.movement)
   const { loading: loadingAppointment } = useAppSelector((state: RootState) => state.appointment)
   const { loading: loadingBloodSugar } = useAppSelector((state: RootState) => state.bloodSugar)
@@ -20,12 +22,13 @@ const AdminConfirmModal = () => {
     loadingPainScore ||
     loadingFeeding ||
     loadingWater ||
-    loadingWalk ||
+    loadingVitalSigns ||
     loadingMovement ||
     loadingAppointment ||
     loadingBloodSugar ||
     loadingSeizure ||
-    loadingMedia
+    loadingMedia ||
+    loadingPet
 
   return (
     <AnimatePresence>
@@ -60,11 +63,16 @@ const AdminConfirmModal = () => {
               </button>
               <button
                 onClick={() => confirmModal.onConfirm()}
-                className={`px-4 py-2 rounded-md text-sm text-white ${
+                className={`px-4 py-2 rounded-md text-sm text-white whitespace-nowrap flex items-center ${
                   confirmModal.isDestructive ? 'bg-red-600 hover:bg-red-700' : 'bg-blue-600 hover:bg-blue-700'
                 }`}
               >
-                {loading ? <Loader2 className="w-4 h-4 mr-1 animate-spin" /> : confirmModal.confirmText}
+                {loading ? (
+                  <Loader2 className="w-4 h-4 mr-1 animate-spin" />
+                ) : (
+                  `${confirmModal.confirmText} ${confirmModal.tokenAmount}`
+                )}
+                {!loading && <TokensSVG id="whiteToWhite" />}
               </button>
             </div>
           </motion.div>

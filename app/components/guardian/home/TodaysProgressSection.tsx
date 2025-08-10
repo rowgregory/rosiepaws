@@ -3,7 +3,7 @@ import { motion } from 'framer-motion'
 import { useState } from 'react'
 
 // Function to calculate today's progress metrics
-const calculateTodaysProgress = ({ walks = [], waters = [], feedings = [], painScores = [], pets = [] }) => {
+const calculateTodaysProgress = ({ movements = [], waters = [], feedings = [], painScores = [], pets = [] }) => {
   const today = new Date()
   const startOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate())
   const endOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1)
@@ -28,12 +28,12 @@ const calculateTodaysProgress = ({ walks = [], waters = [], feedings = [], painS
 
   // 2. Daily Activity Goal
   const calculateActivityProgress = () => {
-    const todayWalks = walks.filter((walk: { createdAt: any }) => isToday(walk.createdAt))
+    const todayMovements = movements.filter((movement: { createdAt: any }) => isToday(movement.createdAt))
     const pet: any = pets[0]
 
-    // Calculate total walk time in minutes
-    const totalWalkTime = todayWalks.reduce((total: any, walk: { duration: any }) => {
-      return total + (walk.duration || 15) // Default 15 minutes if no duration
+    // Calculate total movement time in minutes
+    const totalMovementTime = todayMovements.reduce((total: any, movement: { duration: any }) => {
+      return total + (movement.duration || 15) // Default 15 minutes if no duration
     }, 0)
 
     // Activity goal based on pet type and age
@@ -47,7 +47,7 @@ const calculateTodaysProgress = ({ walks = [], waters = [], feedings = [], painS
     }
 
     const activityGoal = getActivityGoal()
-    const progress = Math.min((totalWalkTime / activityGoal) * 100, 100)
+    const progress = Math.min((totalMovementTime / activityGoal) * 100, 100)
     return Math.round(progress)
   }
 
@@ -105,9 +105,8 @@ const calculateTodaysProgress = ({ walks = [], waters = [], feedings = [], painS
 }
 
 // Updated Progress Component
-const TodaysProgressSection = ({ walks, waters, feedings, painScores, pets }: any) => {
+const TodaysProgressSection = ({ waters, feedings, painScores, pets }: any) => {
   const progress = calculateTodaysProgress({
-    walks,
     waters,
     feedings,
     painScores,

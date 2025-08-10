@@ -139,7 +139,7 @@ export const getTodaysMedicationSchedule = (medications: IMedication[]) => {
       reminderTime.setHours(hours, minutes, 0, 0)
 
       const timeString = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`
-      const wasAlreadySent = med.sentRemindersToday.includes(timeString)
+      const wasAlreadySent = med?.sentRemindersToday?.includes?.(timeString)
 
       let status: 'completed' | 'upcoming' | 'scheduled'
       if (wasAlreadySent) {

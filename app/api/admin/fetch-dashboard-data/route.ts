@@ -52,7 +52,7 @@ export async function GET(req: NextRequest) {
             seizures: true,
             waters: true,
             bloodSugars: true,
-            walks: true,
+            vitalSigns: true,
             galleryItems: true,
             movements: true
           }
@@ -241,7 +241,6 @@ export async function GET(req: NextRequest) {
     const userTypes = users.reduce(
       (acc, user) => {
         if (user.isComfortUser) acc.comfortUsers++
-        else if (user.isCompanionUser) acc.companionUsers++
         else if (user.isLegacyUser) acc.legacyUsers++
         else if (user.isFreeUser) acc.freeUsers++
         return acc
@@ -249,7 +248,6 @@ export async function GET(req: NextRequest) {
       {
         freeUsers: 0,
         comfortUsers: 0,
-        companionUsers: 0,
         legacyUsers: 0
       }
     )
@@ -298,7 +296,6 @@ export async function GET(req: NextRequest) {
       totalUsers: users.length,
       freeUsers: users.filter((u) => u.isFreeUser).length,
       comfortUsers: users.filter((u) => u.isComfortUser).length,
-      companionUsers: users.filter((u) => u.isCompanionUser).length,
       lecacyUsers: users.filter((u) => u.isLegacyUser).length,
       totalPets: pets.length,
       totalSubscriptions: subscriptions.length,

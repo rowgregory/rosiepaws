@@ -10,9 +10,7 @@ const getQuickTimes = () => [
 
 const TimeRecorded: FC<{ inputs: any; handleInput: any; errors: any }> = ({ inputs, handleInput, errors }) => {
   const QUICK_TIMES = getQuickTimes()
-  console.log('getQuickTimes()', QUICK_TIMES)
 
-  console.log('inputs?.timeRecorded: ', inputs?.timeRecorded)
   const [selectedQuickTimeLabel, setSelectedQuickTimeLabel] = useState<string | null>(null)
 
   const handleQuickTimeClick = (time: any) => {

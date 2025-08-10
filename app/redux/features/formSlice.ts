@@ -5,10 +5,11 @@ import { painScoreInitialErrorState, painScoreInitialState } from '@/app/lib/ini
 import { feedingInitialState } from '@/app/lib/initial-states/feeding'
 import { bloodSugarInitialState } from '@/app/lib/initial-states/bloodSugar'
 import { waterInitialState } from '@/app/lib/initial-states/water'
-import { medicationInitialState } from '@/app/lib/initial-states/medication'
+import { medicationInitialErrorState, medicationInitialState } from '@/app/lib/initial-states/medication'
 import { seizureInitialState } from '@/app/lib/initial-states/seizure'
 import { appointmentInitialError, appointmentInitialState } from '@/app/lib/initial-states/appointment'
-import { movementInitialState } from '@/app/lib/initial-states/movement'
+import { movementInitialErrorState, movementInitialState } from '@/app/lib/initial-states/movement'
+import { vitalSignsInitialState } from '@/app/lib/initial-states/vital-signs'
 
 export type Inputs = {
   [key: string]: string | number | boolean | undefined | unknown
@@ -42,7 +43,7 @@ const formInitialState = {
     inputs: petInitialState,
     errors: petInitialState
   },
-  painScoreForm: {
+  painForm: {
     inputs: painScoreInitialState,
     errors: painScoreInitialErrorState
   },
@@ -60,7 +61,7 @@ const formInitialState = {
   },
   medicationForm: {
     inputs: medicationInitialState,
-    errors: medicationInitialState
+    errors: medicationInitialErrorState
   },
   seizureForm: {
     inputs: seizureInitialState,
@@ -72,7 +73,7 @@ const formInitialState = {
   },
   movementForm: {
     inputs: movementInitialState,
-    errors: movementInitialState
+    errors: movementInitialErrorState
   },
   ticketForm: {
     inputs: { category: '', priority: '', subject: '', email: '', description: '', deviceInfo: '', attachments: [] },
@@ -84,6 +85,10 @@ const formInitialState = {
   },
   mediaForm: {
     inputs: { uploadingFiles: [] },
+    errors: {}
+  },
+  vitalSignsForm: {
+    inputs: vitalSignsInitialState,
     errors: {}
   }
 } as any

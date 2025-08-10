@@ -1,6 +1,6 @@
 import React, { FC } from 'react'
 import { formatDateShort, formatTimeAgo, getFoodTypeConfig } from '@/app/lib/utils'
-import { setOpenFeedingUpdateDrawer } from '@/app/redux/features/feedingSlice'
+import { setOpenFeedingDrawer } from '@/app/redux/features/feedingSlice'
 import { setInputs } from '@/app/redux/features/formSlice'
 import { motion } from 'framer-motion'
 import { IFeeding } from '@/app/types'
@@ -8,8 +8,14 @@ import { useAppDispatch } from '@/app/redux/store'
 import { Trash2 } from 'lucide-react'
 import { setCloseAdminConfirmModal, setOpenAdminConfirmModal } from '@/app/redux/features/adminSlice'
 import { useDeleteFeedingMutation } from '@/app/redux/services/feedingApi'
+import { feedingDeleteTokenCost } from '@/app/lib/constants/public/token'
+import { setOpenSlideMessage } from '@/app/redux/features/appSlice'
 
-const FeedingCard: FC<{ feeding: IFeeding; index: number }> = ({ feeding, index }) => {
+const FeedingCard: FC<{ feeding: IFeeding; index: number; shouldAnimate: boolean }> = ({
+  feeding,
+  index,
+  shouldAnimate
+}) => {
   const foodTypeConfig = getFoodTypeConfig(feeding.foodType)
   const dispatch = useAppDispatch()
   const [deleteFeeding] = useDeleteFeedingMutation()
@@ -26,10 +32,13 @@ const FeedingCard: FC<{ feeding: IFeeding; index: number }> = ({ feeding, index 
           description: `Deleting will permanently remove this feeding from your pet.`,
           confirmText: 'Delete Feeding',
           onConfirm: async () => {
-            await deleteFeeding({ feedingId: feeding.id }).unwrap()
             onCloseConfirmModal()
+            await deleteFeeding({ id: feeding.id })
+              .unwrap()
+              .catch(() => dispatch(setOpenSlideMessage()))
           },
-          isDestructive: true
+          isDestructive: true,
+          tokenAmount: feedingDeleteTokenCost
         }
       })
     )
@@ -37,11 +46,13 @@ const FeedingCard: FC<{ feeding: IFeeding; index: number }> = ({ feeding, index 
 
   return (
     <motion.div
+      key={feeding.id}
+      layout
       onClick={() => {
-        dispatch(setOpenFeedingUpdateDrawer())
-        dispatch(setInputs({ formName: 'feedingForm', data: feeding }))
+        dispatch(setOpenFeedingDrawer())
+        dispatch(setInputs({ formName: 'feedingForm', data: { ...feeding, isUpdating: true } }))
       }}
-      initial={{ opacity: 0, y: 20 }}
+      initial={shouldAnimate ? { opacity: 0, y: 20 } : false}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.05 }}
       className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow relative group cursor-pointer"
@@ -49,15 +60,13 @@ const FeedingCard: FC<{ feeding: IFeeding; index: number }> = ({ feeding, index 
       {/* Delete button */}
       <motion.button
         onClick={handleDelete}
-        className="absolute top-3 right-3 w-8 h-8 bg-red-50 hover:bg-red-100 rounded-lg flex items-center justify-center transition-opacity duration-200 z-10"
+        className="absolute top-3 right-3 w-7 h-7 bg-red-50 hover:bg-red-100 rounded-lg flex items-center justify-center duration-200 z-10"
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: index * 0.1 + 0.1 }}
       >
-        <Trash2 className="w-4 h-4 text-red-500" />
+        <Trash2 className="w-3.5 h-3.5 text-red-500" />
       </motion.button>
+
       <div className="p-4">
         {/* Header with pet avatar and food type */}
         <div className="text-center mb-4">

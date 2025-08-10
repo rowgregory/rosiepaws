@@ -371,7 +371,7 @@ const UserMediaLibrary = () => {
 
             <div className="flex items-center gap-4">
               <div className="text-sm text-gray-600">
-                {filteredItems.length} item{filteredItems.length !== 1 ? 's' : ''} found
+                {filteredItems?.length} item{filteredItems?.length !== 1 ? 's' : ''} found
               </div>
             </div>
           </div>
@@ -443,7 +443,7 @@ const UserMediaLibrary = () => {
           }`}
         >
           <AnimatePresence>
-            {filteredItems.map((item: IMedia, index: number) => (
+            {filteredItems?.map((item: IMedia, index: number) => (
               <motion.div
                 key={item.id}
                 layout
@@ -487,7 +487,7 @@ const UserMediaLibrary = () => {
         </div>
 
         {/* Empty State */}
-        {filteredItems.length === 0 && (
+        {filteredItems?.length === 0 && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center py-12">
             <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
               <Search className="w-8 h-8 text-gray-400" />

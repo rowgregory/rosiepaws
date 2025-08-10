@@ -1,3 +1,4 @@
+import { setOpenNeedToUpgradeDrawer } from '@/app/redux/features/dashboardSlice'
 import { Pet } from '@/app/types/entities'
 import { motion, AnimatePresence } from 'framer-motion'
 import { PawPrint, Plus } from 'lucide-react'
@@ -12,6 +13,8 @@ interface IPetDropdownMenu {
   pet: Pet
   petDropdownOpen: boolean
   handlePetSelect: any
+  zeroPets: boolean
+  user: any
 }
 
 const dropdownVariants: any = {
@@ -88,13 +91,14 @@ const PetDropdownMenu: FC<IPetDropdownMenu> = ({
   dispatch,
   pet,
   petDropdownOpen,
-  handlePetSelect
+  handlePetSelect,
+  zeroPets,
+  user
 }) => {
   return (
     <AnimatePresence mode="wait">
       {petDropdownOpen && (
         <>
-          {/* Backdrop */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -102,17 +106,16 @@ const PetDropdownMenu: FC<IPetDropdownMenu> = ({
             className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40"
             onClick={() => setPetDropdownOpen(!petDropdownOpen)}
           />
-
           <motion.div
             variants={dropdownVariants}
             initial="hidden"
             animate="visible"
             exit="exit"
-            className="absolute bottom-20 left-4 right-4 mt-1 bg-white border border-gray-200 rounded-xl shadow-lg z-[70] max-h-64 overflow-hidden"
+            className="absolute bottom-20 left-4 right-4 mt-1 bg-white border border-gray-200 rounded-xl shadow-lg z-[70] max-h-64 w-64 overflow-hidden"
           >
             {/* Pets List Container */}
             <div className="max-h-48 overflow-y-auto">
-              <div className="p-2">
+              <div className={`${zeroPets ? '' : 'p-2'}`}>
                 {pets.map((petItem: Pet, index: number) => (
                   <motion.div
                     key={petItem.id || index}
@@ -165,11 +168,15 @@ const PetDropdownMenu: FC<IPetDropdownMenu> = ({
             </div>
 
             {/* Add New Pet Option */}
-            <motion.div variants={itemVariants} className="border-t border-gray-100 p-2">
+            <motion.div variants={itemVariants} className={`${zeroPets ? '' : 'border-t border-gray-100  p-2'}`}>
               <Link
                 href="/guardian/pets/my-pets"
                 onClick={() => {
-                  dispatch(setOpenPetDrawer())
+                  if (user.role === 'Free' && user.isFreeUser) {
+                    dispatch(setOpenNeedToUpgradeDrawer())
+                  } else {
+                    dispatch(setOpenPetDrawer())
+                  }
                   setPetDropdownOpen(false)
                 }}
                 className="block"
@@ -197,7 +204,6 @@ const PetDropdownMenu: FC<IPetDropdownMenu> = ({
                   </motion.div>
                   <div className="flex-1">
                     <h3 className="text-sm font-medium">Add New Pet</h3>
-                    <p className="text-xs text-gray-500">Register another pet</p>
                   </div>
                 </motion.div>
               </Link>

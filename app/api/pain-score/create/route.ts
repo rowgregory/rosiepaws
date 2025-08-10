@@ -102,6 +102,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(
       {
         sliceName: slicePainScore,
+        painScore: result.newPainScore,
         user: {
           tokens: result.updatedUser.tokens,
           tokensUsed: result.updatedUser.tokensUsed

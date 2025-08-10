@@ -6,8 +6,10 @@ import { ISeizure } from '@/app/types'
 import { useAppDispatch } from '@/app/redux/store'
 import { useDeleteSeizureMutation } from '@/app/redux/services/seizureApi'
 import { setCloseAdminConfirmModal, setOpenAdminConfirmModal } from '@/app/redux/features/adminSlice'
-import { setOpenSeizureUpdateDrawer } from '@/app/redux/features/seizureSlice'
+import { setOpenSeizureDrawer } from '@/app/redux/features/seizureSlice'
 import { setInputs } from '@/app/redux/features/formSlice'
+import { seizureDeleteTokenCost } from '@/app/lib/constants/public/token'
+import { setOpenSlideMessage } from '@/app/redux/features/appSlice'
 
 interface ISeizureCard {
   seizure: ISeizure
@@ -15,9 +17,17 @@ interface ISeizureCard {
   severity: ReturnType<typeof getSeizureSeverity>
   SeverityIcon: React.ComponentType<any>
   setSelectedVideo: any
+  shouldAnimate: boolean
 }
 
-export const SeizureCard: FC<ISeizureCard> = ({ seizure, index, severity, SeverityIcon, setSelectedVideo }) => {
+export const SeizureCard: FC<ISeizureCard> = ({
+  seizure,
+  index,
+  severity,
+  SeverityIcon,
+  setSelectedVideo,
+  shouldAnimate
+}) => {
   const emergencyLevel = getEmergencyLevel(seizure.duration)
   const dispatch = useAppDispatch()
   const [deleteSeizure] = useDeleteSeizureMutation()
@@ -34,10 +44,13 @@ export const SeizureCard: FC<ISeizureCard> = ({ seizure, index, severity, Severi
           description: `Deleting will permanently remove this seizure from your pet.`,
           confirmText: 'Delete Seizure',
           onConfirm: async () => {
-            await deleteSeizure({ seizureId: seizure.id }).unwrap()
             onCloseConfirmModal()
+            await deleteSeizure({ id: seizure.id })
+              .unwrap()
+              .catch(() => dispatch(setOpenSlideMessage()))
           },
-          isDestructive: true
+          isDestructive: true,
+          tokenAmount: seizureDeleteTokenCost
         }
       })
     )
@@ -45,13 +58,16 @@ export const SeizureCard: FC<ISeizureCard> = ({ seizure, index, severity, Severi
 
   return (
     <motion.div
+      key={seizure.id}
+      layout
       onClick={() => {
-        dispatch(setOpenSeizureUpdateDrawer())
-        dispatch(setInputs({ formName: 'seizureForm', data: seizure }))
+        dispatch(setOpenSeizureDrawer())
+        dispatch(setInputs({ formName: 'seizureForm', data: { ...seizure, isUpdating: true } }))
       }}
-      initial={{ opacity: 0, y: 20 }}
+      initial={shouldAnimate ? { opacity: 0, y: 20 } : false}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.05 }}
+      whileTap={{ scale: 0.96 }}
       className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow relative cursor-pointer"
     >
       {/* Delete button */}

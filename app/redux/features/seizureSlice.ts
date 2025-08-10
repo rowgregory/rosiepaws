@@ -12,8 +12,7 @@ export interface SeizureStatePayload {
   seizures: ISeizure[]
   seizure: ISeizure
   zeroSeizures: boolean
-  seizureCreateDrawer: boolean
-  seizureUpdateDrawer: boolean
+  seizureDrawer: boolean
   seizureCount: number
 }
 
@@ -25,8 +24,7 @@ export const initialSeizureState: SeizureStatePayload = {
   seizures: [],
   seizure: seizureInitialState,
   zeroSeizures: true,
-  seizureCreateDrawer: false,
-  seizureUpdateDrawer: false,
+  seizureDrawer: false,
   seizureCount: 0
 }
 
@@ -34,21 +32,41 @@ export const seizureSlice = createSlice({
   name: 'seizure',
   initialState: initialSeizureState,
   reducers: {
-    setOpenSeizureCreateDrawer: (state) => {
-      state.seizureCreateDrawer = true
+    setOpenSeizureDrawer: (state) => {
+      state.seizureDrawer = true
     },
-    setCloseSeizureCreateDrawer: (state) => {
-      state.seizureCreateDrawer = false
+    setCloseSeizureDrawer: (state) => {
+      state.seizureDrawer = false
     },
-    setOpenSeizureUpdateDrawer: (state) => {
-      state.seizureUpdateDrawer = true
-    },
-    setCloseSeizureUpdateDrawer: (state) => {
-      state.seizureUpdateDrawer = false
-    },
-    addSeizuresToState: (state, { payload }) => {
+    setSeizures: (state, { payload }) => {
       state.seizures = payload
       state.zeroSeizures = payload.length === 0
+    },
+    addSeizureToState: (state, { payload }) => {
+      state.seizures.unshift(payload)
+      state.zeroSeizures = state.seizures.length === 0
+    },
+    updateSeizureInState: (state, action) => {
+      const { findById, replaceWith, ...updatedSeizure } = action.payload
+
+      if (findById && replaceWith) {
+        // Special case: find by one ID, replace with different data
+        const index = state.seizures.findIndex((seizure) => seizure?.id === findById)
+        if (index !== -1) {
+          state.seizures[index] = replaceWith
+        }
+      } else {
+        // Normal update
+        const index = state.seizures.findIndex((seizure) => seizure?.id === updatedSeizure?.id)
+        if (index !== -1) {
+          state.seizures[index] = updatedSeizure
+        }
+      }
+    },
+    removeSeizureFromState: (state, action) => {
+      state.seizures = state.seizures.filter((seizure: { id: string }) => seizure?.id !== action.payload)
+      state.seizureCount = state.seizureCount - 1
+      state.zeroSeizures = state.seizures.length === 0
     }
   },
   extraReducers: (builder) => {
@@ -86,9 +104,10 @@ export const seizureSlice = createSlice({
 export const seizureReducer = seizureSlice.reducer as Reducer<SeizureStatePayload>
 
 export const {
-  setOpenSeizureCreateDrawer,
-  setCloseSeizureCreateDrawer,
-  setOpenSeizureUpdateDrawer,
-  setCloseSeizureUpdateDrawer,
-  addSeizuresToState
+  addSeizureToState,
+  removeSeizureFromState,
+  setCloseSeizureDrawer,
+  setOpenSeizureDrawer,
+  setSeizures,
+  updateSeizureInState
 } = seizureSlice.actions

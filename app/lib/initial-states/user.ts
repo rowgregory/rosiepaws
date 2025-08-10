@@ -8,7 +8,6 @@ export const initialUserState: IUser = {
   isAdmin: false, // Default permission
   isFreeUser: true, // Default user type
   isComfortUser: false, // Default user type
-  isCompanionUser: false, // Default user type
   isLegacyUser: false, // Default user type
   firstName: undefined, // Optional field
   lastName: undefined, // Optional field
@@ -28,7 +27,6 @@ export const initialUserState: IUser = {
   accounts: [], // Account[] relationship
   sessions: [], // Session[] relationship
   pets: [], // Pet[] relationship
-  blogs: [], // Blog[] relationship
   stripeSubscription: undefined, // StripeSubscription? relationship
   tokenTransactions: [], // TokenTransaction[] relationship
   galleryItems: [], // GalleryItem[] relationship

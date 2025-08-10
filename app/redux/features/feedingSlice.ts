@@ -13,8 +13,7 @@ export interface FeedingStatePayload {
   feeding: IFeeding
   zeroFeedings: boolean
   feedingCount: number
-  feedingCreateDrawer: boolean
-  feedingUpdateDrawer: boolean
+  feedingDrawer: boolean
 }
 
 export const initialFeedingState: FeedingStatePayload = {
@@ -25,30 +24,49 @@ export const initialFeedingState: FeedingStatePayload = {
   feedings: [],
   feeding: feedingInitialState,
   zeroFeedings: true,
-  feedingCreateDrawer: false,
-  feedingUpdateDrawer: false,
-  feedingCount: 0
+  feedingCount: 0,
+  feedingDrawer: false
 }
 
 export const feedingSlice = createSlice({
   name: 'feeding',
   initialState: initialFeedingState,
   reducers: {
-    setOpenFeedingCreateDrawer: (state) => {
-      state.feedingCreateDrawer = true
+    setOpenFeedingDrawer: (state) => {
+      state.feedingDrawer = true
     },
-    setCloseFeedingCreateDrawer: (state) => {
-      state.feedingCreateDrawer = false
+    setCloseFeedingDrawer: (state) => {
+      state.feedingDrawer = false
     },
-    setOpenFeedingUpdateDrawer: (state) => {
-      state.feedingUpdateDrawer = true
-    },
-    setCloseFeedingUpdateDrawer: (state) => {
-      state.feedingUpdateDrawer = false
-    },
-    addFeedingsToState: (state, { payload }) => {
+    setFeedings: (state, { payload }) => {
       state.feedings = payload
       state.zeroFeedings = payload.length === 0
+    },
+    addFeedingToState: (state, { payload }) => {
+      state.feedings.unshift(payload)
+      state.zeroFeedings = payload.length === 0
+    },
+    updateFeedingInState: (state, action) => {
+      const { findById, replaceWith, ...updatedFeeding } = action.payload
+
+      if (findById && replaceWith) {
+        // Special case: find by one ID, replace with different data
+        const index = state.feedings.findIndex((feeding) => feeding?.id === findById)
+        if (index !== -1) {
+          state.feedings[index] = replaceWith
+        }
+      } else {
+        // Normal update
+        const index = state.feedings.findIndex((feeding) => feeding?.id === updatedFeeding?.id)
+        if (index !== -1) {
+          state.feedings[index] = updatedFeeding
+        }
+      }
+    },
+    removeFeedingFromState: (state, action) => {
+      state.feedings = state.feedings.filter((feeding: { id: string }) => feeding?.id !== action.payload)
+      state.feedingCount = state.feedingCount - 1
+      state.zeroFeedings = state.feedings.length === 0
     }
   },
   extraReducers: (builder) => {
@@ -86,9 +104,10 @@ export const feedingSlice = createSlice({
 export const feedingReducer = feedingSlice.reducer as Reducer<FeedingStatePayload>
 
 export const {
-  setOpenFeedingCreateDrawer,
-  setCloseFeedingCreateDrawer,
-  setOpenFeedingUpdateDrawer,
-  setCloseFeedingUpdateDrawer,
-  addFeedingsToState
+  setOpenFeedingDrawer,
+  setCloseFeedingDrawer,
+  setFeedings,
+  addFeedingToState,
+  updateFeedingInState,
+  removeFeedingFromState
 } = feedingSlice.actions

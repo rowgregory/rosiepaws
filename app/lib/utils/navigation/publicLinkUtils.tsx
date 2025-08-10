@@ -5,7 +5,8 @@ import {
   guardianGalleryLink,
   guardianSettingsLink,
   guardianInfoLink,
-  guardianResourcesLink
+  guardianResourcesLink,
+  authLoginLink
 } from '@/public/data/admin.data'
 import {
   LayoutDashboard,
@@ -22,9 +23,10 @@ import {
   Zap,
   PawPrint,
   Calendar,
-  Footprints,
   Navigation,
-  Archive
+  Archive,
+  Hospital,
+  LogOut
 } from 'lucide-react'
 
 interface PetLink {
@@ -60,7 +62,7 @@ export const publicDashboardLinks = (path: string, zeroPets: boolean) => [
           icon: Cat,
           textKey: 'My Pets',
           linkKey: guardianPetsLink,
-          isActive: path === guardianPetsLink
+          isActive: path.includes('pets')
         }
       ]),
   ...(zeroPets
@@ -90,6 +92,12 @@ export const publicDashboardLinks = (path: string, zeroPets: boolean) => [
     textKey: 'Info',
     linkKey: guardianInfoLink,
     isActive: path === guardianInfoLink
+  },
+  {
+    icon: LogOut,
+    textKey: 'Logout',
+    linkKey: authLoginLink,
+    isActive: path === authLoginLink
   }
 ]
 
@@ -123,10 +131,10 @@ export const publicPetLinks = (path: string): PetLink[] => [
     gradient: 'from-blue-500 to-cyan-500'
   },
   {
-    linkKey: '/guardian/pets/walks',
-    textKey: 'Walks',
-    isActive: path === '/guardian/pets/walks',
-    icon: <Footprints className="w-4 h-4" />,
+    linkKey: '/guardian/pets/vital-signs',
+    textKey: 'Vital Signs',
+    isActive: path === '/guardian/pets/vital-signs',
+    icon: <Hospital className="w-4 h-4" />,
     gradient: 'from-brown-500 to-gray-500'
   },
   {

@@ -22,7 +22,7 @@ export const tokenActions = [
   { name: 'Log Pain', cost: 75, icon: Heart, description: 'Record pain levels and symptoms' },
   { name: 'Log Feeding', cost: 85, icon: UtensilsCrossed, description: 'Track feeding times and amounts' },
   { name: 'Log Water', cost: 90, icon: Droplet, description: 'Monitor water intake and hydration' },
-  { name: 'Log Walks', cost: 125, icon: MapPin, description: 'Record walk duration and activity' },
+  { name: 'Log Vital Signs', cost: 125, icon: MapPin, description: 'Record vital signs' },
   { name: 'Log Movement', cost: 225, icon: Activity, description: 'Track mobility and exercise sessions' },
   { name: 'Log Appointments', cost: 150, icon: Calendar, description: 'Track vet visits and checkups' },
   { name: 'Log Medications', cost: 225, icon: Pill, description: 'Monitor medication schedules' },
@@ -49,7 +49,7 @@ export const faqData = [
   {
     question: 'How much do movement and mobility logs cost?',
     answer:
-      'Mobility tracking varies by complexity: walks cost 125 tokens for basic activity tracking, while comprehensive movement logs cost 225 tokens and include detailed mobility assessments, gait quality, energy levels, and equipment usage - essential for monitoring disabled pets.'
+      'Mobility tracking varies by complexity: pain scoring cost 75 tokens for basic activity tracking, while comprehensive movement logs cost 225 tokens and include detailed mobility assessments, gait quality, energy levels, and equipment usage - essential for monitoring disabled pets.'
   },
   {
     question: 'What about medication tracking costs?',
@@ -59,7 +59,7 @@ export const faqData = [
   {
     question: 'How do token allowances work for different subscription tiers?',
     answer:
-      'Free users receive 750 tokens daily that reset each day and can only log pain, feeding, and water. Comfort subscribers ($11.99) get 45,000 tokens monthly with access to all features. Companion subscribers ($22.99) receive 120,000 tokens monthly. Legacy subscribers ($34.99) have unlimited tokens.'
+      'Free users receive 750 tokens daily that reset each day and can only log pain, feeding, and water. Comfort subscribers ($11.99) get 17,500 tokens monthly with access to all features. Legacy subscribers ($24.99) have unlimited tokens.'
   },
   {
     question: 'Do unused tokens carry over to the next period?',
@@ -78,77 +78,66 @@ export const planFeatures = [
     feature: 'Token Allowance',
     free: '750 Daily',
     comfort: '45,000 Monthly',
-    companion: '120,000 Monthly',
     legacy: 'Unlimited'
   },
   {
     feature: 'Basic Care Logs (Pain, Feeding, Water)',
     free: '✓',
     comfort: '✓',
-    companion: '✓',
     legacy: '✓'
   },
   {
     feature: 'Mobility Tracking (Walks, Movement)',
     free: '✗',
     comfort: '✓',
-    companion: '✓',
     legacy: '✓'
   },
   {
     feature: 'Medical Records (Appointments, Medications)',
     free: '✗',
     comfort: '✓',
-    companion: '✓',
     legacy: '✓'
   },
   {
     feature: 'Critical Health Monitoring (Blood Sugar, Seizures)',
     free: '✗',
     comfort: 'Limited',
-    companion: '✓',
     legacy: '✓'
   },
   {
     feature: 'Data Export & Sharing',
     free: '✗',
     comfort: '✗',
-    companion: '✓',
     legacy: '✓'
   },
   {
     feature: 'Veterinary Report Generation',
     free: '✗',
     comfort: '✗',
-    companion: '✓',
     legacy: '✓'
   },
   {
     feature: 'End-of-Life Care Documentation',
     free: '✗',
     comfort: '✗',
-    companion: '✓',
     legacy: '✓'
   },
   {
     feature: 'Emergency Health Alerts',
     free: '✗',
     comfort: '✗',
-    companion: '✗',
     legacy: '✓'
   },
   {
     feature: '24/7 Support for Critical Care',
     free: '✗',
     comfort: '✗',
-    companion: '✗',
     legacy: '✓'
   },
   {
     feature: 'Dr. Jaci Coble Veterinary Ebook Collection',
     free: '✗',
     comfort: '✗',
-    companion: '✗',
     legacy: '✓'
   }
 ]

@@ -6,19 +6,7 @@ declare module 'next-auth' {
   interface Session {
     user: {
       id: string
-      role?: string
-      firstName?: string
-      lastName?: string
-      isAdmin?: boolean
-      isSuperUser?: boolean
-      isFreeUser?: boolean
-      isComfortUser?: boolean
-      isCompanionUser?: boolean
-      isLegacyUser?: boolean
-      tokens?: number
-      tokensUsed?: number
-      pets?: any[]
-      stripeSubscription?: any
+      email: string
     } & DefaultSession['user']
   }
 
@@ -34,7 +22,6 @@ declare module 'next-auth' {
     isSuperUser?: boolean
     isFreeUser?: boolean
     isComfortUser?: boolean
-    isCompanionUser?: boolean
     isLegacyUser?: boolean
     tokens?: number
     tokensUsed?: number
@@ -53,7 +40,6 @@ declare module 'next-auth/jwt' {
     isSuperUser?: boolean
     isFreeUser?: boolean
     isComfortUser?: boolean
-    isCompanionUser?: boolean
     isLegacyUser?: boolean
     tokens?: number
     tokensUsed?: number

@@ -23,8 +23,10 @@ const LatestPainScore: FC<{ painScore: PainScore }> = ({ painScore }) => {
 
         <div className="flex items-center justify-between">
           <div>
-            <h3 className="text-lg font-semibold text-gray-900">{latest?.pet?.name}</h3>
-            <p className="text-sm text-gray-500">{getTimeInfo(latest?.createdAt)?.relative}</p>
+            <h3 className="text-lg font-semibold text-gray-900">{latest?.pet?.name ?? 'Rosie Paws'}</h3>
+            <p className="text-sm text-gray-500">
+              {latest?.createdAt ? getTimeInfo(latest?.createdAt)?.relative : 'N/A'}
+            </p>
           </div>
 
           <div className="flex items-center space-x-6">

@@ -2,7 +2,7 @@ import { getUserFromHeader } from '@/app/lib/api/getUserFromheader'
 import { validateMovementRequiredFields } from '@/app/lib/api/validateMovementRequiredFields'
 import { movementCreateTokenCost } from '@/app/lib/constants/public/token'
 import prisma from '@/prisma/client'
-import { slicePet } from '@/public/data/api.data'
+import { sliceMovement } from '@/public/data/api.data'
 import { NextRequest, NextResponse } from 'next/server'
 import { handleApiError } from '@/app/lib/api/handleApiError'
 import { createLog } from '@/app/lib/api/createLog'
@@ -170,7 +170,8 @@ export async function POST(req: NextRequest) {
         user: {
           tokens: result.updatedUser.tokens,
           tokensUsed: result.updatedUser.tokensUsed
-        }
+        },
+        sliceName: sliceMovement
       },
       { status: 201 }
     )
@@ -179,7 +180,7 @@ export async function POST(req: NextRequest) {
       error,
       req,
       action: 'Movement creation',
-      sliceName: slicePet
+      sliceName: sliceMovement
     })
   } finally {
     await prisma.$disconnect()

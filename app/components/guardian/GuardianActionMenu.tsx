@@ -6,12 +6,12 @@ import { setCloseGuardianActionMenu, setOpenPetDrawer } from '@/app/redux/featur
 import Link from 'next/link'
 import { Utensils, Pill, Heart, Sparkles, Crown, Zap, Activity, Droplets } from 'lucide-react'
 import { getTodaysBloodSugarLogs } from '@/app/lib/utils'
-import { setOpenPainScoreCreateDrawer } from '@/app/redux/features/painScoreSlice'
-import { setOpenFeedingCreateDrawer } from '@/app/redux/features/feedingSlice'
-import { setOpenWaterCreateDrawer } from '@/app/redux/features/waterSlice'
-import { setOpenMedicationCreateDrawer } from '@/app/redux/features/medicationSlice'
-import { setOpenBloodSugarCreateDrawer } from '@/app/redux/features/bloodSugarSlice'
-import { setOpenSeizureCreateDrawer } from '@/app/redux/features/seizureSlice'
+import { setOpenPainDrawer } from '@/app/redux/features/painSlice'
+import { setOpenFeedingDrawer } from '@/app/redux/features/feedingSlice'
+import { setOpenWaterDrawer } from '@/app/redux/features/waterSlice'
+import { setOpenMedicationDrawer } from '@/app/redux/features/medicationSlice'
+import { setOpenBloodSugarDrawer } from '@/app/redux/features/bloodSugarSlice'
+import { setOpenSeizureDrawer } from '@/app/redux/features/seizureSlice'
 
 const actions = (hasReachedBloodSugarLimit: boolean, todaysBloodSugarLogs: any) => [
   {
@@ -26,7 +26,7 @@ const actions = (hasReachedBloodSugarLimit: boolean, todaysBloodSugarLogs: any) 
   {
     label: 'Pain Score',
     linkKey: '/guardian/pets/pain',
-    func: setOpenPainScoreCreateDrawer,
+    func: setOpenPainDrawer,
     icon: Activity,
     color: 'from-red-500 to-orange-500',
     bgHover: 'hover:bg-red-50',
@@ -35,7 +35,7 @@ const actions = (hasReachedBloodSugarLimit: boolean, todaysBloodSugarLogs: any) 
   {
     label: 'Feedings',
     linkKey: '/guardian/pets/feedings',
-    func: setOpenFeedingCreateDrawer,
+    func: setOpenFeedingDrawer,
     icon: Utensils,
     color: 'from-green-500 to-emerald-500',
     bgHover: 'hover:bg-green-50',
@@ -44,7 +44,7 @@ const actions = (hasReachedBloodSugarLimit: boolean, todaysBloodSugarLogs: any) 
   {
     label: 'Water Intake',
     linkKey: '/guardian/pets/water',
-    func: setOpenWaterCreateDrawer,
+    func: setOpenWaterDrawer,
     icon: Droplets,
     color: 'from-blue-500 to-cyan-500',
     bgHover: 'hover:bg-blue-50',
@@ -53,7 +53,7 @@ const actions = (hasReachedBloodSugarLimit: boolean, todaysBloodSugarLogs: any) 
   {
     label: 'Medication',
     linkKey: '/guardian/pets/medication',
-    func: setOpenMedicationCreateDrawer,
+    func: setOpenMedicationDrawer,
     icon: Pill,
     color: 'from-indigo-500 to-purple-500',
     bgHover: 'hover:bg-purple-50',
@@ -62,7 +62,7 @@ const actions = (hasReachedBloodSugarLimit: boolean, todaysBloodSugarLogs: any) 
   {
     label: hasReachedBloodSugarLimit ? 'Blood Sugar (Limit Reached)' : 'Blood Sugar',
     linkKey: '#', // Use # since we're handling click differently
-    func: !hasReachedBloodSugarLimit ? setOpenBloodSugarCreateDrawer : () => ({ type: '', payload: '' }),
+    func: !hasReachedBloodSugarLimit ? setOpenBloodSugarDrawer : () => ({ type: '', payload: '' }),
     icon: Heart,
     color: hasReachedBloodSugarLimit ? 'from-gray-400 to-gray-500' : 'from-pink-500 to-rose-500',
     bgHover: hasReachedBloodSugarLimit ? 'hover:bg-gray-50' : 'hover:bg-pink-50',
@@ -75,7 +75,7 @@ const actions = (hasReachedBloodSugarLimit: boolean, todaysBloodSugarLogs: any) 
   {
     label: 'Seizure Tracking',
     linkKey: '/guardian/pets/seizure',
-    func: setOpenSeizureCreateDrawer,
+    func: setOpenSeizureDrawer,
     icon: Zap,
     color: 'from-yellow-500 to-orange-500',
     bgHover: 'hover:bg-yellow-50',
@@ -85,7 +85,8 @@ const actions = (hasReachedBloodSugarLimit: boolean, todaysBloodSugarLogs: any) 
 ]
 
 const GuardianActionMenu = () => {
-  const { guardianActionMenu, bloodSugars } = useAppSelector((state: RootState) => state.pet)
+  const { guardianActionMenu } = useAppSelector((state: RootState) => state.pet)
+  const { bloodSugars } = useAppSelector((state: RootState) => state.bloodSugar)
   const dispatch = useAppDispatch()
 
   const onClose = () => dispatch(setCloseGuardianActionMenu())

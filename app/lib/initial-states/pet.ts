@@ -22,7 +22,7 @@ export const petInitialState: Pet = {
 
   painScores: [],
   feedings: [],
-  walks: [],
+  vitalSigns: [],
   waters: [],
   movements: [],
   medications: [],

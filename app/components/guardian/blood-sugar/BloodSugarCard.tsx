@@ -1,6 +1,8 @@
+import { bloodSugarDeleteTokenCost } from '@/app/lib/constants/public/token'
 import { getBloodSugarStatus, getReadingContext, getTimeInfo, getTimeOfDay } from '@/app/lib/utils'
 import { setCloseAdminConfirmModal, setOpenAdminConfirmModal } from '@/app/redux/features/adminSlice'
-import { setOpenBloodSugarUpdateDrawer } from '@/app/redux/features/bloodSugarSlice'
+import { setOpenSlideMessage } from '@/app/redux/features/appSlice'
+import { setOpenBloodSugarDrawer } from '@/app/redux/features/bloodSugarSlice'
 import { setInputs } from '@/app/redux/features/formSlice'
 import { useDeleteBloodSugarMutation } from '@/app/redux/services/bloodSugarApi'
 import { useAppDispatch } from '@/app/redux/store'
@@ -14,9 +16,10 @@ interface BloodSugarCardProps {
   index: number
   status: ReturnType<typeof getBloodSugarStatus>
   StatusIcon: React.ComponentType<any>
+  shouldAnimate: boolean
 }
 
-const BloodSugarCard: FC<BloodSugarCardProps> = ({ reading, index, status, StatusIcon }) => {
+const BloodSugarCard: FC<BloodSugarCardProps> = ({ reading, index, status, StatusIcon, shouldAnimate }) => {
   const dispatch = useAppDispatch()
   const [deleteFeeding] = useDeleteBloodSugarMutation()
   const onCloseConfirmModal = () => dispatch(setCloseAdminConfirmModal())
@@ -32,23 +35,29 @@ const BloodSugarCard: FC<BloodSugarCardProps> = ({ reading, index, status, Statu
           description: `Deleting will permanently remove this blood sugar from your pet.`,
           confirmText: 'Delete Blood Sugar',
           onConfirm: async () => {
-            await deleteFeeding({ bloodSugarId: reading.id }).unwrap()
             onCloseConfirmModal()
+            await deleteFeeding({ id: reading.id })
+              .unwrap()
+              .catch(() => dispatch(setOpenSlideMessage()))
           },
-          isDestructive: true
+          isDestructive: true,
+          tokenAmount: bloodSugarDeleteTokenCost
         }
       })
     )
   }
   return (
     <motion.div
+      key={reading.id}
+      layout
       onClick={() => {
-        dispatch(setOpenBloodSugarUpdateDrawer())
-        dispatch(setInputs({ formName: 'bloodSugarForm', data: reading }))
+        dispatch(setOpenBloodSugarDrawer())
+        dispatch(setInputs({ formName: 'bloodSugarForm', data: { ...reading, isUpdating: true } }))
       }}
-      initial={{ opacity: 0, y: 20 }}
+      initial={shouldAnimate ? { opacity: 0, y: 20 } : false}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.05 }}
+      whileTap={{ scale: 0.96 }}
       className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow relative group cursor-pointer"
     >
       {/* Delete button */}

@@ -105,6 +105,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json(
       {
+        feeding: result.newFeeding,
         sliceName: sliceFeeding,
         user: {
           tokens: result.updatedUser.tokens,

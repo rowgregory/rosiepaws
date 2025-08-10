@@ -2,7 +2,6 @@
 
 import React from 'react'
 import { motion } from 'framer-motion'
-import { RootState, useAppSelector } from '@/app/redux/store'
 import { PainScore } from '@/app/types/entities'
 import ZeroLogs from '@/app/components/guardian/ZeroLogs'
 import CleanHeader from '@/app/components/guardian/navigation/CleanHeader'
@@ -10,38 +9,48 @@ import PainScoreCard from '@/app/components/guardian/pain/PainScoreCard'
 import { getAveragePainScore, getTimeInfo, getTodaysPainScores } from '@/app/lib/utils'
 import { getPainConfig } from '@/app/lib/constants'
 import { painScoreCreateTokenCost } from '@/app/lib/constants/public/token'
-import { setOpenPainScoreCreateDrawer } from '@/app/redux/features/painScoreSlice'
+import { setOpenPainDrawer } from '@/app/redux/features/painSlice'
 import LatestPainScore from '@/app/components/guardian/pain/LatestPainScore'
+import { RootState, useAppSelector } from '@/app/redux/store'
+import { useInitialAnimation } from '@/app/hooks/useInitialAnimation'
 
 const PainScoring = () => {
-  const { zeroPainScores, painScores } = useAppSelector((state: RootState) => state.painScore)
+  const { painScores, zeroPainScores } = useAppSelector((state: RootState) => state.painScore)
 
   const todaysPainScores = getTodaysPainScores(painScores || [])
   const todaysPainScoresCount = todaysPainScores?.length
   const averagePainScore = getAveragePainScore(todaysPainScores, todaysPainScoresCount)
 
+  const shouldAnimate = useInitialAnimation(painScores)
+
   if (zeroPainScores) {
     return (
       <ZeroLogs
         btnText="Add pain score"
-        title="No pain scores added yet"
+        title="No pain scores logged yet"
         subtitle="Monitor and track your pet's pain levels to ensure their comfort and wellbeing."
         tokens={painScoreCreateTokenCost}
-        func={setOpenPainScoreCreateDrawer}
+        func={setOpenPainDrawer}
+        formName="painForm"
       />
     )
   }
 
   return (
-    <div className="h-[calc(100dvh-96px)]">
+    <div className="min-h-[calc(100dvh-96px)] pb-20">
       <div className="mx-auto px-6 space-y-8">
         {/* Header */}
-        <CleanHeader btnText="Log Pain Score" func={setOpenPainScoreCreateDrawer} tokens={painScoreCreateTokenCost} />
+        <CleanHeader
+          btnText="Log Pain Score"
+          func={setOpenPainDrawer}
+          tokens={painScoreCreateTokenCost}
+          formName="painForm"
+        />
 
         <div className="grid grid-cols-1 xl:grid-cols-4 gap-6">
           <div className="xl:col-span-3 space-y-6">
             {/* Latest Pain Score Highlight */}
-            <LatestPainScore painScore={painScores[0]} />
+            <LatestPainScore painScore={painScores?.[0]} />
 
             {/* All Pain Scores Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -56,6 +65,7 @@ const PainScoring = () => {
                     index={index}
                     config={config}
                     IconComponent={IconComponent}
+                    shouldAnimate={shouldAnimate}
                   />
                 )
               })}
@@ -138,13 +148,13 @@ const PainScoring = () => {
                 <div className="space-y-3">
                   <div className="flex justify-between">
                     <span className="text-sm text-gray-600">Total Pain Scores</span>
-                    <span className="font-semibold text-gray-900">{painScores.length}</span>
+                    <span className="font-semibold text-gray-900">{painScores?.length}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-sm text-gray-600">Average Pain Score</span>
                     <span className="font-semibold text-gray-900">
-                      {painScores.length > 0
-                        ? (painScores.reduce((sum, score) => sum + score.score, 0) / painScores.length).toFixed(1)
+                      {painScores?.length > 0
+                        ? (painScores?.reduce((sum, score) => sum + score.score, 0) / painScores?.length).toFixed(1)
                         : '0.0'}
                       /4
                     </span>
@@ -152,16 +162,16 @@ const PainScoring = () => {
                   <div className="flex justify-between">
                     <span className="text-sm text-gray-600">Highest Pain Score</span>
                     <span className="font-semibold text-red-600">
-                      {painScores.length > 0 ? Math.max(...painScores.map((score) => score.score)) : 0}/4
+                      {painScores?.length > 0 ? Math.max(...painScores?.map((score) => score.score)) : 0}/4
                     </span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-sm text-gray-600">Lowest Pain Score</span>
                     <span className="font-semibold text-green-600">
-                      {painScores.length > 0 ? Math.min(...painScores.map((score) => score.score)) : 0}/4
+                      {painScores?.length > 0 ? Math.min(...painScores?.map((score) => score.score)) : 0}/4
                     </span>
                   </div>
-                  {painScores.length > 0 && (
+                  {painScores?.length > 0 && (
                     <div className="flex justify-between">
                       <span className="text-sm text-gray-600">Last Pain Score</span>
                       <span className="font-semibold text-gray-900">
@@ -184,7 +194,7 @@ const PainScoring = () => {
                 <h3 className="text-lg font-semibold text-gray-800">Recent Pain Scores</h3>
               </div>
               <div className="divide-y divide-gray-100 max-h-80 overflow-y-auto">
-                {painScores.map((painScore, index) => {
+                {painScores?.map((painScore, index) => {
                   const getPainData = (score: number) => {
                     if (score >= 4) return { color: 'bg-red-100 text-red-800', label: 'Extreme' }
                     if (score >= 3) return { color: 'bg-orange-100 text-orange-800', label: 'Severe' }

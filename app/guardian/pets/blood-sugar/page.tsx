@@ -10,10 +10,11 @@ import ZeroLogs from '@/app/components/guardian/ZeroLogs'
 import { IBloodSugar } from '@/app/types'
 import BloodSugarCard from '@/app/components/guardian/blood-sugar/BloodSugarCard'
 import { bloodSugarCreateTokenCost } from '@/app/lib/constants/public/token'
-import { setOpenBloodSugarCreateDrawer } from '@/app/redux/features/bloodSugarSlice'
+import { setOpenBloodSugarDrawer } from '@/app/redux/features/bloodSugarSlice'
+import { useInitialAnimation } from '@/app/hooks/useInitialAnimation'
 
 const BloodSugar = () => {
-  const { zeroBloodSugars, bloodSugars } = useAppSelector((state: RootState) => state.pet)
+  const { zeroBloodSugars, bloodSugars } = useAppSelector((state: RootState) => state.bloodSugar)
   const todaysBloodSugars = getTodaysBloodSugarLogs(bloodSugars || [])
   const todaysBloodSugarsCount = todaysBloodSugars?.length
   const dailyLimit = 4
@@ -27,6 +28,8 @@ const BloodSugar = () => {
   const latestReading = bloodSugars?.length > 0 ? bloodSugars[0] : null
   const canAddMore = remainingReadings > 0
 
+  const shouldAnimate = useInitialAnimation(bloodSugars)
+
   if (zeroBloodSugars) {
     return (
       <ZeroLogs
@@ -34,7 +37,8 @@ const BloodSugar = () => {
         title="No blood sugar logs yet"
         subtitle="Track your pet's blood glucose levels to monitor their health and diabetes management."
         tokens={bloodSugarCreateTokenCost}
-        func={setOpenBloodSugarCreateDrawer}
+        func={setOpenBloodSugarDrawer}
+        formName="bloodSugarForm"
       />
     )
   }
@@ -45,8 +49,9 @@ const BloodSugar = () => {
         {/* Header */}
         <CleanHeader
           btnText={canAddMore ? 'Log Blood Sugar' : 'Daily Limit Reached'}
-          func={canAddMore ? setOpenBloodSugarCreateDrawer : null}
+          func={canAddMore ? setOpenBloodSugarDrawer : null}
           tokens={bloodSugarCreateTokenCost}
+          formName="bloodSugarForm"
         />
 
         {/* Daily Limit Warning */}
@@ -127,6 +132,7 @@ const BloodSugar = () => {
                     index={index}
                     status={status}
                     StatusIcon={StatusIcon}
+                    shouldAnimate={shouldAnimate}
                   />
                 )
               })}

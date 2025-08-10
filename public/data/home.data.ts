@@ -42,30 +42,6 @@ export const plans = [
     popular: false
   },
   {
-    id: 'companion',
-    name: 'Companion',
-    role: 'companion_user',
-    subtitle: 'Multi-pet households needing comprehensive organization',
-    price: '$32',
-    period: '/month',
-    features: [
-      '15,000 Fast Tokens on your Billing Date',
-      'Advanced health analytics',
-      'Medication reminders',
-      'Vet appointment scheduling',
-      'Unlimited photo memories',
-      'Detailed health insights',
-      'Priority email support',
-      'Custom health goals',
-      'Export health records'
-    ],
-    color: 'from-orange-400 to-red-500',
-    textColor: 'text-orange-600',
-    bgColor: 'bg-orange-50',
-    borderColor: 'border-orange-200',
-    popular: true
-  },
-  {
     id: 'legacy',
     name: 'Legacy',
     role: 'legacy_user',

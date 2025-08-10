@@ -4,7 +4,7 @@ import { handleApiError } from '@/app/lib/api/handleApiError'
 import { validateOwnerAndPet } from '@/app/lib/api/validateOwnerAndPet'
 import { seizureCreateTokenCost } from '@/app/lib/constants/public/token'
 import prisma from '@/prisma/client'
-import { slicePet } from '@/public/data/api.data'
+import { sliceSeizure } from '@/public/data/api.data'
 import { NextRequest, NextResponse } from 'next/server'
 
 interface CreateSeizureRequest {
@@ -47,7 +47,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(
         {
           message: `Missing required fields: petId: ${petId}, timeRecorded: ${timeRecorded}, and duration: ${duration} are required`,
-          sliceName: slicePet
+          sliceName: sliceSeizure
         },
         { status: 400 }
       )
@@ -68,13 +68,12 @@ export async function POST(req: NextRequest) {
     // Use transaction to ensure atomicity
     const result = await prisma.$transaction(async (tx) => {
       // Convert duration from minutes to seconds for database storage
-      const durationInSeconds = duration ? Math.round(duration * 60) : 0
 
       // Create seizure record
       const newSeizure = await tx.seizure.create({
         data: {
           petId,
-          duration: durationInSeconds,
+          duration,
           timeRecorded,
           notes: notes || null,
           videoUrl: videoUrl || null,
@@ -142,7 +141,8 @@ export async function POST(req: NextRequest) {
         user: {
           tokens: result.updatedUser.tokens,
           tokensUsed: result.updatedUser.tokensUsed
-        }
+        },
+        sliceName: sliceSeizure
       },
       { status: 201 }
     )
@@ -151,7 +151,7 @@ export async function POST(req: NextRequest) {
       error,
       req,
       action: 'Seizure creation',
-      sliceName: slicePet
+      sliceName: sliceSeizure
     })
   } finally {
     await prisma.$disconnect()

@@ -16,12 +16,16 @@ import {
   getUpcomingReminders,
   getUpcomingTime
 } from '@/app/lib/utils'
-import { setOpenMedicationCreateDrawer } from '@/app/redux/features/medicationSlice'
+import { setOpenMedicationDrawer } from '@/app/redux/features/medicationSlice'
+import { useInitialAnimation } from '@/app/hooks/useInitialAnimation'
 
 const MedicationIntake = () => {
-  const { zeroMedications, medications } = useAppSelector((state: RootState) => state.pet)
+  const { zeroMedications, medications } = useAppSelector((state: RootState) => state.medication)
+
   const activeMedications = getActiveMedications(medications || [])
   const upcomingReminders = getUpcomingReminders(medications || [])
+
+  const shouldAnimate = useInitialAnimation(medications)
 
   if (zeroMedications) {
     return (
@@ -30,7 +34,8 @@ const MedicationIntake = () => {
         title="No medications added yet"
         subtitle="Track your pet's medications, set reminders, and monitor dosage schedules."
         tokens={medicationCreateTokenCost}
-        func={setOpenMedicationCreateDrawer}
+        func={setOpenMedicationDrawer}
+        formName="medicationForm"
       />
     )
   }
@@ -39,7 +44,12 @@ const MedicationIntake = () => {
     <div className="h-[calc(100dvh-96px)]">
       <div className="mx-auto px-6 space-y-8">
         {/* Header */}
-        <CleanHeader btnText="Add Medication" func={setOpenMedicationCreateDrawer} tokens={medicationCreateTokenCost} />
+        <CleanHeader
+          btnText="Add Medication"
+          func={setOpenMedicationDrawer}
+          tokens={medicationCreateTokenCost}
+          formName="medicationForm"
+        />
         <div className="grid grid-cols-1 xl:grid-cols-4 gap-6">
           <div className="xl:col-span-3 space-y-6">
             {/* Alert Section for Upcoming Only */}
@@ -78,11 +88,10 @@ const MedicationIntake = () => {
               </motion.div>
             )}
 
-            {/* Active Medications Grid */}
+            {/* All Medications Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {activeMedications?.map((medication: IMedication, index: number) => {
+              {medications?.map((medication: IMedication, index: number) => {
                 const status = getMedicationStatus(medication)
-                const StatusIcon = status.icon
 
                 return (
                   <MedicationCard
@@ -90,41 +99,12 @@ const MedicationIntake = () => {
                     medication={medication}
                     index={index}
                     status={status}
-                    StatusIcon={StatusIcon}
+                    showExpired={true}
+                    shouldAnimate={shouldAnimate}
                   />
                 )
               })}
             </div>
-
-            {/* All Medications (including expired) */}
-            {medications.length > activeMedications.length && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden"
-              >
-                <div className="p-6">
-                  <h2 className="text-xl font-semibold text-gray-800 mb-4">All Medications</h2>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {medications?.map((medication: IMedication, index: number) => {
-                      const status = getMedicationStatus(medication)
-                      const StatusIcon = status.icon
-
-                      return (
-                        <MedicationCard
-                          key={medication.id}
-                          medication={medication}
-                          index={index}
-                          status={status}
-                          StatusIcon={StatusIcon}
-                          showExpired={true}
-                        />
-                      )
-                    })}
-                  </div>
-                </div>
-              </motion.div>
-            )}
           </div>
 
           {/* Sidebar */}

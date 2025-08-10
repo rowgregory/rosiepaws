@@ -13,7 +13,6 @@ export interface IUser {
   isSuperUser: boolean
   isFreeUser: boolean
   isComfortUser: boolean
-  isCompanionUser: boolean
   isLegacyUser: boolean
   tokens: number
   tokensUsed: number
@@ -33,7 +32,6 @@ const userState: IUser = {
   isSuperUser: false,
   isFreeUser: false,
   isComfortUser: false,
-  isCompanionUser: false,
   isLegacyUser: false,
   tokens: 750,
   tokensUsed: 0,
@@ -49,6 +47,7 @@ export interface UserStatePayload {
   user: IUser
   usersCount: number
   noUsers: boolean
+  tokenTransactions: any[]
 }
 
 const initialUserState: UserStatePayload = {
@@ -58,15 +57,18 @@ const initialUserState: UserStatePayload = {
   users: [],
   user: userState,
   usersCount: 0,
-  noUsers: false
+  noUsers: false,
+  tokenTransactions: []
 }
 
 export const userSlice = createSlice({
   name: 'user',
   initialState: initialUserState,
   reducers: {
-    resetUser: (state) => {
+    clearUser: (state) => {
       state.error = null
+      state.loading = false
+      state.success = false
       state.user = userState
     },
     setUsers: (state, { payload }: any) => {
@@ -77,6 +79,9 @@ export const userSlice = createSlice({
     setUser: (state, { payload }) => {
       state.user = payload
       state.loading = false
+    },
+    setTokenTransactions: (state, { payload }) => {
+      state.tokenTransactions = payload
     },
     resetUserError: (state) => {
       state.error = null
@@ -97,10 +102,9 @@ export const userSlice = createSlice({
         state.users = payload.users
         state.loading = false
       })
-      .addMatcher(userApi.endpoints.fetchMe.matchFulfilled, (state, { payload }: any) => {
+      .addMatcher(userApi.endpoints.fetchMe.matchFulfilled, (state) => {
         state.success = true
         state.loading = false
-        state.user = payload
       })
       .addMatcher(userApi.endpoints.deleteUser.matchFulfilled, (state) => {
         state.success = true
@@ -118,4 +122,12 @@ export const userSlice = createSlice({
 
 export const userReducer = userSlice.reducer as Reducer<UserStatePayload>
 
-export const { resetUser, setUsers, setUser, resetUserError, removeUserFromState, updateUserTokens } = userSlice.actions
+export const {
+  clearUser,
+  setUsers,
+  setUser,
+  resetUserError,
+  removeUserFromState,
+  updateUserTokens,
+  setTokenTransactions
+} = userSlice.actions

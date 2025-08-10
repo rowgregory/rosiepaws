@@ -1,8 +1,9 @@
 'use client'
 
 import CleanHeader from '@/app/components/guardian/navigation/CleanHeader'
-import WaterLogCard from '@/app/components/guardian/water/WaterLogCard'
+import WaterCard from '@/app/components/guardian/water/WaterCard'
 import ZeroLogs from '@/app/components/guardian/ZeroLogs'
+import { useInitialAnimation } from '@/app/hooks/useInitialAnimation'
 import { waterCreateTokenCost } from '@/app/lib/constants/public/token'
 import {
   determineRelativeIntake,
@@ -11,13 +12,13 @@ import {
   getTodaysWaterLogs,
   getWaterIntakeConfig
 } from '@/app/lib/utils'
-import { setOpenWaterCreateDrawer } from '@/app/redux/features/waterSlice'
+import { setOpenWaterDrawer } from '@/app/redux/features/waterSlice'
 import { RootState, useAppSelector } from '@/app/redux/store'
 import { IWater } from '@/app/types'
 import { motion } from 'framer-motion'
 
 const Water = () => {
-  const { zeroWaters, waters } = useAppSelector((state: RootState) => state.pet)
+  const { zeroWaters, waters } = useAppSelector((state: RootState) => state.water)
 
   const todaysWaterLogs = getTodaysWaterLogs(waters || [])
   const todaysWaterLogsCount = todaysWaterLogs?.length
@@ -27,14 +28,17 @@ const Water = () => {
       ? (todaysWaterLogs.reduce((sum, log) => sum + parseInt(log.moodRating), 0) / todaysWaterLogsCount).toFixed(1)
       : '0.0'
 
-  if (!waters || waters?.length === 0 || zeroWaters) {
+  const shouldAnimate = useInitialAnimation(waters)
+
+  if (zeroWaters) {
     return (
       <ZeroLogs
-        btnText="Add water log"
-        title="No water intake logged yet"
+        btnText="Add water"
+        title="No water logged yet"
         subtitle="Track your pet's daily water consumption to ensure proper hydration and health."
         tokens={waterCreateTokenCost}
-        func={setOpenWaterCreateDrawer}
+        func={setOpenWaterDrawer}
+        formName="waterForm"
       />
     )
   }
@@ -43,7 +47,7 @@ const Water = () => {
     <div className="h-[calc(100dvh-96px)]">
       <div className="mx-auto px-6 space-y-8">
         {/* Header */}
-        <CleanHeader btnText="Log Water Intake" func={setOpenWaterCreateDrawer} tokens={waterCreateTokenCost} />
+        <CleanHeader btnText="Log Water" func={setOpenWaterDrawer} tokens={waterCreateTokenCost} formName="waterForm" />
         <div className="grid grid-cols-1 xl:grid-cols-4 gap-6">
           <div className="xl:col-span-3 space-y-6">
             {/* Latest Water Log Highlight */}
@@ -96,9 +100,9 @@ const Water = () => {
 
             {/* All Water Logs Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {waters?.map((waterLog: IWater, index: number) => (
-                <WaterLogCard key={waterLog.id} waterLog={waterLog} index={index} />
-              ))}
+              {waters?.map((water: IWater, index: number) => {
+                return <WaterCard key={water.id} water={water} index={index} shouldAnimate={shouldAnimate} />
+              })}
             </div>
           </div>
 

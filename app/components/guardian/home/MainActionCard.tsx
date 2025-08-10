@@ -1,6 +1,6 @@
 import React from 'react'
 import { motion } from 'framer-motion'
-import { Activity, ArrowRight, Calendar, Camera, Clock, FileText, Heart, PawPrint, Pill } from 'lucide-react'
+import { Activity, Calendar, Camera, PawPrint } from 'lucide-react'
 import { useAppDispatch } from '@/app/redux/store'
 import { setOpenPetDrawer } from '@/app/redux/features/petSlice'
 import TokenCounter from '../TokenCounter'
@@ -75,7 +75,7 @@ const MainActionCard = () => {
           </div>
           <h3 className="text-lg font-semibold text-slate-900 mb-2">Photo Gallery</h3>
           <p className="text-slate-600 text-sm mb-4">
-            Upload, organize, and share photos and videos of your pet with automatic categorization.
+            Upload and share photos of your pet with the Rosie Paws community.
           </p>
           <div className="space-y-3">
             <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-md">
@@ -106,85 +106,6 @@ const MainActionCard = () => {
             <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-md">
               <div className="w-2 h-2 bg-blue-500 rounded-full" />
               <span className="text-sm text-slate-700">Vaccination schedules</span>
-            </div>
-          </div>
-        </div>
-      </motion.div>
-
-      {/* Preview Dashboard */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.4 }}
-        className="bg-white rounded-lg border border-slate-200 shadow-sm"
-      >
-        <div className="p-6 border-b border-slate-200">
-          <h2 className="text-xl font-semibold text-slate-900">Your Dashboard Preview</h2>
-          <p className="text-slate-600 mt-1">Here&apos;s what you&apos;ll see once your pet profile is created</p>
-        </div>
-
-        <div className="p-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {/* Today's Tasks */}
-            <div className="space-y-4">
-              <div className="flex items-center gap-3 mb-4">
-                <Clock className="w-5 h-5 text-slate-600" />
-                <h3 className="font-medium text-slate-900">Today&apos;s Tasks</h3>
-              </div>
-
-              <div className="space-y-3 opacity-60">
-                <div className="flex items-center gap-4 p-4 bg-slate-50 rounded-lg border border-slate-200">
-                  <div className="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
-                    <Pill className="w-5 h-5 text-red-600" />
-                  </div>
-                  <div className="flex-1">
-                    <p className="font-medium text-slate-900">Morning Medication</p>
-                    <p className="text-sm text-slate-600">Give insulin shot - 8:00 AM</p>
-                  </div>
-                  <div className="w-4 h-4 border-2 border-slate-300 rounded" />
-                </div>
-
-                <div className="flex items-center gap-4 p-4 bg-slate-50 rounded-lg border border-slate-200">
-                  <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                    <Heart className="w-5 h-5 text-blue-600" />
-                  </div>
-                  <div className="flex-1">
-                    <p className="font-medium text-slate-900">Health Check</p>
-                    <p className="text-sm text-slate-600">Log energy level and appetite</p>
-                  </div>
-                  <div className="w-4 h-4 border-2 border-slate-300 rounded" />
-                </div>
-              </div>
-            </div>
-
-            {/* Quick Actions */}
-            <div className="space-y-4">
-              <div className="flex items-center gap-3 mb-4">
-                <ArrowRight className="w-5 h-5 text-slate-600" />
-                <h3 className="font-medium text-slate-900">Quick Actions</h3>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3 opacity-60">
-                <button className="p-4 bg-slate-50 rounded-lg border border-slate-200 text-center hover:bg-slate-100 transition-colors">
-                  <Activity className="w-6 h-6 mx-auto mb-2 text-slate-600" />
-                  <span className="text-sm font-medium text-slate-700">Log Health</span>
-                </button>
-
-                <button className="p-4 bg-slate-50 rounded-lg border border-slate-200 text-center hover:bg-slate-100 transition-colors">
-                  <Camera className="w-6 h-6 mx-auto mb-2 text-slate-600" />
-                  <span className="text-sm font-medium text-slate-700">Add Photo</span>
-                </button>
-
-                <button className="p-4 bg-slate-50 rounded-lg border border-slate-200 text-center hover:bg-slate-100 transition-colors">
-                  <FileText className="w-6 h-6 mx-auto mb-2 text-slate-600" />
-                  <span className="text-sm font-medium text-slate-700">View Records</span>
-                </button>
-
-                <button className="p-4 bg-slate-50 rounded-lg border border-slate-200 text-center hover:bg-slate-100 transition-colors">
-                  <Calendar className="w-6 h-6 mx-auto mb-2 text-slate-600" />
-                  <span className="text-sm font-medium text-slate-700">Schedule</span>
-                </button>
-              </div>
             </div>
           </div>
         </div>

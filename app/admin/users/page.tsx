@@ -55,7 +55,6 @@ const AdminUsersPage = () => {
                   <option value="all">All Roles</option>
                   <option value="free">Free</option>
                   <option value="comfort">Comfort</option>
-                  <option value="companion">Companion</option>
                   <option value="admin">Admin</option>
                 </select>
                 <select
@@ -66,7 +65,6 @@ const AdminUsersPage = () => {
                   <option value="all">All Types</option>
                   <option value="super">Super Users</option>
                   <option value="admin">Admins</option>
-                  <option value="companion">Companion</option>
                   <option value="comfort">Comfort</option>
                   <option value="legacy">Legacy</option>
                   <option value="free">Free</option>

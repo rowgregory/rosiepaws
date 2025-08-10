@@ -13,9 +13,8 @@ export async function POST(req: NextRequest) {
 
     // Define your subscription plans
     const plans: Record<string, { priceId: string; name: string; userRole: string }> = {
-      comfort: { priceId: process.env.STRIPE_COMFORT_MONTHLY_PRICE_ID!, name: 'COMFORT', userRole: 'basic_user' },
-      companion: { priceId: process.env.STRIPE_COMPANION_MONTHLY_PRICE_ID!, name: 'COMPANION', userRole: 'pro_user' },
-      legacy: { priceId: process.env.STRIPE_LEGACY_MONTHLY_PRICE_ID!, name: 'LEGACY', userRole: 'premium_user' }
+      comfort: { priceId: process.env.STRIPE_COMFORT_MONTHLY_PRICE_ID!, name: 'COMFORT', userRole: 'comfort_user' },
+      legacy: { priceId: process.env.STRIPE_LEGACY_MONTHLY_PRICE_ID!, name: 'LEGACY', userRole: 'legacy_user' }
     }
 
     if (!plans[planId]) {

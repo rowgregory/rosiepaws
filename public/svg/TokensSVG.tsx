@@ -1,6 +1,6 @@
 import React from 'react'
 
-const TokensSVG = ({ color1, color2, id }: any) => {
+const TokensSVG = ({ color1 = '#fff', color2 = '#fff', id }: any) => {
   return (
     <>
       <svg width="0" height="0" className="absolute">

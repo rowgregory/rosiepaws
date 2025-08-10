@@ -4,19 +4,22 @@ import { motion } from 'framer-motion'
 import { PainScore } from '@/app/types/entities'
 import { formatDate } from '@/app/lib/utils'
 import { useAppDispatch } from '@/app/redux/store'
-import { setOpenPainScoreUpdateDrawer } from '@/app/redux/features/painScoreSlice'
+import { setOpenPainDrawer } from '@/app/redux/features/painSlice'
 import { setInputs } from '@/app/redux/features/formSlice'
 import { useDeletePainScoreMutation } from '@/app/redux/services/painScoreApi'
 import { setCloseAdminConfirmModal, setOpenAdminConfirmModal } from '@/app/redux/features/adminSlice'
+import { painScoreDeleteTokenCost } from '@/app/lib/constants/public/token'
+import { setOpenSlideMessage } from '@/app/redux/features/appSlice'
 
 interface IPainScoreCard {
   painScore: PainScore
   index: number
   config: any
   IconComponent: any
+  shouldAnimate: boolean
 }
 
-const PainScoreCard: FC<IPainScoreCard> = ({ painScore, index, config, IconComponent }) => {
+const PainScoreCard: FC<IPainScoreCard> = ({ painScore, index, config, IconComponent, shouldAnimate }) => {
   const dispatch = useAppDispatch()
   const [deletePainScore] = useDeletePainScoreMutation()
   const onCloseConfirmModal = () => dispatch(setCloseAdminConfirmModal())
@@ -32,10 +35,13 @@ const PainScoreCard: FC<IPainScoreCard> = ({ painScore, index, config, IconCompo
           description: `Deleting will permanently remove this pain score from your pet`,
           confirmText: 'Delete Pain Score',
           onConfirm: async () => {
-            await deletePainScore({ painScoreId: painScore.id }).unwrap()
             onCloseConfirmModal()
+            await deletePainScore({ id: painScore.id })
+              .unwrap()
+              .catch(() => dispatch(setOpenSlideMessage()))
           },
-          isDestructive: true
+          isDestructive: true,
+          tokenAmount: painScoreDeleteTokenCost
         }
       })
     )
@@ -43,39 +49,32 @@ const PainScoreCard: FC<IPainScoreCard> = ({ painScore, index, config, IconCompo
 
   return (
     <motion.div
+      key={painScore.id}
+      layout
       onClick={() => {
-        dispatch(setOpenPainScoreUpdateDrawer())
-        dispatch(setInputs({ formName: 'painScoreForm', data: painScore }))
+        dispatch(setOpenPainDrawer())
+        dispatch(setInputs({ formName: 'painForm', data: { ...painScore, isUpdating: true } }))
       }}
-      key={painScore?.id}
-      className="bg-white rounded-xl border border-gray-200 p-5 cursor-pointer group relative"
-      initial={{ opacity: 0, scale: 0.9 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{ delay: index * 0.1, duration: 0.3 }}
-      whileHover={{
-        y: -4,
-        boxShadow: '0 12px 24px rgba(0, 0, 0, 0.1)',
-        transition: { duration: 0.2 }
-      }}
+      initial={shouldAnimate ? { opacity: 0, y: 20 } : false}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: index * 0.05 }}
       whileTap={{ scale: 0.96 }}
+      className="bg-white rounded-xl border border-gray-200 p-5 cursor-pointer hover:shadow-md transition-shadow group relative"
     >
       {/* Delete button */}
       <motion.button
         onClick={handleDelete}
-        className="absolute top-3 right-3 w-8 h-8 bg-red-50 hover:bg-red-100 rounded-lg flex items-center justify-center transition-opacity duration-200 z-10"
+        className="absolute top-3 right-3 w-7 h-7 bg-red-50 hover:bg-red-100 rounded-lg flex items-center justify-center duration-200 z-10"
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: index * 0.1 + 0.1 }}
       >
-        <Trash2 className="w-4 h-4 text-red-500" />
+        <Trash2 className="w-3.5 h-3.5 text-red-500" />
       </motion.button>
 
       {/* Header with pain level */}
       <motion.div
         className="text-center mb-4"
-        initial={{ opacity: 0, y: -10 }}
+        initial={shouldAnimate ? { opacity: 0, y: -10 } : false}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: index * 0.1 + 0.2 }}
       >
@@ -93,7 +92,7 @@ const PainScoreCard: FC<IPainScoreCard> = ({ painScore, index, config, IconCompo
       {/* Pet info */}
       <motion.div
         className="mb-4"
-        initial={{ opacity: 0, x: -10 }}
+        initial={shouldAnimate ? { opacity: 0, x: -10 } : false}
         animate={{ opacity: 1, x: 0 }}
         transition={{ delay: index * 0.1 + 0.3 }}
       >
@@ -115,7 +114,7 @@ const PainScoreCard: FC<IPainScoreCard> = ({ painScore, index, config, IconCompo
         {painScore?.notes && (
           <motion.div
             className="bg-gray-50 rounded-lg p-3"
-            initial={{ opacity: 0, height: 0 }}
+            initial={shouldAnimate ? { opacity: 0, height: 0 } : false}
             animate={{ opacity: 1, height: 'auto' }}
             transition={{ delay: index * 0.1 + 0.4 }}
           >
@@ -127,7 +126,7 @@ const PainScoreCard: FC<IPainScoreCard> = ({ painScore, index, config, IconCompo
       {/* Time stamp */}
       <motion.div
         className="pt-3 border-t border-gray-100"
-        initial={{ opacity: 0 }}
+        initial={shouldAnimate ? { opacity: 0 } : false}
         animate={{ opacity: 1 }}
         transition={{ delay: index * 0.1 + 0.5 }}
       >
@@ -141,7 +140,7 @@ const PainScoreCard: FC<IPainScoreCard> = ({ painScore, index, config, IconCompo
       {painScore?.score >= 4 && (
         <motion.div
           className="absolute top-2 left-2 w-2 h-2 bg-red-500 rounded-full"
-          initial={{ scale: 0 }}
+          initial={shouldAnimate ? { scale: 0 } : false}
           animate={{ scale: 1 }}
           transition={{ delay: index * 0.1 + 0.6, type: 'spring' }}
         />

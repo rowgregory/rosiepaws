@@ -3,7 +3,8 @@ import { petInitialState } from './pet'
 
 export const painScoreInitialState: PainScore = {
   id: '',
-  score: -1,
+  tempId: '',
+  score: 2,
   petId: '',
   timeRecorded: '',
   notes: '',
@@ -14,6 +15,7 @@ export const painScoreInitialState: PainScore = {
 }
 export const painScoreInitialErrorState: PainScore = {
   id: '',
+  tempId: '',
   score: 0,
   petId: '',
   timeRecorded: '',

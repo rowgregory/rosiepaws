@@ -73,7 +73,7 @@ export async function PATCH(req: NextRequest, { params }: any) {
     // Use transaction to ensure atomicity
     const result = await prisma.$transaction(
       async (tx) => {
-        const newAppointment = await tx.appointment.update({
+        const updatedAppointment = await tx.appointment.update({
           where: { id: appointmentId },
           data: updateData,
           include: {
@@ -110,7 +110,7 @@ export async function PATCH(req: NextRequest, { params }: any) {
           }
         })
 
-        return { newAppointment, updatedUser }
+        return { updatedAppointment, updatedUser }
       },
       {
         timeout: 15000, // ✅ Increase to 15 seconds for atomic operations
@@ -125,12 +125,13 @@ export async function PATCH(req: NextRequest, { params }: any) {
       url: req.url,
       method: req.method,
       petId,
-      appointmentId: result.newAppointment.id,
+      appointmentId: result.updatedAppointment.id,
       userId: userAuth.userId
     })
 
     return NextResponse.json(
       {
+        appointment: result.updatedAppointment,
         sliceName: sliceAppointment,
         user: {
           tokens: result.updatedUser.tokens,
@@ -146,5 +147,7 @@ export async function PATCH(req: NextRequest, { params }: any) {
       action: 'Appointment updated',
       sliceName: sliceAppointment
     })
+  } finally {
+    await prisma.$disconnect()
   }
 }

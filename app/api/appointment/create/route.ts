@@ -79,8 +79,8 @@ export async function POST(req: NextRequest) {
             type: 'APPOINTMENT_CREATION',
             description: `Appointment creation`,
             metadata: {
-              appointmentId: newAppointment.id,
-              appointmentServiceType: newAppointment.serviceType,
+              appointmentId: newAppointment?.id,
+              appointmentServiceType: newAppointment?.serviceType,
               feature: 'appointment_creation'
             }
           }
@@ -123,5 +123,7 @@ export async function POST(req: NextRequest) {
       action: 'Appointment creation',
       sliceName: sliceAppointment
     })
+  } finally {
+    await prisma.$disconnect()
   }
 }

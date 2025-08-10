@@ -20,6 +20,7 @@ const MyPets = () => {
         subtitle="Get started by adding your first pet to begin tracking their health and activities."
         tokens={petCreateTokenCost}
         func={setOpenPetDrawer}
+        formName="petForm"
       />
     )
   }
@@ -28,7 +29,7 @@ const MyPets = () => {
     <div className="h-[calc(100dvh-96px)]">
       <div className="mx-auto px-6 space-y-8">
         {/* Header */}
-        <CleanHeader btnText="Add Pet" func={setOpenPetDrawer} tokens={petCreateTokenCost} />
+        <CleanHeader btnText="Add Pet" func={setOpenPetDrawer} tokens={petCreateTokenCost} formName="petForm" />
 
         {/* Pet Cards Grid */}
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">

@@ -51,7 +51,7 @@ export async function DELETE(req: NextRequest, { params }: any) {
             painScores: true,
             feedings: true,
             waters: true,
-            walks: true,
+            vitalSigns: true,
             movements: true,
             appointments: true,
             medications: true,
@@ -110,7 +110,7 @@ export async function DELETE(req: NextRequest, { params }: any) {
         painScores: petToDelete?._count.painScores || 0,
         feedings: petToDelete?._count.feedings || 0,
         waters: petToDelete?._count.waters || 0,
-        walks: petToDelete?._count.walks || 0,
+        vitalSigns: petToDelete?._count.vitalSigns || 0,
         movements: petToDelete?._count.movements || 0,
         appointments: petToDelete?._count.appointments || 0,
         medications: petToDelete?._count.medications || 0,
@@ -121,6 +121,11 @@ export async function DELETE(req: NextRequest, { params }: any) {
 
     return NextResponse.json(
       {
+        pet: result.deletedPet,
+        user: {
+          tokens: result.updatedUser.tokens,
+          tokensUsed: result.updatedUser.tokensUsed
+        },
         sliceName: slicePet
       },
       { status: 200 }

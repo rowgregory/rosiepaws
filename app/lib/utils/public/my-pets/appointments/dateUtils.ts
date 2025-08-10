@@ -19,7 +19,7 @@ export const getUpcomingAppointments = (appointments: any[]) => {
   return (
     appointments
       ?.filter((apt) => {
-        const aptDateTime = new Date(`${apt?.date.split('T')[0]}T${apt?.time}:00`)
+        const aptDateTime = new Date(`${apt?.date?.split?.('T')[0]}T${apt?.time}:00`)
         return aptDateTime.getTime() > now.getTime() && apt.status !== AppointmentStatus.CANCELLED
       })
       .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()) || []
@@ -36,7 +36,7 @@ export const getNextAppointment = (appointments: any[]) => {
 }
 
 export const isPastAppointment = (appointment: any): boolean => {
-  const aptDateTime = new Date(`${appointment.date.split('T')[0]}T${appointment.time}:00`)
+  const aptDateTime = new Date(`${appointment?.date?.split?.('T')[0]}T${appointment.time}:00`)
   return aptDateTime.getTime() < new Date().getTime()
 }
 

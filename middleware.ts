@@ -39,7 +39,6 @@ export async function middleware(req: NextRequest) {
       isAdmin: session.user.isAdmin,
       isFreeUser: session.user.isFreeUser,
       isComfortUser: session.user.isComfortUser,
-      isCompanionUser: session.user.isCompanionUser,
       isLegacyUser: session.user.isLegacyUser
     }
     requestHeaders.set('x-user', JSON.stringify(userData))

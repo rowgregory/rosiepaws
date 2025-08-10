@@ -116,6 +116,11 @@ export async function PATCH(req: NextRequest, { params }: any) {
 
     return NextResponse.json(
       {
+        pet: result.updatedPet,
+        user: {
+          tokens: result.updatedUser.tokens,
+          tokensUsed: result.updatedUser.tokensUsed
+        },
         sliceName: slicePet
       },
       { status: 200 }

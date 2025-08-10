@@ -142,6 +142,7 @@ export async function PATCH(req: NextRequest, { params }: any) {
 
     return NextResponse.json(
       {
+        seizure: result.newSeizure,
         sliceName: sliceSeizure,
         user: {
           tokens: result.updatedUser.tokens,

@@ -10,7 +10,6 @@ export const SUBSCRIPTION_PLAN_OPTIONS = [
   { value: 'all', label: 'All Plans', color: 'gray' },
   { value: 'FREE', label: 'Free', color: 'gray' },
   { value: 'COMFORT', label: 'Comfort', color: 'green' },
-  { value: 'COMPANION', label: 'Companion', color: 'blue' },
   { value: 'LEGACY', label: 'Legacy', color: 'yellow' }
 ]
 

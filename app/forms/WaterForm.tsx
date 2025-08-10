@@ -3,7 +3,7 @@ import { MOOD_EMOJIS } from '@/app/lib/constants'
 import { IForm } from '../types'
 import PetSelection from '../components/common/forms/PetSelection'
 import FixedFooter from '../components/common/forms/FixedFooter'
-import { waterCreateTokenCost } from '../lib/constants/public/token'
+import { waterCreateTokenCost, waterUpdateTokenCost } from '../lib/constants/public/token'
 import Notes from '../components/common/forms/Notes'
 import TimeRecorded from '../components/common/forms/TimeRecorded'
 import { getWaterMoodDescription } from '../lib/utils'
@@ -76,7 +76,7 @@ const WaterForm: FC<IForm> = ({ inputs, handleInput, close, handleSubmit, loadin
       <FixedFooter
         inputs={inputs}
         loading={loading}
-        tokens={waterCreateTokenCost}
+        tokens={isUpdating ? waterUpdateTokenCost : waterCreateTokenCost}
         text="Water"
         close={close}
         func={() => isWaterFormValid(inputs)}

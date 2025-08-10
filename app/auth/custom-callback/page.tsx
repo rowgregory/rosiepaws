@@ -1,7 +1,5 @@
 'use client'
 
-import { setPet, setPets } from '@/app/redux/features/petSlice'
-import { setUser } from '@/app/redux/features/userSlice'
 import { useAppDispatch } from '@/app/redux/store'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
@@ -14,30 +12,10 @@ const CustomCallback = () => {
 
   useEffect(() => {
     const handlePostAuth = async () => {
-      if (status === 'authenticated' && session?.user?.id) {
+      const user = session?.user
+      if (status === 'authenticated' && user?.id) {
         try {
-          dispatch(
-            setUser({
-              id: session.user.id,
-              email: session.user.email,
-              firstName: session.user.firstName,
-              lastName: session.user.lastName,
-              role: session.user.role,
-              hasSubscription: !!session.user.stripeSubscription,
-              isAdmin: session.user.isAdmin,
-              isFreeUser: session.user.isFreeUser,
-              isComfortUser: session.user.isComfortUser,
-              isCompanionUser: session.user.isCompanionUser,
-              isLegacyUser: session.user.isLegacyUser,
-              pets: session.user.pets
-            })
-          )
-
-          dispatch(setPets(session.user.pets))
-          dispatch(setPet(session.user.pets?.[0]))
-
-          // Route based on user type with clearer priority
-          if ((session.user.isAdmin || session.user.isSuperUser) && session.user.role === 'ADMIN') {
+          if ((user?.isAdmin || user?.isSuperUser) && user?.role === 'ADMIN') {
             push('/admin/dashboard')
           } else {
             push('/guardian/home')

@@ -13,16 +13,17 @@ import { formReducer } from './features/formSlice'
 import { stripeReducer } from './features/stripeSlice'
 import { adminReducer } from './features/adminSlice'
 import { ticketReducer } from './features/ticketSlice'
-import { painScoreReducer } from './features/painScoreSlice'
+import { painScoreReducer } from './features/painSlice'
 import { feedingReducer } from './features/feedingSlice'
 import { waterReducer } from './features/waterSlice'
-import { walkReducer } from './features/walkSlice'
 import { movementReducer } from './features/movementSlice'
 import { appointmentReducer } from './features/appointmentSlice'
 import { medicationReducer } from './features/medicationSlice'
 import { bloodSugarReducer } from './features/bloodSugarSlice'
 import { seizureReducer } from './features/seizureSlice'
 import { mediaReducer } from './features/mediaSlice'
+import { vitalSignsReducer } from './features/vitalSignsSlice'
+import { vetReducer } from './features/vetSlice'
 
 const rootReducer = combineReducers({
   app: appReducer,
@@ -37,13 +38,14 @@ const rootReducer = combineReducers({
   painScore: painScoreReducer,
   feeding: feedingReducer,
   water: waterReducer,
-  walk: walkReducer,
+  vitalSigns: vitalSignsReducer,
   movement: movementReducer,
   appointment: appointmentReducer,
   medication: medicationReducer,
   bloodSugar: bloodSugarReducer,
   seizure: seizureReducer,
   media: mediaReducer,
+  vet: vetReducer,
   [api.reducerPath]: api.reducer
 })
 
@@ -65,3 +67,14 @@ export type AppSelector = typeof store.getState
 export const useAppDispatch: () => AppDispatch = useDispatch
 
 export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector
+
+export const usePetSelector = () => useAppSelector((state) => state.pet)
+export const usePainScoreSelector = () => useAppSelector((state) => state.painScore)
+export const useFeedingSelector = () => useAppSelector((state) => state.feeding)
+export const useWaterSelector = () => useAppSelector((state) => state.water)
+export const useVitalSignsSelector = () => useAppSelector((state) => state.vitalSigns)
+export const useMovementSelector = () => useAppSelector((state) => state.movement)
+export const useAppointmentSelector = () => useAppSelector((state) => state.appointment)
+export const useMedicationSelector = () => useAppSelector((state) => state.medication)
+export const useBloodSugarSelector = () => useAppSelector((state) => state.bloodSugar)
+export const useSeizureSelector = () => useAppSelector((state) => state.seizure)

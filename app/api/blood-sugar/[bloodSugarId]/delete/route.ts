@@ -102,6 +102,7 @@ export async function DELETE(req: NextRequest, { params }: any) {
     })
 
     return NextResponse.json({
+      bloodSugar: result.deletedBloodSugar,
       sliceName: sliceBloodSugar,
       user: {
         tokens: result.updatedUser.tokens,

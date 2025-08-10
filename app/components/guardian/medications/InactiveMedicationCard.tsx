@@ -1,5 +1,5 @@
 import { setInputs } from '@/app/redux/features/formSlice'
-import { setOpenMedicationUpdateDrawer } from '@/app/redux/features/medicationSlice'
+import { setOpenMedicationDrawer } from '@/app/redux/features/medicationSlice'
 import { useAppDispatch } from '@/app/redux/store'
 import { IMedication } from '@/app/types'
 import { BellOff } from 'lucide-react'
@@ -16,7 +16,7 @@ const InactiveMedicationCard: FC<{ inactiveMedications: IMedication[] }> = ({ in
             key={medication.id}
             onClick={() => {
               dispatch(setInputs({ formName: 'medicationForm', data: medication }))
-              dispatch(setOpenMedicationUpdateDrawer())
+              dispatch(setOpenMedicationDrawer())
             }}
             className="bg-gray-50 rounded-lg border border-gray-200 p-6 opacity-75 cursor-pointer"
           >

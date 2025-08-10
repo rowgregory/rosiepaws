@@ -50,7 +50,6 @@ export interface IUser {
   isAdmin: boolean
   isFreeUser: boolean
   isComfortUser: boolean
-  isCompanionUser: boolean
   isLegacyUser: boolean
   firstName?: string
   lastName?: string
@@ -71,7 +70,6 @@ export interface IUser {
   accounts: any[]
   sessions: any[]
   pets: any[]
-  blogs: any[]
   stripeSubscription?: any
   tokenTransactions: any[]
   galleryItems: any[]
@@ -105,7 +103,7 @@ export interface Pet {
   medications: IMedication[]
   feedings: IFeeding[]
   seizures: ISeizure[]
-  walks: IWalk[]
+  vitalSigns: IVitalSigns[]
   waters: IWater[]
   bloodSugars: IBloodSugar[]
   painScores: PainScore[]
@@ -189,17 +187,6 @@ export interface ISeizure {
   pet: Pet
 }
 
-export interface Walk {
-  id: string
-  duration: number // in minutes
-  timeRecorded: string
-  notes?: string
-  petId: string
-  isCareTask?: boolean
-  createdAt: Date
-  updatedAt: Date
-}
-
 export interface IWater {
   id: string
   intakeType: string
@@ -249,25 +236,9 @@ export interface PainScore {
   notes?: string
   createdAt: Date
   updatedAt: Date
+  tempId: string
 
   pet: Pet
-}
-
-export interface IWalk {
-  id: string
-  distance: string
-  pace: string
-  distraction: string
-  duration: string
-  moodRating: number
-  timeRecorded: string
-  movement?: string
-  notes?: string
-  petId: string
-  pet?: Pet
-  isCareTask?: boolean
-  createdAt: Date
-  updatedAt: Date
 }
 
 export interface IMovement {
@@ -297,6 +268,8 @@ export interface IMovement {
   recoveryTime: number
   notes: string
   timeRecorded: string
+  createdAt: Date | string
+  updatedAt: Date | string
 
   pet: Pet
 }
@@ -387,4 +360,47 @@ export interface IMedia {
   createdAt: string // ISO date string
   updatedAt: string // ISO date string
   deletedAt?: string // ISO date string for soft delete
+}
+
+export type CapillaryRefillTime =
+  | 'LESS_THAN_ONE_SECOND'
+  | 'ONE_TO_TWO_SECONDS'
+  | 'TWO_TO_THREE_SECONDS'
+  | 'MORE_THAN_THREE_SECONDS'
+
+export type MucousMembraneColor =
+  | 'PINK_AND_MOIST'
+  | 'PALE'
+  | 'WHITE'
+  | 'BLUE_CYANOTIC'
+  | 'YELLOW_ICTERIC'
+  | 'RED_INJECTED'
+
+export type HydrationStatus = 'NORMAL' | 'MILD_DEHYDRATION' | 'MODERATE_DEHYDRATION' | 'SEVERE_DEHYDRATION'
+
+export interface IVitalSigns {
+  id: string
+  createdAt: Date
+  updatedAt: Date
+
+  // Pet Information
+  petId: string
+
+  // Basic Vital Signs
+  temperature?: number | null // Fahrenheit
+  heartRate?: number | null // beats per minute
+  respiratoryRate?: number | null // breaths per minute
+  weight?: number | null // pounds
+  bloodPressure?: string | null // systolic/diastolic format
+
+  // Physical Assessment
+  capillaryRefillTime?: CapillaryRefillTime | string
+  mucousMembranes?: MucousMembraneColor | string
+  hydrationStatus?: HydrationStatus | string
+
+  // Additional Information
+  timeRecorded: string
+  notes?: string | null
+
+  pet: Pet
 }

@@ -26,6 +26,9 @@ enum TokenTransactionType {
   WALK_CREATION
   WALK_UPDATE
   WALK_DELETE
+  VITAL_SIGNS_CREATION
+  VITAL_SIGNS_UPDATE
+  VITAL_SIGNS_DELETE
   PAIN_SCORE_CREATION
   PAIN_SCORE_UPDATE
   PAIN_SCORE_DELETE
@@ -189,6 +192,31 @@ enum SeizureSeverity {
   CRITICAL // Emergency level
 }
 
+enum CapillaryRefillTime {
+  LESS_THAN_ONE_SECOND // <1 second (Normal)
+  ONE_TO_TWO_SECONDS // 1-2 seconds (Normal)
+  TWO_TO_THREE_SECONDS // 2-3 seconds (Mild dehydration)
+  MORE_THAN_THREE_SECONDS // >3 seconds (Concerning)
+}
+
+enum MucousMembraneColor {
+  PINK_AND_MOIST // Normal
+  PALE
+  WHITE
+  BLUE_CYANOTIC // Blue/Cyanotic
+  YELLOW_ICTERIC // Yellow/Icteric
+  RED_INJECTED // Red/Injected
+}
+
+enum HydrationStatus {
+  NORMAL // Normal
+  MILD_DEHYDRATION // Mild dehydration (3-5%)
+  MODERATE_DEHYDRATION // Moderate dehydration (5-10%)
+  SEVERE_DEHYDRATION // Severe dehydration (>10%)
+}
+
+// ====================================== MODELS =============================== \\
+
 model Account {
   id                String  @id @default(cuid())
   userId            String
@@ -250,17 +278,16 @@ model StripeSubscription {
 }
 
 model User {
-  id              String  @id @default(cuid())
-  email           String  @unique @db.VarChar(255)
-  role            String  @default("Free") @db.VarChar(255)
-  isSuperUser     Boolean @default(false)
-  isAdmin         Boolean @default(false)
-  isFreeUser      Boolean @default(true)
-  isComfortUser   Boolean @default(false)
-  isCompanionUser Boolean @default(false)
-  isLegacyUser    Boolean @default(false)
-  firstName       String? @db.VarChar(255)
-  lastName        String? @db.VarChar(255)
+  id            String  @id @default(cuid())
+  email         String  @unique @db.VarChar(255)
+  role          String  @default("Free") @db.VarChar(255)
+  isSuperUser   Boolean @default(false)
+  isAdmin       Boolean @default(false)
+  isFreeUser    Boolean @default(true)
+  isComfortUser Boolean @default(false)
+  isLegacyUser  Boolean @default(false)
+  firstName     String? @db.VarChar(255)
+  lastName      String? @db.VarChar(255)
 
   stripeCustomerId String? @unique @db.VarChar(255)
 
@@ -282,6 +309,8 @@ model User {
   tokenTransactions  TokenTransaction[]
   galleryItems       GalleryItem[]
   tickets            Ticket[]
+  vet                Vet?                @relation(fields: [vetId], references: [id])
+  vetId              String?             @unique // Foreign key
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -320,6 +349,8 @@ model Pet {
   owner                 User      @relation(fields: [ownerId], references: [id])
   ownerId               String
   notes                 String?
+  fileName              String    @default("") @db.VarChar(255) // Original filename
+  filePath              String    @default("") @db.Text // Storage path or URL
 
   painScores   PainScore[]
   appointments Appointment[]
@@ -328,9 +359,9 @@ model Pet {
   seizures     Seizure[]
   waters       Water[]
   bloodSugars  BloodSugar[]
-  walks        Walk[]
   galleryItems GalleryItem[]
   movements    Movement[]
+  vitalSigns   VitalSigns[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -382,23 +413,6 @@ model Water {
   updatedAt DateTime @updatedAt
 }
 
-model Walk {
-  id           String   @id @default(cuid())
-  distance     String
-  duration     String
-  pace         String
-  distraction  String
-  timeRecorded DateTime
-  moodRating   Int      @default(0)
-  movement     String?  @default("")
-  notes        String?
-  pet          Pet      @relation(fields: [petId], references: [id], onDelete: Cascade)
-  petId        String
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
 model Medication {
   id                 String    @id @default(cuid())
   drugName           String
@@ -416,8 +430,8 @@ model Medication {
   prescribedBy       String?
   timezoneOffset     Int?      @default(-5)
 
-  pet   Pet    @relation(fields: [petId], references: [id], onDelete: Cascade)
   petId String
+  pet   Pet    @relation(fields: [petId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -531,9 +545,8 @@ model Seizure {
   recoveryTime  Int?
   pet           Pet             @relation(fields: [petId], references: [id], onDelete: Cascade)
   petId         String
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
 }
 
 model Newsletter {
@@ -640,34 +653,59 @@ model Setting {
 }
 
 model Media {
-  id         String     @id @default(cuid())
-  title      String     @db.VarChar(255)
-  type       MediaType
-  format     String     @db.VarChar(10)
-  size       String     @db.VarChar(20) // Stored as string like "2.4 MB"
-  sizeBytes  BigInt? // Optional: actual file size in bytes for sorting/filtering
-  uploadDate DateTime   @default(now())
-  views      Int        @default(0)
-  downloads  Int        @default(0)
-  thumbnail  String?    @db.Text // URL or base64 encoded thumbnail
-  color      MediaColor @default(BLUE)
-
-  // File storage information
-  fileName String @db.VarChar(255) // Original filename
-  filePath String @db.Text // Storage path or URL
-  mimeType String @db.VarChar(100) // MIME type like "application/pdf"
-
-  // Metadata
-  description String?  @db.Text
+  id          String     @id @default(cuid())
+  title       String     @db.VarChar(255)
+  type        MediaType
+  format      String     @db.VarChar(10)
+  size        String     @db.VarChar(20) // Stored as string like "2.4 MB"
+  sizeBytes   BigInt? // Optional: actual file size in bytes for sorting/filtering
+  uploadDate  DateTime   @default(now())
+  views       Int        @default(0)
+  downloads   Int        @default(0)
+  thumbnail   String?    @db.Text // URL or base64 encoded thumbnail
+  color       MediaColor @default(BLUE)
+  fileName    String     @db.VarChar(255) // Original filename
+  filePath    String     @db.Text // Storage path or URL
+  mimeType    String     @db.VarChar(100) // MIME type like "application/pdf"
+  description String?    @db.Text
   tags        String[] // Array of tags for better organization
-  isActive    Boolean  @default(true)
+  isActive    Boolean    @default(true)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
 
-  // Audit fields
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  // Indexes
   @@index([type])
   @@index([uploadDate])
   @@index([isActive])
+}
+
+model VitalSigns {
+  id                  String               @id @default(cuid())
+  pet                 Pet                  @relation(fields: [petId], references: [id], onDelete: Cascade)
+  petId               String
+  temperature         Float? // Fahrenheit
+  heartRate           Int? // beats per minute
+  respiratoryRate     Int? // breaths per minute
+  weight              Float? // pounds
+  bloodPressure       String? // systolic/diastolic format
+  capillaryRefillTime CapillaryRefillTime?
+  mucousMembranes     MucousMembraneColor?
+  hydrationStatus     HydrationStatus?
+  notes               String?
+  timeRecorded        DateTime
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+}
+
+model Vet {
+  id             String  @id @default(cuid())
+  vetName        String
+  clinicName     String
+  phone          String
+  emergencyPhone String
+  email          String
+  website        String
+  address        String
+  hours          String
+  notes          String?
+  user           User?
 }

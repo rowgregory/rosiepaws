@@ -21,7 +21,7 @@ const validateFeedingForm = (inputs: FeedingFormInputs, setErrors: any) => {
     newErrors.foodAmount = 'Please specify the custom food type'
   }
 
-  if (!inputs?.timeRecorded?.trim()) {
+  if (!inputs?.timeRecorded) {
     newErrors.timeRecorded = 'Please select when the pet was fed'
   }
   const moodRating = Number(inputs?.moodRating)

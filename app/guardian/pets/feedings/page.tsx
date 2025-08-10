@@ -9,19 +9,23 @@ import { feedingCreateTokenCost } from '@/app/lib/constants/public/token'
 import FeedingCard from '@/app/components/guardian/feeding/FeedingCard'
 import LatestFeeding from '@/app/components/guardian/feeding/LatestFeeding'
 import { getFoodTypeConfig, getTimeInfo } from '@/app/lib/utils'
-import { setOpenFeedingCreateDrawer } from '@/app/redux/features/feedingSlice'
+import { setOpenFeedingDrawer } from '@/app/redux/features/feedingSlice'
+import { useInitialAnimation } from '@/app/hooks/useInitialAnimation'
 
 const Feedings = () => {
-  const { zeroFeedings, feedings } = useAppSelector((state: RootState) => state.pet)
+  const { zeroFeedings, feedings } = useAppSelector((state: RootState) => state.feeding)
+
+  const shouldAnimate = useInitialAnimation(feedings)
 
   if (zeroFeedings) {
     return (
       <ZeroLogs
-        btnText="Add feeding"
-        title="Record a feeding"
+        btnText="Log feeding"
+        title="No feedings logged yet"
         subtitle="Keep your pets healthy with consistent feeding logs"
         tokens={feedingCreateTokenCost}
-        func={setOpenFeedingCreateDrawer}
+        func={setOpenFeedingDrawer}
+        formName="feedingForm"
       />
     )
   }
@@ -30,7 +34,12 @@ const Feedings = () => {
     <div className="h-[calc(100dvh-96px)]">
       <div className="mx-auto px-6 space-y-8">
         {/* Header */}
-        <CleanHeader btnText="Log Feeding" func={setOpenFeedingCreateDrawer} tokens={feedingCreateTokenCost} />
+        <CleanHeader
+          btnText="Log Feeding"
+          func={setOpenFeedingDrawer}
+          tokens={feedingCreateTokenCost}
+          formName="feedingForm"
+        />
 
         <div className="grid grid-cols-1 xl:grid-cols-4 gap-6">
           <div className="xl:col-span-3 space-y-6">
@@ -39,8 +48,8 @@ const Feedings = () => {
 
             {/* All Feedings Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {feedings.slice(0, 5).map((feeding, i) => (
-                <FeedingCard key={i} feeding={feeding} index={i} />
+              {feedings?.map((feeding, i) => (
+                <FeedingCard key={feeding.id} feeding={feeding} index={i} shouldAnimate={shouldAnimate} />
               ))}
             </div>
           </div>

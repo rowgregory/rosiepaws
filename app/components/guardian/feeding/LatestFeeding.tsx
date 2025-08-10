@@ -2,7 +2,7 @@ import React, { FC } from 'react'
 import { UtensilsCrossed } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { IFeeding } from '@/app/types'
-import { formatDate, getFoodTypeConfig, getMoodEmoji, getTimeInfo } from '@/app/lib/utils'
+import { formatDate, formatDateLong, getFoodTypeConfig, getMoodEmoji } from '@/app/lib/utils'
 
 const LatestFeeding: FC<{ feeding: IFeeding }> = ({ feeding }) => {
   const latest = feeding
@@ -39,7 +39,7 @@ const LatestFeeding: FC<{ feeding: IFeeding }> = ({ feeding }) => {
             </div>
             <div>
               <h3 className="text-base font-semibold text-gray-900">{latest?.pet?.name}</h3>
-              <p className="text-sm text-gray-500">{getTimeInfo(latest?.createdAt)?.relative}</p>
+              <p className="text-sm text-gray-500">{formatDateLong(latest?.timeRecorded)}</p>
             </div>
           </div>
 

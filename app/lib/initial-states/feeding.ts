@@ -4,13 +4,13 @@ import { petInitialState } from './pet'
 export const feedingInitialState: IFeeding = {
   id: '',
   timeRecorded: '',
-  foodType: '',
-  foodAmount: '',
+  foodType: 'dry',
+  foodAmount: '1/4',
   notes: '',
-  moodRating: '0',
+  moodRating: '4',
   petId: '',
   ingredients: '',
-  brand: '',
+  brand: 'royal-canin',
   createdAt: new Date(),
   updatedAt: new Date(),
   pet: petInitialState

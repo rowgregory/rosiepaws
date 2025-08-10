@@ -6,10 +6,7 @@ interface WaterIntakeFormInputs {
   moodRating: string
 }
 
-const validateWaterIntakeForm = (
-  inputs: WaterIntakeFormInputs,
-  setErrors: (errors: Record<string, string>) => void
-) => {
+const validateWaterForm = (inputs: WaterIntakeFormInputs, setErrors: (errors: Record<string, string>) => void) => {
   const newErrors: Record<string, string> = {}
 
   if (!inputs?.petId?.trim()) {
@@ -42,4 +39,4 @@ export const isWaterFormValid = (inputs: any) => {
   return inputs?.petId && inputs?.timeRecorded && inputs?.milliliters && inputs?.moodRating
 }
 
-export default validateWaterIntakeForm
+export default validateWaterForm

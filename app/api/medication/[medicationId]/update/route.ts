@@ -1,6 +1,7 @@
 import { createLog } from '@/app/lib/api/createLog'
 import { getUserFromHeader } from '@/app/lib/api/getUserFromheader'
 import { handleApiError } from '@/app/lib/api/handleApiError'
+import { validateOwnerAndPet } from '@/app/lib/api/validateOwnerAndPet'
 import { medicationUpdateTokenCost } from '@/app/lib/constants/public/token'
 import prisma from '@/prisma/client'
 import { sliceMedication } from '@/public/data/api.data'
@@ -25,13 +26,21 @@ export async function PATCH(req: NextRequest, { params }: any) {
 
     const body = await req.json()
 
+    const validation = await validateOwnerAndPet({
+      userId: userAuth.userId!,
+      petId: body.petId,
+      tokenCost: medicationUpdateTokenCost,
+      actionName: 'update medication',
+      req
+    })
+
+    if (!validation.success) {
+      return validation.response!
+    }
+
     const existingMedication = await prisma.medication.findFirst({
-      where: {
-        id: medicationId,
-        pet: {
-          ownerId: userAuth?.userId
-        }
-      }
+      where: { id: medicationId },
+      include: { pet: true }
     })
 
     if (!existingMedication) {
@@ -40,19 +49,18 @@ export async function PATCH(req: NextRequest, { params }: any) {
 
     const updateData: any = {}
 
-    if (body.petId !== undefined) updateData.petId = body.petId
-    if (body.drugName !== undefined) updateData.drugName = body.drugName
-    if (body.dosage !== undefined) updateData.dosage = body.dosage
-    if (body.dosageUnit !== undefined) updateData.dosageUnit = body.dosageUnit
-    if (body.frequency !== undefined) updateData.frequency = body.frequency
-    if (body.customFrequency !== undefined) updateData.customFrequency = body.customFrequency || null
-    if (body.startDate !== undefined) updateData.startDate = new Date(body.startDate)
-    if (body.endDate !== undefined) updateData.endDate = body.endDate ? new Date(body.endDate) : null
-    if (body.reminderEnabled !== undefined) updateData.reminderEnabled = body.reminderEnabled
-    if (body.reminderTimes !== undefined) updateData.reminderTimes = body.reminderTimes || []
-    if (body.instructions !== undefined) updateData.instructions = body.instructions || null
-    if (body.prescribedBy !== undefined) updateData.prescribedBy = body.prescribedBy || null
-    if (body.timezoneOffset !== undefined) updateData.timezoneOffset = Number(body.timezoneOffset)
+    if (body.petId !== null) updateData.petId = body.petId
+    if (body.drugName !== null) updateData.drugName = body.drugName
+    if (body.dosage !== null) updateData.dosage = body.dosage
+    if (body.dosageUnit !== null) updateData.dosageUnit = body.dosageUnit
+    if (body.frequency !== null) updateData.frequency = body.frequency
+    if (body.customFrequency !== null) updateData.customFrequency = body.customFrequency || null
+    if (body.startDate !== null) updateData.startDate = new Date(body.startDate)
+    if (body.endDate !== null) updateData.endDate = body.endDate ? new Date(body.endDate) : null
+    if (body.reminderEnabled !== null) updateData.reminderEnabled = body.reminderEnabled
+    if (body.reminderTimes !== null) updateData.reminderTimes = body.reminderTimes || []
+    if (body.prescribedBy !== null) updateData.prescribedBy = body.prescribedBy || null
+    if (body.timezoneOffset !== null) updateData.timezoneOffset = Number(body.timezoneOffset)
 
     // Check if reminder settings changed
     const reminderSettingsChanged =
@@ -70,7 +78,16 @@ export async function PATCH(req: NextRequest, { params }: any) {
       const updatedMedication = await tx.medication.update({
         where: { id: medicationId },
         data: updateData,
-        include: { pet: true }
+        include: {
+          pet: {
+            select: {
+              id: true,
+              name: true,
+              type: true,
+              breed: true
+            }
+          }
+        }
       })
 
       // Deduct tokens from user
@@ -113,7 +130,12 @@ export async function PATCH(req: NextRequest, { params }: any) {
 
     return NextResponse.json({
       medication: result.updatedMedication,
-      reminderSettingsReset: reminderSettingsChanged
+      reminderSettingsReset: reminderSettingsChanged,
+      sliceName: sliceMedication,
+      user: {
+        tokens: result.updatedUser.tokens,
+        tokensUsed: result.updatedUser.tokensUsed
+      }
     })
   } catch (error: any) {
     return await handleApiError({

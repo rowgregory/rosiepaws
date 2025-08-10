@@ -12,8 +12,7 @@ export interface MedicationStatePayload {
   medications: IMedication[]
   medication: IMedication
   zeroMedications: boolean
-  medicationCreateDrawer: boolean
-  medicationUpdateDrawer: boolean
+  medicationDrawer: boolean
   medicationCount: number
 }
 
@@ -25,8 +24,7 @@ export const initialMedicationState: MedicationStatePayload = {
   medications: [],
   medication: medicationInitialState,
   zeroMedications: true,
-  medicationCreateDrawer: false,
-  medicationUpdateDrawer: false,
+  medicationDrawer: false,
   medicationCount: 0
 }
 
@@ -34,21 +32,41 @@ export const medicationSlice = createSlice({
   name: 'medication',
   initialState: initialMedicationState,
   reducers: {
-    setOpenMedicationCreateDrawer: (state) => {
-      state.medicationCreateDrawer = true
+    setOpenMedicationDrawer: (state) => {
+      state.medicationDrawer = true
     },
-    setCloseMedicationCreateDrawer: (state) => {
-      state.medicationCreateDrawer = false
+    setCloseMedicationDrawer: (state) => {
+      state.medicationDrawer = false
     },
-    setOpenMedicationUpdateDrawer: (state) => {
-      state.medicationUpdateDrawer = true
-    },
-    setCloseMedicationUpdateDrawer: (state) => {
-      state.medicationUpdateDrawer = false
-    },
-    addMedicationsToState: (state, { payload }) => {
+    setMedications: (state, { payload }) => {
       state.medications = payload
       state.zeroMedications = payload.length === 0
+    },
+    addMedicationToState: (state, { payload }) => {
+      state.medications.unshift(payload)
+      state.zeroMedications = state.medications.length === 0
+    },
+    updateMedicationInState: (state, action) => {
+      const { findById, replaceWith, ...updatedMedication } = action.payload
+
+      if (findById && replaceWith) {
+        // Special case: find by one ID, replace with different data
+        const index = state.medications.findIndex((pain) => pain?.id === findById)
+        if (index !== -1) {
+          state.medications[index] = replaceWith
+        }
+      } else {
+        // Normal update
+        const index = state.medications.findIndex((pain) => pain?.id === updatedMedication?.id)
+        if (index !== -1) {
+          state.medications[index] = updatedMedication
+        }
+      }
+    },
+    removeMedicationFromState: (state, action) => {
+      state.medications = state.medications.filter((pain: { id: string }) => pain?.id !== action.payload)
+      state.medicationCount = state.medicationCount - 1
+      state.zeroMedications = state.medications.length === 0
     }
   },
   extraReducers: (builder) => {
@@ -86,9 +104,10 @@ export const medicationSlice = createSlice({
 export const medicationReducer = medicationSlice.reducer as Reducer<MedicationStatePayload>
 
 export const {
-  setOpenMedicationCreateDrawer,
-  setCloseMedicationCreateDrawer,
-  setOpenMedicationUpdateDrawer,
-  setCloseMedicationUpdateDrawer,
-  addMedicationsToState
+  addMedicationToState,
+  removeMedicationFromState,
+  setCloseMedicationDrawer,
+  setMedications,
+  setOpenMedicationDrawer,
+  updateMedicationInState
 } = medicationSlice.actions

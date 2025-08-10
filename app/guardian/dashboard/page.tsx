@@ -17,26 +17,26 @@ import LargeSeizureGraph from '@/app/components/guardian/dashboard/LargeSeizureG
 import LargeBloodSugarGraph from '@/app/components/guardian/dashboard/LargeBloodSugarGraph'
 import LargeAppointmentChart from '@/app/components/guardian/dashboard/LargeAppointmentChart'
 import MiniAppointmentChart from '@/app/components/guardian/dashboard/MiniAppointmentChart'
-import MiniWalkGraph from '@/app/components/guardian/dashboard/MiniWalkGraph'
 import TokenCounter from '@/app/components/guardian/TokenCounter'
 import { Activity, ArrowDown, ArrowLeftIcon, ArrowRightIcon, Heart, Plus, Utensils } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-import LargeWalkGraph from '@/app/components/guardian/dashboard/LargeWalkGraph'
+import LargeVitalSignsGraph from '@/app/components/guardian/dashboard/LargeVitalSignsGraph'
 import { motion } from 'framer-motion'
 import MiniMovementsGraph from '@/app/components/guardian/dashboard/MiniMovementGraph'
 import LargeMovementsGraph from '@/app/components/guardian/dashboard/LargeMovementGraph'
 import { metricConfigButton, metricsConfigCards } from '@/app/lib/constants/public/dashboard/displayConstants'
-import { setOpenPainScoreCreateDrawer } from '@/app/redux/features/painScoreSlice'
+import { setOpenPainDrawer } from '@/app/redux/features/painSlice'
 import Link from 'next/link'
-import { setOpenFeedingCreateDrawer } from '@/app/redux/features/feedingSlice'
-import { setOpenWaterCreateDrawer } from '@/app/redux/features/waterSlice'
-import { setOpenWalkCreateDrawer } from '@/app/redux/features/walkSlice'
-import { setOpenMedicationCreateDrawer } from '@/app/redux/features/medicationSlice'
-import { setOpenMovementCreateDrawer } from '@/app/redux/features/movementSlice'
-import { setOpenAppointmentCreateDrawer } from '@/app/redux/features/appointmentSlice'
-import { setOpenBloodSugarCreateDrawer } from '@/app/redux/features/bloodSugarSlice'
-import { setOpenSeizureCreateDrawer } from '@/app/redux/features/seizureSlice'
+import { setOpenFeedingDrawer } from '@/app/redux/features/feedingSlice'
+import { setOpenWaterDrawer } from '@/app/redux/features/waterSlice'
+import { setOpenMedicationDrawer } from '@/app/redux/features/medicationSlice'
+import { setOpenMovementDrawer } from '@/app/redux/features/movementSlice'
+import { setOpenAppointmentDrawer } from '@/app/redux/features/appointmentSlice'
+import { setOpenBloodSugarDrawer } from '@/app/redux/features/bloodSugarSlice'
+import { setOpenSeizureDrawer } from '@/app/redux/features/seizureSlice'
 import { getTodaysBloodSugarLogs } from '@/app/lib/utils'
+import { setOpenVitalSignsDrawer } from '@/app/redux/features/vitalSignsSlice'
+import MiniVitalSignsGraph from '@/app/components/guardian/dashboard/MiniVitalSignsGraph'
 
 const GuardianDashboard = () => {
   const dispatch = useAppDispatch()
@@ -54,8 +54,8 @@ const GuardianDashboard = () => {
         return <LargeFeedingGraph feedingData={chartData?.feedings} />
       case 'waters':
         return <LargeWaterGraph waterData={chartData?.waters} petWeight={pet?.weight || 20} />
-      case 'walks':
-        return <LargeWalkGraph walks={chartData?.walks} petWeight={pet?.weight || 20} />
+      case 'vital-signs':
+        return <LargeVitalSignsGraph vitalSigns={chartData?.vitalSigns} pet={pet} />
       case 'appointments':
         return <LargeAppointmentChart appointments={chartData?.appointments} />
       case 'medications':
@@ -71,7 +71,7 @@ const GuardianDashboard = () => {
             <MiniPainScoreGraph painScores={chartData?.painScores} />
             <MiniFeedingGraph feedings={chartData?.feedings} />
             <MiniWaterChart waters={chartData?.waters} />
-            <MiniWalkGraph walks={chartData?.walks} />
+            <MiniVitalSignsGraph vitalSigns={chartData?.vitalSigns} />
             <MiniMovementsGraph movements={chartData?.movements} />
             <MiniMedicationChart medications={chartData?.medications} />
             <MiniAppointmentChart appointments={chartData?.appointments} />
@@ -91,15 +91,15 @@ const GuardianDashboard = () => {
 
     // Handle metrics with no data - open drawer and navigate
     const noDataActions: Record<string, { drawer: any; route: string }> = {
-      'pain-scores': { drawer: setOpenPainScoreCreateDrawer(), route: '/guardian/pets/pain' },
-      feedings: { drawer: setOpenFeedingCreateDrawer(), route: '/guardian/pets/feedings' },
-      waters: { drawer: setOpenWaterCreateDrawer(), route: '/guardian/pets/water' },
-      walks: { drawer: setOpenWalkCreateDrawer(), route: '/guardian/pets/walks' },
-      medications: { drawer: setOpenMedicationCreateDrawer(), route: '/guardian/pets/medication' },
-      movements: { drawer: setOpenMovementCreateDrawer(), route: '/guardian/pets/movements' },
-      appointments: { drawer: setOpenAppointmentCreateDrawer(), route: '/guardian/pets/appointments' },
-      'blood-sugars': { drawer: setOpenBloodSugarCreateDrawer(), route: '/guardian/pets/blood-sugar' },
-      seizures: { drawer: setOpenSeizureCreateDrawer(), route: '/guardian/pets/seizure' }
+      'pain-scores': { drawer: setOpenPainDrawer(), route: '/guardian/pets/pain' },
+      feedings: { drawer: setOpenFeedingDrawer(), route: '/guardian/pets/feedings' },
+      waters: { drawer: setOpenWaterDrawer(), route: '/guardian/pets/water' },
+      'vital-signs': { drawer: setOpenVitalSignsDrawer(), route: '/guardian/pets/vital-signs' },
+      medications: { drawer: setOpenMedicationDrawer(), route: '/guardian/pets/medication' },
+      movements: { drawer: setOpenMovementDrawer(), route: '/guardian/pets/movements' },
+      appointments: { drawer: setOpenAppointmentDrawer(), route: '/guardian/pets/appointments' },
+      'blood-sugars': { drawer: setOpenBloodSugarDrawer(), route: '/guardian/pets/blood-sugar' },
+      seizures: { drawer: setOpenSeizureDrawer(), route: '/guardian/pets/seizure' }
     }
 
     const metricAction = noDataActions[metric.id]
@@ -108,7 +108,7 @@ const GuardianDashboard = () => {
       'pain-scores',
       'feedings',
       'waters',
-      'walks',
+      'vital-signs',
       'medications',
       'movements',
       'appointments',
@@ -127,8 +127,8 @@ const GuardianDashboard = () => {
   }
 
   return (
-    <div className="bg-gray-50">
-      <div className="sticky top-0 flex items-center pl-6 border-b-1 border-b-gray-300 z-30 bg-white h-24">
+    <div>
+      <div className="sticky top-0 flex items-center pl-6 border-b-1 border-b-gray-300 z-30 bg-white h-[68px]">
         <span className="text-2xl bg-gradient-to-r from-orange-400 via-orange-600 to-pink-600 bg-clip-text text-transparent font-semibold">
           {pet?.name}&apos;s Health Dashboard
         </span>
@@ -189,7 +189,7 @@ const GuardianDashboard = () => {
           </motion.div>
         )}
         <>
-          <div className="flex gap-3.5 w-[calc(100vw-304px)] overflow-x-auto pb-2 scrollbar-hide">
+          <div className="flex gap-3.5 w-[calc(100vw-304px)] overflow-x-auto p-2 scrollbar-hide">
             {metricsConfigCards(stats).map((metric, index) => {
               return (
                 <motion.div
@@ -288,13 +288,13 @@ const GuardianDashboard = () => {
                                 : selectedMetric === 'water'
                                   ? '/guardian/pets/water'
                                   : selectedMetric === 'medications'
-                                    ? '/guardian/pets/medications'
+                                    ? '/guardian/pets/medication'
                                     : selectedMetric === 'seizures'
                                       ? '/guardian/pets/seizures'
                                       : selectedMetric === 'movements'
                                         ? '/guardian/pets/movements'
-                                        : selectedMetric === 'walks'
-                                          ? '/guardian/pets/walks'
+                                        : selectedMetric === 'vital-signs'
+                                          ? '/guardian/pets/vital-signs'
                                           : '/guardian/pets/appointments'
                         }
                         className={`px-4 py-2 rounded-full font-medium text-sm transition-colors flex items-center gap-x-1.5 bg-gray-100 text-gray-600 hover:bg-gray-200`}
@@ -314,8 +314,8 @@ const GuardianDashboard = () => {
                                     ? 'Seizures'
                                     : selectedMetric === 'movements'
                                       ? 'Movements'
-                                      : selectedMetric === 'walks'
-                                        ? 'Walks'
+                                      : selectedMetric === 'vital-signs'
+                                        ? 'Vital Signs'
                                         : 'Appointments'}{' '}
                         <ArrowRightIcon size={16} />
                       </Link>

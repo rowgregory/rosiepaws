@@ -61,10 +61,6 @@ const TokenSystem = () => {
                 <span className="font-medium text-blue-600">Token packages</span>
               </div>
               <div className="flex justify-between items-center p-2 bg-white rounded border border-green-100">
-                <span className="text-gray-600">Companion</span>
-                <span className="font-medium text-purple-600">Token packages</span>
-              </div>
-              <div className="flex justify-between items-center p-2 bg-white rounded border border-green-100">
                 <span className="text-gray-600">Legacy</span>
                 <span className="font-medium text-yellow-600">Unlimited</span>
               </div>

@@ -13,8 +13,7 @@ export interface WaterStatePayload {
   water: IWater
   zeroWaters: boolean
   waterCount: number
-  waterCreateDrawer: boolean
-  waterUpdateDrawer: boolean
+  waterDrawer: boolean
 }
 
 export const initialWaterState: WaterStatePayload = {
@@ -25,8 +24,7 @@ export const initialWaterState: WaterStatePayload = {
   waters: [],
   water: waterInitialState,
   zeroWaters: true,
-  waterCreateDrawer: false,
-  waterUpdateDrawer: false,
+  waterDrawer: false,
   waterCount: 0
 }
 
@@ -34,21 +32,41 @@ export const waterSlice = createSlice({
   name: 'water',
   initialState: initialWaterState,
   reducers: {
-    setOpenWaterCreateDrawer: (state) => {
-      state.waterCreateDrawer = true
+    setOpenWaterDrawer: (state) => {
+      state.waterDrawer = true
     },
-    setCloseWaterCreateDrawer: (state) => {
-      state.waterCreateDrawer = false
+    setCloseWaterDrawer: (state) => {
+      state.waterDrawer = false
     },
-    setOpenWaterUpdateDrawer: (state) => {
-      state.waterUpdateDrawer = true
-    },
-    setCloseWaterUpdateDrawer: (state) => {
-      state.waterUpdateDrawer = false
-    },
-    addWatersToState: (state, { payload }) => {
+    setWaters: (state, { payload }) => {
       state.waters = payload
       state.zeroWaters = payload.length === 0
+    },
+    addWaterToState: (state, { payload }) => {
+      state.waters.unshift(payload)
+      state.zeroWaters = state.waters.length === 0
+    },
+    updateWaterInState: (state, action) => {
+      const { findById, replaceWith, ...updatedWater } = action.payload
+
+      if (findById && replaceWith) {
+        // Special case: find by one ID, replace with different data
+        const index = state.waters.findIndex((water) => water?.id === findById)
+        if (index !== -1) {
+          state.waters[index] = replaceWith
+        }
+      } else {
+        // Normal update
+        const index = state.waters.findIndex((water) => water?.id === updatedWater?.id)
+        if (index !== -1) {
+          state.waters[index] = updatedWater
+        }
+      }
+    },
+    removeWaterFromState: (state, action) => {
+      state.waters = state.waters.filter((water: { id: string }) => water?.id !== action.payload)
+      state.waterCount = state.waterCount - 1
+      state.zeroWaters = state.waters.length === 0
     }
   },
   extraReducers: (builder) => {
@@ -86,9 +104,10 @@ export const waterSlice = createSlice({
 export const waterReducer = waterSlice.reducer as Reducer<WaterStatePayload>
 
 export const {
-  setOpenWaterCreateDrawer,
-  setCloseWaterCreateDrawer,
-  setOpenWaterUpdateDrawer,
-  setCloseWaterUpdateDrawer,
-  addWatersToState
+  addWaterToState,
+  removeWaterFromState,
+  setCloseWaterDrawer,
+  setOpenWaterDrawer,
+  setWaters,
+  updateWaterInState
 } = waterSlice.actions

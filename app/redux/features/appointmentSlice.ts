@@ -12,8 +12,7 @@ export interface AppointmentStatePayload {
   appointments: IAppointment[]
   appointment: IAppointment
   zeroAppointments: boolean
-  appointmentCreateDrawer: boolean
-  appointmentUpdateDrawer: boolean
+  appointmentDrawer: boolean
   appointmentCount: number
 }
 
@@ -25,8 +24,7 @@ export const initialAppointmentState: AppointmentStatePayload = {
   appointments: [],
   appointment: appointmentInitialState,
   zeroAppointments: true,
-  appointmentCreateDrawer: false,
-  appointmentUpdateDrawer: false,
+  appointmentDrawer: false,
   appointmentCount: 0
 }
 
@@ -34,21 +32,43 @@ export const appointmentSlice = createSlice({
   name: 'appointment',
   initialState: initialAppointmentState,
   reducers: {
-    setOpenAppointmentCreateDrawer: (state) => {
-      state.appointmentCreateDrawer = true
+    setOpenAppointmentDrawer: (state) => {
+      state.appointmentDrawer = true
     },
-    setCloseAppointmentCreateDrawer: (state) => {
-      state.appointmentCreateDrawer = false
+    setCloseAppointmentDrawer: (state) => {
+      state.appointmentDrawer = false
     },
-    setOpenAppointmentUpdateDrawer: (state) => {
-      state.appointmentUpdateDrawer = true
-    },
-    setCloseAppointmentUpdateDrawer: (state) => {
-      state.appointmentUpdateDrawer = false
-    },
-    addAppointmentsToState: (state, { payload }) => {
+    setAppointments: (state, { payload }) => {
       state.appointments = payload
       state.zeroAppointments = payload.length === 0
+    },
+    addAppointmentToState: (state, { payload }) => {
+      state.appointments.unshift(payload)
+      state.zeroAppointments = state.appointments.length === 0
+    },
+    updateAppointmentInState: (state, action) => {
+      const { findById, replaceWith, ...updatedAppointment } = action.payload
+
+      if (findById && replaceWith) {
+        // Special case: find by one ID, replace with different data
+        const index = state.appointments.findIndex((appointment) => appointment?.id === findById)
+        if (index !== -1) {
+          state.appointments[index] = replaceWith
+        }
+      } else {
+        // Normal update
+        const index = state.appointments.findIndex((appointment) => appointment?.id === updatedAppointment?.id)
+        if (index !== -1) {
+          state.appointments[index] = updatedAppointment
+        }
+      }
+    },
+    removeAppointmentFromState: (state, action) => {
+      state.appointments = state.appointments.filter(
+        (appointment: { id: string }) => appointment?.id !== action.payload
+      )
+      state.appointmentCount = state.appointmentCount - 1
+      state.zeroAppointments = state.appointments.length === 0
     }
   },
   extraReducers: (builder) => {
@@ -86,9 +106,10 @@ export const appointmentSlice = createSlice({
 export const appointmentReducer = appointmentSlice.reducer as Reducer<AppointmentStatePayload>
 
 export const {
-  setOpenAppointmentCreateDrawer,
-  setCloseAppointmentCreateDrawer,
-  setOpenAppointmentUpdateDrawer,
-  setCloseAppointmentUpdateDrawer,
-  addAppointmentsToState
+  addAppointmentToState,
+  removeAppointmentFromState,
+  setAppointments,
+  setCloseAppointmentDrawer,
+  setOpenAppointmentDrawer,
+  updateAppointmentInState
 } = appointmentSlice.actions

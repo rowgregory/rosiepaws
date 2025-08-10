@@ -1,15 +1,51 @@
 import React, { FC } from 'react'
 import { GENDER_OPTIONS, PET_TYPES, SPAY_NEUTER_OPTIONS } from '../lib/constants/public/pet'
 import { AnimatePresence, motion } from 'framer-motion'
-import { Calendar, FileText, Phone, Shield, Stethoscope, User, Weight } from 'lucide-react'
+import { Calendar, Camera, FileText, ImageIcon, Phone, Shield, Stethoscope, User, Weight, X } from 'lucide-react'
 import { petCreateTokenCost, petUpdateTokenCost } from '../lib/constants/public/token'
 import FixedFooter from '../components/common/forms/FixedFooter'
 import { IForm } from '../types'
 import { getCurrentBreeds } from '../lib/utils'
 import { containerVariants, itemVariants } from '../lib/constants'
 import { isPetFormValid } from '../validations/validatePetForm'
+import Picture from '../components/common/Picture'
+import { useAppDispatch } from '../redux/store'
+import { setInputs } from '../redux/features/formSlice'
+import { setOpenSlideMessage } from '../redux/features/appSlice'
 
 const PetForm: FC<IForm> = ({ inputs, errors, handleInput, close, handleSubmit, loading, isUpdating }) => {
+  const dispatch = useAppDispatch()
+
+  const handleFileUpload = async (file: File) => {
+    if (!file) return
+
+    // Set uploading state for single file
+    dispatch(
+      setInputs({
+        formName: 'petForm', // or whatever your form name is
+        data: {
+          media: file, // Store the file object temporarily
+          uploadingFile: { name: file.name, progress: 0 }
+        }
+      })
+    )
+
+    try {
+      // Optionally save to database if needed
+      // await createMedia({ items: [mediaItem] }).unwrap()
+    } catch {
+      dispatch(setOpenSlideMessage())
+    } finally {
+      setTimeout(() => {
+        dispatch(
+          setInputs({
+            formName: 'mediaForm',
+            data: { uploadingFiles: [] }
+          })
+        )
+      }, 300)
+    }
+  }
   return (
     <form onSubmit={handleSubmit} className="flex-1 flex flex-col min-h-full">
       <div className="overflow-y-auto px-5 pt-9 pb-12 h-[calc(100dvh-132px)]">
@@ -124,6 +160,86 @@ const PetForm: FC<IForm> = ({ inputs, errors, handleInput, close, handleSubmit, 
                   </motion.div>
                 )}
               </div>
+            </div>
+          </motion.div>
+
+          {/* Pet Photo/Video Section */}
+          <motion.div variants={itemVariants} className="bg-white rounded-2xl p-6 shadow-sm border border-gray-200">
+            <div className="flex items-center gap-2 mb-6">
+              <Camera className="w-5 h-5 text-pink-600" />
+              <h3 className="text-lg font-semibold text-gray-900">Pet Photo or Video</h3>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-3">
+                Upload a photo or video
+                <span className="text-gray-400 font-normal ml-1">(optional)</span>
+              </label>
+
+              {inputs?.media ? (
+                <div className="relative">
+                  <div className="w-full h-48 rounded-xl overflow-hidden bg-gray-100 border border-gray-200">
+                    {inputs.media.type?.startsWith('video/') ? (
+                      <video src={URL.createObjectURL(inputs.media)} className="w-full h-full object-cover" controls />
+                    ) : (
+                      <Picture
+                        priority={false}
+                        src={URL.createObjectURL(inputs.media)}
+                        alt="Pet preview"
+                        className="w-full h-full object-cover"
+                      />
+                    )}
+                  </div>
+                  <motion.button
+                    type="button"
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
+                    onClick={() => handleInput({ target: { name: 'media', value: null } })}
+                    className="absolute top-2 right-2 p-1.5 bg-red-500 hover:bg-red-600 text-white rounded-full shadow-lg transition-colors"
+                  >
+                    <X className="w-4 h-4" />
+                  </motion.button>
+                  <div className="mt-2 text-sm text-gray-600">
+                    {inputs.media.name} ({(inputs.media.size / 1024 / 1024).toFixed(1)} MB)
+                  </div>
+                </div>
+              ) : (
+                <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className="relative group">
+                  <input
+                    type="file"
+                    accept="image/*,video/*"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0]
+                      if (file) handleFileUpload(file)
+                    }}
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                  />
+                  <div className="w-full h-32 border-2 border-dashed border-gray-300 rounded-xl flex flex-col items-center justify-center gap-2 hover:border-blue-400 hover:bg-blue-50 transition-all group-hover:border-blue-400 group-hover:bg-blue-50">
+                    <div className="p-2 bg-gray-100 rounded-full group-hover:bg-blue-100 transition-colors">
+                      <ImageIcon className="w-6 h-6 text-gray-500 group-hover:text-blue-600 transition-colors" />
+                    </div>
+                    <div className="text-center">
+                      <p className="text-sm font-medium text-gray-700 group-hover:text-blue-700">
+                        Click to upload photo or video
+                      </p>
+                      <p className="text-xs text-gray-500">PNG, JPG, MP4, MOV up to 10MB</p>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+
+              <AnimatePresence>
+                {errors?.media && (
+                  <motion.p
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    className="text-sm text-red-500 mt-1"
+                  >
+                    {errors.media}
+                  </motion.p>
+                )}
+              </AnimatePresence>
             </div>
           </motion.div>
 

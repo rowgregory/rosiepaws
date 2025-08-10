@@ -173,7 +173,7 @@ const usersData = [
     isAdmin: false,
     isFreeUser: true,
     isComfortUser: false,
-    isCompanionUser: false,
+
     isLegacyUser: false,
     firstName: 'John',
     lastName: 'Doe',
@@ -189,7 +189,7 @@ const usersData = [
     isAdmin: false,
     isFreeUser: true,
     isComfortUser: false,
-    isCompanionUser: false,
+
     isLegacyUser: false,
     firstName: 'Jane',
     lastName: 'Smith',
@@ -205,7 +205,7 @@ const usersData = [
     isAdmin: false,
     isFreeUser: false,
     isComfortUser: true,
-    isCompanionUser: false,
+
     isLegacyUser: false,
     firstName: 'Mike',
     lastName: 'Johnson',
@@ -221,7 +221,7 @@ const usersData = [
     isAdmin: false,
     isFreeUser: true,
     isComfortUser: false,
-    isCompanionUser: false,
+
     isLegacyUser: false,
     firstName: 'Sarah',
     lastName: 'Wilson',
@@ -232,12 +232,11 @@ const usersData = [
   },
   {
     email: 'user5@example.com',
-    role: 'COMPANION',
+    role: 'LEGACY',
     isSuperUser: false,
     isAdmin: false,
     isFreeUser: false,
     isComfortUser: false,
-    isCompanionUser: true,
     isLegacyUser: false,
     firstName: 'David',
     lastName: 'Brown',
@@ -253,7 +252,7 @@ const usersData = [
     isAdmin: true,
     isFreeUser: false,
     isComfortUser: false,
-    isCompanionUser: false,
+
     isLegacyUser: false,
     firstName: 'TestAdmin',
     lastName: 'User',
@@ -269,7 +268,7 @@ const usersData = [
     isAdmin: false,
     isFreeUser: true,
     isComfortUser: false,
-    isCompanionUser: false,
+
     isLegacyUser: false,
     firstName: 'Lisa',
     lastName: 'Davis',
@@ -285,7 +284,7 @@ const usersData = [
     isAdmin: false,
     isFreeUser: false,
     isComfortUser: false,
-    isCompanionUser: false,
+
     isLegacyUser: true,
     firstName: 'Robert',
     lastName: 'Miller',
@@ -301,7 +300,7 @@ const usersData = [
     isAdmin: false,
     isFreeUser: false,
     isComfortUser: true,
-    isCompanionUser: false,
+
     isLegacyUser: false,
     firstName: 'Emily',
     lastName: 'Garcia',
@@ -317,7 +316,7 @@ const usersData = [
     isAdmin: true,
     isFreeUser: false,
     isComfortUser: false,
-    isCompanionUser: false,
+
     isLegacyUser: false,
     firstName: 'Super',
     lastName: 'User',
@@ -353,7 +352,7 @@ const subscriptionsData = [
     paymentMethodId: 'pm_stripe_payment_method_002',
     subscriptionId: 'sub_stripe_subscription_002',
     status: 'active',
-    plan: 'COMPANION',
+    plan: 'LEGACY',
     planPrice: 2299, // $29.99 in cents
     tokensIncluded: 120000,
     trialEndsAt: null,
@@ -404,7 +403,7 @@ const subscriptionsData = [
     paymentMethodId: 'pm_stripe_payment_method_005',
     subscriptionId: 'sub_stripe_subscription_005',
     status: 'canceled',
-    plan: 'COMPANION',
+    plan: 'LEGACY',
     planPrice: 2299,
     tokensIncluded: 120000,
     trialEndsAt: null,
@@ -455,7 +454,7 @@ const subscriptionsData = [
     paymentMethodId: 'pm_stripe_payment_method_008',
     subscriptionId: 'sub_stripe_subscription_008',
     status: 'unpaid',
-    plan: 'COMPANION',
+    plan: 'LEGACY',
     planPrice: 2299,
     tokensIncluded: 120000,
     trialEndsAt: null,

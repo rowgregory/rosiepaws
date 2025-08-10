@@ -202,7 +202,7 @@ const SeizureForm: FC<IForm> = ({
 
             {/* Emergency Alert */}
             <AnimatePresence>
-              {duration >= 5 && (
+              {duration >= 300 && (
                 <motion.div
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: 'auto' }}

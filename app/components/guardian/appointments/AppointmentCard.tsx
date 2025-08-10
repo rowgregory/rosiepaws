@@ -8,10 +8,16 @@ import { getTimeInfo } from '@/app/lib/utils'
 import { useAppDispatch } from '@/app/redux/store'
 import { useDeleteAppointmentMutation } from '@/app/redux/services/appointmentApi'
 import { setCloseAdminConfirmModal, setOpenAdminConfirmModal } from '@/app/redux/features/adminSlice'
-import { setOpenAppointmentUpdateDrawer } from '@/app/redux/features/appointmentSlice'
+import { setOpenAppointmentDrawer } from '@/app/redux/features/appointmentSlice'
 import { setInputs } from '@/app/redux/features/formSlice'
+import { setOpenSlideMessage } from '@/app/redux/features/appSlice'
+import { appointmentDeleteTokenCost } from '@/app/lib/constants/public/token'
 
-const AppointmentCard: FC<{ appointment: IAppointment; index: number }> = ({ appointment, index }) => {
+const AppointmentCard: FC<{ appointment: IAppointment; index: number; shouldAnimate: boolean }> = ({
+  appointment,
+  index,
+  shouldAnimate
+}) => {
   const serviceConfig = serviceTypeConfig[appointment.serviceType]
   const statusDisplay = statusConfig[appointment.status]
   const appointmentDate = new Date(appointment.date)
@@ -29,13 +35,16 @@ const AppointmentCard: FC<{ appointment: IAppointment; index: number }> = ({ app
         confirmModal: {
           isOpen: true,
           title: 'Delete Appointment',
-          description: `Deleting will permanently remove this appointment from your pet.`,
+          description: `Deleting will permanently remove this appointment from your pet`,
           confirmText: 'Delete Appointment',
           onConfirm: async () => {
-            await deleteAppointment({ appointmentId: appointment.id }).unwrap()
             onCloseConfirmModal()
+            await deleteAppointment({ id: appointment.id })
+              .unwrap()
+              .catch(() => dispatch(setOpenSlideMessage()))
           },
-          isDestructive: true
+          isDestructive: true,
+          tokenAmount: appointmentDeleteTokenCost
         }
       })
     )
@@ -43,14 +52,16 @@ const AppointmentCard: FC<{ appointment: IAppointment; index: number }> = ({ app
 
   return (
     <motion.div
-      onClick={() => {
-        dispatch(setOpenAppointmentUpdateDrawer())
-        dispatch(setInputs({ formName: 'appointmentForm', data: appointment }))
-      }}
       key={appointment.id}
-      initial={{ opacity: 0, y: 20 }}
+      layout
+      onClick={() => {
+        dispatch(setOpenAppointmentDrawer())
+        dispatch(setInputs({ formName: 'appointmentForm', data: { ...appointment, isUpdating: true } }))
+      }}
+      initial={shouldAnimate ? { opacity: 0, y: 20 } : false}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.05 }}
+      whileTap={{ scale: 0.96 }}
       className={`bg-white rounded-xl shadow-sm border p-5 hover:shadow-md transition-all hover:scale-105 relative cursor-pointer ${
         isPast
           ? 'opacity-75 border-gray-200'

@@ -92,7 +92,7 @@ const MiniAppointmentsList: FC<{ appointments: any }> = ({ appointments }) => {
                 <div className="flex items-center space-x-2">
                   <FileText className="w-3 h-3 text-gray-400" />
                   <span className="text-sm font-medium text-gray-900">
-                    {appointment.serviceType || 'General Appointment'}
+                    {appointment?.serviceType || 'General Appointment'}
                   </span>
                 </div>
 

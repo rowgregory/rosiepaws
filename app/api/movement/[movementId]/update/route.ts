@@ -179,6 +179,7 @@ export async function PATCH(req: NextRequest, { params }: any) {
     return NextResponse.json(
       {
         sliceName: sliceMovement,
+        movement: result.newMovement,
         user: {
           tokens: result.updatedUser.tokens,
           tokensUsed: result.updatedUser.tokensUsed

@@ -1,11 +1,11 @@
 'use client'
 
 import React, { FC } from 'react'
-import { ChildrenProps } from '../types/common'
 import AdminNavigation from '../components/admin/AdminNavigation'
 import { useFetchAdminDashboardDataQuery } from '../redux/services/adminApi'
+import { IChildren } from '../types'
 
-const AdminLayout: FC<ChildrenProps> = ({ children }) => {
+const AdminLayout: FC<IChildren> = ({ children }) => {
   useFetchAdminDashboardDataQuery(undefined)
   return (
     <>

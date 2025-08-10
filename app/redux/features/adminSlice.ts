@@ -29,7 +29,6 @@ export interface DashboardSummaryData {
   totalUsers: number
   freeUsers: number
   comfortUsers: number
-  companionUsers: number
   legacyUsers: number
   totalPets: number
   totalSubscriptions: number
@@ -48,6 +47,7 @@ interface IConfirmModal {
   onConfirm: any
   isDestructive: boolean
   isProcessing: boolean
+  tokenAmount: string | number
 }
 
 interface IAdminPet {
@@ -81,7 +81,7 @@ interface IAdminPet {
     seizures: number
     waters: number
     bloodSugars: number
-    walks: number
+    vitalSigns: number
     galleryItems: number
     movements: number
   }
@@ -90,7 +90,8 @@ interface IAdminPet {
   medications?: any[]
   feedings?: any[]
   waters?: any[]
-  walks?: any[]
+  vitalSigns?: any[]
+  movements?: any[]
 }
 
 export interface AdminStatePayload {
@@ -131,14 +132,14 @@ const initialConfirmModal = {
   confirmText: '',
   onConfirm: () => {},
   isDestructive: false,
-  isProcessing: false
+  isProcessing: false,
+  tokenAmount: ''
 }
 
 const summaryInitialState = {
   totalUsers: 0,
   freeUsers: 0,
   comfortUsers: 0,
-  companionUsers: 0,
   legacyUsers: 0,
   totalPets: 0,
   totalSubscriptions: 0,
@@ -195,7 +196,7 @@ const initialAdminPetState = {
     seizures: 0,
     waters: 0,
     bloodSugars: 0,
-    walks: 0,
+    vitalSigns: 0,
     galleryItems: 0,
     movements: 0
   },
@@ -203,7 +204,8 @@ const initialAdminPetState = {
   medications: [],
   feedings: [],
   waters: [],
-  walks: []
+  vitalSigns: [],
+  movements: []
 }
 
 export const initialAdminState: AdminStatePayload = {
@@ -347,7 +349,6 @@ export const adminSlice = createSlice({
         (action): action is PayloadAction<ErrorPayload> =>
           action.type.endsWith('/rejected') && action.payload?.data?.sliceName === 'adminApi',
         (state, action) => {
-          console.log('action:: ', action)
           state.loading = false
           state.error = action.payload.data?.message
         }

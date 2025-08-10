@@ -5,7 +5,7 @@ interface IProcessedChartData {
   waters: any[]
   medications: any[]
   seizures: any[]
-  walks: any[]
+  vitalSigns: any[]
   appointments: any[]
   movements: any[]
 }
@@ -19,7 +19,7 @@ export const processChartDataForPet = (pet: any): IProcessedChartData => {
       waters: [],
       medications: [],
       seizures: [],
-      walks: [],
+      vitalSigns: [],
       appointments: [],
       movements: []
     }
@@ -78,8 +78,8 @@ export const processChartDataForPet = (pet: any): IProcessedChartData => {
         }))
         .sort((a: any, b: any) => +new Date(b.timeRecorded) - +new Date(a.timeRecorded)) || [],
 
-    walks:
-      pet.walks
+    vitalSigns:
+      pet.vitalSigns
         ?.map((obj: any) => ({
           ...obj,
           date: new Date(obj.timeRecorded).toLocaleDateString(),

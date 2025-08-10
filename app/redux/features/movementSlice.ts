@@ -12,8 +12,7 @@ export interface MovementStatePayload {
   movements: IMovement[]
   movement: IMovement
   zeroMovements: boolean
-  movementCreateDrawer: boolean
-  movementUpdateDrawer: boolean
+  movementDrawer: boolean
   movementCount: number
 }
 
@@ -25,8 +24,7 @@ export const initialMovementState: MovementStatePayload = {
   movements: [],
   movement: movementInitialState,
   zeroMovements: true,
-  movementCreateDrawer: false,
-  movementUpdateDrawer: false,
+  movementDrawer: false,
   movementCount: 0
 }
 
@@ -34,21 +32,47 @@ export const movementSlice = createSlice({
   name: 'movement',
   initialState: initialMovementState,
   reducers: {
-    setOpenMovementCreateDrawer: (state) => {
-      state.movementCreateDrawer = true
+    setOpenMovementDrawer: (state) => {
+      state.movementDrawer = true
     },
-    setCloseMovementCreateDrawer: (state) => {
-      state.movementCreateDrawer = false
+    setCloseMovementDrawer: (state) => {
+      state.movementDrawer = false
     },
-    setOpenMovementUpdateDrawer: (state) => {
-      state.movementUpdateDrawer = true
-    },
-    setCloseMovementUpdateDrawer: (state) => {
-      state.movementUpdateDrawer = false
-    },
-    addMovementsToState: (state, { payload }) => {
+    setMovements: (state, { payload }) => {
       state.movements = payload
       state.zeroMovements = payload.length === 0
+    },
+    addMovementToState: (state, { payload }) => {
+      state.movements.unshift(payload)
+      state.zeroMovements = state.movements.length === 0
+    },
+    updateMovementInState: (state, action) => {
+      const { findById, replaceWith } = action.payload
+
+      if (findById && replaceWith) {
+        const index = state.movements.findIndex((movement) => movement?.id === findById)
+
+        if (index !== -1) {
+          // Item exists - update it
+          state.movements[index] = replaceWith
+        } else {
+          // Item doesn't exist (was deleted optimistically) - add it back
+          state.movements.push(replaceWith)
+          state.zeroMovements = state.movements.length === 0
+        }
+      } else {
+        // Normal update
+        const updatedMovement = action.payload
+        const index = state.movements.findIndex((movement) => movement?.id === updatedMovement?.id)
+        if (index !== -1) {
+          state.movements[index] = updatedMovement
+        }
+      }
+    },
+    removeMovementFromState: (state, action) => {
+      state.movements = state.movements.filter((movement: { id: string }) => movement?.id !== action.payload)
+      state.movementCount = state.movementCount - 1
+      state.zeroMovements = state.movements.length === 0
     }
   },
   extraReducers: (builder) => {
@@ -86,9 +110,10 @@ export const movementSlice = createSlice({
 export const movementReducer = movementSlice.reducer as Reducer<MovementStatePayload>
 
 export const {
-  setOpenMovementCreateDrawer,
-  setCloseMovementCreateDrawer,
-  setOpenMovementUpdateDrawer,
-  setCloseMovementUpdateDrawer,
-  addMovementsToState
+  addMovementToState,
+  removeMovementFromState,
+  setCloseMovementDrawer,
+  setMovements,
+  setOpenMovementDrawer,
+  updateMovementInState
 } = movementSlice.actions

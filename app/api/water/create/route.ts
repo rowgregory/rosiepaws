@@ -19,7 +19,7 @@ export async function POST(req: NextRequest) {
 
     const { petId, milliliters, timeRecorded, moodRating, notes } = await req.json()
 
-    if (!petId || !timeRecorded || !moodRating) {
+    if (!petId || !timeRecorded || moodRating < 0 || moodRating > 4) {
       return NextResponse.json(
         {
           message: `Missing required fields: petId: ${petId}, milliliters: ${milliliters}, timeRecorded: ${timeRecorded}, and moodRading: ${moodRating} are required`,
@@ -97,6 +97,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json(
       {
+        water: result.newWater,
         sliceName: sliceWater,
         user: {
           tokens: result.updatedUser.tokens,

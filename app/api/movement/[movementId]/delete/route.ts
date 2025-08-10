@@ -20,7 +20,7 @@ export async function DELETE(req: NextRequest, { params }: any) {
     const movementId = parameters.movementId
 
     if (!movementId) {
-      return NextResponse.json({ error: 'Movement ID is required', sliceNam: sliceMovement }, { status: 400 })
+      return NextResponse.json({ error: 'Movement ID is required', sliceName: sliceMovement }, { status: 400 })
     }
 
     // Check if movement exists
@@ -29,7 +29,7 @@ export async function DELETE(req: NextRequest, { params }: any) {
     })
 
     if (!existingMovement) {
-      return NextResponse.json({ error: 'Movement not found', sliceNam: sliceMovement }, { status: 404 })
+      return NextResponse.json({ error: 'Movement not found', sliceName: sliceMovement }, { status: 404 })
     }
 
     // Use transaction to ensure atomicity
@@ -80,7 +80,8 @@ export async function DELETE(req: NextRequest, { params }: any) {
     })
 
     return NextResponse.json({
-      sliceNam: sliceMovement,
+      sliceName: sliceMovement,
+      movement: result.deletedMovement,
       user: {
         tokens: result.updatedUser.tokens,
         tokensUsed: result.updatedUser.tokensUsed

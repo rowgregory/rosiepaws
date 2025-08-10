@@ -245,33 +245,24 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       return true
     },
     async session({ session, token }) {
-      // Pass all the user data from token to session
       if (token.userId) {
         session.user.id = token.userId
-        session.user.pets = token.pets
-
-        // Add these missing properties
-        session.user.firstName = token.firstName
-        session.user.lastName = token.lastName
+        session.user.email = token.email || ''
         session.user.role = token.role
         session.user.isAdmin = token.isAdmin
         session.user.isSuperUser = token.isSuperUser
-        session.user.isFreeUser = token.isFreeUser
-        session.user.isComfortUser = token.isComfortUser
-        session.user.isCompanionUser = token.isCompanionUser
-        session.user.isLegacyUser = token.isLegacyUser
-        session.user.stripeSubscription = token.stripeSubscription
       }
       return session
     },
     async jwt({ token, user, account }) {
       if (user) {
-        // First time sign in - user was just created by the adapter
+        // Only store essential identifier
         token.userId = user.id
         token.role = user.role
         token.isAdmin = user.isAdmin
+        token.isSuperUser = user.isSuperUser
 
-        // If this is a new Google user, update their name fields
+        // Handle Google user name updates (this is fine to keep)
         if (account?.provider === 'google' && user.name && !user.firstName) {
           try {
             const nameParts = user.name.split(' ')
@@ -292,27 +283,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           }
         }
 
-        // Fetch fresh user data from database
-        const dbUser = await prisma.user.findUnique({
-          where: { id: user.id },
-          include: {
-            pets: true,
-            stripeSubscription: true
-          }
-        })
-
-        if (dbUser) {
-          token.pets = dbUser.pets || []
-          token.firstName = dbUser.firstName || undefined
-          token.lastName = dbUser.lastName || undefined
-          token.role = dbUser.role || undefined
-          token.isAdmin = dbUser.isAdmin ?? false
-          token.isSuperUser = dbUser.isSuperUser ?? false
-          token.isFreeUser = dbUser.isFreeUser ?? false
-          token.isComfortUser = dbUser.isComfortUser ?? false
-          token.isCompanionUser = dbUser.isCompanionUser ?? false
-          token.isLegacyUser = dbUser.isLegacyUser ?? false
-          token.stripeSubscription = dbUser.stripeSubscription || undefined
+        // Maybe keep email for convenience if needed
+        if (user.email) {
+          token.email = user.email
         }
       }
       return token

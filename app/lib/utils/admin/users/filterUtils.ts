@@ -12,7 +12,6 @@ export const userFilter = (users: IUser[], searchTerm: string, roleFilter: strin
       userTypeFilter === 'all' ||
       (userTypeFilter === 'super' && user.isSuperUser) ||
       (userTypeFilter === 'admin' && user.isAdmin) ||
-      (userTypeFilter === 'companion' && user.isCompanionUser) ||
       (userTypeFilter === 'comfort' && user.isComfortUser) ||
       (userTypeFilter === 'legacy' && user.isLegacyUser) ||
       (userTypeFilter === 'free' && user.isFreeUser)

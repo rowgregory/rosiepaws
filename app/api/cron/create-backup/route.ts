@@ -26,7 +26,7 @@ async function generateBackupData() {
         painScores: true,
         feedings: true,
         waters: true,
-        walks: true,
+        vitalSigns: true,
         movements: true,
         appointments: true,
         medications: true,

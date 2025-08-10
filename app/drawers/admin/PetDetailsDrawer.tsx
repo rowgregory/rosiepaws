@@ -114,8 +114,8 @@ const PetDetailsDrawer = () => {
                     <div className="text-xs text-gray-500">Medications</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-2xl font-bold text-gray-900">{pet._count?.walks || 0}</div>
-                    <div className="text-xs text-gray-500">Walks</div>
+                    <div className="text-2xl font-bold text-gray-900">{pet._count?.movements || 0}</div>
+                    <div className="text-xs text-gray-500">Movements</div>
                   </div>
                   <div className="text-center">
                     <div className="text-2xl font-bold text-gray-900">{pet._count?.painScores || 0}</div>
@@ -286,8 +286,8 @@ const PetDetailsDrawer = () => {
                           </div>
                           <div className="text-center p-4 bg-purple-50 rounded-lg">
                             <Footprints className="w-6 h-6 text-purple-600 mx-auto mb-2" />
-                            <div className="text-xl font-bold text-purple-600">{pet._count?.walks || 0}</div>
-                            <div className="text-sm text-purple-700">Walks</div>
+                            <div className="text-xl font-bold text-purple-600">{pet._count?.movements || 0}</div>
+                            <div className="text-sm text-purple-700">Movements</div>
                           </div>
                           <div className="text-center p-4 bg-orange-50 rounded-lg">
                             <TrendingUp className="w-6 h-6 text-orange-600 mx-auto mb-2" />
@@ -330,21 +330,21 @@ const PetDetailsDrawer = () => {
                         </div>
                       )}
 
-                      {/* Recent Walks */}
-                      {pet.walks && pet.walks.length > 0 && (
+                      {/* Recent Movements */}
+                      {pet.movements && pet.movements.length > 0 && (
                         <div className="bg-white border border-gray-200 rounded-lg p-6">
-                          <h3 className="text-lg font-semibold text-gray-900 mb-4">Recent Walks</h3>
+                          <h3 className="text-lg font-semibold text-gray-900 mb-4">Recent Movements</h3>
                           <div className="space-y-3">
-                            {pet.walks.slice(0, 3).map((walk: any, index) => (
+                            {pet.movements.slice(0, 3).map((movement: any, index) => (
                               <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                                 <div className="flex items-center gap-3">
                                   <Footprints className="w-4 h-4 text-purple-600" />
                                   <div>
-                                    <span className="text-sm font-medium">{walk.duration} minutes</span>
-                                    <p className="text-xs text-gray-600">Mood: {walk.moodRating}/10</p>
+                                    <span className="text-sm font-medium">{movement.duration} minutes</span>
+                                    <p className="text-xs text-gray-600">Mood: {movement.moodRating}/10</p>
                                   </div>
                                 </div>
-                                <span className="text-xs text-gray-500">{formatDateTime(walk.timeRecorded)}</span>
+                                <span className="text-xs text-gray-500">{formatDateTime(movement.timeRecorded)}</span>
                               </div>
                             ))}
                           </div>

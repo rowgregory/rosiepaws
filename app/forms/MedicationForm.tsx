@@ -3,7 +3,7 @@
 import { setInputs } from '@/app/redux/features/formSlice'
 import { ChangeEvent, useState } from 'react'
 import { RootState, useAppDispatch, useAppSelector } from '@/app/redux/store'
-import { Bell, Pill, Plus, Search, X } from 'lucide-react'
+import { Bell, Pill, Search } from 'lucide-react'
 import { COMMON_MEDICATIONS, DOSAGE_UNITS, FREQUENCIES, TIME_ZONE_OPTIONS } from '../lib/constants'
 import { getDefaultReminderTimes } from '../lib/utils'
 import PetSelection from '../components/common/forms/PetSelection'
@@ -71,19 +71,19 @@ const MedicationForm = ({ inputs, handleSubmit, close, errors, loading, isUpdati
     }
   }
 
-  const addReminderTime = () => {
-    const newTime = '08:00'
-    const currentReminderTimes = medicationForm?.inputs?.reminderTimes || []
+  // const addReminderTime = () => {
+  //   const newTime = '08:00'
+  //   const currentReminderTimes = medicationForm?.inputs?.reminderTimes || []
 
-    dispatch(
-      setInputs({
-        formName: 'medicationForm',
-        data: {
-          reminderTimes: [...currentReminderTimes, newTime]
-        }
-      })
-    )
-  }
+  //   dispatch(
+  //     setInputs({
+  //       formName: 'medicationForm',
+  //       data: {
+  //         reminderTimes: [...currentReminderTimes, newTime]
+  //       }
+  //     })
+  //   )
+  // }
 
   const updateReminderTime = (index: number, time: string) => {
     dispatch(
@@ -96,16 +96,16 @@ const MedicationForm = ({ inputs, handleSubmit, close, errors, loading, isUpdati
     )
   }
 
-  const removeReminderTime = (index: number) => {
-    dispatch(
-      setInputs({
-        formName: 'medicationForm',
-        data: {
-          reminderTimes: medicationForm?.inputs?.reminderTimes.filter((_: any, i: number) => i !== index)
-        }
-      })
-    )
-  }
+  // const removeReminderTime = (index: number) => {
+  //   dispatch(
+  //     setInputs({
+  //       formName: 'medicationForm',
+  //       data: {
+  //         reminderTimes: medicationForm?.inputs?.reminderTimes.filter((_: any, i: number) => i !== index)
+  //       }
+  //     })
+  //   )
+  // }
 
   return (
     <form onSubmit={handleSubmit} className="mx-auto bg-white min-h-screen">
@@ -202,7 +202,7 @@ const MedicationForm = ({ inputs, handleSubmit, close, errors, loading, isUpdati
                 <input
                   type="number"
                   name="dosage"
-                  value={medicationForm?.inputs?.dosage || 0}
+                  value={medicationForm?.inputs?.dosage || ''}
                   onChange={handleInput}
                   placeholder="Amount"
                   step="0.1"
@@ -318,14 +318,14 @@ const MedicationForm = ({ inputs, handleSubmit, close, errors, loading, isUpdati
                   </div>
                   <div className="flex items-center justify-between">
                     <label className="text-sm font-medium text-blue-700">Reminder Times</label>
-                    <button
+                    {/* <button
                       type="button"
                       onClick={addReminderTime}
                       className="text-blue-600 hover:text-blue-700 text-sm font-medium flex items-center"
                     >
                       <Plus className="w-4 h-4 mr-1" />
                       Add Time
-                    </button>
+                    </button> */}
                   </div>
 
                   <div className="space-y-2">
@@ -337,7 +337,6 @@ const MedicationForm = ({ inputs, handleSubmit, close, errors, loading, isUpdati
                           onChange={(e) => updateReminderTime(index, e.target.value)}
                           className="flex-1 p-2 border border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                         />
-                        <X onClick={() => removeReminderTime(index)} className="text-red-600 hover:text-red-700 p-2" />
                       </div>
                     ))}
                   </div>

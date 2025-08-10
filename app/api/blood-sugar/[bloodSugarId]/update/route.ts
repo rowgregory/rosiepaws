@@ -131,6 +131,7 @@ export async function PATCH(req: NextRequest, { params }: any) {
 
     return NextResponse.json(
       {
+        bloodSugar: result.newBloodSugar,
         sliceName: sliceBloodSugar,
         user: {
           tokens: result.updatedUser.tokens,

@@ -13,8 +13,6 @@ import { planFeatures } from '../lib/constants'
 import {
   comfortTierName,
   comfortTierPrice,
-  companionTierName,
-  companionTierPrice,
   freeTierName,
   freeTierPrice,
   legacyTierName,
@@ -121,12 +119,6 @@ const Buy = () => {
                           <span className="text-sm font-normal text-blue-500 mt-1">${comfortTierPrice}/month</span>
                         </div>
                       </th>
-                      <th className="px-6 py-4 text-center font-semibold text-purple-600 min-w-[120px]">
-                        <div className="flex flex-col items-center">
-                          <span>{companionTierName}</span>
-                          <span className="text-sm font-normal text-purple-500 mt-1">${companionTierPrice}/month</span>
-                        </div>
-                      </th>
                       <th className="px-6 py-4 text-center font-semibold text-amber-600 min-w-[120px]">
                         <div className="flex flex-col items-center">
                           <span>{legacyTierName}</span>
@@ -168,19 +160,6 @@ const Buy = () => {
                             </div>
                           ) : (
                             <span className="text-blue-600 font-semibold">{row.comfort}</span>
-                          )}
-                        </td>
-                        <td className="px-6 py-4 text-center">
-                          {row.companion === '✓' ? (
-                            <div className="inline-flex items-center justify-center w-8 h-8 bg-green-100 rounded-full">
-                              <Check className="w-5 h-5 text-green-600" />
-                            </div>
-                          ) : row.companion === '✗' ? (
-                            <div className="inline-flex items-center justify-center w-8 h-8 bg-red-100 rounded-full">
-                              <X className="w-5 h-5 text-red-500" />
-                            </div>
-                          ) : (
-                            <span className="text-purple-600 font-semibold">{row.companion}</span>
                           )}
                         </td>
                         <td className="px-6 py-4 text-center">

@@ -5,7 +5,7 @@ import { setInputs } from '@/app/redux/features/formSlice'
 import { IMedication } from '@/app/types'
 import { formatTimeRemaining, getNextDoseTime } from '@/app/lib/utils'
 import { itemVariants } from '@/app/lib/constants'
-import { setOpenMedicationUpdateDrawer } from '@/app/redux/features/medicationSlice'
+import { setOpenMedicationDrawer } from '@/app/redux/features/medicationSlice'
 
 const containerVariants = {
   hidden: {
@@ -45,7 +45,7 @@ const ActiveMedicationCard: FC<IActiveMedicationCard> = ({
         key={medication.id}
         onClick={() => {
           dispatch(setInputs({ formName: 'medicationForm', data: medication }))
-          dispatch(setOpenMedicationUpdateDrawer())
+          dispatch(setOpenMedicationDrawer())
         }}
         className="bg-white rounded-lg border border-gray-200 p-6 cursor-pointer overflow-hidden relative"
         variants={itemVariants}

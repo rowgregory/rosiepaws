@@ -1,7 +1,7 @@
 'use client'
 
 import React, { FC } from 'react'
-import { ChildrenProps } from '@/app/types/common'
+import { IChildren } from '@/app/types/common'
 import Link from 'next/link'
 import useCustomPathname from '@/app/hooks/useCustomPathname'
 import { Activity, PawPrint } from 'lucide-react'
@@ -32,7 +32,7 @@ const petLinks = (path: string): PetLink[] => [
   }
 ]
 
-const GuardianSettingsLayout: FC<ChildrenProps> = ({ children }) => {
+const GuardianSettingsLayout: FC<IChildren> = ({ children }) => {
   const path = useCustomPathname()
 
   return (

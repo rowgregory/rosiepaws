@@ -1,23 +1,50 @@
-import { updateUserTokensOnSuccess } from '@/app/lib/utils/common/reduxUtils'
 import { api } from './api'
-import { updateUserTokens } from '../features/userSlice'
+import { createOptimisticHandlers } from '@/app/lib/utils/api/optimisticUpdates'
 
 const BASE_URL = '/feeding'
+
+let feedingHandlers: any = null
+let handlersPromise: Promise<any> | null = null
+
+const getFeedingHandlers = async () => {
+  if (feedingHandlers) {
+    return feedingHandlers
+  }
+
+  if (!handlersPromise) {
+    handlersPromise = (async () => {
+      // Dynamic imports for ES modules
+      const [{ addFeedingToState, updateFeedingInState, removeFeedingFromState }, { updateUserTokens }] =
+        await Promise.all([import('../features/feedingSlice'), import('../features/userSlice')])
+
+      const petConfig = {
+        addAction: addFeedingToState,
+        updateAction: updateFeedingInState,
+        removeAction: removeFeedingFromState,
+        updateTokensAction: updateUserTokens,
+        responseKey: 'feeding',
+        getEntityFromState: (state: { feeding: { feedings: any[] } }, id: any) =>
+          state.feeding.feedings.find((feeding) => feeding.id === id)
+      }
+
+      feedingHandlers = createOptimisticHandlers(petConfig)
+      return feedingHandlers
+    })()
+  }
+
+  return handlersPromise
+}
 
 export const feedingApi = api.injectEndpoints({
   overrideExisting: true,
   endpoints: (build: any) => ({
-    listMyFeedings: build.query({
-      query: () => `${BASE_URL}/me`,
-      providesTags: (result: { id: any }[]) =>
-        result
-          ? [...result.map(({ id }) => ({ type: 'Feeding' as const, id })), { type: 'Feeding', id: 'LIST' }]
-          : [{ type: 'Feeding', id: 'LIST' }]
-    }),
     createFeeding: build.mutation({
       query: (body: any) => ({ url: `${BASE_URL}/create`, method: 'POST', body }),
-      invalidatesTags: ['Feeding', 'Pet'],
-      onQueryStarted: updateUserTokensOnSuccess(updateUserTokens)
+      onQueryStarted: async (data: any, { dispatch, queryFulfilled }: any) => {
+        const handlers = await getFeedingHandlers()
+        await handlers.handleCreate(dispatch)(data, queryFulfilled)
+      },
+      invalidatesTags: ['Feeding', 'Pet']
     }),
     updateFeeding: build.mutation({
       query: (body: any) => ({
@@ -25,16 +52,23 @@ export const feedingApi = api.injectEndpoints({
         method: 'PATCH',
         body
       }),
-      invalidatesTags: ['Feeding', 'Pet'],
-      onQueryStarted: updateUserTokensOnSuccess(updateUserTokens)
+      onQueryStarted: async (data: any, { dispatch, queryFulfilled, getState }: any) => {
+        const handlers = await getFeedingHandlers()
+        const { feedingId, ...updateFields } = data
+        const updateData = { id: feedingId, ...updateFields }
+        await handlers.handleUpdate(dispatch, getState)(updateData, queryFulfilled)
+      },
+      invalidatesTags: ['Feeding', 'Pet']
     }),
     deleteFeeding: build.mutation({
-      query: (body: any) => ({ url: `${BASE_URL}/${body.feedingId}/delete`, method: 'DELETE', body }),
-      invalidatesTags: ['Feeding', 'Pet'],
-      onQueryStarted: updateUserTokensOnSuccess(updateUserTokens)
+      query: (body: any) => ({ url: `${BASE_URL}/${body.id}/delete`, method: 'DELETE', body }),
+      onQueryStarted: async (data: { id: any }, { dispatch, queryFulfilled, getState }: any) => {
+        const handlers = await getFeedingHandlers()
+        await handlers.handleDelete(dispatch, getState)(data, queryFulfilled)
+      },
+      invalidatesTags: ['Feeding', 'Pet']
     })
   })
 })
 
-export const { useListMyFeedingsQuery, useCreateFeedingMutation, useUpdateFeedingMutation, useDeleteFeedingMutation } =
-  feedingApi
+export const { useCreateFeedingMutation, useUpdateFeedingMutation, useDeleteFeedingMutation } = feedingApi

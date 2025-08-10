@@ -81,6 +81,7 @@ export async function DELETE(req: NextRequest, { params }: any) {
     })
 
     return NextResponse.json({
+      deletedWater: result.deletedWater,
       sliceNam: sliceWater,
       user: {
         tokens: result.updatedUser.tokens,
@@ -94,5 +95,7 @@ export async function DELETE(req: NextRequest, { params }: any) {
       action: 'Water delete',
       sliceName: sliceWater
     })
+  } finally {
+    await prisma.$disconnect()
   }
 }

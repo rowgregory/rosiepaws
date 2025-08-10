@@ -1,5 +1,5 @@
 import React, { FC } from 'react'
-import { Users, Star, Heart, Shield } from 'lucide-react'
+import { Users, Star, Shield } from 'lucide-react'
 import AdminStatCard from '../common/AdminStatCard'
 import { DashboardSummaryData } from '@/app/redux/features/adminSlice'
 
@@ -15,12 +15,6 @@ const UsersStats: FC<{ summary: DashboardSummaryData }> = ({ summary }) => {
       title: 'Comofort Users',
       value: summary.comfortUsers,
       icon: Star,
-      formatter: (value: { toLocaleString: () => any }) => value?.toLocaleString()
-    },
-    {
-      title: 'Companion Users',
-      value: summary.companionUsers,
-      icon: Heart,
       formatter: (value: { toLocaleString: () => any }) => value?.toLocaleString()
     },
     {

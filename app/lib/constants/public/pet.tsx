@@ -1,4 +1,4 @@
-import { PawPrint, Shield, Stethoscope, Calendar, Sparkles, Clock, Award, Activity } from 'lucide-react'
+import { PawPrint, Shield, Stethoscope, Calendar, Sparkles, Heart, Users } from 'lucide-react'
 
 export const PET_TYPES = [
   { id: 'dog', name: 'Dog', icon: '🐶', color: 'bg-amber-50 border-amber-300 text-amber-700' },
@@ -63,39 +63,24 @@ export const PET_TIPS = [
   }
 ]
 
-export const BREED_CATEGORIES = [
-  {
-    type: '🐶',
-    label: 'Popular Dog Breeds',
-    breeds: ['Golden Retriever', 'Labrador', 'German Shepherd', 'French Bulldog', 'Poodle', 'Beagle'],
-    color: 'from-blue-400 to-indigo-500'
-  },
-  {
-    type: '🐱',
-    label: 'Popular Cat Breeds',
-    breeds: ['Persian', 'Siamese', 'Maine Coon', 'British Shorthair', 'Ragdoll', 'Bengal'],
-    color: 'from-purple-400 to-pink-500'
-  }
-]
-
 export const PET_STATS = [
   {
-    icon: <Activity className="w-5 h-5 text-blue-500" />,
-    value: '24/7',
-    label: 'Health Monitoring',
-    description: 'Continuous AI-powered health tracking'
+    icon: <Heart className="w-5 h-5 text-red-500" />,
+    value: '100%',
+    label: 'Pet Profiles',
+    description: 'Complete digital pet records & health history'
   },
   {
-    icon: <Award className="w-5 h-5 text-emerald-500" />,
-    value: '95%',
-    label: 'Care Accuracy',
-    description: 'Veterinarian-approved recommendations'
+    icon: <Shield className="w-5 h-5 text-violet-500" />,
+    value: 'Secure',
+    label: 'Data Protection',
+    description: "Your pet's information is safe and private"
   },
   {
-    icon: <Clock className="w-5 h-5 text-orange-500" />,
-    value: '< 1min',
-    label: 'Setup Time',
-    description: 'Quick and easy profile creation'
+    icon: <Users className="w-5 h-5 text-blue-500" />,
+    value: '< 2min',
+    label: 'Quick Setup',
+    description: 'Fast profile creation for pets and veterinarians'
   },
   {
     icon: <Sparkles className="w-5 h-5 text-violet-500" />,

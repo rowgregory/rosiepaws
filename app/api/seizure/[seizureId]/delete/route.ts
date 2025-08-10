@@ -105,6 +105,7 @@ export async function DELETE(req: NextRequest, { params }: any) {
     })
 
     return NextResponse.json({
+      seizure: result.deletedSeizure,
       sliceName: sliceSeizure,
       user: {
         tokens: result.updatedUser.tokens,

@@ -2,7 +2,6 @@ import { SeizureSeverity } from '@/app/lib/constants'
 import { AlertCircle, AlertTriangle, Clock, Shield, Zap } from 'lucide-react'
 
 export const getSeizureSeverity = (duration?: number) => {
-  console.log(duration)
   if (!duration) {
     return {
       icon: Clock,

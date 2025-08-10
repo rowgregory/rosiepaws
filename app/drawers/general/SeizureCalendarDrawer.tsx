@@ -8,7 +8,7 @@ import React, { useState } from 'react'
 
 const SeizureCalendarDrawer: React.FC = () => {
   const [currentDate, setCurrentDate] = useState(new Date())
-  const { seizures } = useAppSelector((state: RootState) => state.pet)
+  const { seizures } = useAppSelector((state: RootState) => state.seizure)
   const { seizureCalendarDrawer } = useAppSelector((state: RootState) => state.dashboard)
   const [seizureRecords] = useState<ISeizure[]>(seizures)
   const dispatch = useAppDispatch()

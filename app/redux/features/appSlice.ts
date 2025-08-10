@@ -52,6 +52,8 @@ export interface AppStatePayload {
   contactSupportDrawer: boolean
   authErrorDrawer: boolean
   slideMessage: boolean
+  hasInitiallyLoaded: boolean
+  lastTempId: string
 }
 
 const mediaDataInitialState: ModalUploaderPayload = {
@@ -93,7 +95,9 @@ const initialAppState: AppStatePayload = {
   viewGuideDrawer: false,
   contactSupportDrawer: false,
   authErrorDrawer: false,
-  slideMessage: false
+  slideMessage: false,
+  hasInitiallyLoaded: false,
+  lastTempId: ''
 }
 
 interface FetchAppDataPayload {
@@ -222,6 +226,12 @@ export const appSlice = createSlice({
     },
     setCloseSlideMessage: (state) => {
       state.slideMessage = false
+    },
+    setInitiallyLoaded: (state) => {
+      state.hasInitiallyLoaded = true
+    },
+    setLastTempId: (state, action) => {
+      state.lastTempId = action.payload
     }
   },
   extraReducers: (builder) => {
@@ -282,5 +292,7 @@ export const {
   setOpenAuthErrorDrawer,
   setCloseAuthErrorDrawer,
   setOpenSlideMessage,
-  setCloseSlideMessage
+  setCloseSlideMessage,
+  setInitiallyLoaded,
+  setLastTempId
 } = appSlice.actions

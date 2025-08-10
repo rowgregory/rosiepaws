@@ -7,11 +7,23 @@ export const CheckboxStyle = 'rounded border-gray-300 text-indigo-600 focus:ring
 
 export const COLORS = ['#1f2937', '#374151', '#4b5563', '#6b7280', '#9ca3af', '#d1d5db', '#e5e7eb', '#f3f4f6']
 
+export const drawerVariants = {
+  initial: { x: '100%' },
+  animate: { x: 0 },
+  exit: { x: '100%' }
+}
+
+export const backdropVariants = {
+  initial: { opacity: 0 },
+  animate: { opacity: 1 },
+  exit: { opacity: 0 }
+}
+
 export * from './public/blood-sugar'
 export * from './public/feeding'
 export * from './public/medication'
 export * from './public/pain'
-export * from './public/walk'
+export * from './public/vital-signs'
 export * from './public/water'
 export * from './public/movement'
 export * from './public/appointment'

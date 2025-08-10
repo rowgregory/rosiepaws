@@ -10,8 +10,8 @@ const RosiePawsTokenInfo = () => {
   const [activeTab, setActiveTab] = useState('tokens')
 
   return (
-    <>
-      <div className="sticky top-0 pt-6 pl-6 border-b-1 border-b-gray-300 z-30 bg-white">
+    <div>
+      <div className="sticky top-0 pt-1 pl-6 border-b-1 border-b-gray-300 z-30 bg-white">
         <span className="text-2xl bg-gradient-to-r from-orange-400 via-orange-600 to-pink-600 bg-clip-text text-transparent font-semibold">
           Token Guide
         </span>
@@ -36,7 +36,7 @@ const RosiePawsTokenInfo = () => {
 
         {activeTab === 'actions' && <TokenActions />}
       </div>
-    </>
+    </div>
   )
 }
 

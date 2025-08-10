@@ -14,6 +14,7 @@ export interface DashboardStatePayload {
   notificationDrawer: boolean
   emergencySignsDrawer: boolean
   seizureCalendarDrawer: boolean
+  needToUpgradeDrawer: boolean
 }
 
 const initialDashboardState: DashboardStatePayload = {
@@ -29,7 +30,8 @@ const initialDashboardState: DashboardStatePayload = {
   type: '',
   notificationDrawer: false,
   emergencySignsDrawer: false,
-  seizureCalendarDrawer: false
+  seizureCalendarDrawer: false,
+  needToUpgradeDrawer: false
 }
 
 export const dashboardSlice = createSlice({
@@ -98,6 +100,12 @@ export const dashboardSlice = createSlice({
     },
     setCloseSeizureCalendarDrawer: (state) => {
       state.seizureCalendarDrawer = false
+    },
+    setOpenNeedToUpgradeDrawer: (state) => {
+      state.needToUpgradeDrawer = true
+    },
+    setCloseNeedToUpgradeDrawer: (state) => {
+      state.needToUpgradeDrawer = false
     }
   }
 })
@@ -123,5 +131,7 @@ export const {
   setOpenEmergencySignsDrawer,
   setCloseEmergencySignsDrawer,
   setOpenSeizureCalendarDrawer,
-  setCloseSeizureCalendarDrawer
+  setCloseSeizureCalendarDrawer,
+  setOpenNeedToUpgradeDrawer,
+  setCloseNeedToUpgradeDrawer
 } = dashboardSlice.actions
