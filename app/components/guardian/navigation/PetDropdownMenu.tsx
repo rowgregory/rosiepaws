@@ -4,6 +4,8 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { PawPrint, Plus } from 'lucide-react'
 import Link from 'next/link'
 import React, { FC } from 'react'
+import TokenCounter from '../TokenCounter'
+import { petCreateTokenCost } from '@/app/lib/constants/public/token'
 
 interface IPetDropdownMenu {
   setOpenPetDrawer: () => void
@@ -170,9 +172,9 @@ const PetDropdownMenu: FC<IPetDropdownMenu> = ({
             {/* Add New Pet Option */}
             <motion.div variants={itemVariants} className={`${zeroPets ? '' : 'border-t border-gray-100  p-2'}`}>
               <Link
-                href="/guardian/pets/my-pets"
+                href={user.role !== 'Free' && !user.isFreeUser ? '/guardian/pets/my-pets' : ''}
                 onClick={() => {
-                  if (user.role === 'Free' && user.isFreeUser) {
+                  if (user.role === 'Free' && user.isFreeUser && user.pets.length === 1) {
                     dispatch(setOpenNeedToUpgradeDrawer())
                   } else {
                     dispatch(setOpenPetDrawer())
@@ -202,8 +204,9 @@ const PetDropdownMenu: FC<IPetDropdownMenu> = ({
                   >
                     <Plus className="w-4 h-4 text-pink-600" />
                   </motion.div>
-                  <div className="flex-1">
-                    <h3 className="text-sm font-medium">Add New Pet</h3>
+                  <div className="flex-1 flex items-center gap-x-1">
+                    <h3 className="text-sm font-medium">Create Pet Profile</h3>
+                    <TokenCounter tokens={petCreateTokenCost} id="pink-to-orange" color1="#ed4797" color2="#f97320" />
                   </div>
                 </motion.div>
               </Link>

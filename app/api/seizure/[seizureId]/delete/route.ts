@@ -2,6 +2,7 @@ import { createLog } from '@/app/lib/api/createLog'
 import { getUserFromHeader } from '@/app/lib/api/getUserFromheader'
 import { handleApiError } from '@/app/lib/api/handleApiError'
 import { seizureDeleteTokenCost } from '@/app/lib/constants/public/token'
+import { deleteFileFromFirebase } from '@/app/utils/firebase-helpers'
 import prisma from '@/prisma/client'
 import { sliceSeizure } from '@/public/data/api.data'
 import { NextRequest, NextResponse } from 'next/server'
@@ -55,6 +56,10 @@ export async function DELETE(req: NextRequest, { params }: any) {
             }
           }
         })
+
+        if (deletedSeizure.videoFilename) {
+          await deleteFileFromFirebase(deletedSeizure.videoFilename, 'video')
+        }
 
         // Deduct tokens from user
         const updatedUser = await tx.user.update({
@@ -119,5 +124,7 @@ export async function DELETE(req: NextRequest, { params }: any) {
       action: 'Seizure deleted',
       sliceName: sliceSeizure
     })
+  } finally {
+    await prisma.$disconnect()
   }
 }

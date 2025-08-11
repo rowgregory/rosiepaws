@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "Pet" ALTER COLUMN "fileName" DROP NOT NULL,
+ALTER COLUMN "filePath" DROP NOT NULL;

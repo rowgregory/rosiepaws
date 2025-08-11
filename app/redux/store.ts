@@ -24,6 +24,7 @@ import { seizureReducer } from './features/seizureSlice'
 import { mediaReducer } from './features/mediaSlice'
 import { vitalSignsReducer } from './features/vitalSignsSlice'
 import { vetReducer } from './features/vetSlice'
+import { galleryItemReducer } from './features/galleryItemSlice'
 
 const rootReducer = combineReducers({
   app: appReducer,
@@ -46,6 +47,7 @@ const rootReducer = combineReducers({
   seizure: seizureReducer,
   media: mediaReducer,
   vet: vetReducer,
+  galleryItem: galleryItemReducer,
   [api.reducerPath]: api.reducer
 })
 

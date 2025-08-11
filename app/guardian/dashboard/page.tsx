@@ -128,12 +128,12 @@ const GuardianDashboard = () => {
 
   return (
     <div>
-      <div className="sticky top-0 flex items-center pl-6 border-b-1 border-b-gray-300 z-30 bg-white h-[68px]">
+      <div className="sticky top-0 flex items-center pl-6 border-b-1 border-b-gray-100 z-30 bg-white h-[64px]">
         <span className="text-2xl bg-gradient-to-r from-orange-400 via-orange-600 to-pink-600 bg-clip-text text-transparent font-semibold">
           {pet?.name}&apos;s Health Dashboard
         </span>
       </div>
-      <div className="h-[calc(100dvh-96px)] mx-auto p-6 space-y-8">
+      <div className="min-h-[calc(100dvh-64px)] mx-auto p-6 space-y-8 bg-gray-50">
         {onboardingBanner && (
           <motion.div
             initial={{ opacity: 0, y: -20 }}
@@ -281,11 +281,11 @@ const GuardianDashboard = () => {
                         href={
                           selectedMetric === 'blood-sugars'
                             ? '/guardian/pets/blood-sugar'
-                            : selectedMetric === 'pain-score'
+                            : selectedMetric === 'pain-scores'
                               ? '/guardian/pets/pain'
                               : selectedMetric === 'feedings'
                                 ? '/guardian/pets/feedings'
-                                : selectedMetric === 'water'
+                                : selectedMetric === 'waters'
                                   ? '/guardian/pets/water'
                                   : selectedMetric === 'medications'
                                     ? '/guardian/pets/medication'
@@ -302,11 +302,11 @@ const GuardianDashboard = () => {
                         View All{' '}
                         {selectedMetric === 'blood-sugars'
                           ? 'Blood Sugars'
-                          : selectedMetric === 'pain-score'
+                          : selectedMetric === 'pain-scores'
                             ? 'Pain Scores'
                             : selectedMetric === 'feedings'
                               ? 'Feedings'
-                              : selectedMetric === 'water'
+                              : selectedMetric === 'waters'
                                 ? 'Waters'
                                 : selectedMetric === 'medications'
                                   ? 'Medications'

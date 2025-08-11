@@ -32,7 +32,9 @@ export async function PATCH(req: NextRequest, { params }: any) {
       allergies,
       emergencyContactName,
       emergencyContactPhone,
-      notes
+      notes,
+      fileName,
+      filePath
     } = await req.json()
 
     // Validate required fields
@@ -56,52 +58,63 @@ export async function PATCH(req: NextRequest, { params }: any) {
     }
 
     // Use transaction to ensure atomicity
-    const result = await prisma.$transaction(async (tx) => {
-      const updatedPet = await prisma.pet.update({
-        where: { id: petId },
-        data: {
-          name,
-          type,
-          breed,
-          age,
-          gender,
-          weight,
-          notes,
-          spayedNeutered,
-          microchipId,
-          allergies,
-          emergencyContactName,
-          emergencyContactPhone
-        }
-      })
-
-      // Deduct tokens from user
-      const updatedUser = await tx.user.update({
-        where: { id: userAuth.userId },
-        data: {
-          tokens: { decrement: petUpdateTokenCost },
-          tokensUsed: { increment: petUpdateTokenCost }
-        }
-      })
-
-      // Create token transaction record
-      await tx.tokenTransaction.create({
-        data: {
-          userId: userAuth.userId!,
-          amount: -petUpdateTokenCost, // Negative for debit
-          type: 'PET_UPDATE',
-          description: `Pet update`,
-          metadata: {
-            petId: updatedPet.id,
-            feature: 'pet_update',
-            petName: updatedPet.name,
-            petBreed: updatedPet.breed
+    const result = await prisma.$transaction(
+      async (tx) => {
+        const updatedPet = await tx.pet.update({
+          where: { id: petId },
+          data: {
+            name,
+            type,
+            breed,
+            age,
+            gender,
+            weight,
+            spayedNeutered,
+            microchipId,
+            allergies,
+            emergencyContactName,
+            emergencyContactPhone,
+            notes,
+            fileName,
+            filePath
           }
-        }
-      })
+        })
 
-      return { updatedPet, updatedUser }
-    })
+        // Deduct tokens from user
+        const updatedUser = await tx.user.update({
+          where: { id: userAuth.userId },
+          data: {
+            tokens: { decrement: petUpdateTokenCost },
+            tokensUsed: { increment: petUpdateTokenCost }
+          },
+          select: {
+            tokens: true,
+            tokensUsed: true
+          }
+        })
+
+        // Create token transaction record
+        await tx.tokenTransaction.create({
+          data: {
+            userId: userAuth.userId!,
+            amount: -petUpdateTokenCost, // Negative for debit
+            type: 'PET_UPDATE',
+            description: `Pet update`,
+            metadata: {
+              petId: updatedPet.id,
+              feature: 'pet_update',
+              petName: updatedPet.name,
+              petBreed: updatedPet.breed
+            }
+          }
+        })
+
+        return { updatedPet, updatedUser }
+      },
+      {
+        timeout: 20000
+      }
+    )
 
     await createLog('info', 'Pet updated successfully', {
       location: ['api route - PUT /api/pet/[petId]/update'],

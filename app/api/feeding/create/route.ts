@@ -48,7 +48,7 @@ export async function POST(req: NextRequest) {
     // Use transaction to ensure atomicity
     const result = await prisma.$transaction(async (tx) => {
       // Create PainScore entry
-      const newFeeding = await prisma.feeding.create({
+      const newFeeding = await tx.feeding.create({
         data: {
           petId,
           foodAmount,

@@ -98,6 +98,9 @@ export interface Pet {
   lastVisit?: Date
   nextVisit?: Date
 
+  fileName: any
+  filePath: any
+
   // Related entities - you can type these more precisely if needed
   appointments: IAppointment[]
   medications: IMedication[]
@@ -318,7 +321,7 @@ export enum MediaType {
   EBOOK = 'EBOOK',
   DOCUMENT = 'DOCUMENT',
   VIDEO = 'VIDEO',
-  AUDIO = 'AUDIO'
+  IMAGE = 'IMAGE'
 }
 
 export enum MediaColor {
@@ -403,4 +406,26 @@ export interface IVitalSigns {
   notes?: string | null
 
   pet: Pet
+}
+
+// Interface for GalleryItem
+export interface IGalleryItem {
+  id: string
+  url: string // Firebase download URL
+  type: MediaType
+  name: string // Original filename
+  size: number // File size in bytes
+  mimeType: string // e.g., "image/jpeg", "video/mp4"
+  thumbnail?: string | null // Optional thumbnail URL for videos
+  description?: string | null // Optional user description
+  tags: string[] // Array of tags for organization
+  isPublic: boolean
+
+  // Relationships
+  petId: string
+  userId: string
+
+  // Timestamps
+  createdAt: Date
+  updatedAt: Date
 }

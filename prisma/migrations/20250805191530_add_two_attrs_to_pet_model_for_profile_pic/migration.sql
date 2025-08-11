@@ -1,3 +1,0 @@
--- AlterTable
-ALTER TABLE "Pet" ADD COLUMN     "fileName" VARCHAR(255) NOT NULL DEFAULT '',
-ADD COLUMN     "filePath" TEXT NOT NULL DEFAULT '';

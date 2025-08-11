@@ -1,5 +1,5 @@
 import { api } from './api'
-import { createOptimisticHandlers } from '@/app/lib/utils/api/optimisticUpdates'
+import { createOptimisticHandlers } from '@/app/lib/api/optimisticUpdates'
 
 const BASE_URL = '/pain-score'
 
@@ -44,21 +44,17 @@ export const painScoreApi = api.injectEndpoints({
         const handlers = await getPainHandlers()
         await handlers.handleCreate(dispatch)(data, queryFulfilled)
       },
-      invalidatesTags: ['Pain-Score', 'Pet']
+      invalidatesTags: ['Pain-Score', 'User']
     }),
     updatePainScore: build.mutation({
-      query: (body: any) => ({
-        url: `${BASE_URL}/${body.painId}/update`,
-        method: 'PATCH',
-        body
-      }),
+      query: (body: any) => ({ url: `${BASE_URL}/${body.painId}/update`, method: 'PATCH', body }),
       onQueryStarted: async (data: any, { dispatch, queryFulfilled, getState }: any) => {
         const handlers = await getPainHandlers()
         const { painId, ...updateFields } = data
         const updateData = { id: painId, ...updateFields }
         await handlers.handleUpdate(dispatch, getState)(updateData, queryFulfilled)
       },
-      invalidatesTags: ['Pain-Score', 'Pet']
+      invalidatesTags: ['Pain-Score', 'User']
     }),
     deletePainScore: build.mutation({
       query: (body: any) => ({ url: `${BASE_URL}/${body.id}/delete`, method: 'DELETE', body }),
@@ -66,7 +62,7 @@ export const painScoreApi = api.injectEndpoints({
         const handlers = await getPainHandlers()
         await handlers.handleDelete(dispatch, getState)(data, queryFulfilled)
       },
-      invalidatesTags: ['Pain-Score', 'Pet']
+      invalidatesTags: ['Pain-Score', 'User']
     })
   })
 })

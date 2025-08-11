@@ -1,5 +1,5 @@
 import { api } from './api'
-import { createOptimisticHandlers } from '@/app/lib/utils/api/optimisticUpdates'
+import { createOptimisticHandlers } from '@/app/lib/api/optimisticUpdates'
 
 const BASE_URL = '/blood-sugar'
 
@@ -44,7 +44,7 @@ export const bloodSugarApi = api.injectEndpoints({
         const handlers = await getBloodSugarHandlers()
         await handlers.handleCreate(dispatch)(data, queryFulfilled)
       },
-      invalidatesTags: ['Blood-Sugar', 'Pet']
+      invalidatesTags: ['Blood-Sugar', 'User']
     }),
     updateBloodSugar: build.mutation({
       query: (body: any) => ({ url: `${BASE_URL}/${body.bloodSugarId}/update`, method: 'PATCH', body }),
@@ -54,7 +54,7 @@ export const bloodSugarApi = api.injectEndpoints({
         const updateData = { id: bloodSugarId, ...updateFields }
         await handlers.handleUpdate(dispatch, getState)(updateData, queryFulfilled)
       },
-      invalidatesTags: ['Blood-Sugar', 'Pet']
+      invalidatesTags: ['Blood-Sugar', 'User']
     }),
     deleteBloodSugar: build.mutation({
       query: (body: any) => ({ url: `${BASE_URL}/${body.id}/delete`, method: 'DELETE', body }),
@@ -62,7 +62,7 @@ export const bloodSugarApi = api.injectEndpoints({
         const handlers = await getBloodSugarHandlers()
         await handlers.handleDelete(dispatch, getState)(data, queryFulfilled)
       },
-      invalidatesTags: ['Blood-Sugar', 'Pet']
+      invalidatesTags: ['Blood-Sugar', 'User']
     })
   })
 })

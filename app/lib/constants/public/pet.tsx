@@ -1,8 +1,8 @@
-import { PawPrint, Shield, Stethoscope, Calendar, Sparkles, Heart, Users } from 'lucide-react'
+import { PawPrint, Shield, Stethoscope, Calendar, Sparkles, Heart, Users, Dog, Cat } from 'lucide-react'
 
 export const PET_TYPES = [
-  { id: 'dog', name: 'Dog', icon: '🐶', color: 'bg-amber-50 border-amber-300 text-amber-700' },
-  { id: 'cat', name: 'Cat', icon: '🐱', color: 'bg-purple-50 border-purple-300 text-purple-700' }
+  { id: 'dog', name: 'Dog', icon: Dog, color: 'bg-amber-50 border-amber-300 text-amber-700' },
+  { id: 'cat', name: 'Cat', icon: Cat, color: 'bg-purple-50 border-purple-300 text-purple-700' }
 ]
 
 export const GENDER_OPTIONS = [

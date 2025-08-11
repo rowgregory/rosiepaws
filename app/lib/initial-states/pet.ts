@@ -15,6 +15,8 @@ export const petInitialState: Pet = {
   spayedNeutered: '',
   microchipId: '',
   allergies: '',
+  fileName: '',
+  filePath: '',
   emergencyContactName: '',
   emergencyContactPhone: '',
   lastVisit: new Date(),

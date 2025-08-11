@@ -83,8 +83,9 @@ export const petSlice = createSlice({
     setPet: (state, { payload }) => {
       state.pet = payload
       state.loading = false
+      console.log('PAYLOAD: ', payload)
 
-      const filteredPet = state.petsWithNoLogs.filter((pet) => pet.id === payload.id)[0]
+      const filteredPet = state.petsWithNoLogs?.filter?.((pet) => pet?.id === payload?.id)[0]
       const petNoLogs = filteredPet?.noLogs
       state.noLogs = petNoLogs
       state.onboardingBanner = petNoLogs
@@ -276,9 +277,21 @@ export const petSlice = createSlice({
     },
 
     setSelectedPetWithChartData: (state, action) => {
+      const noData =
+        action.payload.stats.appointments.totalLogs === 0 &&
+        action.payload.stats.bloodSugars.totalLogs === 0 &&
+        action.payload.stats.feedings.totalLogs === 0 &&
+        action.payload.stats.medications.totalLogs === 0 &&
+        action.payload.stats.movements.totalLogs === 0 &&
+        action.payload.stats.painScores.totalLogs === 0 &&
+        action.payload.stats.seizures.totalLogs === 0 &&
+        action.payload.stats.vitalSigns.totalLogs === 0 &&
+        action.payload.stats.waters.totalLogs === 0
       state.pet = action.payload.pet
       state.chartData = action.payload.chartData
       state.stats = action.payload.stats
+      state.noLogs = noData
+      state.onboardingBanner = noData
     }
   },
   extraReducers: (builder) => {

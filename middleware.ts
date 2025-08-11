@@ -14,11 +14,7 @@ export async function middleware(req: NextRequest) {
   }
 
   // Skip middleware for static files and Next.js internals only
-  if (
-    nextUrl.pathname.startsWith('/_next') ||
-    nextUrl.pathname.includes('.') ||
-    nextUrl.pathname.startsWith('/favicon')
-  ) {
+  if (nextUrl.pathname.startsWith('/_next') || nextUrl.pathname.includes('.') || nextUrl.pathname.startsWith('/icon')) {
     return NextResponse.next()
   }
 
@@ -95,5 +91,5 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)']
+  matcher: ['/((?!_next/static|_next/image|icon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)']
 }

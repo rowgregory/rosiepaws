@@ -36,7 +36,8 @@ export async function GET(req: NextRequest) {
         tokensUsed: true,
         image: true,
         pets: true,
-        stripeSubscription: true
+        stripeSubscription: true,
+        galleryItems: true
       }
     })
 

@@ -18,7 +18,14 @@ import { IFeeding, IUser, PainScore, Pet } from '../types'
 import { useSession } from 'next-auth/react'
 import { useAppDispatch } from '../redux/store'
 import { clearUser, setTokenTransactions, setUser } from '../redux/features/userSlice'
-import { setChartData, setPet, setPets, setPetStats, setPetsWithNoLogs } from '../redux/features/petSlice'
+import {
+  setChartData,
+  setPet,
+  setPets,
+  setPetStats,
+  setPetsWithNoLogs,
+  setSelectedPetWithChartData
+} from '../redux/features/petSlice'
 import FeedingDrawer from '../drawers/guardian/FeedingDrawer'
 import PainDrawer from '../drawers/guardian/PainDrawer'
 import NeedToUpgradeDrawer from '../drawers/general/NeedToUpgradeDrawer'
@@ -32,6 +39,7 @@ import AppointmentDrawer from '../drawers/guardian/AppointmentDrawer'
 import { setAppointments } from '../redux/features/appointmentSlice'
 import { setBloodSugars } from '../redux/features/bloodSugarSlice'
 import { setSeizures } from '../redux/features/seizureSlice'
+import { setGalleryItems } from '../redux/features/galleryItemSlice'
 
 interface IFetchMe {
   data: {
@@ -79,6 +87,8 @@ const GuardianLayout: FC<IChildren> = ({ children }) => {
       dispatch(setAppointments(data?.appointments))
       dispatch(setBloodSugars(data?.bloodSugars))
       dispatch(setSeizures(data?.seizures))
+      dispatch(setGalleryItems(data?.user?.galleryItems))
+      dispatch(setSelectedPetWithChartData({ stats: data?.stats, chartData: data.chartData, pet: data.pets[0] }))
     } else if (status === 'unauthenticated') {
       dispatch(clearUser())
     }

@@ -15,8 +15,8 @@ const MyPets = () => {
   if (zeroPets) {
     return (
       <ZeroLogs
-        btnText="Add first pet"
-        title="No pets added yet"
+        btnText="Create Pet Profile"
+        title="No pet profiles have been created"
         subtitle="Get started by adding your first pet to begin tracking their health and activities."
         tokens={petCreateTokenCost}
         func={setOpenPetDrawer}
@@ -26,7 +26,7 @@ const MyPets = () => {
   }
 
   return (
-    <div className="h-[calc(100dvh-96px)]">
+    <div className="h-[calc(100dvh-64px)]">
       <div className="mx-auto px-6 space-y-8">
         {/* Header */}
         <CleanHeader btnText="Add Pet" func={setOpenPetDrawer} tokens={petCreateTokenCost} formName="petForm" />

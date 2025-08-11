@@ -35,19 +35,26 @@ const FixedFooter: FC<IFixedFooter> = ({ inputs, loading, tokens, text, close, f
         disabled={!isFormValid || loading}
         whileHover={{ scale: isFormValid && !loading ? 1.02 : 1 }}
         whileTap={{ scale: isFormValid && !loading ? 0.98 : 1 }}
-        className="px-4 py-2 bg-gradient-to-r from-pink-600 to-orange-600 text-white rounded-full font-medium transition-all disabled:from-gray-400 disabled:to-zinc-400 disabled:cursor-not-allowed flex items-center gap-2"
+        className="group relative inline-flex items-center rounded-full px-10 py-3 bg-gradient-to-r from-pink-600 to-orange-600 text-white font-bold overflow-hidden transition-all duration-500 cursor-pointer justify-center"
+        style={{
+          textShadow: '0 2px 4px rgba(0,0,0,0.3)'
+        }}
       >
-        {loading ? (
-          <>
-            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-            {isUpdating ? 'Updating' : 'Logging'}...
-          </>
-        ) : (
-          <>
-            {isUpdating ? 'Update' : 'Log'} {text}
-            <TokenCounter color1="#fff" color2="#fff" id="whiteToWhite" tokens={tokens} />
-          </>
-        )}
+        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-1000 ease-out" />
+        <div className="absolute inset-0 rounded-full border-2 border-pink-300/50 group-hover:border-pink-200/80 transition-colors duration-300" />
+        <span className="relative z-10 flex items-center gap-2 whitespace-nowrap">
+          {loading ? (
+            <>
+              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              {isUpdating ? 'Updating' : 'Logging'}...
+            </>
+          ) : (
+            <>
+              {isUpdating ? 'Update' : 'Log'} {text}
+              <TokenCounter color1="#fff" color2="#fff" id="whiteToWhite" tokens={tokens} />
+            </>
+          )}
+        </span>
       </motion.button>
     </motion.div>
   )

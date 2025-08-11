@@ -14,10 +14,6 @@ export async function GET(req: NextRequest) {
       return userAuth.response!
     }
 
-    const pets = await prisma.pet.findMany({
-      where: { id: userAuth?.userId }
-    })
-
     const painScores = await prisma.painScore.findMany({
       where: {
         pet: {
@@ -37,7 +33,7 @@ export async function GET(req: NextRequest) {
       orderBy: { timeRecorded: 'desc' }
     })
 
-    return NextResponse.json({ painScores, pets }, { status: 201 })
+    return NextResponse.json({ painScores }, { status: 201 })
   } catch (error) {
     return await handleApiError({
       error,

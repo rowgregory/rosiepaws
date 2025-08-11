@@ -36,7 +36,8 @@ export const api = createApi({
     'Seizure',
     'Medication',
     'Media',
-    'Vet'
+    'Vet',
+    'Gallery-Item'
   ],
   endpoints: () => ({})
 })

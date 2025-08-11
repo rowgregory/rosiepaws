@@ -1,6 +1,6 @@
 {
   "name": "rosiepaws",
-  "version": "0.8.0",
+  "version": "0.9.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -22,6 +22,7 @@
     "error-stack-parser-es": "^1.0.5",
     "firebase": "^11.9.1",
     "framer-motion": "^12.4.3",
+    "heic2any": "^0.0.4",
     "jose": "^5.9.6",
     "jspdf": "^3.0.1",
     "lucide-react": "^0.511.0",

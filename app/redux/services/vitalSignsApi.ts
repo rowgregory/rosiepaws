@@ -1,5 +1,5 @@
 import { api } from './api'
-import { createOptimisticHandlers } from '@/app/lib/utils/api/optimisticUpdates'
+import { createOptimisticHandlers } from '@/app/lib/api/optimisticUpdates'
 
 const BASE_URL = '/vital-signs'
 
@@ -44,7 +44,7 @@ export const vitalSignsApi = api.injectEndpoints({
         const handlers = await getVitalSignsHandlers()
         await handlers.handleCreate(dispatch)(data, queryFulfilled)
       },
-      invalidatesTags: ['Vital-Signs', 'Pet']
+      invalidatesTags: ['Vital-Signs', 'User']
     }),
     updateVitalSigns: build.mutation({
       query: (body: any) => ({ url: `${BASE_URL}/${body.vitalSignsId}/update`, method: 'PATCH', body }),
@@ -54,7 +54,7 @@ export const vitalSignsApi = api.injectEndpoints({
         const updateData = { id: vitalSignsId, ...updateFields }
         await handlers.handleUpdate(dispatch, getState)(updateData, queryFulfilled)
       },
-      invalidatesTags: ['Vital-Signs', 'Pet']
+      invalidatesTags: ['Vital-Signs', 'User']
     }),
     deleteVitalSigns: build.mutation({
       query: (body: any) => ({ url: `${BASE_URL}/${body.id}/delete`, method: 'DELETE', body }),
@@ -62,7 +62,7 @@ export const vitalSignsApi = api.injectEndpoints({
         const handlers = await getVitalSignsHandlers()
         await handlers.handleDelete(dispatch, getState)(data, queryFulfilled)
       },
-      invalidatesTags: ['Vital-Signs', 'Pet']
+      invalidatesTags: ['Vital-Signs', 'User']
     })
   })
 })

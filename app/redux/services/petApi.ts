@@ -1,5 +1,6 @@
-import { createOptimisticHandlers } from '@/app/lib/utils/api/optimisticUpdates'
+import { createOptimisticHandlers } from '@/app/lib/api/optimisticUpdates'
 import { api } from './api'
+import { setClosePetDrawer } from '../features/petSlice'
 
 const BASE_URL = '/pet'
 
@@ -45,8 +46,9 @@ export const petApi = api.injectEndpoints({
         onQueryStarted: async (data: any, { dispatch, queryFulfilled }: any) => {
           const handlers = await getPetHandlers()
           await handlers.handleCreate(dispatch)(data, queryFulfilled)
+          dispatch(setClosePetDrawer())
         },
-        invalidatesTags: ['Pet']
+        invalidatesTags: ['Pet', 'User']
       }),
       updatePet: build.mutation({
         query: (body: any) => ({ url: `${BASE_URL}/${body.petId}/update`, method: 'PATCH', body }),
@@ -55,8 +57,9 @@ export const petApi = api.injectEndpoints({
           const { petId, ...updateFields } = data
           const updateData = { id: petId, ...updateFields }
           await handlers.handleUpdate(dispatch, getState)(updateData, queryFulfilled)
+          dispatch(setClosePetDrawer())
         },
-        invalidatesTags: ['Pet']
+        invalidatesTags: ['Pet', 'User']
       }),
       deletePet: build.mutation({
         query: (body: any) => ({ url: `${BASE_URL}/${body.petId}/delete`, method: 'DELETE', body }),
@@ -64,7 +67,7 @@ export const petApi = api.injectEndpoints({
           const handlers = await getPetHandlers()
           await handlers.handleDelete(dispatch, getState)(data, queryFulfilled)
         },
-        invalidatesTags: ['Pet']
+        invalidatesTags: ['Pet', 'User']
       })
     }
   }

@@ -26,6 +26,14 @@ const MiniFeedingGraph: FC<{ feedings: any }> = ({ feedings }) => {
       return acc
     }, []) || []
 
+  const today = new Date()
+  const todayTotal = feedings
+    .filter((entry: any) => {
+      const entryDate = new Date(entry.timeRecorded)
+      return entryDate.toDateString() === today.toDateString()
+    })
+    .reduce((sum: number, entry: any) => sum + (parseFraction(entry.foodAmount) || 0), 0)
+
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
       {/* Header */}
@@ -40,9 +48,7 @@ const MiniFeedingGraph: FC<{ feedings: any }> = ({ feedings }) => {
           </div>
         </div>
         <div className="text-right">
-          <div className="text-2xl font-bold text-green-600">
-            {foodTypeData.reduce((sum: any, item: any) => sum + Number(item.amount), 0)} cups
-          </div>
+          <div className="text-2xl font-bold text-green-600">{todayTotal} cups</div>
           <div className="text-sm text-gray-500">Today</div>
         </div>
       </div>

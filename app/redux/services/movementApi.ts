@@ -1,5 +1,5 @@
 import { api } from './api'
-import { createOptimisticHandlers } from '@/app/lib/utils/api/optimisticUpdates'
+import { createOptimisticHandlers } from '@/app/lib/api/optimisticUpdates'
 
 const BASE_URL = '/movement'
 
@@ -44,7 +44,7 @@ export const movementApi = api.injectEndpoints({
         const handlers = await getMovementHandlers()
         await handlers.handleCreate(dispatch)(data, queryFulfilled)
       },
-      invalidatesTags: ['Movement', 'Pet']
+      invalidatesTags: ['Movement', 'User']
     }),
     updateMovement: build.mutation({
       query: (body: any) => ({ url: `${BASE_URL}/${body.movementId}/update`, method: 'PATCH', body }),
@@ -54,7 +54,7 @@ export const movementApi = api.injectEndpoints({
         const updateData = { id: movementId, ...updateFields }
         await handlers.handleUpdate(dispatch, getState)(updateData, queryFulfilled)
       },
-      invalidatesTags: ['Movement', 'Pet']
+      invalidatesTags: ['Movement', 'User']
     }),
     deleteMovement: build.mutation({
       query: (body: any) => ({ url: `${BASE_URL}/${body.id}/delete`, method: 'DELETE', body }),
@@ -62,7 +62,7 @@ export const movementApi = api.injectEndpoints({
         const handlers = await getMovementHandlers()
         await handlers.handleDelete(dispatch, getState)(data, queryFulfilled)
       },
-      invalidatesTags: ['Movement', 'Pet']
+      invalidatesTags: ['Movement', 'User']
     })
   })
 })

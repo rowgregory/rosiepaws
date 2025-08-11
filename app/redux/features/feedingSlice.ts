@@ -50,10 +50,15 @@ export const feedingSlice = createSlice({
       const { findById, replaceWith, ...updatedFeeding } = action.payload
 
       if (findById && replaceWith) {
-        // Special case: find by one ID, replace with different data
         const index = state.feedings.findIndex((feeding) => feeding?.id === findById)
+
         if (index !== -1) {
+          // Item exists - update it
           state.feedings[index] = replaceWith
+        } else {
+          // Item doesn't exist (was deleted optimistically) - add it back
+          state.feedings.push(replaceWith)
+          state.zeroFeedings = state.feedings.length === 0
         }
       } else {
         // Normal update

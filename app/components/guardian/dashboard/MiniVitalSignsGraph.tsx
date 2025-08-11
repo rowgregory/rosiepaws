@@ -35,18 +35,19 @@ const MiniVitalSignsGraph = ({ vitalSigns, pet }: any) => {
   })
 
   // Custom dot component for scatter plot
-  const CustomDot = (props: any) => {
+  const CustomScatterDot = (props: any) => {
     const { cx, cy, payload } = props
+    const size =
+      payload.healthStatus === 'emergency'
+        ? 8
+        : payload.healthStatus === 'contact_vet'
+          ? 7
+          : payload.healthStatus === 'monitor'
+            ? 6
+            : 5
+
     return (
-      <circle
-        cx={cx}
-        cy={cy}
-        r={payload.statusSize}
-        fill={payload.statusColor}
-        stroke="#fff"
-        strokeWidth={2}
-        fillOpacity={0.8}
-      />
+      <circle cx={cx} cy={cy} r={size} fill={payload.statusColor} stroke="#fff" strokeWidth={2} fillOpacity={0.8} />
     )
   }
 
@@ -75,11 +76,11 @@ const MiniVitalSignsGraph = ({ vitalSigns, pet }: any) => {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center space-x-3">
-          <div className="p-2 bg-gradient-to-br from-blue-500 to-purple-500 rounded-lg">
+          <div className="p-2 bg-gradient-to-br from-slate-500 to-stone-500 rounded-lg">
             <Stethoscope className="w-5 h-5 text-white" />
           </div>
           <div>
-            <h3 className="font-semibold text-gray-900">Recent Health</h3>
+            <h3 className="font-semibold text-gray-900">Vital Signs</h3>
             <p className="text-sm text-gray-500">Last 7 assessments</p>
           </div>
         </div>
@@ -213,7 +214,7 @@ const MiniVitalSignsGraph = ({ vitalSigns, pet }: any) => {
             }}
           />
 
-          <Scatter name="Assessments" data={chartData} shape={<CustomDot />} />
+          <Scatter name="Assessments" data={chartData} shape={<CustomScatterDot />} />
         </ScatterChart>
       </ResponsiveContainer>
 

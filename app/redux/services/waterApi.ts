@@ -1,5 +1,5 @@
 import { api } from './api'
-import { createOptimisticHandlers } from '@/app/lib/utils/api/optimisticUpdates'
+import { createOptimisticHandlers } from '@/app/lib/api/optimisticUpdates'
 
 const BASE_URL = '/water'
 
@@ -46,7 +46,7 @@ export const waterApi = api.injectEndpoints({
         const handlers = await getWaterHandlers()
         await handlers.handleCreate(dispatch)(data, queryFulfilled)
       },
-      invalidatesTags: ['Water', 'Pet']
+      invalidatesTags: ['Water', 'User']
     }),
     updateWater: build.mutation({
       query: (body: any) => ({ url: `${BASE_URL}/${body.waterId}/update`, method: 'PATCH', body }),
@@ -56,7 +56,7 @@ export const waterApi = api.injectEndpoints({
         const updateData = { id: waterId, ...updateFields }
         await handlers.handleUpdate(dispatch, getState)(updateData, queryFulfilled)
       },
-      invalidatesTags: ['Water', 'Pet']
+      invalidatesTags: ['Water', 'User']
     }),
     deleteWater: build.mutation({
       query: (body: any) => ({ url: `${BASE_URL}/${body.id}/delete`, method: 'DELETE', body }),
@@ -64,7 +64,7 @@ export const waterApi = api.injectEndpoints({
         const handlers = await getWaterHandlers()
         await handlers.handleDelete(dispatch, getState)(data, queryFulfilled)
       },
-      invalidatesTags: ['Water', 'Pet']
+      invalidatesTags: ['Water', 'User']
     })
   })
 })

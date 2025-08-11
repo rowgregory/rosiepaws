@@ -10,6 +10,7 @@ import { setCloseAdminConfirmModal, setOpenAdminConfirmModal } from '@/app/redux
 import { useDeletePetMutation } from '@/app/redux/services/petApi'
 import { processChartDataForPet } from '@/app/lib/utils/public/dashboard/processChartData'
 import { calculatePetStats } from '@/app/lib/utils/public/dashboard/calculatePetStats'
+import { petDeleteTokenCost } from '@/app/lib/constants/public/token'
 
 const getInitials = (name: string) => {
   return name.substring(0, 2).toUpperCase()
@@ -50,7 +51,8 @@ const PetCard: FC<{ pet: Pet; index: number }> = ({ pet, index }) => {
             await deletePet({ petId: pet.id }).unwrap()
             dispatch(setCloseAdminConfirmModal())
           },
-          isDestructive: true
+          isDestructive: true,
+          tokenAmount: petDeleteTokenCost
         }
       })
     )

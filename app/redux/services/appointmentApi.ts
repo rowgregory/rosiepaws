@@ -1,5 +1,5 @@
 import { api } from './api'
-import { createOptimisticHandlers } from '@/app/lib/utils/api/optimisticUpdates'
+import { createOptimisticHandlers } from '@/app/lib/api/optimisticUpdates'
 
 const BASE_URL = '/appointment'
 
@@ -44,7 +44,7 @@ export const appointmentApi = api.injectEndpoints({
         const handlers = await getAppointmentHandlers()
         await handlers.handleCreate(dispatch)(data, queryFulfilled)
       },
-      invalidatesTags: ['Appointment', 'Pet']
+      invalidatesTags: ['Appointment', 'User']
     }),
     updateAppointment: build.mutation({
       query: (body: any) => ({ url: `${BASE_URL}/${body.appointmentId}/update`, method: 'PATCH', body }),
@@ -54,7 +54,7 @@ export const appointmentApi = api.injectEndpoints({
         const updateData = { id: appointmentId, ...updateFields }
         await handlers.handleUpdate(dispatch, getState)(updateData, queryFulfilled)
       },
-      invalidatesTags: ['Appointment', 'Pet']
+      invalidatesTags: ['Appointment', 'User']
     }),
     deleteAppointment: build.mutation({
       query: (body: any) => ({ url: `${BASE_URL}/${body.id}/delete`, method: 'DELETE', body }),
@@ -62,7 +62,7 @@ export const appointmentApi = api.injectEndpoints({
         const handlers = await getAppointmentHandlers()
         await handlers.handleDelete(dispatch, getState)(data, queryFulfilled)
       },
-      invalidatesTags: ['Appointment', 'Pet']
+      invalidatesTags: ['Appointment', 'User']
     })
   })
 })

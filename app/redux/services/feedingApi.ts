@@ -1,5 +1,5 @@
 import { api } from './api'
-import { createOptimisticHandlers } from '@/app/lib/utils/api/optimisticUpdates'
+import { createOptimisticHandlers } from '@/app/lib/api/optimisticUpdates'
 
 const BASE_URL = '/feeding'
 
@@ -44,21 +44,17 @@ export const feedingApi = api.injectEndpoints({
         const handlers = await getFeedingHandlers()
         await handlers.handleCreate(dispatch)(data, queryFulfilled)
       },
-      invalidatesTags: ['Feeding', 'Pet']
+      invalidatesTags: ['Feeding', 'User']
     }),
     updateFeeding: build.mutation({
-      query: (body: any) => ({
-        url: `${BASE_URL}/${body.feedingId}/update`,
-        method: 'PATCH',
-        body
-      }),
+      query: (body: any) => ({ url: `${BASE_URL}/${body.feedingId}/update`, method: 'PATCH', body }),
       onQueryStarted: async (data: any, { dispatch, queryFulfilled, getState }: any) => {
         const handlers = await getFeedingHandlers()
         const { feedingId, ...updateFields } = data
         const updateData = { id: feedingId, ...updateFields }
         await handlers.handleUpdate(dispatch, getState)(updateData, queryFulfilled)
       },
-      invalidatesTags: ['Feeding', 'Pet']
+      invalidatesTags: ['Feeding', 'User']
     }),
     deleteFeeding: build.mutation({
       query: (body: any) => ({ url: `${BASE_URL}/${body.id}/delete`, method: 'DELETE', body }),
@@ -66,7 +62,7 @@ export const feedingApi = api.injectEndpoints({
         const handlers = await getFeedingHandlers()
         await handlers.handleDelete(dispatch, getState)(data, queryFulfilled)
       },
-      invalidatesTags: ['Feeding', 'Pet']
+      invalidatesTags: ['Feeding', 'User']
     })
   })
 })

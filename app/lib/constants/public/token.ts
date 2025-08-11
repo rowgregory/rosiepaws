@@ -35,7 +35,8 @@ export const seizureDeleteTokenCost = parseInt(process.env.NEXT_PUBLIC_SEIZURE_D
 export const movementDeleteTokenCost = parseInt(process.env.NEXT_PUBLIC_MOVEMENT_DELETE_TOKEN_COST!) || 60
 
 // Other costs
-export const galleryUploadTokenCost = parseInt(process.env.NEXT_PUBLIC_GALLERY_UPLOAD_TOKEN_COST!) || 5
+export const galleryUploadTokenCost = parseInt(process.env.NEXT_PUBLIC_GALLERY_UPLOAD_TOKEN_COST!) || 45
+export const galleryDeleteTokenCost = parseInt(process.env.NEXT_PUBLIC_GALLERY_DELETE_TOKEN_COST!) || 25
 
 // Tier prices
 export const freeTierPrice = parseFloat(process.env.NEXT_PUBLIC_FREE_TIER_PRICE!) || 0

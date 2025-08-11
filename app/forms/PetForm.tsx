@@ -1,123 +1,138 @@
-import React, { FC } from 'react'
+import React, { FC, useState } from 'react'
 import { GENDER_OPTIONS, PET_TYPES, SPAY_NEUTER_OPTIONS } from '../lib/constants/public/pet'
 import { AnimatePresence, motion } from 'framer-motion'
-import { Calendar, Camera, FileText, ImageIcon, Phone, Shield, Stethoscope, User, Weight, X } from 'lucide-react'
+import {
+  Activity,
+  Calendar,
+  Camera,
+  FileText,
+  ImageIcon,
+  Phone,
+  Shield,
+  Stethoscope,
+  Trash2,
+  User,
+  Weight
+} from 'lucide-react'
 import { petCreateTokenCost, petUpdateTokenCost } from '../lib/constants/public/token'
 import FixedFooter from '../components/common/forms/FixedFooter'
 import { IForm } from '../types'
 import { getCurrentBreeds } from '../lib/utils'
-import { containerVariants, itemVariants } from '../lib/constants'
+import { containerVariants } from '../lib/constants'
 import { isPetFormValid } from '../validations/validatePetForm'
 import Picture from '../components/common/Picture'
 import { useAppDispatch } from '../redux/store'
 import { setInputs } from '../redux/features/formSlice'
-import { setOpenSlideMessage } from '../redux/features/appSlice'
 
 const PetForm: FC<IForm> = ({ inputs, errors, handleInput, close, handleSubmit, loading, isUpdating }) => {
   const dispatch = useAppDispatch()
+  const [converting, setConverting] = useState(false)
 
   const handleFileUpload = async (file: File) => {
     if (!file) return
 
-    // Set uploading state for single file
+    let processedFile = file
+
+    const isHEIC =
+      file.type === 'image/heic' ||
+      file.type === 'image/heif' ||
+      file.name.toLowerCase().endsWith('.heic') ||
+      file.name.toLowerCase().endsWith('.heif')
+
+    if (isHEIC) {
+      setConverting(true)
+      try {
+        const heic2any = (await import('heic2any')).default
+        // Convert HEIC to JPEG
+        const convertedBlob = await heic2any({
+          blob: file,
+          toType: 'image/jpeg',
+          quality: 0.6
+        })
+
+        // Create a new File object from the converted blob
+        const convertedFile = new File([convertedBlob as Blob], file.name.replace(/\.(heic|heif)$/i, '.jpg'), {
+          type: 'image/jpeg'
+        })
+
+        processedFile = convertedFile
+      } catch {
+        alert('Failed to convert HEIC file. Please try a different format.')
+        return
+      } finally {
+        setConverting(false)
+      }
+    }
+
+    // Handle all file types (HEIC converted files and regular files)
     dispatch(
       setInputs({
-        formName: 'petForm', // or whatever your form name is
+        formName: 'petForm',
         data: {
-          media: file, // Store the file object temporarily
-          uploadingFile: { name: file.name, progress: 0 }
+          media: processedFile, // Store the processed file object
+          uploadingFile: { name: processedFile.name, progress: 0, isHEIC },
+          // Flag that we need to delete the original
+          shouldDeleteOriginal: !!inputs?.fileName,
+          originalFileName: inputs?.fileName,
+          wantsToReplace: true
         }
       })
     )
-
-    try {
-      // Optionally save to database if needed
-      // await createMedia({ items: [mediaItem] }).unwrap()
-    } catch {
-      dispatch(setOpenSlideMessage())
-    } finally {
-      setTimeout(() => {
-        dispatch(
-          setInputs({
-            formName: 'mediaForm',
-            data: { uploadingFiles: [] }
-          })
-        )
-      }, 300)
-    }
   }
+
   return (
     <form onSubmit={handleSubmit} className="flex-1 flex flex-col min-h-full">
       <div className="overflow-y-auto px-5 pt-9 pb-12 h-[calc(100dvh-132px)]">
         <motion.div variants={containerVariants} initial="hidden" animate="visible" className="space-y-6">
-          {/* Basic Information Section */}
-          <motion.div variants={itemVariants} className="bg-white rounded-2xl p-6 shadow-sm border border-gray-200">
-            <div className="flex items-center gap-2 mb-6">
-              <User className="w-5 h-5 text-blue-600" />
-              <h3 className="text-lg font-semibold text-gray-900">Basic Information</h3>
+          {/* Basic Information */}
+          <section className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+            <div className="px-6 py-4 bg-gray-50 border-b border-gray-200">
+              <div className="flex items-center gap-2">
+                <User className="w-4 h-4 text-gray-600" />
+                <h2 className="text-sm font-semibold text-gray-900 uppercase tracking-wide">Basic Information</h2>
+              </div>
             </div>
-
-            <div className="space-y-6">
+            <div className="p-6 space-y-6">
               {/* Pet Name */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Pet Name *</label>
+              <div className="grid grid-cols-1 gap-2">
+                <label className="text-sm font-medium text-gray-900">Pet Name *</label>
                 <input
                   type="text"
                   name="name"
                   value={inputs?.name || ''}
                   onChange={handleInput}
-                  placeholder="Enter your pet's name"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                  placeholder="Enter pet name"
+                  className="w-full px-3 py-2.5 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-gray-900 placeholder-gray-500"
                 />
-                <AnimatePresence>
-                  {errors?.name && (
-                    <motion.p
-                      initial={{ opacity: 0, y: -10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -10 }}
-                      className="text-sm text-red-500 mt-1"
-                    >
-                      {errors.name}
-                    </motion.p>
-                  )}
-                </AnimatePresence>
+                {errors?.name && <p className="text-sm text-red-600 font-medium">{errors.name}</p>}
               </div>
 
               {/* Pet Type */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-3">Pet Type *</label>
+              <div className="grid grid-cols-1 gap-2">
+                <label className="text-sm font-medium text-gray-900">Pet Type *</label>
                 <div className="grid grid-cols-2 gap-3">
-                  {PET_TYPES.map((type) => (
-                    <motion.label
-                      key={type.id}
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      className={`p-4 rounded-xl border cursor-pointer transition-all text-center ${
-                        inputs?.type === type.id
-                          ? `${type.color} shadow-md`
-                          : 'border-gray-300 bg-white hover:border-gray-400 hover:shadow-sm'
-                      }`}
-                    >
-                      <input type="radio" name="type" value={type.id} onChange={handleInput} className="hidden" />
-                      <div>
-                        <span className="text-2xl mb-2 block">{type.icon}</span>
-                        <p className="font-medium">{type.name}</p>
-                      </div>
-                    </motion.label>
-                  ))}
+                  {PET_TYPES.map((type) => {
+                    const IconComponent = type.icon
+                    const isSelected = inputs?.type?.toLowerCase() === type.id
+                    return (
+                      <label
+                        key={type.id}
+                        className={`flex items-center gap-3 p-4 rounded-md border-2 cursor-pointer transition-all ${
+                          isSelected ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-gray-300 bg-white'
+                        }`}
+                      >
+                        <input type="radio" name="type" value={type.id} onChange={handleInput} className="sr-only" />
+                        <div className={`p-2 rounded-md ${isSelected ? 'bg-blue-100' : 'bg-gray-100'}`}>
+                          <IconComponent className={`w-5 h-5 ${isSelected ? 'text-blue-600' : 'text-gray-600'}`} />
+                        </div>
+                        <span className={`font-medium ${isSelected ? 'text-blue-900' : 'text-gray-700'}`}>
+                          {type.name}
+                        </span>
+                      </label>
+                    )
+                  })}
                 </div>
-                <AnimatePresence>
-                  {errors?.type && (
-                    <motion.p
-                      initial={{ opacity: 0, y: -10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -10 }}
-                      className="text-sm text-red-500 mt-1"
-                    >
-                      {errors.type}
-                    </motion.p>
-                  )}
-                </AnimatePresence>
+                {errors?.type && <p className="text-sm text-red-600 font-medium">{errors.type}</p>}
               </div>
 
               {/* Breed */}
@@ -129,7 +144,7 @@ const PetForm: FC<IForm> = ({ inputs, errors, handleInput, close, handleSubmit, 
                   value={inputs?.breed || ''}
                   onChange={handleInput}
                   placeholder="Enter breed (e.g., Golden Retriever)"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
                   list="breeds"
                 />
                 <datalist id="breeds">
@@ -161,49 +176,133 @@ const PetForm: FC<IForm> = ({ inputs, errors, handleInput, close, handleSubmit, 
                 )}
               </div>
             </div>
-          </motion.div>
+          </section>
 
           {/* Pet Photo/Video Section */}
-          <motion.div variants={itemVariants} className="bg-white rounded-2xl p-6 shadow-sm border border-gray-200">
-            <div className="flex items-center gap-2 mb-6">
-              <Camera className="w-5 h-5 text-pink-600" />
-              <h3 className="text-lg font-semibold text-gray-900">Pet Photo or Video</h3>
+          <section className="rounded-lg border border-gray-200 overflow-hidden">
+            <div className="px-6 py-4 bg-gray-50 border-b border-gray-200">
+              <div className="flex items-center gap-2">
+                <Camera className="w-4 h-4 text-gray-600" />
+                <h2 className="text-sm font-semibold text-gray-900 uppercase tracking-wide">
+                  Pet Photo or Video <span className="text-gray-400 font-normal ml-1">(optional)</span>
+                </h2>
+              </div>
             </div>
+            <div className="bg-white p-6">
+              {converting ? (
+                <div className="w-full h-32 border-2 border-dashed border-gray-300 flex flex-col items-center justify-center gap-2">
+                  <div className="animate-spin rounded-full h-6 w-6 border-2 border-gray-300 border-t-pink-600"></div>
+                  <p className="text-sm text-gray-600">Converting HEIC...</p>
+                </div>
+              ) : (inputs?.media && inputs.media instanceof File) || inputs.fileName || inputs.filePath ? (
+                <div className="space-y-4">
+                  {/* Current Media Display */}
+                  <div className="relative">
+                    <div className="w-full h-48 overflow-hidden rounded-lg border border-gray-200">
+                      {/* If there's a new file being uploaded */}
+                      {inputs?.media && inputs.media instanceof File ? (
+                        inputs.media.type?.startsWith('video/') ? (
+                          <video
+                            src={URL.createObjectURL(inputs.media)}
+                            className="w-full h-full object-cover"
+                            controls
+                          />
+                        ) : (
+                          <Picture
+                            priority={false}
+                            src={URL.createObjectURL(inputs.media)}
+                            alt="Pet preview"
+                            className="w-full h-full object-contain"
+                          />
+                        )
+                      ) : (
+                        /* Display existing pet media using filePath */
+                        inputs.fileName &&
+                        inputs.filePath &&
+                        (inputs.fileName.toLowerCase().match(/\.(mp4|mov|avi|webm)$/) ? (
+                          <video src={inputs.filePath} className="w-full h-full object-cover" controls />
+                        ) : (
+                          <Picture
+                            priority={false}
+                            src={inputs.filePath}
+                            alt="Pet photo"
+                            className="w-full h-full object-contain"
+                          />
+                        ))
+                      )}
+                    </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-3">
-                Upload a photo or video
-                <span className="text-gray-400 font-normal ml-1">(optional)</span>
-              </label>
-
-              {inputs?.media ? (
-                <div className="relative">
-                  <div className="w-full h-48 rounded-xl overflow-hidden bg-gray-100 border border-gray-200">
-                    {inputs.media.type?.startsWith('video/') ? (
-                      <video src={URL.createObjectURL(inputs.media)} className="w-full h-full object-cover" controls />
-                    ) : (
-                      <Picture
-                        priority={false}
-                        src={URL.createObjectURL(inputs.media)}
-                        alt="Pet preview"
-                        className="w-full h-full object-cover"
-                      />
-                    )}
+                    {/* File Info */}
+                    <div className="mt-2 text-sm text-gray-600">
+                      {inputs?.media && inputs.media instanceof File ? (
+                        <>
+                          {inputs.media.name} ({(inputs.media.size / 1024 / 1024).toFixed(1)} MB)
+                        </>
+                      ) : inputs.fileName ? (
+                        <>{inputs.fileName}</>
+                      ) : null}
+                    </div>
                   </div>
-                  <motion.button
-                    type="button"
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.9 }}
-                    onClick={() => handleInput({ target: { name: 'media', value: null } })}
-                    className="absolute top-2 right-2 p-1.5 bg-red-500 hover:bg-red-600 text-white rounded-full shadow-lg transition-colors"
-                  >
-                    <X className="w-4 h-4" />
-                  </motion.button>
-                  <div className="mt-2 text-sm text-gray-600">
-                    {inputs.media.name} ({(inputs.media.size / 1024 / 1024).toFixed(1)} MB)
+
+                  {/* Action Buttons */}
+                  <div className="grid grid-cols-2 gap-3">
+                    {/* Replace Upload */}
+                    <motion.div whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }} className="relative group">
+                      <input
+                        type="file"
+                        accept="image/*,video/*"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0]
+                          if (file) handleFileUpload(file)
+                        }}
+                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                      />
+                      <div className="w-full h-16 border-2 border-dashed border-blue-300 rounded-lg flex items-center justify-center gap-2 hover:border-blue-400 hover:bg-blue-50 transition-all group-hover:border-blue-400 group-hover:bg-blue-50">
+                        <ImageIcon className="w-4 h-4 text-blue-600" />
+                        <span className="text-xs font-medium text-blue-700">Replace</span>
+                      </div>
+                    </motion.div>
+
+                    {/* Remove Button */}
+                    <motion.button
+                      type="button"
+                      whileHover={{ scale: 1.01 }}
+                      whileTap={{ scale: 0.99 }}
+                      onClick={() => {
+                        dispatch(
+                          setInputs({
+                            formName: 'petForm',
+                            data: {
+                              shouldDeleteOriginal: !!inputs?.fileName,
+                              wantsToRemove: true
+                            }
+                          })
+                        )
+                      }}
+                      className={`w-full h-16 border-2 border-dashed rounded-lg flex items-center justify-center gap-2 transition-all group ${
+                        inputs?.wantsToRemove
+                          ? 'border-red-500 bg-red-100 text-red-800'
+                          : 'border-red-300 hover:border-red-400 hover:bg-red-50'
+                      }`}
+                    >
+                      <Trash2 className={`w-4 h-4 ${inputs?.wantsToRemove ? 'text-red-700' : 'text-red-600'}`} />
+                      <span
+                        className={`text-xs font-medium ${inputs?.wantsToRemove ? 'text-red-800' : 'text-red-700'}`}
+                      >
+                        {inputs?.wantsToRemove ? 'Will be removed' : 'Remove'}
+                      </span>
+                    </motion.button>
+                  </div>
+
+                  {/* Info Message */}
+                  <div className="p-2 bg-gray-50 border border-gray-200 rounded-md">
+                    <p className="text-xs text-gray-600 text-center">
+                      Replace to upload a new file, or Remove to delete entirely
+                    </p>
                   </div>
                 </div>
               ) : (
+                /* Initial Upload Section */
                 <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className="relative group">
                   <input
                     type="file"
@@ -222,7 +321,7 @@ const PetForm: FC<IForm> = ({ inputs, errors, handleInput, close, handleSubmit, 
                       <p className="text-sm font-medium text-gray-700 group-hover:text-blue-700">
                         Click to upload photo or video
                       </p>
-                      <p className="text-xs text-gray-500">PNG, JPG, MP4, MOV up to 10MB</p>
+                      <p className="text-xs text-gray-500">PNG, JPG, HEIC, MP4, MOV up to 10MB</p>
                     </div>
                   </div>
                 </motion.div>
@@ -241,111 +340,120 @@ const PetForm: FC<IForm> = ({ inputs, errors, handleInput, close, handleSubmit, 
                 )}
               </AnimatePresence>
             </div>
-          </motion.div>
+          </section>
 
           {/* Physical Details Section */}
-          <motion.div variants={itemVariants} className="bg-white rounded-2xl p-6 shadow-sm border border-gray-200">
-            <div className="flex items-center gap-2 mb-6">
-              <Weight className="w-5 h-5 text-green-600" />
-              <h3 className="text-lg font-semibold text-gray-900">Physical Details</h3>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Age */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Age</label>
-                <div className="relative">
-                  <input
-                    type="text"
-                    name="age"
-                    value={inputs?.age || ''}
-                    onChange={handleInput}
-                    placeholder="e.g., 2 years, 6 months"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 pr-12"
-                  />
-                  <Calendar className="w-5 h-5 absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                </div>
-              </div>
-
-              {/* Weight */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Weight</label>
-                <div className="relative">
-                  <input
-                    type="text"
-                    name="weight"
-                    value={inputs?.weight || ''}
-                    onChange={handleInput}
-                    placeholder="e.g., 45 lbs, 12 kg"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 pr-12"
-                  />
-                  <Weight className="w-5 h-5 absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                </div>
-              </div>
-
-              {/* Gender */}
-              <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-gray-700 mb-3">Gender</label>
-                <div className="grid grid-cols-2 gap-3">
-                  {GENDER_OPTIONS.map((gender) => (
-                    <motion.label
-                      key={gender.id}
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      className={`p-4 rounded-xl border cursor-pointer transition-all text-center ${
-                        inputs?.gender === gender.id
-                          ? `${gender.color} shadow-md`
-                          : 'border-gray-300 bg-white hover:border-gray-400 hover:shadow-sm'
-                      }`}
-                    >
-                      <input type="radio" name="gender" value={gender.id} onChange={handleInput} className="hidden" />
-                      <div>
-                        <span className="text-xl mb-2 block">{gender.icon}</span>
-                        <p className="font-medium">{gender.name}</p>
-                      </div>
-                    </motion.label>
-                  ))}
-                </div>
-              </div>
-
-              {/* Spay/Neuter Status */}
-              <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-gray-700 mb-3">Spayed/Neutered</label>
-                <div className="grid grid-cols-3 gap-3">
-                  {SPAY_NEUTER_OPTIONS.map((option) => (
-                    <motion.label
-                      key={option.id}
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      className={`p-3 rounded-xl border cursor-pointer transition-all text-center ${
-                        inputs?.spayedNeutered === option.id
-                          ? `${option.color} shadow-md`
-                          : 'border-gray-300 bg-white hover:border-gray-400 hover:shadow-sm'
-                      }`}
-                    >
-                      <input
-                        type="radio"
-                        name="spayedNeutered"
-                        value={option.id}
-                        onChange={handleInput}
-                        className="hidden"
-                      />
-                      <p className="font-medium text-sm">{option.name}</p>
-                    </motion.label>
-                  ))}
-                </div>
+          <section className="rounded-lg border border-gray-200 overflow-hidden">
+            <div className="px-6 py-4 bg-gray-50 border-b border-gray-200">
+              <div className="flex items-center gap-2">
+                <Activity className="w-4 h-4 text-gray-600" />
+                <h2 className="text-sm font-semibold text-gray-900 uppercase tracking-wide">Physical Details</h2>
               </div>
             </div>
-          </motion.div>
+            <div className="bg-white p-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Age */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Age * <span className="text-gray-400 font-normal ml-1">(i.e. 4 yrs 5 months)</span>
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="text"
+                      name="age"
+                      value={inputs?.age || ''}
+                      onChange={handleInput}
+                      placeholder="e.g., 2 years, 6 months"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 pr-12"
+                    />
+                    <Calendar className="w-5 h-5 absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                  </div>
+                </div>
+
+                {/* Weight */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Weight * <span className="text-gray-400 font-normal ml-1">(lbs)</span>
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="number"
+                      name="weight"
+                      value={inputs?.weight || ''}
+                      onChange={handleInput}
+                      placeholder="e.g., 45"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 pr-12"
+                    />
+                    <Weight className="w-5 h-5 absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                  </div>
+                </div>
+
+                {/* Gender */}
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-3">Gender</label>
+                  <div className="grid grid-cols-2 gap-3">
+                    {GENDER_OPTIONS.map((gender) => (
+                      <motion.label
+                        key={gender.id}
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        className={`p-4 rounded-xl border cursor-pointer transition-all text-center ${
+                          inputs?.gender === gender.id
+                            ? `${gender.color} shadow-md`
+                            : 'border-gray-300 bg-white hover:border-gray-400 hover:shadow-sm'
+                        }`}
+                      >
+                        <input type="radio" name="gender" value={gender.id} onChange={handleInput} className="hidden" />
+                        <div>
+                          <span className="text-xl mb-2 block">{gender.icon}</span>
+                          <p className="font-medium">{gender.name}</p>
+                        </div>
+                      </motion.label>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Spay/Neuter Status */}
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-3">Spayed/Neutered</label>
+                  <div className="grid grid-cols-3 gap-3">
+                    {SPAY_NEUTER_OPTIONS.map((option) => (
+                      <motion.label
+                        key={option.id}
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        className={`p-3 rounded-xl border cursor-pointer transition-all text-center ${
+                          inputs?.spayedNeutered === option.id
+                            ? `${option.color} shadow-md`
+                            : 'border-gray-300 bg-white hover:border-gray-400 hover:shadow-sm'
+                        }`}
+                      >
+                        <input
+                          type="radio"
+                          name="spayedNeutered"
+                          value={option.id}
+                          onChange={handleInput}
+                          className="hidden"
+                        />
+                        <p className="font-medium text-sm">{option.name}</p>
+                      </motion.label>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
 
           {/* Health Information Section */}
-          <motion.div variants={itemVariants} className="bg-white rounded-2xl p-6 shadow-sm border border-gray-200">
-            <div className="flex items-center gap-2 mb-6">
-              <Stethoscope className="w-5 h-5 text-red-600" />
-              <h3 className="text-lg font-semibold text-gray-900">Health Information</h3>
+          <section className="rounded-lg border border-gray-200 overflow-hidden">
+            <div className="px-6 py-4 bg-gray-50 border-b border-gray-200">
+              <div className="flex items-center gap-2">
+                <Stethoscope className="w-4 h-4 text-gray-600" />
+                <h2 className="text-sm font-semibold text-gray-900 uppercase tracking-wide">Health Information</h2>
+              </div>
             </div>
 
-            <div className="space-y-6">
+            <div className="bg-white p-6 space-y-6">
               {/* Microchip ID */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -381,16 +489,18 @@ const PetForm: FC<IForm> = ({ inputs, errors, handleInput, close, handleSubmit, 
                 />
               </div>
             </div>
-          </motion.div>
+          </section>
 
           {/* Emergency Contact Section */}
-          <motion.div variants={itemVariants} className="bg-white rounded-2xl p-6 shadow-sm border border-gray-200">
-            <div className="flex items-center gap-2 mb-6">
-              <Phone className="w-5 h-5 text-purple-600" />
-              <h3 className="text-lg font-semibold text-gray-900">Emergency Contact</h3>
+          <section className="rounded-lg border border-gray-200 overflow-hidden">
+            <div className="px-6 py-4 bg-gray-50 border-b border-gray-200">
+              <div className="flex items-center gap-2">
+                <Phone className="w-4 h-4 text-gray-600" />
+                <h2 className="text-sm font-semibold text-gray-900 uppercase tracking-wide">Emergency Contact</h2>
+              </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="p-6 bg-white grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Emergency Contact Name
@@ -421,16 +531,18 @@ const PetForm: FC<IForm> = ({ inputs, errors, handleInput, close, handleSubmit, 
                 />
               </div>
             </div>
-          </motion.div>
+          </section>
 
           {/* Additional Notes Section */}
-          <motion.div variants={itemVariants} className="bg-white rounded-2xl p-6 shadow-sm border border-gray-200">
-            <div className="flex items-center gap-2 mb-6">
-              <FileText className="w-5 h-5 text-orange-600" />
-              <h3 className="text-lg font-semibold text-gray-900">Additional Information</h3>
+          <section className="rounded-lg border border-gray-200 overflow-hidden">
+            <div className="px-6 py-4 bg-gray-50 border-b border-gray-200">
+              <div className="flex items-center gap-2">
+                <FileText className="w-4 h-4 text-gray-600" />
+                <h2 className="text-sm font-semibold text-gray-900 uppercase tracking-wide">Additonal Information</h2>
+              </div>
             </div>
 
-            <div>
+            <div className="bg-white p-6">
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Special Notes
                 <span className="text-gray-400 font-normal ml-1">(optional)</span>
@@ -444,7 +556,7 @@ const PetForm: FC<IForm> = ({ inputs, errors, handleInput, close, handleSubmit, 
                 className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
               />
             </div>
-          </motion.div>
+          </section>
         </motion.div>
       </div>
 

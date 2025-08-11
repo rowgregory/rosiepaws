@@ -53,6 +53,8 @@ enum TokenTransactionType {
   MOVEMENT_CREATION
   MOVEMENT_UPDATE
   MOVEMENT_DELETE
+  GALLERY_ITEM_CREATION
+  GALLERY_ITEM_DELETE
 }
 
 enum PetType {
@@ -64,6 +66,11 @@ enum MediaType {
   POSTER
   EBOOK
   DOCUMENT
+  VIDEO
+  IMAGE
+}
+
+enum GalleryItemType {
   VIDEO
   IMAGE
 }
@@ -349,8 +356,8 @@ model Pet {
   owner                 User      @relation(fields: [ownerId], references: [id])
   ownerId               String
   notes                 String?
-  fileName              String    @default("") @db.VarChar(255) // Original filename
-  filePath              String    @default("") @db.Text // Storage path or URL
+  fileName              String?   @default("") @db.VarChar(255) // Original filename
+  filePath              String?   @default("") @db.Text // Storage path or URL
 
   painScores   PainScore[]
   appointments Appointment[]
@@ -569,15 +576,16 @@ model Log {
 }
 
 model GalleryItem {
-  id          String    @id @default(cuid())
+  id          String          @id @default(cuid())
   url         String // Firebase download URL
-  type        MediaType // ENUM for IMAGE or VIDEO
+  type        GalleryItemType // ENUM for IMAGE or VIDEO
   name        String // Original filename
   size        Int // File size in bytes
   mimeType    String // e.g., "image/jpeg", "video/mp4"
   thumbnail   String? // Optional thumbnail URL for videos
   description String? // Optional user description
   tags        String[] // Array of tags for organization
+  isPublic    Boolean         @default(false)
 
   // Relationships
   pet    Pet    @relation(fields: [petId], references: [id], onDelete: Cascade)

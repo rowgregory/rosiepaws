@@ -1,5 +1,5 @@
 import { api } from './api'
-import { createOptimisticHandlers } from '@/app/lib/utils/api/optimisticUpdates'
+import { createOptimisticHandlers } from '@/app/lib/api/optimisticUpdates'
 
 const BASE_URL = '/seizure'
 
@@ -44,7 +44,7 @@ export const seizureApi = api.injectEndpoints({
         const handlers = await getSeizureHandlers()
         await handlers.handleCreate(dispatch)(data, queryFulfilled)
       },
-      invalidatesTags: ['Seizure', 'Pet']
+      invalidatesTags: ['Seizure', 'User']
     }),
     updateSeizure: build.mutation({
       query: (body: any) => ({ url: `${BASE_URL}/${body.seizureId}/update`, method: 'PATCH', body }),
@@ -54,7 +54,7 @@ export const seizureApi = api.injectEndpoints({
         const updateData = { id: seizureId, ...updateFields }
         await handlers.handleUpdate(dispatch, getState)(updateData, queryFulfilled)
       },
-      invalidatesTags: ['Seizure', 'Pet']
+      invalidatesTags: ['Seizure', 'User']
     }),
     deleteSeizure: build.mutation({
       query: (body: any) => ({ url: `${BASE_URL}/${body.id}/delete`, method: 'DELETE', body }),
@@ -62,7 +62,7 @@ export const seizureApi = api.injectEndpoints({
         const handlers = await getSeizureHandlers()
         await handlers.handleDelete(dispatch, getState)(data, queryFulfilled)
       },
-      invalidatesTags: ['Seizure', 'Pet']
+      invalidatesTags: ['Seizure', 'User']
     })
   })
 })

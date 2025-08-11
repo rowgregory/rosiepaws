@@ -10,6 +10,7 @@ import { seizureInitialState } from '@/app/lib/initial-states/seizure'
 import { appointmentInitialError, appointmentInitialState } from '@/app/lib/initial-states/appointment'
 import { movementInitialErrorState, movementInitialState } from '@/app/lib/initial-states/movement'
 import { vitalSignsInitialState } from '@/app/lib/initial-states/vital-signs'
+import { PetType } from '@prisma/client'
 
 export type Inputs = {
   [key: string]: string | number | boolean | undefined | unknown
@@ -40,7 +41,23 @@ interface HandleInputProps {
 const formInitialState = {
   isCreating: false,
   petForm: {
-    inputs: petInitialState,
+    inputs: {
+      id: '',
+      name: '',
+      type: '' as PetType,
+      breed: '',
+      age: '',
+      gender: '',
+      weight: '',
+      notes: '',
+      spayedNeutered: '',
+      microchipId: '',
+      allergies: '',
+      fileName: '',
+      filePath: '',
+      emergencyContactName: '',
+      emergencyContactPhone: ''
+    },
     errors: petInitialState
   },
   painForm: {

@@ -1,5 +1,6 @@
 import { ref, uploadBytesResumable, getDownloadURL, deleteObject } from 'firebase/storage'
 import { storage } from '../lib/config/firebaseConfig'
+import { $Enums } from '@prisma/client'
 
 /**
  * Uploads a video or image file to Firebase Storage.
@@ -64,5 +65,24 @@ export const deleteFileFromFirebase = async (
   } catch (error) {
     console.error(`Failed to delete file "${fileName}" of type "${type}":`, error)
     throw error // Optionally rethrow the error
+  }
+}
+
+export const getFirebaseTypeFromMediaType = (
+  mediaType: $Enums.MediaType
+): 'image' | 'video' | 'document' | 'poster' | 'ebook' => {
+  switch (mediaType) {
+    case $Enums.MediaType.IMAGE:
+      return 'image'
+    case $Enums.MediaType.VIDEO:
+      return 'video'
+    case $Enums.MediaType.DOCUMENT:
+      return 'document'
+    case $Enums.MediaType.POSTER:
+      return 'poster'
+    case $Enums.MediaType.EBOOK:
+      return 'ebook'
+    default:
+      return 'document' // Default fallback
   }
 }

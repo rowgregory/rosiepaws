@@ -1,18 +1,20 @@
 import prisma from '@/prisma/client'
 import { NextRequest, NextResponse } from 'next/server'
-import { parseStack } from 'error-stack-parser-es/lite'
 import { slicePet } from '@/public/data/api.data'
 import { createLog } from '@/app/lib/api/createLog'
 import { petCreateTokenCost } from '@/app/lib/constants/public/token'
+import { getUserFromHeader } from '@/app/lib/api/getUserFromheader'
+import { handleApiError } from '@/app/lib/api/handleApiError'
 
 export async function POST(req: NextRequest) {
   try {
-    const userHeader = req.headers.get('x-user')!
-    if (!userHeader) {
-      return NextResponse.json({ message: 'Unauthorized: Missing user header', sliceName: slicePet }, { status: 401 })
+    const userAuth = getUserFromHeader({
+      req
+    })
+
+    if (!userAuth.success) {
+      return userAuth.response!
     }
-    const parsedUser = JSON.parse(userHeader)
-    const ownerId = parsedUser.id
 
     const {
       name,
@@ -26,27 +28,31 @@ export async function POST(req: NextRequest) {
       allergies,
       emergencyContactName,
       emergencyContactPhone,
-      notes
+      notes,
+      fileName,
+      filePath
     } = await req.json()
 
-    // Validate required fields
-    if (!name || !type) {
+    if (!name || !type || !breed || !age || !weight || !gender || !spayedNeutered) {
       return NextResponse.json(
-        { message: 'Missing required fields: name and type are required', sliceName: slicePet },
+        {
+          message: 'Missing required fields: name, type, breed, age, weight, gender, and sprayedNeutered are required',
+          sliceName: slicePet
+        },
         { status: 400 }
       )
     }
 
     // Confirm owner exists (optional since user is logged in, but good safety)
-    const owner = await prisma.user.findUnique({ where: { id: ownerId } })
+    const owner = await prisma.user.findUnique({ where: { id: userAuth.userId } })
     if (!owner) {
       await createLog('warning', 'Owner user not found when creating pet', {
-        location: ['api route - POST /api/pet/create-pet'],
+        location: ['api route - POST /api/pet/create'],
         name: 'OwnerNotFound',
         timestamp: new Date().toISOString(),
         url: req.url,
         method: req.method,
-        ownerId
+        userId: userAuth.userId
       })
       return NextResponse.json({ message: 'Owner not found', sliceName: slicePet }, { status: 404 })
     }
@@ -55,12 +61,12 @@ export async function POST(req: NextRequest) {
 
     if (owner.tokens < petCreateTokenCost) {
       await createLog('warning', 'Insufficient tokens for pet creation', {
-        location: ['api route - POST /api/pet/create-pet'],
+        location: ['api route - POST /api/pet/create'],
         name: 'InsufficientTokens',
         timestamp: new Date().toISOString(),
         url: req.url,
         method: req.method,
-        ownerId,
+        userId: userAuth.userId,
         requiredTokens: petCreateTokenCost,
         availableTokens: owner.tokens
       })
@@ -74,53 +80,61 @@ export async function POST(req: NextRequest) {
     }
 
     // Use transaction to ensure atomicity
-    const result = await prisma.$transaction(async (tx) => {
-      // Create the pet
-      const newPet = await tx.pet.create({
-        data: {
+    const result = await prisma.$transaction(
+      async (tx) => {
+        // Prepare final pet data with media URL
+        const finalPetData = {
           name,
           type,
           breed,
           age,
           gender,
           weight,
-          ownerId,
-          notes,
           spayedNeutered,
           microchipId,
           allergies,
           emergencyContactName,
-          emergencyContactPhone
+          emergencyContactPhone,
+          notes,
+          ownerId: userAuth.userId!,
+          ...(fileName && filePath && { filePath, fileName })
         }
-      })
 
-      // Deduct tokens from user
-      const updatedUser = await tx.user.update({
-        where: { id: ownerId },
-        data: {
-          tokens: { decrement: petCreateTokenCost },
-          tokensUsed: { increment: petCreateTokenCost }
-        }
-      })
+        const newPet = await tx.pet.create({
+          data: finalPetData
+        })
 
-      // Create token transaction record
-      await tx.tokenTransaction.create({
-        data: {
-          userId: ownerId,
-          amount: -petCreateTokenCost, // Negative for debit
-          type: 'PET_CREATION', // You'll need to add this to your enum
-          description: `Pet creation`,
-          metadata: {
-            petId: newPet.id,
-            petName: name,
-            petType: type,
-            feature: 'pet_creation'
+        // Deduct tokens from user
+        const updatedUser = await tx.user.update({
+          where: { id: userAuth.userId },
+          data: {
+            tokens: { decrement: petCreateTokenCost },
+            tokensUsed: { increment: petCreateTokenCost }
           }
-        }
-      })
+        })
 
-      return { newPet, updatedUser }
-    })
+        // Create token transaction record
+        await tx.tokenTransaction.create({
+          data: {
+            userId: userAuth.userId!,
+            amount: -petCreateTokenCost, // Negative for debit
+            type: 'PET_CREATION', // You'll need to add this to your enum
+            description: `Pet creation`,
+            metadata: {
+              petId: newPet.id,
+              petName: name,
+              petType: type,
+              feature: 'pet_creation'
+            }
+          }
+        })
+
+        return { newPet, updatedUser }
+      },
+      {
+        timeout: 20000
+      }
+    )
 
     await createLog('info', 'Pet created successfully with token deduction', {
       location: ['api route - POST /api/pet/create-pet'],
@@ -129,7 +143,7 @@ export async function POST(req: NextRequest) {
       url: req.url,
       method: req.method,
       petId: result.newPet.id,
-      ownerId,
+      ownerId: userAuth.userId,
       tokensDeducted: petCreateTokenCost,
       remainingTokens: result.updatedUser.tokens
     })
@@ -146,14 +160,13 @@ export async function POST(req: NextRequest) {
       { status: 201 }
     )
   } catch (error: any) {
-    await createLog('error', `Pet creation failed: ${error.message}`, {
-      errorLocation: parseStack(JSON.stringify(error)),
-      errorMessage: error.message,
-      errorName: error.name || 'UnknownError',
-      timestamp: new Date().toISOString(),
-      url: req.url,
-      method: req.method
+    return await handleApiError({
+      error,
+      req,
+      action: 'Pet creation',
+      sliceName: slicePet
     })
-    return NextResponse.json({ message: 'Pet creation failed', error, sliceName: slicePet }, { status: 500 })
+  } finally {
+    await prisma.$disconnect()
   }
 }

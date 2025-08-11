@@ -1,4 +1,4 @@
-import { PainScore, Pet } from '@/app/types/entities'
+import { PainScore } from '@/app/types/entities'
 import { Reducer, createSlice } from '@reduxjs/toolkit'
 import { painScoreInitialState } from '@/app/lib/initial-states/pain-score'
 import { painScoreApi } from '../services/painScoreApi'
@@ -14,7 +14,6 @@ export interface PainScoreStatePayload {
   zeroPainScores: boolean
   painDrawer: boolean
   painScoreCount: number
-  pets: Pet[]
 }
 
 export const initialPainScoreState: PainScoreStatePayload = {
@@ -26,8 +25,7 @@ export const initialPainScoreState: PainScoreStatePayload = {
   painScore: painScoreInitialState,
   zeroPainScores: true,
   painDrawer: false,
-  painScoreCount: 0,
-  pets: []
+  painScoreCount: 0
 }
 
 export const painScoreSlice = createSlice({
