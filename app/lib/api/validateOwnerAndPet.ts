@@ -9,6 +9,7 @@ interface ValidationOptions {
   tokenCost: number
   actionName: string
   req: NextRequest
+  user?: any
 }
 
 interface ValidationResult {
@@ -23,28 +24,12 @@ export async function validateOwnerAndPet({
   petId,
   tokenCost,
   actionName,
-  req
+  req,
+  user
 }: ValidationOptions): Promise<ValidationResult> {
   try {
-    // Confirm owner exists
-    const owner = await prisma.user.findUnique({ where: { id: userId } })
-    if (!owner) {
-      await createLog('warning', `Owner user not found when creating ${actionName}`, {
-        location: [`api route - ${req.method} ${req.url}`],
-        name: 'OwnerNotFound',
-        timestamp: new Date().toISOString(),
-        url: req.url,
-        method: req.method,
-        userId
-      })
-      return {
-        success: false,
-        response: NextResponse.json({ message: 'Owner not found', sliceName: slicePet }, { status: 404 })
-      }
-    }
-
     // Check token balance
-    if (owner.tokens < tokenCost) {
+    if (user.tokens < tokenCost) {
       await createLog('warning', `Insufficient tokens for ${actionName}`, {
         location: [`api route - ${req.method} ${req.url}`],
         name: 'InsufficientTokens',
@@ -53,13 +38,13 @@ export async function validateOwnerAndPet({
         method: req.method,
         userId,
         requiredTokens: tokenCost,
-        availableTokens: owner.tokens
+        availableTokens: user.tokens
       })
       return {
         success: false,
         response: NextResponse.json(
           {
-            message: `Insufficient tokens. Required: ${tokenCost}, Available: ${owner.tokens}`,
+            message: `Insufficient tokens. Required: ${tokenCost}, Available: ${user.tokens}`,
             sliceName: slicePet
           },
           { status: 400 }

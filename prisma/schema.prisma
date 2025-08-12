@@ -55,6 +55,7 @@ enum TokenTransactionType {
   MOVEMENT_DELETE
   GALLERY_ITEM_CREATION
   GALLERY_ITEM_DELETE
+  GALLERY_ITEM_UPDATE
 }
 
 enum PetType {

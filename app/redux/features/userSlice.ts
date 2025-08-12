@@ -1,5 +1,6 @@
 import { Reducer, createSlice } from '@reduxjs/toolkit'
 import { userApi } from '../services/userApi'
+import { Pet } from '@/app/types'
 
 export interface IUser {
   id: string
@@ -18,6 +19,8 @@ export interface IUser {
   tokensUsed: number
   createdAt: Date
   updatedAt: Date
+
+  pets?: Pet[]
 }
 
 const userState: IUser = {
@@ -36,7 +39,9 @@ const userState: IUser = {
   tokens: 750,
   tokensUsed: 0,
   createdAt: new Date(),
-  updatedAt: new Date()
+  updatedAt: new Date(),
+
+  pets: []
 }
 
 export interface UserStatePayload {

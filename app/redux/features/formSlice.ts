@@ -40,6 +40,7 @@ interface HandleInputProps {
 
 const formInitialState = {
   isCreating: false,
+  progress: 0,
   petForm: {
     inputs: {
       id: '',
@@ -107,6 +108,10 @@ const formInitialState = {
   vitalSignsForm: {
     inputs: vitalSignsInitialState,
     errors: {}
+  },
+  galleryItemForm: {
+    inputs: { isPublic: false },
+    errors: { isPublic: false }
   }
 } as any
 
@@ -229,9 +234,6 @@ const formSlice = createSlice({
     },
     setUploadProgress: (state, { payload }: any) => {
       state.progress = payload
-      if ((state.progress = 100)) {
-        state.progress = -1
-      }
     }
   }
 })

@@ -83,7 +83,6 @@ export const petSlice = createSlice({
     setPet: (state, { payload }) => {
       state.pet = payload
       state.loading = false
-      console.log('PAYLOAD: ', payload)
 
       const filteredPet = state.petsWithNoLogs?.filter?.((pet) => pet?.id === payload?.id)[0]
       const petNoLogs = filteredPet?.noLogs

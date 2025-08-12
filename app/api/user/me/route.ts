@@ -37,7 +37,11 @@ export async function GET(req: NextRequest) {
         image: true,
         pets: true,
         stripeSubscription: true,
-        galleryItems: true
+        galleryItems: {
+          orderBy: {
+            createdAt: 'desc'
+          }
+        }
       }
     })
 

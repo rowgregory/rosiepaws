@@ -1,4 +1,3 @@
-import { createLog } from '@/app/lib/api/createLog'
 import { getUserFromHeader } from '@/app/lib/api/getUserFromheader'
 import { handleApiError } from '@/app/lib/api/handleApiError'
 import { validateOwnerAndPet } from '@/app/lib/api/validateOwnerAndPet'
@@ -19,7 +18,6 @@ export async function POST(req: NextRequest) {
 
     const { url, type, name, size, mimeType, thumbnail, description, tags, petId, isPublic } = await req.json()
 
-    // Validate required fields
     if (!url || !type || !name || !size || !mimeType || !petId) {
       return NextResponse.json(
         {
@@ -30,7 +28,6 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    // Validate type enum
     if (!['IMAGE', 'VIDEO'].includes(type)) {
       return NextResponse.json(
         { message: 'Invalid type. Must be IMAGE or VIDEO', sliceName: sliceGallery },
@@ -43,17 +40,20 @@ export async function POST(req: NextRequest) {
       petId,
       tokenCost: galleryUploadTokenCost,
       actionName: 'gallery item',
-      req
+      req,
+      user: userAuth.user
     })
 
     if (!validation.success) {
       return validation.response!
     }
 
+    const isPublicValue = isPublic === true || isPublic === 'true' || isPublic === '1'
+
     // Use transaction to ensure atomicity
     const result = await prisma.$transaction(async (tx) => {
       // Create the gallery item
-      const newGalleryItem = await prisma.galleryItem.create({
+      await tx.galleryItem.create({
         data: {
           url,
           type: type as 'IMAGE' | 'VIDEO',
@@ -65,16 +65,7 @@ export async function POST(req: NextRequest) {
           tags: tags || [],
           petId,
           userId: userAuth.userId!,
-          isPublic
-        },
-        include: {
-          pet: {
-            select: {
-              id: true,
-              name: true,
-              type: true
-            }
-          }
+          isPublic: isPublicValue
         }
       })
 
@@ -91,40 +82,25 @@ export async function POST(req: NextRequest) {
       await tx.tokenTransaction.create({
         data: {
           userId: userAuth.userId!,
-          amount: -galleryUploadTokenCost, // Negative for debit
+          amount: -galleryUploadTokenCost,
           type: 'GALLERY_ITEM_CREATION',
           description: `Gallery item creation`,
           metadata: {
-            galleryItemId: newGalleryItem.id,
-            feature: 'water_creation'
+            feature: 'gallery_item_creation'
           }
         }
       })
 
-      return { newGalleryItem, updatedUser }
-    })
-
-    await createLog('info', 'Gallery item created successfully', {
-      location: ['api route - POST /api/gallery/create-gallery-item'],
-      name: 'GalleryItemCreated',
-      timestamp: new Date().toISOString(),
-      url: req.url,
-      method: req.method,
-      galleryItemId: result.newGalleryItem.id,
-      petId,
-      userId: userAuth.userId,
-      fileType: type,
-      fileSize: size
+      return { updatedUser }
     })
 
     return NextResponse.json(
       {
-        galleryItem: result.newGalleryItem,
+        sliceName: sliceGallery,
         user: {
           tokens: result.updatedUser.tokens,
           tokensUsed: result.updatedUser.tokensUsed
-        },
-        sliceName: sliceGallery
+        }
       },
       { status: 201 }
     )

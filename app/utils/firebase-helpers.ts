@@ -29,7 +29,8 @@ export const uploadFileToFirebase = async (
       (snapshot) => {
         // Calculate progress as a percentage
         const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100
-        onProgress(progress)
+        const cappedProgress = Math.min(progress, 95)
+        onProgress(cappedProgress)
       },
       (error) => {
         reject(error)

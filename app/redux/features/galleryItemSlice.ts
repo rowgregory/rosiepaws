@@ -44,7 +44,24 @@ export const galleryItemSlice = createSlice({
     },
     addGalleryItemToState: (state, { payload }) => {
       state.galleryItems.unshift(payload)
-      state.zeroGalleryItems = payload.length === 0
+      state.zeroGalleryItems = state.galleryItems.length === 0
+    },
+    updateGalleryItemInState: (state, action) => {
+      const { findById, replaceWith, ...updatedGalleryItem } = action.payload
+
+      if (findById && replaceWith) {
+        // Special case: find by one ID, replace with different data
+        const index = state.galleryItems.findIndex((galleryItem) => galleryItem?.id === findById)
+        if (index !== -1) {
+          state.galleryItems[index] = replaceWith
+        }
+      } else {
+        // Normal update
+        const index = state.galleryItems.findIndex((galleryItem) => galleryItem?.id === updatedGalleryItem?.id)
+        if (index !== -1) {
+          state.galleryItems[index] = updatedGalleryItem
+        }
+      }
     },
     removeGalleryItemFromState: (state, action) => {
       state.galleryItems = state.galleryItems.filter(
@@ -56,6 +73,12 @@ export const galleryItemSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+      .addMatcher(galleryItemApi.endpoints.listPublicGalleryItems.matchPending, (state) => {
+        state.loading = true
+      })
+      .addMatcher(galleryItemApi.endpoints.listPublicGalleryItems.matchFulfilled, (state) => {
+        state.loading = false
+      })
       .addMatcher(galleryItemApi.endpoints.createGalleryItem.matchPending, (state) => {
         state.loading = true
       })
@@ -66,6 +89,12 @@ export const galleryItemSlice = createSlice({
         state.loading = true
       })
       .addMatcher(galleryItemApi.endpoints.deleteGalleryItem.matchFulfilled, (state) => {
+        state.loading = false
+      })
+      .addMatcher(galleryItemApi.endpoints.updateGalleryItem.matchPending, (state) => {
+        state.loading = true
+      })
+      .addMatcher(galleryItemApi.endpoints.updateGalleryItem.matchFulfilled, (state) => {
         state.loading = false
       })
       .addMatcher(
@@ -87,5 +116,6 @@ export const {
   removeGalleryItemFromState,
   setCloseGalleryItemDrawer,
   setGalleryItems,
-  setOpenGalleryItemDrawer
+  setOpenGalleryItemDrawer,
+  updateGalleryItemInState
 } = galleryItemSlice.actions
