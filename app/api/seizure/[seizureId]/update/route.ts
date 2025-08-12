@@ -2,7 +2,7 @@ import prisma from '@/prisma/client'
 import { NextRequest, NextResponse } from 'next/server'
 import { sliceSeizure } from '@/public/data/api.data'
 import { getUserFromHeader } from '@/app/lib/api/getUserFromheader'
-import { validateOwnerAndPet } from '@/app/lib/api/validateOwnerAndPet'
+import { validateTokensAndPet } from '@/app/lib/api/validateTokensAndPet'
 import { handleApiError } from '@/app/lib/api/handleApiError'
 import { createLog } from '@/app/lib/api/createLog'
 import { seizureUpdateTokenCost } from '@/app/lib/constants/public/token'
@@ -47,12 +47,13 @@ export async function PATCH(req: NextRequest, { params }: any) {
       )
     }
 
-    const validation = await validateOwnerAndPet({
+    const validation = await validateTokensAndPet({
       userId: userAuth.userId!,
       petId,
       tokenCost: seizureUpdateTokenCost,
       actionName: 'update seizure',
-      req
+      req,
+      user: userAuth?.user
     })
 
     if (!validation.success) {

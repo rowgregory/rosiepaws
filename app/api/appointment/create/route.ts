@@ -2,7 +2,7 @@ import prisma from '@/prisma/client'
 import { NextRequest, NextResponse } from 'next/server'
 import { sliceAppointment } from '@/public/data/api.data'
 import { getUserFromHeader } from '@/app/lib/api/getUserFromheader'
-import { validateOwnerAndPet } from '@/app/lib/api/validateOwnerAndPet'
+import { validateTokensAndPet } from '@/app/lib/api/validateTokensAndPet'
 import { appointmentCreateTokenCost } from '@/app/lib/constants/public/token'
 import { createLog } from '@/app/lib/api/createLog'
 import { handleApiError } from '@/app/lib/api/handleApiError'
@@ -30,12 +30,13 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    const validation = await validateOwnerAndPet({
-      userId: userAuth.userId ?? '',
+    const validation = await validateTokensAndPet({
+      userId: userAuth.userId!,
       petId,
       tokenCost: appointmentCreateTokenCost,
       actionName: 'appointment',
-      req
+      req,
+      user: userAuth?.user
     })
 
     if (!validation.success) {

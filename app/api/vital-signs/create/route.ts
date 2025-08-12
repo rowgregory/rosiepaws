@@ -2,7 +2,7 @@ import prisma from '@/prisma/client'
 import { slicePet, sliceVitalSigns } from '@/public/data/api.data'
 import { NextRequest, NextResponse } from 'next/server'
 import { getUserFromHeader } from '@/app/lib/api/getUserFromheader'
-import { validateOwnerAndPet } from '@/app/lib/api/validateOwnerAndPet'
+import { validateTokensAndPet } from '@/app/lib/api/validateTokensAndPet'
 import { handleApiError } from '@/app/lib/api/handleApiError'
 import { createLog } from '@/app/lib/api/createLog'
 import { CapillaryRefillTime, HydrationStatus, MucousMembraneColor } from '@/app/types'
@@ -55,12 +55,13 @@ export async function POST(req: NextRequest) {
         { status: 404 }
       )
     }
-    const validation = await validateOwnerAndPet({
+    const validation = await validateTokensAndPet({
       userId: userAuth.userId!,
       petId,
       tokenCost: vitalSignsCreateTokenCost,
       actionName: 'vital-signs',
-      req
+      req,
+      user: userAuth?.user
     })
 
     if (!validation.success) {

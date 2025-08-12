@@ -2,7 +2,7 @@ import prisma from '@/prisma/client'
 import { NextRequest, NextResponse } from 'next/server'
 import { slicePainScore } from '@/public/data/api.data'
 import { getUserFromHeader } from '@/app/lib/api/getUserFromheader'
-import { validateOwnerAndPet } from '@/app/lib/api/validateOwnerAndPet'
+import { validateTokensAndPet } from '@/app/lib/api/validateTokensAndPet'
 import { painScoreUpdateTokenCost } from '@/app/lib/constants/public/token'
 import { handleApiError } from '@/app/lib/api/handleApiError'
 import { createLog } from '@/app/lib/api/createLog'
@@ -26,12 +26,13 @@ export async function PATCH(req: NextRequest, { params }: any) {
     // Parse req body
     const { petId, score, symptoms, location, triggers, relief, timeRecorded, notes } = await req.json()
 
-    const validation = await validateOwnerAndPet({
+    const validation = await validateTokensAndPet({
       userId: userAuth.userId!,
       petId,
       tokenCost: painScoreUpdateTokenCost,
       actionName: 'update pain score',
-      req
+      req,
+      user: userAuth?.user
     })
 
     if (!validation.success) {

@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { sliceFeeding } from '@/public/data/api.data'
 import { getUserFromHeader } from '@/app/lib/api/getUserFromheader'
 import { validateFeedingRequiredFields } from '@/app/lib/api/validateFeedingRequiredFields'
-import { validateOwnerAndPet } from '@/app/lib/api/validateOwnerAndPet'
+import { validateTokensAndPet } from '@/app/lib/api/validateTokensAndPet'
 import { handleApiError } from '@/app/lib/api/handleApiError'
 import { feedingCreateTokenCost } from '@/app/lib/constants/public/token'
 import { createLog } from '@/app/lib/api/createLog'
@@ -33,12 +33,13 @@ export async function POST(req: NextRequest) {
       return validatedFields.response!
     }
 
-    const validation = await validateOwnerAndPet({
+    const validation = await validateTokensAndPet({
       userId: userAuth.userId!,
       petId,
       tokenCost: feedingCreateTokenCost,
       actionName: 'feeding',
-      req
+      req,
+      user: userAuth?.user
     })
 
     if (!validation.success) {

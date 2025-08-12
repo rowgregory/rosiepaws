@@ -1,7 +1,7 @@
 import { createLog } from '@/app/lib/api/createLog'
 import { getUserFromHeader } from '@/app/lib/api/getUserFromheader'
 import { handleApiError } from '@/app/lib/api/handleApiError'
-import { validateOwnerAndPet } from '@/app/lib/api/validateOwnerAndPet'
+import { validateTokensAndPet } from '@/app/lib/api/validateTokensAndPet'
 import { seizureCreateTokenCost } from '@/app/lib/constants/public/token'
 import prisma from '@/prisma/client'
 import { sliceSeizure } from '@/public/data/api.data'
@@ -53,12 +53,13 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    const validation = await validateOwnerAndPet({
+    const validation = await validateTokensAndPet({
       userId: userAuth.userId ?? '',
       petId,
       tokenCost: seizureCreateTokenCost,
       actionName: 'seizure',
-      req
+      req,
+      user: userAuth?.user
     })
 
     if (!validation.success) {

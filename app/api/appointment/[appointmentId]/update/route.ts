@@ -2,7 +2,7 @@ import prisma from '@/prisma/client'
 import { NextRequest, NextResponse } from 'next/server'
 import { sliceAppointment } from '@/public/data/api.data'
 import { getUserFromHeader } from '@/app/lib/api/getUserFromheader'
-import { validateOwnerAndPet } from '@/app/lib/api/validateOwnerAndPet'
+import { validateTokensAndPet } from '@/app/lib/api/validateTokensAndPet'
 import { handleApiError } from '@/app/lib/api/handleApiError'
 import { createLog } from '@/app/lib/api/createLog'
 import { appointmentUpdateTokenCost } from '@/app/lib/constants/public/token'
@@ -37,12 +37,13 @@ export async function PATCH(req: NextRequest, { params }: any) {
       )
     }
 
-    const validation = await validateOwnerAndPet({
+    const validation = await validateTokensAndPet({
       userId: userAuth.userId!,
       petId,
       tokenCost: appointmentUpdateTokenCost,
       actionName: 'update appointment',
-      req
+      req,
+      user: userAuth?.user
     })
 
     if (!validation.success) {

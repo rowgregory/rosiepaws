@@ -6,7 +6,7 @@ import { validatePainScoreRequiredFields } from '@/app/lib/api/validatePainScore
 import { painScoreCreateTokenCost } from '@/app/lib/constants/public/token'
 import { createLog } from '@/app/lib/api/createLog'
 import { handleApiError } from '@/app/lib/api/handleApiError'
-import { validateOwnerAndPet } from '@/app/lib/api/validateOwnerAndPet'
+import { validateTokensAndPet } from '@/app/lib/api/validateTokensAndPet'
 
 export async function POST(req: NextRequest) {
   try {
@@ -30,12 +30,13 @@ export async function POST(req: NextRequest) {
       return validatedFields.response!
     }
 
-    const validation = await validateOwnerAndPet({
+    const validation = await validateTokensAndPet({
       userId: userAuth.userId!,
       petId,
       tokenCost: painScoreCreateTokenCost,
       actionName: 'pain score',
-      req
+      req,
+      user: userAuth?.user
     })
 
     if (!validation.success) {

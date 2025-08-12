@@ -1,6 +1,6 @@
 import { getUserFromHeader } from '@/app/lib/api/getUserFromheader'
 import { handleApiError } from '@/app/lib/api/handleApiError'
-import { validateOwnerAndPet } from '@/app/lib/api/validateOwnerAndPet'
+import { validateTokensAndPet } from '@/app/lib/api/validateTokensAndPet'
 import prisma from '@/prisma/client'
 import { sliceGallery } from '@/public/data/api.data'
 import { NextRequest, NextResponse } from 'next/server'
@@ -48,7 +48,7 @@ export async function PATCH(req: NextRequest, { params }: any) {
     }
 
     // Validate user has enough tokens and pet exists
-    const validation = await validateOwnerAndPet({
+    const validation = await validateTokensAndPet({
       userId: userAuth.userId,
       petId: existingGalleryItem.petId,
       tokenCost: togglePublicTokenCost,

@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { sliceFeeding } from '@/public/data/api.data'
 import { getUserFromHeader } from '@/app/lib/api/getUserFromheader'
 import { validateFeedingRequiredFields } from '@/app/lib/api/validateFeedingRequiredFields'
-import { validateOwnerAndPet } from '@/app/lib/api/validateOwnerAndPet'
+import { validateTokensAndPet } from '@/app/lib/api/validateTokensAndPet'
 import { handleApiError } from '@/app/lib/api/handleApiError'
 import { createLog } from '@/app/lib/api/createLog'
 import { feedingUpdateTokenCost } from '@/app/lib/constants/public/token'
@@ -40,12 +40,13 @@ export async function PATCH(req: NextRequest, { params }: any) {
       return validatedFields.response!
     }
 
-    const validation = await validateOwnerAndPet({
+    const validation = await validateTokensAndPet({
       userId: userAuth.userId!,
       petId,
       tokenCost: feedingUpdateTokenCost,
       actionName: 'update feeding',
-      req
+      req,
+      user: userAuth?.user
     })
 
     if (!validation.success) {

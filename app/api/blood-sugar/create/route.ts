@@ -4,7 +4,7 @@ import { slicePet } from '@/public/data/api.data'
 import { bloodSugarCreateTokenCost } from '@/app/lib/constants/public/token'
 import { createLog } from '@/app/lib/api/createLog'
 import { getUserFromHeader } from '@/app/lib/api/getUserFromheader'
-import { validateOwnerAndPet } from '@/app/lib/api/validateOwnerAndPet'
+import { validateTokensAndPet } from '@/app/lib/api/validateTokensAndPet'
 import { handleApiError } from '@/app/lib/api/handleApiError'
 
 export async function POST(req: NextRequest) {
@@ -30,12 +30,13 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    const validation = await validateOwnerAndPet({
-      userId: userAuth.userId ?? '',
+    const validation = await validateTokensAndPet({
+      userId: userAuth.userId!,
       petId,
       tokenCost: bloodSugarCreateTokenCost,
       actionName: 'blood sugar',
-      req
+      req,
+      user: userAuth?.user
     })
 
     if (!validation.success) {

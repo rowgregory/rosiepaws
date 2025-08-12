@@ -19,7 +19,7 @@ interface ValidationResult {
   pet?: any
 }
 
-export async function validateOwnerAndPet({
+export async function validateTokensAndPet({
   userId,
   petId,
   tokenCost,
@@ -75,6 +75,7 @@ export async function validateOwnerAndPet({
       success: true
     }
   } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error'
     await createLog('error', `Database error during ${actionName} validation`, {
       location: [`api route - ${req.method} ${req.url}`],
       name: 'DatabaseError',
@@ -83,12 +84,16 @@ export async function validateOwnerAndPet({
       method: req.method,
       userId,
       petId,
-      error: error instanceof Error ? error.message : 'Unknown error'
+      error: errorMessage,
+      user
     })
 
     return {
       success: false,
-      response: NextResponse.json({ message: 'Internal server error', sliceName: slicePet }, { status: 500 })
+      response: NextResponse.json(
+        { message: 'Internal server error', error: errorMessage, sliceName: slicePet },
+        { status: 500 }
+      )
     }
   }
 }
