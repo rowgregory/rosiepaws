@@ -93,7 +93,7 @@ export async function PATCH(req: NextRequest, { params }: any) {
       const updatedUser = await tx.user.update({
         where: { id: userAuth.userId },
         data: {
-          tokens: { decrement: feedingUpdateTokenCost },
+          ...(!userAuth.user.isLegacyUser && { tokens: { decrement: feedingUpdateTokenCost } }),
           tokensUsed: { increment: feedingUpdateTokenCost }
         }
       })
@@ -103,8 +103,8 @@ export async function PATCH(req: NextRequest, { params }: any) {
         data: {
           userId: userAuth.userId!,
           amount: -feedingUpdateTokenCost,
-          type: 'FEEDING_UPDATE',
-          description: `Feeding update`,
+          type: userAuth.user.isLegacyUser ? 'FEEDING_UPDATE_LEGACY' : 'FEEDING_UPDATE',
+          description: `Feeding update${userAuth.user.isLegacyUser ? ' (Usage Tracking Only)' : ''}`,
           metadata: {
             ...updateData,
             feature: 'feeding_update'

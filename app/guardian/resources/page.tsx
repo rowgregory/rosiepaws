@@ -1,10 +1,26 @@
 'use client'
 
 import Picture from '@/app/components/common/Picture'
+import ResourcesHeader from '@/app/components/guardian/resources/ResourcesHeader'
 import { useGetAllMediaQuery, useUpdateAnalyticsMutation } from '@/app/redux/services/mediaApi'
 import { IMedia } from '@/app/types'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Download, Eye, Search, Grid3X3, List, Calendar, FileText, Heart, Share2, User, X } from 'lucide-react'
+import {
+  Download,
+  Eye,
+  Search,
+  Grid3X3,
+  List,
+  Calendar,
+  FileText,
+  Heart,
+  Share2,
+  User,
+  X,
+  Filter,
+  SortAsc,
+  File
+} from 'lucide-react'
 import { useState } from 'react'
 
 const MediaCard = ({ item, favorites, handleView, toggleFavorite, handleDownload }: any) => {
@@ -286,6 +302,7 @@ const UserMediaLibrary = () => {
   const { data } = useGetAllMediaQuery(undefined) as any
   const media = data?.media
   const [updateAnalytics] = useUpdateAnalyticsMutation()
+  const [activeTab, setActiveTab] = useState('available')
 
   const toggleFavorite = (itemId: any) => {
     setFavorites((prev: any[]) => (prev.includes(itemId) ? prev.filter((id) => id !== itemId) : [...prev, itemId]))
@@ -358,84 +375,86 @@ const UserMediaLibrary = () => {
     }
   }
 
-  return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-6 py-8">
-          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
-            <div className="mb-6 lg:mb-0">
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">Media Library</h1>
-              <p className="text-gray-600">Browse and download company resources</p>
-            </div>
+  const locked: [] = []
 
-            <div className="flex items-center gap-4">
-              <div className="text-sm text-gray-600">
-                {filteredItems?.length} item{filteredItems?.length !== 1 ? 's' : ''} found
+  return (
+    <div>
+      <ResourcesHeader setActiveTab={setActiveTab} activeTab={activeTab} available={filteredItems} locked={locked} />
+
+      {/* Filters */}
+      <div className="w-full min-h-[calc(100dvh-64px)] mx-auto p-6 bg-gray-50">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="mb-8"
+        >
+          <div className="bg-white rounded-xl shadow-sm border border-slate-200">
+            <div className="p-4">
+              <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center justify-between">
+                <div className="flex flex-col sm:flex-row gap-3 flex-1">
+                  {/* Search */}
+                  <div className="relative">
+                    <Search className="w-4 h-4 absolute left-3 top-2.5 text-slate-400" />
+                    <input
+                      type="text"
+                      placeholder="Search resources..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="pl-10 pr-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-slate-200 focus:border-slate-300 w-full sm:w-64 text-sm"
+                    />
+                  </div>
+
+                  {/* Category Filter */}
+                  <div className="relative">
+                    <Filter className="w-4 h-4 absolute left-3 top-2.5 text-slate-400" />
+                    <select
+                      value={selectedCategory}
+                      onChange={(e) => setSelectedCategory(e.target.value)}
+                      className="pl-10 pr-8 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-slate-200 focus:border-slate-300 text-sm appearance-none bg-white"
+                    >
+                      <option value="all">All Categories</option>
+                      <option value="EBOOK">eBooks</option>
+                      <option value="POSTER">Posters</option>
+                      <option value="DOCUMENT">Documents</option>
+                    </select>
+                  </div>
+
+                  {/* Sort Filter */}
+                  <div className="relative">
+                    <SortAsc className="w-4 h-4 absolute left-3 top-2.5 text-slate-400" />
+                    <select
+                      value={sortBy}
+                      onChange={(e) => setSortBy(e.target.value)}
+                      className="pl-10 pr-8 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-slate-200 focus:border-slate-300 text-sm appearance-none bg-white"
+                    >
+                      <option value="newest">Newest First</option>
+                      <option value="oldest">Oldest First</option>
+                      <option value="most-viewed">Most Viewed</option>
+                      <option value="most-downloaded">Most Downloaded</option>
+                      <option value="alphabetical">A-Z</option>
+                    </select>
+                  </div>
+                </div>
+                {/* View Mode */}
+                <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
+                  <button
+                    onClick={() => setViewMode('grid')}
+                    className={`p-2 rounded ${viewMode === 'grid' ? 'bg-white shadow-sm' : 'hover:bg-gray-200'}`}
+                  >
+                    <Grid3X3 className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={() => setViewMode('list')}
+                    className={`p-2 rounded ${viewMode === 'list' ? 'bg-white shadow-sm' : 'hover:bg-gray-200'}`}
+                  >
+                    <List className="w-4 h-4" />
+                  </button>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </div>
-
-      {/* Filters */}
-      <div className="max-w-7xl mx-auto px-6 py-6">
-        <div className="bg-white rounded-xl shadow-sm border p-6 mb-6">
-          <div className="flex flex-col lg:flex-row gap-4">
-            {/* Search */}
-            <div className="relative flex-1">
-              <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-              <input
-                type="text"
-                placeholder="Search resources..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-              />
-            </div>
-
-            {/* Category Filter */}
-            <select
-              value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-            >
-              <option value="all">All Categories</option>
-              <option value="EBOOK">eBooks</option>
-              <option value="POSTER">Posters</option>
-            </select>
-
-            {/* Sort */}
-            <select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-            >
-              <option value="newest">Newest First</option>
-              <option value="oldest">Oldest First</option>
-              <option value="most-viewed">Most Viewed</option>
-              <option value="most-downloaded">Most Downloaded</option>
-              <option value="alphabetical">A-Z</option>
-            </select>
-
-            {/* View Mode */}
-            <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
-              <button
-                onClick={() => setViewMode('grid')}
-                className={`p-2 rounded ${viewMode === 'grid' ? 'bg-white shadow-sm' : 'hover:bg-gray-200'}`}
-              >
-                <Grid3X3 className="w-4 h-4" />
-              </button>
-              <button
-                onClick={() => setViewMode('list')}
-                className={`p-2 rounded ${viewMode === 'list' ? 'bg-white shadow-sm' : 'hover:bg-gray-200'}`}
-              >
-                <List className="w-4 h-4" />
-              </button>
-            </div>
-          </div>
-        </div>
-
+        </motion.div>
         {/* Media Grid */}
         <div
           className={`grid gap-6 ${
@@ -488,21 +507,14 @@ const UserMediaLibrary = () => {
 
         {/* Empty State */}
         {filteredItems?.length === 0 && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center py-12">
-            <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
-              <Search className="w-8 h-8 text-gray-400" />
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }}>
+            <div className="text-center py-20">
+              <div className="w-32 h-32 mx-auto mb-8 bg-slate-100 rounded-3xl flex items-center justify-center">
+                <File className="w-16 h-16 text-slate-300" />
+              </div>
+              <h3 className="text-2xl font-light text-slate-600 mb-3">No resources found</h3>
+              <p className="text-slate-500">No resources available at the moment</p>
             </div>
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No resources found</h3>
-            <p className="text-gray-500 mb-4">Try adjusting your search terms or filters</p>
-            <button
-              onClick={() => {
-                setSearchQuery('')
-                setSelectedCategory('all')
-              }}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-            >
-              Clear Filters
-            </button>
           </motion.div>
         )}
       </div>

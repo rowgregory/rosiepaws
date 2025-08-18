@@ -36,7 +36,7 @@ const userState: IUser = {
   isFreeUser: false,
   isComfortUser: false,
   isLegacyUser: false,
-  tokens: 750,
+  tokens: 0,
   tokensUsed: 0,
   createdAt: new Date(),
   updatedAt: new Date(),

@@ -1,3 +1,4 @@
+import { setCloseFeedingDrawer } from '../features/feedingSlice'
 import { api } from './api'
 import { createOptimisticHandlers } from '@/app/lib/api/optimisticUpdates'
 
@@ -22,6 +23,7 @@ const getFeedingHandlers = async () => {
         updateAction: updateFeedingInState,
         removeAction: removeFeedingFromState,
         updateTokensAction: updateUserTokens,
+        closeDrawer: setCloseFeedingDrawer,
         responseKey: 'feeding',
         getEntityFromState: (state: { feeding: { feedings: any[] } }, id: any) =>
           state.feeding.feedings.find((feeding) => feeding.id === id)

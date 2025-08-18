@@ -37,10 +37,12 @@ export async function PATCH(req: NextRequest, { params }: any) {
       filePath
     } = await req.json()
 
-    // Validate required fields
-    if (!petId || !name || !type) {
+    if (!name || !type || !breed || !age || !weight || !gender || !spayedNeutered) {
       return NextResponse.json(
-        { message: 'Missing required field: pet id is required for update', sliceName: slicePet },
+        {
+          message: `Missing required fields: name:${name}, type:${type}, breed:${breed}, age:${age}, weight:${weight}, gender:${gender}, and sprayedNeutered:${spayedNeutered} are required`,
+          sliceName: slicePet
+        },
         { status: 400 }
       )
     }
@@ -85,12 +87,8 @@ export async function PATCH(req: NextRequest, { params }: any) {
         const updatedUser = await tx.user.update({
           where: { id: userAuth.userId },
           data: {
-            tokens: { decrement: petUpdateTokenCost },
+            ...(!userAuth.user.isLegacyUser && { tokens: { decrement: petUpdateTokenCost } }),
             tokensUsed: { increment: petUpdateTokenCost }
-          },
-          select: {
-            tokens: true,
-            tokensUsed: true
           }
         })
 
@@ -99,8 +97,8 @@ export async function PATCH(req: NextRequest, { params }: any) {
           data: {
             userId: userAuth.userId!,
             amount: -petUpdateTokenCost, // Negative for debit
-            type: 'PET_UPDATE',
-            description: `Pet update`,
+            type: userAuth.user.isLegacyUser ? 'PET_UPDATE_LEGACY' : 'PET_UPDATE',
+            description: `Pet update${userAuth.user.isLegacyUser ? ' (Usage Tracking Only)' : ''}`,
             metadata: {
               petId: updatedPet.id,
               feature: 'pet_update',

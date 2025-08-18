@@ -13,27 +13,8 @@ interface ChildrenProps {
   children: React.ReactNode
 }
 
-const GuardianPetsLayout: FC<ChildrenProps> = ({ children }) => {
-  const path = useCustomPathname()
-  const dispatch = useAppDispatch()
-  const { user } = useAppSelector((state: RootState) => state.user)
-
-  // Determine user tier and access
-  const getUserTier = () => {
-    if (user?.isLegacyUser) return 'legacy'
-    if (user?.isComfortUser) return 'comfort'
-    return 'free'
-  }
-
-  const userTier = getUserTier()
-  const maxAllowed = {
-    free: 3,
-    comfort: 6,
-    legacy: 9
-  }[userTier]
-
-  // Get links with tier information
-  const linksWithTiers = publicPetLinks(path).map((link, index) => {
+const linkData = (path: string, userTier: string) =>
+  publicPetLinks(path).map((link, index) => {
     let tier: 'free' | 'comfort' | 'legacy' | ''
     let isAccessible = false
 
@@ -58,51 +39,73 @@ const GuardianPetsLayout: FC<ChildrenProps> = ({ children }) => {
       index
     }
   })
-  const getTierIcon = (tier: string) => {
-    switch (tier) {
-      case 'free':
-        return <Heart className="w-full h-full" />
-      case 'comfort':
-        return <Star className="w-full h-full" />
-      case 'legacy':
-        return <Crown className="w-full h-full" />
-      default:
-        return <Heart className="w-full h-full" />
-    }
+const getTierIcon = (tier: string) => {
+  switch (tier) {
+    case 'free':
+      return <Heart className="w-full h-full" />
+    case 'comfort':
+      return <Star className="w-full h-full" />
+    case 'legacy':
+      return <Crown className="w-full h-full" />
+    default:
+      return <Heart className="w-full h-full" />
+  }
+}
+
+const getTierColor = (tier: string) => {
+  switch (tier) {
+    case 'free':
+      return 'text-lime-500'
+    case 'comfort':
+      return 'text-sky-500'
+    case 'legacy':
+      return 'text-violet-500'
+    default:
+      return 'text-gray-500'
+  }
+}
+
+const getTierBg = (tier: string) => {
+  switch (tier) {
+    case 'free':
+      return 'bg-lime-50 border-lime-200'
+    case 'comfort':
+      return 'bg-sky-50 border-sky-200'
+    case 'legacy':
+      return 'bg-violet-50 border-violet-200'
+    default:
+      return 'bg-gray-50 border-gray-200'
+  }
+}
+
+const GuardianPetsLayout: FC<ChildrenProps> = ({ children }) => {
+  const path = useCustomPathname()
+  const dispatch = useAppDispatch()
+  const { user } = useAppSelector((state: RootState) => state.user)
+
+  // Determine user tier and access
+  const getUserTier = () => {
+    if (user?.isLegacyUser) return 'legacy'
+    if (user?.isComfortUser) return 'comfort'
+    return 'free'
   }
 
-  const getTierColor = (tier: string) => {
-    switch (tier) {
-      case 'free':
-        return 'text-lime-500'
-      case 'comfort':
-        return 'text-sky-500'
-      case 'legacy':
-        return 'text-violet-500'
-      default:
-        return 'text-gray-500'
-    }
-  }
+  const userTier = getUserTier()
+  const maxAllowed = {
+    free: 3,
+    comfort: 6,
+    legacy: 9
+  }[userTier]
 
-  const getTierBg = (tier: string) => {
-    switch (tier) {
-      case 'free':
-        return 'bg-lime-50 border-lime-200'
-      case 'comfort':
-        return 'bg-sky-50 border-sky-200'
-      case 'legacy':
-        return 'bg-violet-50 border-violet-200'
-      default:
-        return 'bg-gray-50 border-gray-200'
-    }
-  }
+  // Get links with tier information
+  const linksWithTiers = linkData(path, userTier)
 
   return (
     <>
       <div className="sticky top-0 h-[64px] px-3 sm:px-6 border-b border-gray-100 z-30 bg-white flex items-center">
         {/* Navigation Links - Main content */}
         <div className="flex items-center gap-x-1 sm:gap-x-2 overflow-x-auto scrollbar-hide flex-1 py-2">
-          <div className="flex items-center gap-x-1 sm:gap-x-2 min-w-max">
+          <div className="flex items-center gap-x-1 sm:gap-x-2 md:max-w-screen-sm lg:max-w-screen-md w-full">
             {linksWithTiers.map((link) => {
               const isActive = link.isActive
               const isAccessible = link.isAccessible

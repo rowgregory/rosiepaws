@@ -1,3 +1,4 @@
+import { setCloseVitalSignsDrawer } from '../features/vitalSignsSlice'
 import { api } from './api'
 import { createOptimisticHandlers } from '@/app/lib/api/optimisticUpdates'
 
@@ -22,6 +23,7 @@ const getVitalSignsHandlers = async () => {
         updateAction: updateVitalSignsInState,
         removeAction: removeVitalSignsFromState,
         updateTokensAction: updateUserTokens,
+        closeDrawer: setCloseVitalSignsDrawer,
         responseKey: 'vital-signs',
         getEntityFromState: (state: { vitalSigns: { vitalSigns: any[] } }, id: any) =>
           state.vitalSigns.vitalSigns.find((vitalSigns) => vitalSigns.id === id)

@@ -20,6 +20,7 @@ import { setOpenMovementDrawer } from '@/app/redux/features/movementSlice'
 import { setOpenNeedToUpgradeDrawer } from '@/app/redux/features/dashboardSlice'
 import { setOpenVitalSignsDrawer } from '@/app/redux/features/vitalSignsSlice'
 import { formatDate } from '@/app/lib/utils'
+import FirstPetModal from '@/app/modals/FirstPetModal'
 
 const Home = () => {
   const dispatch = useAppDispatch()
@@ -50,6 +51,7 @@ const Home = () => {
 
   return (
     <>
+      <FirstPetModal />
       <EmergencySignsDrawer />
       <ViewGuideDrawer />
       <DisabilityEndOfLifeCareDrawer />
@@ -225,7 +227,7 @@ const Home = () => {
                     <h2 className="text-lg font-semibold text-gray-900">Token Activity</h2>
                     <div className="flex items-center text-sm text-gray-600">
                       <div className="w-2 h-2 bg-blue-500 rounded-full mr-2"></div>
-                      Current Balance: {user?.tokens?.toLocaleString()} tokens
+                      Current Balance: {user.isLegacyUser ? '♾️' : `${user?.tokens?.toLocaleString()} tokens`}
                     </div>
                   </div>
                   <div className="flex-1 overflow-y-auto pr-2 max-h-[400px]">

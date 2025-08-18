@@ -8,8 +8,9 @@ export const createOptimisticHandlers = (entityConfig: {
   removeAction?: any
   updateTokensAction?: any
   getEntityFromState?: any
+  closeDrawer?: any
 }) => {
-  const { addAction, updateAction, removeAction, updateTokensAction, getEntityFromState } = entityConfig
+  const { addAction, updateAction, removeAction, updateTokensAction, getEntityFromState, closeDrawer } = entityConfig
 
   const handleCreate =
     (dispatch: (arg0: any) => void) =>
@@ -17,6 +18,7 @@ export const createOptimisticHandlers = (entityConfig: {
       const tempId = `temp-${Date.now()}`
       const optimisticEntity = { ...data, id: tempId }
 
+      dispatch(closeDrawer())
       dispatch(addAction(optimisticEntity))
       if (optimisticEntity.id?.toString().startsWith('temp-')) {
         dispatch(setLastTempId(optimisticEntity.id))
@@ -44,6 +46,7 @@ export const createOptimisticHandlers = (entityConfig: {
       const currentState = getState()
       const originalEntity = getEntityFromState(currentState, id)
 
+      dispatch(closeDrawer())
       // Apply optimistic update - keep the original id
       dispatch(
         updateAction({

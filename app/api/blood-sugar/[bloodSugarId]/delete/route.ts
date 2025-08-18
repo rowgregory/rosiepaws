@@ -58,7 +58,7 @@ export async function DELETE(req: NextRequest, { params }: any) {
         const updatedUser = await tx.user.update({
           where: { id: userAuth.userId },
           data: {
-            tokens: { decrement: bloodSugarDeleteTokenCost },
+            ...(!userAuth.user.isLegacyUser && { tokens: { decrement: bloodSugarDeleteTokenCost } }),
             tokensUsed: { increment: bloodSugarDeleteTokenCost }
           }
         })
@@ -68,8 +68,8 @@ export async function DELETE(req: NextRequest, { params }: any) {
           data: {
             userId: userAuth.userId!,
             amount: -bloodSugarDeleteTokenCost, // Negative for debit
-            type: 'BLOOD_SUGAR_DELETE',
-            description: `Blood sugar delete`,
+            type: userAuth.user.isLegacyUser ? 'BLOOD_SUGAR_DELETE_LEGACY' : 'BLOOD_SUGAR_DELETE',
+            description: `Blood sugar delete${userAuth.user.isLegacyUser ? ' (Usage Tracking Only)' : ''}`,
             metadata: {
               petId: deletedBloodSugar.id,
               feature: 'blood_sugar_delete',

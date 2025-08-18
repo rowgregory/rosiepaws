@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react'
+import React, { FC, useMemo, useState } from 'react'
 import { GENDER_OPTIONS, PET_TYPES, SPAY_NEUTER_OPTIONS } from '../lib/constants/public/pet'
 import { AnimatePresence, motion } from 'framer-motion'
 import {
@@ -79,6 +79,13 @@ const PetForm: FC<IForm> = ({ inputs, errors, handleInput, close, handleSubmit, 
       })
     )
   }
+
+  const mediaObjectUrl = useMemo(() => {
+    if (inputs?.media && inputs.media instanceof File) {
+      return URL.createObjectURL(inputs.media)
+    }
+    return null
+  }, [inputs?.media])
 
   return (
     <form onSubmit={handleSubmit} className="flex-1 flex flex-col min-h-full">
@@ -202,15 +209,11 @@ const PetForm: FC<IForm> = ({ inputs, errors, handleInput, close, handleSubmit, 
                       {/* If there's a new file being uploaded */}
                       {inputs?.media && inputs.media instanceof File ? (
                         inputs.media.type?.startsWith('video/') ? (
-                          <video
-                            src={URL.createObjectURL(inputs.media)}
-                            className="w-full h-full object-cover"
-                            controls
-                          />
+                          <video src={mediaObjectUrl!} className="w-full h-full object-cover" controls />
                         ) : (
                           <Picture
                             priority={false}
-                            src={URL.createObjectURL(inputs.media)}
+                            src={mediaObjectUrl!}
                             alt="Pet preview"
                             className="w-full h-full object-contain"
                           />

@@ -82,7 +82,7 @@ export async function PATCH(req: NextRequest, { params }: any) {
       const updatedUser = await tx.user.update({
         where: { id: userAuth.userId },
         data: {
-          tokens: { decrement: painScoreUpdateTokenCost },
+          ...(!userAuth.user.isLegacyUser && { tokens: { decrement: painScoreUpdateTokenCost } }),
           tokensUsed: { increment: painScoreUpdateTokenCost }
         }
       })
@@ -92,8 +92,8 @@ export async function PATCH(req: NextRequest, { params }: any) {
         data: {
           userId: userAuth.userId!,
           amount: -painScoreUpdateTokenCost, // Negative for debit
-          type: 'PAIN_SCORE_UPDATE',
-          description: `Pain score update`,
+          type: userAuth.user.isLegacyUser ? 'PAIN_SCORE_UPDATE_LEGACY' : 'PAIN_SCORE_UPDATE',
+          description: `Pain score update${userAuth.user.isLegacyUser ? ' (Usage Tracking Only)' : ''}`,
           metadata: {
             painScoreId: updatedPainScore.id,
             feature: 'pain_score_update',

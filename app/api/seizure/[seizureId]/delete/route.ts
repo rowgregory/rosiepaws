@@ -65,7 +65,7 @@ export async function DELETE(req: NextRequest, { params }: any) {
         const updatedUser = await tx.user.update({
           where: { id: userAuth.userId },
           data: {
-            tokens: { decrement: seizureDeleteTokenCost },
+            ...(!userAuth.user.isLegacyUser && { tokens: { decrement: seizureDeleteTokenCost } }),
             tokensUsed: { increment: seizureDeleteTokenCost }
           }
         })
@@ -75,8 +75,8 @@ export async function DELETE(req: NextRequest, { params }: any) {
           data: {
             userId: userAuth.userId!,
             amount: -seizureDeleteTokenCost, // Negative for debit
-            type: 'SEIZURE_TRACKING_DELETE',
-            description: `Seizure delete`,
+            type: userAuth.user.isLegacyUser ? 'SEIZURE_TRACKING_DELETE_LEGACY' : 'SEIZURE_TRACKING_DELETE',
+            description: `Seizure tracking delete${userAuth.user.isLegacyUser ? ' (Usage Tracking Only)' : ''}`,
             metadata: {
               petId: deletedSeizure.id,
               feature: 'seizure_delete',

@@ -1,3 +1,4 @@
+import { setCloseAppointmentDrawer } from '../features/appointmentSlice'
 import { api } from './api'
 import { createOptimisticHandlers } from '@/app/lib/api/optimisticUpdates'
 
@@ -22,6 +23,7 @@ const getAppointmentHandlers = async () => {
         updateAction: updateAppointmentInState,
         removeAction: removeAppointmentFromState,
         updateTokensAction: updateUserTokens,
+        closeDrawer: setCloseAppointmentDrawer,
         responseKey: 'appointment',
         getEntityFromState: (state: { appointment: { appointments: any[] } }, id: any) =>
           state.appointment.appointments.find((appointment) => appointment.id === id)

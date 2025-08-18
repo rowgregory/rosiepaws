@@ -28,7 +28,7 @@ export async function DELETE(req: NextRequest, { params }: any) {
     }
 
     const validation = await validateTokensAndPet({
-      userId: userAuth.userId ?? '',
+      userId: userAuth.userId!,
       petId,
       tokenCost: petDeleteTokenCost,
       actionName: 'delete pet',
@@ -73,7 +73,7 @@ export async function DELETE(req: NextRequest, { params }: any) {
       const updatedUser = await tx.user.update({
         where: { id: userAuth.userId },
         data: {
-          tokens: { decrement: petDeleteTokenCost },
+          ...(!userAuth.user.isLegacyUser && { tokens: { decrement: petDeleteTokenCost } }),
           tokensUsed: { increment: petDeleteTokenCost }
         }
       })
@@ -83,8 +83,8 @@ export async function DELETE(req: NextRequest, { params }: any) {
         data: {
           userId: userAuth.userId!,
           amount: -petDeleteTokenCost, // Negative for debit
-          type: 'PET_DELETE',
-          description: `Pet deletion`,
+          type: userAuth.user.isLegacyUser ? 'PET_DELETE_LEGACY' : 'PET_DELETE',
+          description: `Pet delete${userAuth.user.isLegacyUser ? ' (Usage Tracking Only)' : ''}`,
           metadata: {
             petId: deletedPet.id,
             petName: deletedPet.name,

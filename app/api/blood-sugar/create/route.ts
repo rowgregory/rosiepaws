@@ -67,7 +67,7 @@ export async function POST(req: NextRequest) {
       const updatedUser = await tx.user.update({
         where: { id: userAuth.userId },
         data: {
-          tokens: { decrement: bloodSugarCreateTokenCost },
+          ...(!userAuth.user.isLegacyUser && { tokens: { decrement: bloodSugarCreateTokenCost } }),
           tokensUsed: { increment: bloodSugarCreateTokenCost }
         }
       })
@@ -77,8 +77,8 @@ export async function POST(req: NextRequest) {
         data: {
           userId: userAuth.userId!,
           amount: -bloodSugarCreateTokenCost, // Negative for debit
-          type: 'BLOOD_SUGAR_CREATION',
-          description: `Blood sugar creation`,
+          type: userAuth.user.isLegacyUser ? 'BLOOD_SUGAR_CREATION_LEGACY' : 'BLOOD_SUGAR_CREATION',
+          description: `Blood sugar creation${userAuth.user.isLegacyUser ? ' (Usage Tracking Only)' : ''}`,
           metadata: {
             bloodSugarId: newBloodSugar.id,
             feature: 'blood_sugar_creation'

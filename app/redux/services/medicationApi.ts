@@ -1,3 +1,4 @@
+import { setCloseMedicationDrawer } from '../features/medicationSlice'
 import { api } from './api'
 import { createOptimisticHandlers } from '@/app/lib/api/optimisticUpdates'
 
@@ -22,6 +23,7 @@ const getMedicationHandlers = async () => {
         updateAction: updateMedicationInState,
         removeAction: removeMedicationFromState,
         updateTokensAction: updateUserTokens,
+        closeDrawer: setCloseMedicationDrawer,
         responseKey: 'medication',
         getEntityFromState: (state: { medication: { medications: any[] } }, id: any) =>
           state.medication.medications.find((medication) => medication.id === id)

@@ -62,7 +62,7 @@ export async function POST(req: NextRequest) {
       const updatedUser = await tx.user.update({
         where: { id: userAuth.userId },
         data: {
-          tokens: { decrement: waterCreateTokenCost },
+          ...(!userAuth.user.isLegacyUser && { tokens: { decrement: waterCreateTokenCost } }),
           tokensUsed: { increment: waterCreateTokenCost }
         }
       })
@@ -72,8 +72,8 @@ export async function POST(req: NextRequest) {
         data: {
           userId: userAuth.userId!,
           amount: -waterCreateTokenCost, // Negative for debit
-          type: 'WATER_CREATION',
-          description: `Water creation`,
+          type: userAuth.user.isLegacyUser ? 'WATER_CREATION_LEGACY' : 'WATER_CREATION',
+          description: `Water creation${userAuth.user.isLegacyUser ? ' (Usage Tracking Only)' : ''}`,
           metadata: {
             waterId: newWater.id,
             feature: 'water_creation',

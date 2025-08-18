@@ -66,7 +66,7 @@ export async function POST(req: NextRequest) {
       const updatedUser = await tx.user.update({
         where: { id: userAuth.userId },
         data: {
-          tokens: { decrement: painScoreCreateTokenCost },
+          ...(!userAuth.user.isLegacyUser && { tokens: { decrement: painScoreCreateTokenCost } }),
           tokensUsed: { increment: painScoreCreateTokenCost }
         }
       })
@@ -76,8 +76,8 @@ export async function POST(req: NextRequest) {
         data: {
           userId: userAuth.userId!,
           amount: -painScoreCreateTokenCost,
-          type: 'PAIN_SCORE_CREATION',
-          description: `Pain score creation`,
+          type: userAuth.user.isLegacyUser ? 'PAIN_SCORE_CREATION_LEGACY' : 'PAIN_SCORE_CREATION',
+          description: `Pet score creation${userAuth.user.isLegacyUser ? ' (Usage Tracking Only)' : ''}`,
           metadata: {
             painScoreId: newPainScore.id,
             painScore: newPainScore.score,

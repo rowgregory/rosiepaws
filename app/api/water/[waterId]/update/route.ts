@@ -79,7 +79,7 @@ export async function PATCH(req: NextRequest, { params }: any) {
       const updatedUser = await tx.user.update({
         where: { id: userAuth.userId },
         data: {
-          tokens: { decrement: waterUpdateTokenCost },
+          ...(!userAuth.user.isLegacyUser && { tokens: { decrement: waterUpdateTokenCost } }),
           tokensUsed: { increment: waterUpdateTokenCost }
         }
       })
@@ -89,8 +89,8 @@ export async function PATCH(req: NextRequest, { params }: any) {
         data: {
           userId: userAuth.userId!,
           amount: -waterUpdateTokenCost, // Negative for debit
-          type: 'WATER_UPDATE',
-          description: `Water update`,
+          type: userAuth.user.isLegacyUser ? 'WATER_UPDATE_LEGACY' : 'WATER_UPDATE',
+          description: `Water update${userAuth.user.isLegacyUser ? ' (Usage Tracking Only)' : ''}`,
           metadata: {
             feature: 'water_update',
             ...Object.keys(updateData)

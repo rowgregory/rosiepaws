@@ -103,7 +103,7 @@ export async function PATCH(req: NextRequest, { params }: any) {
         const updatedUser = await tx.user.update({
           where: { id: userAuth.userId },
           data: {
-            tokens: { decrement: seizureUpdateTokenCost },
+            ...(!userAuth.user.isLegacyUser && { tokens: { decrement: seizureUpdateTokenCost } }),
             tokensUsed: { increment: seizureUpdateTokenCost }
           }
         })
@@ -113,8 +113,8 @@ export async function PATCH(req: NextRequest, { params }: any) {
           data: {
             userId: userAuth.userId!,
             amount: -seizureUpdateTokenCost,
-            type: 'SEIZURE_TRACKING_UPDATE',
-            description: `Seizure update`,
+            type: userAuth.user.isLegacyUser ? 'SEIZURE_TRACKING_UPDATE_LEGACY' : 'SEIZURE_TRACKING_UPDATE',
+            description: `Seizure tracking update${userAuth.user.isLegacyUser ? ' (Usage Tracking Only)' : ''}`,
             metadata: {
               ...updateData,
               feature: 'seizure_update'

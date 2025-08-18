@@ -1,3 +1,4 @@
+import { setCloseSeizureDrawer } from '../features/seizureSlice'
 import { api } from './api'
 import { createOptimisticHandlers } from '@/app/lib/api/optimisticUpdates'
 
@@ -22,6 +23,7 @@ const getSeizureHandlers = async () => {
         updateAction: updateSeizureInState,
         removeAction: removeSeizureFromState,
         updateTokensAction: updateUserTokens,
+        closeDrawer: setCloseSeizureDrawer,
         responseKey: 'seizure',
         getEntityFromState: (state: { seizure: { seizures: any[] } }, id: any) =>
           state.seizure.seizures.find((seizure) => seizure.id === id)

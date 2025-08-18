@@ -132,7 +132,7 @@ export async function POST(req: NextRequest) {
       const updatedUser = await tx.user.update({
         where: { id: userAuth.userId },
         data: {
-          tokens: { decrement: movementCreateTokenCost },
+          ...(!userAuth.user.isLegacyUser && { tokens: { decrement: movementCreateTokenCost } }),
           tokensUsed: { increment: movementCreateTokenCost }
         }
       })
@@ -142,8 +142,8 @@ export async function POST(req: NextRequest) {
         data: {
           userId: userAuth.userId!,
           amount: -movementCreateTokenCost, // Negative for debit
-          type: 'MOVEMENT_CREATION',
-          description: `Movement creation`,
+          type: userAuth.user.isLegacyUser ? 'MOVEMENT_CREATION_LEGACY' : 'MOVEMENT_CREATION',
+          description: `Movement creation${userAuth.user.isLegacyUser ? ' (Usage Tracking Only)' : ''}`,
           metadata: {
             movementId: newMovement.id,
             feature: 'movement_creation'

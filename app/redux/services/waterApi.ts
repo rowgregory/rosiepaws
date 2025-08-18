@@ -1,3 +1,4 @@
+import { setCloseWaterDrawer } from '../features/waterSlice'
 import { api } from './api'
 import { createOptimisticHandlers } from '@/app/lib/api/optimisticUpdates'
 
@@ -24,6 +25,7 @@ const getWaterHandlers = async () => {
         updateAction: updateWaterInState,
         removeAction: removeWaterFromState,
         updateTokensAction: updateUserTokens,
+        closeDrawer: setCloseWaterDrawer,
         responseKey: 'water',
         getEntityFromState: (state: { water: { waters: any[] } }, id: any) =>
           state.water.waters.find((water) => water.id === id)

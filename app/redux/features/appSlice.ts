@@ -54,6 +54,8 @@ export interface AppStatePayload {
   slideMessage: boolean
   hasInitiallyLoaded: boolean
   lastTempId: string
+  firstPetModal: boolean
+  petName: string // For FirstPetModal
 }
 
 const mediaDataInitialState: ModalUploaderPayload = {
@@ -97,7 +99,9 @@ const initialAppState: AppStatePayload = {
   authErrorDrawer: false,
   slideMessage: false,
   hasInitiallyLoaded: false,
-  lastTempId: ''
+  lastTempId: '',
+  firstPetModal: false,
+  petName: ''
 }
 
 interface FetchAppDataPayload {
@@ -232,6 +236,13 @@ export const appSlice = createSlice({
     },
     setLastTempId: (state, action) => {
       state.lastTempId = action.payload
+    },
+    setOpenFirstPetModal: (state, { payload }) => {
+      state.firstPetModal = true
+      state.petName = payload
+    },
+    setCloseFirstPetModal: (state) => {
+      state.firstPetModal = true
     }
   },
   extraReducers: (builder) => {
@@ -294,5 +305,7 @@ export const {
   setOpenSlideMessage,
   setCloseSlideMessage,
   setInitiallyLoaded,
-  setLastTempId
+  setLastTempId,
+  setOpenFirstPetModal,
+  setCloseFirstPetModal
 } = appSlice.actions

@@ -1,6 +1,6 @@
 'use client'
 
-import React, { FC, useEffect } from 'react'
+import React, { FC, useEffect, useState } from 'react'
 import { IChildren } from '../types/common'
 import GuardianNavigation from '../components/guardian/GuardianNavigation'
 // import GuardianToolbar from '../components/guardian/GuardianToolbar'
@@ -68,6 +68,7 @@ const GuardianLayout: FC<IChildren> = ({ children }) => {
   const { status } = useSession()
   const dispatch = useAppDispatch()
   const { data } = useFetchMeQuery(undefined) as IFetchMe
+  const [toggleSidebar, setToggleSidebar] = useState(false)
 
   useEffect(() => {
     if (status === 'authenticated' && data?.user) {
@@ -112,8 +113,12 @@ const GuardianLayout: FC<IChildren> = ({ children }) => {
 
       {/* <GuardianToolbar /> */}
       <div className="flex">
-        <GuardianNavigation />
-        <div className={`flex flex-col mx-auto ml-0 md:ml-64 w-[calc(100vw-256px)]`}>{children}</div>
+        <GuardianNavigation toggleSidebar={toggleSidebar} setToggleSidebar={setToggleSidebar} />
+        <div
+          className={`flex flex-col mx-auto duration-300 w-full ${toggleSidebar ? 'lg:w-[calc(100vw-64px)] lg:ml-16' : 'lg:w-[calc(100vw-256px)] lg:ml-64'}`}
+        >
+          {children}
+        </div>
       </div>
     </>
   )

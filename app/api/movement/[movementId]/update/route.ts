@@ -139,7 +139,7 @@ export async function PATCH(req: NextRequest, { params }: any) {
         const updatedUser = await tx.user.update({
           where: { id: userAuth.userId },
           data: {
-            tokens: { decrement: movementUpdateTokenCost },
+            ...(!userAuth.user.isLegacyUser && { tokens: { decrement: movementUpdateTokenCost } }),
             tokensUsed: { increment: movementUpdateTokenCost }
           }
         })
@@ -149,8 +149,8 @@ export async function PATCH(req: NextRequest, { params }: any) {
           data: {
             userId: userAuth.userId!,
             amount: -movementUpdateTokenCost,
-            type: 'MOVEMENT_UPDATE',
-            description: `Movement update`,
+            type: userAuth.user.isLegacyUser ? 'MOVEMENT_UPDATE_LEGACY' : 'MOVEMENT_UPDATE',
+            description: `Movement update${userAuth.user.isLegacyUser ? ' (Usage Tracking Only)' : ''}`,
             metadata: {
               ...updateData,
               feature: 'movement_update'

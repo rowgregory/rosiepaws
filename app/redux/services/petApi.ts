@@ -25,6 +25,7 @@ const getPetHandlers = async () => {
         updateAction: updatePetInState,
         removeAction: removePetFromState,
         updateTokensAction: updateUserTokens,
+        closeDrawer: setClosePetDrawer,
         responseKey: 'pet',
         getEntityFromState: (state: { pet: { pets: any[] } }, id: any) => state.pet.pets.find((pet) => pet.id === id)
       }
@@ -46,7 +47,6 @@ export const petApi = api.injectEndpoints({
         onQueryStarted: async (data: any, { dispatch, queryFulfilled }: any) => {
           const handlers = await getPetHandlers()
           await handlers.handleCreate(dispatch)(data, queryFulfilled)
-          dispatch(setClosePetDrawer())
         },
         invalidatesTags: ['Pet', 'User']
       }),
@@ -57,7 +57,6 @@ export const petApi = api.injectEndpoints({
           const { petId, ...updateFields } = data
           const updateData = { id: petId, ...updateFields }
           await handlers.handleUpdate(dispatch, getState)(updateData, queryFulfilled)
-          dispatch(setClosePetDrawer())
         },
         invalidatesTags: ['Pet', 'User']
       }),

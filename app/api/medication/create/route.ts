@@ -1,18 +1,21 @@
 import { createLog } from '@/app/lib/api/createLog'
+import { getUserFromHeader } from '@/app/lib/api/getUserFromheader'
+import { handleApiError } from '@/app/lib/api/handleApiError'
+import { validateTokensAndPet } from '@/app/lib/api/validateTokensAndPet'
 import { medicationCreateTokenCost } from '@/app/lib/constants/public/token'
 import prisma from '@/prisma/client'
-import { slicePet } from '@/public/data/api.data'
-import { parseStack } from 'error-stack-parser-es/lite'
+import { sliceMedication, slicePet } from '@/public/data/api.data'
 import { NextRequest, NextResponse } from 'next/server'
 
 export async function POST(req: NextRequest) {
   try {
-    const userHeader = req.headers.get('x-user')!
-    if (!userHeader) {
-      return NextResponse.json({ message: 'Unauthorized: Missing user header', sliceName: slicePet }, { status: 401 })
+    const userAuth = getUserFromHeader({
+      req
+    })
+
+    if (!userAuth.success) {
+      return userAuth.response!
     }
-    const parsedUser = JSON.parse(userHeader)
-    const ownerId = parsedUser.id
 
     const body = await req.json()
 
@@ -36,38 +39,17 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
     }
 
-    // Confirm owner exists (optional since user is logged in, but good safety)
-    const owner = await prisma.user.findUnique({ where: { id: ownerId } })
-    if (!owner) {
-      await createLog('warning', 'Owner user not found when creating medication', {
-        location: ['api route - POST /api/pet/create-medication'],
-        name: 'OwnerNotFound',
-        timestamp: new Date().toISOString(),
-        url: req.url,
-        method: req.method,
-        ownerId
-      })
-      return NextResponse.json({ message: 'Owner not found', sliceName: slicePet }, { status: 404 })
-    }
+    const validation = await validateTokensAndPet({
+      userId: userAuth.userId!,
+      petId,
+      tokenCost: medicationCreateTokenCost,
+      actionName: 'medication create',
+      req,
+      user: userAuth?.user
+    })
 
-    if (owner.tokens < medicationCreateTokenCost) {
-      await createLog('warning', 'Insufficient tokens for medication creation', {
-        location: ['api route - POST /api/pet/create-medication'],
-        name: 'InsufficientTokens',
-        timestamp: new Date().toISOString(),
-        url: req.url,
-        method: req.method,
-        ownerId,
-        requiredTokens: medicationCreateTokenCost,
-        availableTokens: owner.tokens
-      })
-      return NextResponse.json(
-        {
-          message: `Insufficient tokens. Required: ${medicationCreateTokenCost}, Available: ${owner.tokens}`,
-          sliceName: slicePet
-        },
-        { status: 400 }
-      )
+    if (!validation.success) {
+      return validation.response!
     }
 
     // Use transaction to ensure atomicity
@@ -97,9 +79,9 @@ export async function POST(req: NextRequest) {
 
         // Deduct tokens from user
         const updatedUser = await tx.user.update({
-          where: { id: ownerId },
+          where: { id: userAuth.userId },
           data: {
-            tokens: { decrement: medicationCreateTokenCost },
+            ...(!userAuth.user.isLegacyUser && { tokens: { decrement: medicationCreateTokenCost } }),
             tokensUsed: { increment: medicationCreateTokenCost }
           }
         })
@@ -107,10 +89,10 @@ export async function POST(req: NextRequest) {
         // Create token transaction record
         await tx.tokenTransaction.create({
           data: {
-            userId: ownerId,
+            userId: userAuth.userId!,
             amount: -medicationCreateTokenCost, // Negative for debit
-            type: 'MEDICATION_CREATION',
-            description: `Medication creation`,
+            type: userAuth.user.isLegacyUser ? 'MEDICATION_CREATION_LEGACY' : 'MEDICATION_CREATION',
+            description: `Medication creation${userAuth.user.isLegacyUser ? ' (Usage Tracking Only)' : ''}`,
             metadata: {
               medicationId: newMedication.id,
               feature: 'medication_creation',
@@ -137,7 +119,7 @@ export async function POST(req: NextRequest) {
       method: req.method,
       petId,
       painScoreId: result.newMedication.id,
-      ownerId
+      userId: userAuth.userId
     })
 
     return NextResponse.json({
@@ -149,15 +131,12 @@ export async function POST(req: NextRequest) {
       sliceName: slicePet
     })
   } catch (error: any) {
-    await createLog('error', `Medication creation failed: ${error.message}`, {
-      errorLocation: parseStack(JSON.stringify(error)),
-      errorMessage: error.message,
-      errorName: error.name || 'UnknownError',
-      timestamp: new Date().toISOString(),
-      url: req.url,
-      method: req.method
+    return await handleApiError({
+      error,
+      req,
+      action: 'Medication created',
+      sliceName: sliceMedication
     })
-    return NextResponse.json({ error: 'Failed to create medication' }, { status: 500 })
   } finally {
     await prisma.$disconnect()
   }

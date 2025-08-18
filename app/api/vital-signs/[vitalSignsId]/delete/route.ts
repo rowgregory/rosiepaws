@@ -44,7 +44,7 @@ export async function DELETE(req: NextRequest, { params }: any) {
       const updatedUser = await tx.user.update({
         where: { id: userAuth.userId },
         data: {
-          tokens: { decrement: vitalSignsDeleteTokenCost },
+          ...(!userAuth.user.isLegacyUser && { tokens: { decrement: vitalSignsDeleteTokenCost } }),
           tokensUsed: { increment: vitalSignsDeleteTokenCost }
         }
       })
@@ -54,8 +54,8 @@ export async function DELETE(req: NextRequest, { params }: any) {
         data: {
           userId: userAuth.userId!,
           amount: -vitalSignsDeleteTokenCost, // Negative for debit
-          type: 'VITAL_SIGNS_DELETE',
-          description: `Vital Signs delete`,
+          type: userAuth.user.isLegacyUser ? 'VITAL_SIGNS_DELETE_LEGACY' : 'VITAL_SIGNS_DELETE',
+          description: `Vital signs delete${userAuth.user.isLegacyUser ? ' (Usage Tracking Only)' : ''}`,
           metadata: {
             petId: deletedVitalSigns.pet.id,
             vitalSignsId: deletedVitalSigns.id,

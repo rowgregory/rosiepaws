@@ -70,7 +70,7 @@ export async function DELETE(req: NextRequest, { params }: any) {
       const updatedUser = await tx.user.update({
         where: { id: userAuth.userId },
         data: {
-          tokens: { decrement: medicationDeleteTokenCost },
+          ...(!userAuth.user.isLegacyUser && { tokens: { decrement: medicationDeleteTokenCost } }),
           tokensUsed: { increment: medicationDeleteTokenCost }
         }
       })
@@ -80,8 +80,8 @@ export async function DELETE(req: NextRequest, { params }: any) {
         data: {
           userId: userAuth.userId!,
           amount: -medicationDeleteTokenCost, // Negative for debit
-          type: 'MEDICATION_DELETE',
-          description: `Medication deleted`,
+          type: userAuth.user.isLegacyUser ? 'MEDICATION_DELETE_LEGACY' : 'MEDICATION_DELETE',
+          description: `Medication delete${userAuth.user.isLegacyUser ? ' (Usage Tracking Only)' : ''}`,
           metadata: {
             medicationId: deleletedMedication.id,
             feature: 'medication_deleted'

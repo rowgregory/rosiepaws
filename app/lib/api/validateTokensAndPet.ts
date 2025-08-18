@@ -29,7 +29,7 @@ export async function validateTokensAndPet({
 }: ValidationOptions): Promise<ValidationResult> {
   try {
     // Check token balance
-    if (user.tokens < tokenCost) {
+    if (!user.isLegacyUser && user.tokens < tokenCost) {
       await createLog('warning', `Insufficient tokens for ${actionName}`, {
         location: [`api route - ${req.method} ${req.url}`],
         name: 'InsufficientTokens',

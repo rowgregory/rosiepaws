@@ -54,7 +54,7 @@ export async function POST(req: NextRequest) {
     }
 
     const validation = await validateTokensAndPet({
-      userId: userAuth.userId ?? '',
+      userId: userAuth.userId!,
       petId,
       tokenCost: seizureCreateTokenCost,
       actionName: 'seizure',
@@ -103,7 +103,7 @@ export async function POST(req: NextRequest) {
       const updatedUser = await tx.user.update({
         where: { id: userAuth.userId },
         data: {
-          tokens: { decrement: seizureCreateTokenCost },
+          ...(!userAuth.user.isLegacyUser && { tokens: { decrement: seizureCreateTokenCost } }),
           tokensUsed: { increment: seizureCreateTokenCost }
         }
       })
@@ -113,8 +113,8 @@ export async function POST(req: NextRequest) {
         data: {
           userId: userAuth.userId!,
           amount: -seizureCreateTokenCost, // Negative for debit
-          type: 'SEIZURE_TRACKING_CREATION',
-          description: `Seizure creation`,
+          type: userAuth.user.isLegacyUser ? 'SEIZURE_TRACKING_CREATION_LEGACY' : 'SEIZURE_TRACKING_CREATION',
+          description: `Seizure tracking creation${userAuth.user.isLegacyUser ? ' (Usage Tracking Only)' : ''}`,
           metadata: {
             seizureId: newSeizure.id,
             feature: 'seizure_creation'

@@ -44,7 +44,7 @@ export async function DELETE(req: NextRequest, { params }: any) {
       const updatedUser = await tx.user.update({
         where: { id: userAuth.userId },
         data: {
-          tokens: { decrement: movementDeleteTokenCost },
+          ...(!userAuth.user.isLegacyUser && { tokens: { decrement: movementDeleteTokenCost } }),
           tokensUsed: { increment: movementDeleteTokenCost }
         }
       })
@@ -54,8 +54,8 @@ export async function DELETE(req: NextRequest, { params }: any) {
         data: {
           userId: userAuth.userId!,
           amount: -movementDeleteTokenCost, // Negative for debit
-          type: 'MOVEMENT_DELETE',
-          description: `Movement delete`,
+          type: userAuth.user.isLegacyUser ? 'MOVEMENT_DELETE_LEGACY' : 'MOVEMENT_DELETE',
+          description: `Movement delete${userAuth.user.isLegacyUser ? ' (Usage Tracking Only)' : ''}`,
           metadata: {
             petId: deletedMovement.id,
             feature: 'movement_delete',

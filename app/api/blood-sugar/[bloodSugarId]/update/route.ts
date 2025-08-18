@@ -92,7 +92,7 @@ export async function PATCH(req: NextRequest, { params }: any) {
         const updatedUser = await tx.user.update({
           where: { id: userAuth.userId },
           data: {
-            tokens: { decrement: bloodSugarUpdateTokenCost },
+            ...(!userAuth.user.isLegacyUser && { tokens: { decrement: bloodSugarUpdateTokenCost } }),
             tokensUsed: { increment: bloodSugarUpdateTokenCost }
           }
         })
@@ -102,8 +102,8 @@ export async function PATCH(req: NextRequest, { params }: any) {
           data: {
             userId: userAuth.userId!,
             amount: -bloodSugarUpdateTokenCost,
-            type: 'BLOOD_SUGAR_UPDATE',
-            description: `Blood sugar update`,
+            type: userAuth.user.isLegacyUser ? 'BLOOD_SUGAR_UPDATE_LEGACY' : 'BLOOD_SUGAR_UPDATE',
+            description: `Blood sugar update${userAuth.user.isLegacyUser ? ' (Usage Tracking Only)' : ''}`,
             metadata: {
               ...updateData,
               feature: 'blood_sugar_update'

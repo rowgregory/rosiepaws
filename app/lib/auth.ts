@@ -251,6 +251,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         session.user.role = token.role
         session.user.isAdmin = token.isAdmin
         session.user.isSuperUser = token.isSuperUser
+        session.user.isFreeUser = token.isFreeUser
+        session.user.isComfortUser = token.isComfortUser
+        session.user.isLegacyUser = token.isLegacyUser
       }
       return session
     },
@@ -261,6 +264,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         token.role = user.role
         token.isAdmin = user.isAdmin
         token.isSuperUser = user.isSuperUser
+        token.isFreeUser = user.isFreeUser
+        token.isComfortUser = user.isComfortUser
+        token.isLegacyUser = user.isLegacyUser
 
         // Handle Google user name updates (this is fine to keep)
         if (account?.provider === 'google' && user.name && !user.firstName) {

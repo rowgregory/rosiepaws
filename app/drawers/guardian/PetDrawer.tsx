@@ -12,17 +12,17 @@ import { motion, AnimatePresence } from 'framer-motion'
 import GuardianPetGuide from '@/app/components/guardian/form-guides/PetGuide'
 import AnimatedDrawerHeader from '@/app/components/guardian/AnimatedDrawerHeader'
 import { backdropVariants, drawerVariants } from '@/app/lib/constants'
-import { setOpenSlideMessage } from '@/app/redux/features/appSlice'
+import { setOpenFirstPetModal, setOpenSlideMessage } from '@/app/redux/features/appSlice'
 import { deleteFileFromFirebase, uploadFileToFirebase } from '@/app/utils/firebase-helpers'
 
 const PetDrawer = () => {
   const { petDrawer } = useAppSelector((state: RootState) => state.pet)
   const { petForm } = useAppSelector((state: RootState) => state.form)
+  const { user } = useAppSelector((state: RootState) => state.user)
   const dispatch = useAppDispatch()
   const { handleInput, setErrors, handleUploadProgress } = createFormActions('petForm', dispatch)
   const [createPet, { isLoading: isCreating }] = useCreatePetMutation()
   const [updatePet, { isLoading: isUpdating }] = useUpdatePetMutation()
-
   const [submitting, setSubmitting] = useState(false)
 
   const closeDrawer = () => dispatch(setClosePetDrawer())
@@ -93,6 +93,10 @@ const PetDrawer = () => {
         ...petData,
         ...(mediaUrl && { filePath: mediaUrl, fileName: petForm.inputs.media.name }),
         ...(petForm.inputs.wantsToRemove && { filePath: null, fileName: null })
+      }
+
+      if (user?.pets?.length === 0) {
+        dispatch(setOpenFirstPetModal(finalPetData.name))
       }
 
       if (isUpdateMode) {

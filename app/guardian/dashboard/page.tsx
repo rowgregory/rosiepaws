@@ -18,7 +18,7 @@ import LargeBloodSugarGraph from '@/app/components/guardian/dashboard/LargeBlood
 import LargeAppointmentChart from '@/app/components/guardian/dashboard/LargeAppointmentChart'
 import MiniAppointmentChart from '@/app/components/guardian/dashboard/MiniAppointmentChart'
 import TokenCounter from '@/app/components/guardian/TokenCounter'
-import { Activity, ArrowDown, ArrowLeftIcon, ArrowRightIcon, Heart, Plus, Utensils } from 'lucide-react'
+import { Activity, ArrowDown, ArrowLeftIcon, ArrowRightIcon, Droplets, Heart, Plus, Utensils } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import LargeVitalSignsGraph from '@/app/components/guardian/dashboard/LargeVitalSignsGraph'
 import { motion } from 'framer-motion'
@@ -148,7 +148,7 @@ const GuardianDashboard = () => {
                     <Heart className="w-4 h-4 text-white" />
                   </div>
                   <h3 className="text-lg font-semibold text-gray-900">
-                    Welcome to {pet.name}&apos;s Health Dashboard! 🎉
+                    Welcome to {pet.name}&apos;s Health Dashboard!
                   </h3>
                 </div>
 
@@ -159,12 +159,16 @@ const GuardianDashboard = () => {
 
                 <div className="flex flex-wrap gap-2">
                   <div className="flex items-center space-x-1 bg-white px-3 py-1 rounded-full border border-blue-200">
-                    <Activity className="w-4 h-4 text-blue-500" />
+                    <Activity className="w-4 h-4 text-red-500" />
                     <span className="text-sm text-gray-700">Pain Scores</span>
                   </div>
                   <div className="flex items-center space-x-1 bg-white px-3 py-1 rounded-full border border-blue-200">
                     <Utensils className="w-4 h-4 text-green-500" />
                     <span className="text-sm text-gray-700">Feedings</span>
+                  </div>
+                  <div className="flex items-center space-x-1 bg-white px-3 py-1 rounded-full border border-blue-200">
+                    <Droplets className="w-4 h-4 text-cyan-500" />
+                    <span className="text-sm text-gray-700">Water Intakes</span>
                   </div>
                   <div className="flex items-center space-x-1 bg-white px-3 py-1 rounded-full border border-blue-200">
                     <Plus className="w-4 h-4 text-purple-500" />

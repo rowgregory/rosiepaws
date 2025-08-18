@@ -1,3 +1,4 @@
+import { setCloseBloodSugarDrawer } from '../features/bloodSugarSlice'
 import { api } from './api'
 import { createOptimisticHandlers } from '@/app/lib/api/optimisticUpdates'
 
@@ -22,6 +23,7 @@ const getBloodSugarHandlers = async () => {
         updateAction: updateBloodSugarInState,
         removeAction: removeBloodSugarFromState,
         updateTokensAction: updateUserTokens,
+        closeDrawer: setCloseBloodSugarDrawer,
         responseKey: 'bloodSugar',
         getEntityFromState: (state: { bloodSugar: { bloodSugars: any[] } }, id: any) =>
           state.bloodSugar.bloodSugars.find((bloodSugar) => bloodSugar.id === id)

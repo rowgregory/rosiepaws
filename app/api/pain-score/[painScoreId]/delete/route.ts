@@ -44,7 +44,7 @@ export async function DELETE(req: NextRequest, { params }: any) {
       const updatedUser = await tx.user.update({
         where: { id: userAuth.userId },
         data: {
-          tokens: { decrement: painScoreDeleteTokenCost },
+          ...(!userAuth.user.isLegacyUser && { tokens: { decrement: painScoreDeleteTokenCost } }),
           tokensUsed: { increment: painScoreDeleteTokenCost }
         }
       })
@@ -54,8 +54,8 @@ export async function DELETE(req: NextRequest, { params }: any) {
         data: {
           userId: userAuth.userId!,
           amount: -painScoreDeleteTokenCost, // Negative for debit
-          type: 'PAIN_SCORE_DELETE',
-          description: `Pain score delete`,
+          type: userAuth.user.isLegacyUser ? 'PAIN_SCORE_DELETE_LEGACY' : 'PAIN_SCORE_DELETE',
+          description: `Pet score delete${userAuth.user.isLegacyUser ? ' (Usage Tracking Only)' : ''}`,
           metadata: {
             petId: deletedPainScore.id,
             feature: 'delete',

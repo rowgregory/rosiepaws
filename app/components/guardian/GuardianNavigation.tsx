@@ -1,11 +1,10 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { FC, useState } from 'react'
 import Link from 'next/link'
 import { RootState, useAppDispatch, useAppSelector } from '@/app/redux/store'
 import { useRouter } from 'next/navigation'
 import useCustomPathname from '@/app/hooks/useCustomPathname'
-import TokenCounter from './TokenCounter'
 import PetDropdownMenu from './navigation/PetDropdownMenu'
 import { setOpenPetDrawer, setSelectedPetWithChartData } from '@/app/redux/features/petSlice'
 import { processChartDataForPet } from '@/app/lib/utils/public/dashboard/processChartData'
@@ -15,8 +14,12 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { ChevronRight } from 'lucide-react'
 import { signOut } from 'next-auth/react'
 import Spinner from '../common/Spinner'
+import TokensSVG from '@/public/svg/TokensSVG'
 
-const GuardianNavigation = ({ toggleSidebar, setToggleSidebar }: any) => {
+const GuardianNavigation: FC<{ toggleSidebar: boolean; setToggleSidebar: any }> = ({
+  toggleSidebar,
+  setToggleSidebar
+}) => {
   const path = useCustomPathname()
   const dispatch = useAppDispatch()
   const { push } = useRouter()
@@ -107,25 +110,29 @@ const GuardianNavigation = ({ toggleSidebar, setToggleSidebar }: any) => {
                 transition={{ duration: 0.2 }}
                 className="w-8 h-8 bg-gray-900 rounded-lg flex items-center justify-center"
               >
-                <Link href="/" className="px-4 flex items-center justify-center border-b-1 border-b-gray-300 h-24">
-                  <div className="bg-logo bg-center bg-no repeat bg-contain w-6 h-6" />
-                </Link>
+                <div className="w-8 h-8 bg-gray-900 rounded-lg flex items-center justify-center">
+                  <span className="text-white font-bold text-sm">{user?.firstName?.charAt(0)}</span>
+                </div>
               </motion.div>
             )}
           </AnimatePresence>
         </div>
 
-        {user?.role !== 'Legacy' && (
-          <Link
-            href="/buy"
-            className="mx-auto pl-3 border-1 border-gray-300 rounded-full gap-x-3 flex items-center w-fit my-7"
-          >
-            <TokenCounter color1="#f472b6" color2="#fb923c" id="pinkToOrange" tokens={user?.tokens} />
+        {/* Token */}
+        <Link
+          href="/buy"
+          className={`mx-auto ${toggleSidebar ? 'px-2 py-0.5' : 'pl-3'} border-1 border-gray-300 rounded-full gap-x-3 flex items-center w-fit my-7`}
+        >
+          <div className="flex items-center justify-center">
+            <TokensSVG color1="#f472b6" color2="#fb923c" id="pinkToOrange" />
+            <span className="text-12">{user?.isLegacyUser ? '♾️' : user?.tokens}</span>
+          </div>
+          {!toggleSidebar && (
             <div className="bg-gradient-to-r from-pink-500 via-orange-500 to-red-500 rounded-full h-7 flex items-center justify-center text-12 font-semibold text-white px-2 border-1 border-pink-500 hover:bg-gradient-to-r hover:from-zinc-500 hover:to-zinc-600 hover:border-zinc-500">
-              Upgrade
+              {user?.isLegacyUser ? 'Subscription' : 'Upgrade'}
             </div>
-          </Link>
-        )}
+          )}
+        </Link>
 
         {/* Toggle Button */}
         <motion.button
@@ -249,6 +256,7 @@ const GuardianNavigation = ({ toggleSidebar, setToggleSidebar }: any) => {
         </AnimatePresence>
 
         {/* Collapsed Profile Indicator */}
+
         <AnimatePresence>
           {toggleSidebar && (
             <motion.div
@@ -256,7 +264,7 @@ const GuardianNavigation = ({ toggleSidebar, setToggleSidebar }: any) => {
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.8 }}
               transition={{ duration: 0.3 }}
-              className="absolute bottom-4 left-1/2 -translate-x-1/2"
+              className="absolute inset-x-0 bottom-4 flex justify-center"
             >
               <div className="w-8 h-8 rounded-lg bg-gray-900 flex items-center justify-center relative">
                 <span className="text-sm font-semibold text-white">X</span>

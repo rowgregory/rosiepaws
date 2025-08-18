@@ -1,3 +1,4 @@
+import { setCloseMovementDrawer } from '../features/movementSlice'
 import { api } from './api'
 import { createOptimisticHandlers } from '@/app/lib/api/optimisticUpdates'
 
@@ -22,6 +23,7 @@ const getMovementHandlers = async () => {
         updateAction: updateMovementInState,
         removeAction: removeMovementFromState,
         updateTokensAction: updateUserTokens,
+        closeDrawer: setCloseMovementDrawer,
         responseKey: 'movement',
         getEntityFromState: (state: { movement: { movements: any[] } }, id: any) =>
           state.movement.movements.find((movement) => movement.id === id)

@@ -68,7 +68,7 @@ export async function POST(req: NextRequest) {
         const updatedUser = await tx.user.update({
           where: { id: userAuth.userId },
           data: {
-            tokens: { decrement: appointmentCreateTokenCost },
+            ...(!userAuth.user.isLegacyUser && { tokens: { decrement: appointmentCreateTokenCost } }),
             tokensUsed: { increment: appointmentCreateTokenCost }
           }
         })
@@ -77,8 +77,8 @@ export async function POST(req: NextRequest) {
           data: {
             userId: userAuth.userId!,
             amount: -appointmentCreateTokenCost,
-            type: 'APPOINTMENT_CREATION',
-            description: `Appointment creation`,
+            type: userAuth.user.isLegacyUser ? 'APPOINTMENT_CREATION_LEGACY' : 'APPOINTMENT_CREATION',
+            description: `Appointment creation${userAuth.user.isLegacyUser ? ' (Usage Tracking Only)' : ''}`,
             metadata: {
               appointmentId: newAppointment?.id,
               appointmentServiceType: newAppointment?.serviceType,

@@ -24,6 +24,8 @@ const LargeFeedingGraph: FC<{ feedingData: any; showIndividualFeedings?: boolean
     }
   )
 
+  const reversed = [...processedData]?.reverse()
+
   const latestAmount = processedData?.[0]?.totalAmount || 0
 
   // Enhanced analytics
@@ -69,7 +71,7 @@ const LargeFeedingGraph: FC<{ feedingData: any; showIndividualFeedings?: boolean
 
       {/* Emerald Green Theme Bar Chart with Gradients */}
       <ResponsiveContainer width="100%" height={400}>
-        <ComposedChart data={processedData} margin={{ top: 20, right: 30, left: 20, bottom: 60 }}>
+        <ComposedChart data={reversed} margin={{ top: 20, right: 30, left: 20, bottom: 60 }}>
           <defs>
             <linearGradient id="dryGradient" x1="0" y1="0" x2="0" y2="1">
               <stop offset="5%" stopColor="#16a34a" stopOpacity={0.8} />

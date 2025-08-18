@@ -90,7 +90,7 @@ export async function POST(req: NextRequest) {
       const updatedUser = await tx.user.update({
         where: { id: userAuth.userId },
         data: {
-          tokens: { decrement: vitalSignsCreateTokenCost },
+          ...(!userAuth.user.isLegacyUser && { tokens: { decrement: vitalSignsCreateTokenCost } }),
           tokensUsed: { increment: vitalSignsCreateTokenCost }
         }
       })
@@ -100,8 +100,8 @@ export async function POST(req: NextRequest) {
         data: {
           userId: userAuth.userId!,
           amount: -vitalSignsCreateTokenCost,
-          type: 'VITAL_SIGNS_CREATION',
-          description: `Vital Signs creation`,
+          type: userAuth.user.isLegacyUser ? 'VITAL_SIGNS_CREATION_LEGACY' : 'VITAL_SIGNS_CREATION',
+          description: `Vital signs creation${userAuth.user.isLegacyUser ? ' (Usage Tracking Only)' : ''}`,
           metadata: {
             walkId: newVitalSign.id,
             feature: 'vital_signs_creation',

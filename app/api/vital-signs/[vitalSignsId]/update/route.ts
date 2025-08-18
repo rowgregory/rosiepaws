@@ -93,7 +93,7 @@ export async function PATCH(req: NextRequest, { params }: any) {
       const updatedUser = await tx.user.update({
         where: { id: userAuth.userId },
         data: {
-          tokens: { decrement: vitalSignsUpdateTokenCost },
+          ...(!userAuth.user.isLegacyUser && { tokens: { decrement: vitalSignsUpdateTokenCost } }),
           tokensUsed: { increment: vitalSignsUpdateTokenCost }
         }
       })
@@ -103,8 +103,8 @@ export async function PATCH(req: NextRequest, { params }: any) {
         data: {
           userId: userAuth.userId!,
           amount: -vitalSignsUpdateTokenCost,
-          type: 'VITAL_SIGNS_UPDATE',
-          description: `Vital signs update`,
+          type: userAuth.user.isLegacyUser ? 'VITAL_SIGNS_UPDATE_LEGACY' : 'VITAL_SIGNS_UPDATE',
+          description: `Vital signs update${userAuth.user.isLegacyUser ? ' (Usage Tracking Only)' : ''}`,
           metadata: {
             ...updateData,
             feature: 'vital_signs_update'

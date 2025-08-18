@@ -44,7 +44,7 @@ export async function DELETE(req: NextRequest, { params }: any) {
       const updatedUser = await tx.user.update({
         where: { id: userAuth.userId },
         data: {
-          tokens: { decrement: waterDeleteTokenCost },
+          ...(!userAuth.user.isLegacyUser && { tokens: { decrement: waterDeleteTokenCost } }),
           tokensUsed: { increment: waterDeleteTokenCost }
         }
       })
@@ -54,8 +54,8 @@ export async function DELETE(req: NextRequest, { params }: any) {
         data: {
           userId: userAuth.userId!,
           amount: -waterDeleteTokenCost, // Negative for debit
-          type: 'WATER_DELETE',
-          description: `Water delete`,
+          type: userAuth.user.isLegacyUser ? 'WATER_DELETE_LEGACY' : 'WATER_DELETE',
+          description: `Water delete${userAuth.user.isLegacyUser ? ' (Usage Tracking Only)' : ''}`,
           metadata: {
             petId: deletedWater.pet.id,
             waterId: deletedWater.id,

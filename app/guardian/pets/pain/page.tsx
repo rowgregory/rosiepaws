@@ -26,7 +26,7 @@ const PainScoring = () => {
   if (zeroPainScores) {
     return (
       <ZeroLogs
-        btnText="Add pain score"
+        btnText="Log pain score"
         title="No pain scores logged yet"
         subtitle="Monitor and track your pet's pain levels to ensure their comfort and wellbeing."
         tokens={painScoreCreateTokenCost}
@@ -37,7 +37,7 @@ const PainScoring = () => {
   }
 
   return (
-    <div className="min-h-[calc(100dvh-96px)] pb-20">
+    <div className="min-h-[calc(100dvh-64px)] pb-20">
       <div className="mx-auto px-6 space-y-8">
         {/* Header */}
         <CleanHeader

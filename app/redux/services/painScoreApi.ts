@@ -1,3 +1,4 @@
+import { setClosePainDrawer } from '../features/painSlice'
 import { api } from './api'
 import { createOptimisticHandlers } from '@/app/lib/api/optimisticUpdates'
 
@@ -22,6 +23,7 @@ const getPainHandlers = async () => {
         updateAction: updatePainScoreInState,
         removeAction: removePainScoreFromState,
         updateTokensAction: updateUserTokens,
+        closeDrawer: setClosePainDrawer,
         responseKey: 'painScore',
         getEntityFromState: (state: { painScore: { painScores: any[] } }, id: any) =>
           state.painScore.painScores.find((painScore) => painScore.id === id)

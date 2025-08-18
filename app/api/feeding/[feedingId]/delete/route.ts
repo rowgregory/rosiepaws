@@ -54,7 +54,7 @@ export async function DELETE(req: NextRequest, { params }: any) {
       const updatedUser = await tx.user.update({
         where: { id: userAuth.userId },
         data: {
-          tokens: { decrement: feedingDeleteTokenCost },
+          ...(!userAuth.user.isLegacyUser && { tokens: { decrement: feedingDeleteTokenCost } }),
           tokensUsed: { increment: feedingDeleteTokenCost }
         }
       })
@@ -64,8 +64,8 @@ export async function DELETE(req: NextRequest, { params }: any) {
         data: {
           userId: userAuth.userId!,
           amount: -feedingDeleteTokenCost, // Negative for debit
-          type: 'FEEDING_DELETE',
-          description: `Feeding delete`,
+          type: userAuth.user.isLegacyUser ? 'FEEDING_DELETE_LEGACY' : 'FEEDING_CREATION',
+          description: `Feeding delete${userAuth.user.isLegacyUser ? ' (Usage Tracking Only)' : ''}`,
           metadata: {
             petId: deletedFeeding.id,
             feature: 'delete',

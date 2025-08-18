@@ -69,7 +69,7 @@ export async function POST(req: NextRequest) {
       const updatedUser = await tx.user.update({
         where: { id: userAuth.userId },
         data: {
-          tokens: { decrement: feedingCreateTokenCost },
+          ...(!userAuth.user.isLegacyUser && { tokens: { decrement: feedingCreateTokenCost } }),
           tokensUsed: { increment: feedingCreateTokenCost }
         }
       })
@@ -79,8 +79,8 @@ export async function POST(req: NextRequest) {
         data: {
           userId: userAuth.userId!,
           amount: -feedingCreateTokenCost, // Negative for debit
-          type: 'FEEDING_CREATION',
-          description: `Feeding creation`,
+          type: userAuth.user.isLegacyUser ? 'FEEDING_CREATION_LEGACY' : 'FEEDING_CREATION',
+          description: `Feeding creation${userAuth.user.isLegacyUser ? ' (Usage Tracking Only)' : ''}`,
           metadata: {
             feedingId: newFeeding.id,
             foodAmount: newFeeding.foodAmount,
