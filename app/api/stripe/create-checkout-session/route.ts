@@ -21,8 +21,6 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Invalid plan selected' }, { status: 400 })
     }
 
-    console.log('plans[planId]: ', plans[planId])
-
     if (!userId) {
       return NextResponse.json({ error: 'User ID required' }, { status: 400 })
     }
@@ -44,7 +42,6 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ url: session.url })
   } catch (error) {
-    console.error('Stripe error:', error)
-    return NextResponse.json({ error: 'Failed to create checkout session' }, { status: 500 })
+    return NextResponse.json({ message: 'Failed to create checkout session', error }, { status: 500 })
   }
 }

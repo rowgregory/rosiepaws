@@ -1,69 +1,14 @@
 'use client'
 
-import React, { useState, useRef } from 'react'
+import React, { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import {
-  FileText,
-  Image,
-  BookOpen,
-  Plus,
-  Eye,
-  Download,
-  Trash2,
-  Search,
-  Grid3X3,
-  List,
-  Calendar,
-  File
-} from 'lucide-react'
-import { uploadFileToFirebase } from '@/app/utils/firebase-helpers'
-import { createFormActions, setInputs } from '@/app/redux/features/formSlice'
+import { FileText, Image, BookOpen, Search, Grid3X3, List } from 'lucide-react'
+import { createFormActions } from '@/app/redux/features/formSlice'
 import { RootState, useAppDispatch, useAppSelector } from '@/app/redux/store'
-import { useCreateMediaMutation, useDeleteMediaMutation, useGetAllMediaQuery } from '@/app/redux/services/mediaApi'
-import { setOpenSlideMessage } from '@/app/redux/features/appSlice'
+import { useGetAllMediaQuery } from '@/app/redux/services/mediaApi'
 import { IMedia } from '@/app/types'
-import { setCloseAdminConfirmModal, setOpenAdminConfirmModal } from '@/app/redux/features/adminSlice'
-
-const getTypeIcon = (type: any) => {
-  switch (type) {
-    case 'POSTER':
-      return Image
-    case 'EBOOK':
-      return BookOpen
-    case 'DOCUMENT':
-      return File
-    default:
-      return File
-  }
-}
-
-const getFormatIcon = (format: string) => {
-  switch (format.toLowerCase()) {
-    case 'pdf':
-      return FileText
-    case 'png':
-    case 'jpg':
-    case 'jpeg':
-      return Image
-    case 'xlsx':
-    case 'xls':
-      return FileText
-    default:
-      return FileText
-  }
-}
-
-const getColorGradient = (color: string | number) => {
-  const gradients: any = {
-    BLUE: 'from-blue-500 to-blue-600',
-    PURPLE: 'from-purple-500 to-purple-600',
-    GREEN: 'from-green-500 to-green-600',
-    ORANGE: 'from-orange-500 to-orange-600',
-    RED: 'from-red-500 to-red-600',
-    INDIGO: 'from-indigo-500 to-indigo-600'
-  }
-  return gradients[color] || gradients.blue
-}
+import MediaCard from '@/app/components/admin/media-library/MediaCard'
+import UploadCard from '@/app/components/admin/media-library/UploadCard'
 
 const tabs = [
   { id: 'all', label: 'All Media', icon: Grid3X3 },
@@ -72,72 +17,16 @@ const tabs = [
   { id: 'document', label: 'Documents', icon: FileText }
 ]
 
-const getTypeFromFile = (fileName: any) => {
-  const ext = fileName.split('.').pop().toLowerCase()
-  if (['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg', 'bmp', 'tiff'].includes(ext)) return 'poster'
-  if (['pdf'].includes(ext) && fileName.toLowerCase().includes('book')) return 'ebook'
-  if (['pdf'].includes(ext)) return 'ebook'
-  if (['doc', 'docx', 'rtf', 'odt'].includes(ext)) return 'document'
-  if (['xls', 'xlsx', 'csv', 'ods'].includes(ext)) return 'document'
-  if (['ppt', 'pptx', 'odp'].includes(ext)) return 'document'
-  if (['txt', 'md', 'json', 'xml'].includes(ext)) return 'document'
-  if (['mp4', 'avi', 'mov', 'wmv', 'flv', 'webm', 'mkv'].includes(ext)) return 'document'
-  if (['zip', 'rar', '7z', 'tar', 'gz'].includes(ext)) return 'document'
-  return 'document'
-}
-
-const getColorFromType = (type: string | number | any, fileName: any) => {
-  // Deterministic color based on media type
-  const typeColors: any = {
-    poster: 'purple',
-    ebook: 'green',
-    document: 'blue'
-  }
-
-  // If it's a specific document type, assign specific colors
-  const ext: any = fileName.split('.').pop().toLowerCase()
-  const extColors: any = {
-    pdf: 'red',
-    doc: 'blue',
-    docx: 'blue',
-    xls: 'green',
-    xlsx: 'green',
-    ppt: 'orange',
-    pptx: 'orange',
-    txt: 'gray',
-    jpg: 'purple',
-    jpeg: 'purple',
-    png: 'purple',
-    gif: 'indigo',
-    mp4: 'orange',
-    avi: 'orange'
-  }
-
-  return extColors[ext] || typeColors[type] || 'blue'
-}
-
-const formatFileSize = (bytes: number) => {
-  if (bytes === 0) return '0 Bytes'
-
-  const k = 1024
-  const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB']
-  const i = Math.floor(Math.log(bytes) / Math.log(k))
-
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i]
-}
-
 const AdminMediaDashboard = () => {
   const { data } = useGetAllMediaQuery(undefined) as { data: { media: IMedia[] | undefined } }
   const [activeTab, setActiveTab] = useState('all')
   const [viewMode, setViewMode] = useState('grid')
   const [searchQuery, setSearchQuery] = useState('')
   const [isUploading, setIsUploading] = useState(false)
-  const fileInputRef = useRef(null) as any
+
   const dispatch = useAppDispatch()
   const { handleUploadProgress, handleInput } = createFormActions('mediaForm', dispatch)
   const { mediaForm } = useAppSelector((state: RootState) => state.form)
-  const [createMedia] = useCreateMediaMutation() as any
-  const [deleteMedia] = useDeleteMediaMutation() as any
 
   const filteredItems = (data?.media || []).filter((item) => {
     if (!item) return false // Safety check for undefined items
@@ -145,193 +34,6 @@ const AdminMediaDashboard = () => {
     const matchesSearch = item?.title?.toLowerCase()?.includes(searchQuery.toLowerCase())
     return matchesTab && matchesSearch
   })
-
-  const handleFileUpload = async (files: any) => {
-    setIsUploading(true)
-    const fileArray: any = Array.from(files)
-
-    dispatch(
-      setInputs({
-        formName: 'mediaForm',
-        data: { uploadingFiles: fileArray.map((f: { name: any }) => ({ name: f.name, progress: 0 })) }
-      })
-    )
-
-    try {
-      const uploadPromises = fileArray.map(async (file: any) => {
-        try {
-          // Upload to Firebase with progress tracking
-          const downloadURL = await uploadFileToFirebase(file, handleUploadProgress, getTypeFromFile(file.name))
-
-          // Create media item with Firebase URL
-          return {
-            title: file.name.replace(/\.[^/.]+$/, ''),
-            type: getTypeFromFile(file.name),
-            format: file.name.split('.').pop().toUpperCase(),
-            size: formatFileSize(file.size),
-            sizeBytes: file.size,
-            views: 0,
-            downloads: 0,
-            thumbnail: downloadURL, // Use Firebase URL as thumbnail
-            filePath: downloadURL, // Store Firebase download URL
-            fileName: file.name,
-            mimeType: file.type,
-            color: getColorFromType(getTypeFromFile(file.name), file.name),
-            isActive: true,
-            tags: []
-          }
-        } catch (error) {
-          throw error
-        }
-      })
-
-      const newItems = await Promise.all(uploadPromises)
-
-      const itemsToSave = [...mediaForm?.inputs?.uploadingFiles, ...newItems]
-
-      dispatch(
-        setInputs({
-          formName: 'mediaForm',
-          data: { uploadingFiles: itemsToSave }
-        })
-      )
-
-      await createMedia({ items: itemsToSave }).unwrap()
-    } catch {
-      dispatch(setOpenSlideMessage())
-    } finally {
-      setIsUploading(false)
-
-      setTimeout(() => {
-        dispatch(
-          setInputs({
-            formName: 'mediaForm',
-            data: { uploadingFiles: [] }
-          })
-        )
-      }, 300)
-    }
-  }
-
-  const handleDelete = async (item: IMedia) => {
-    dispatch(
-      setInputs({
-        formName: 'mediaForm',
-        data: { uploadingFiles: mediaForm?.inputs?.uploadingFiles.filter((item: any) => item.id !== item.id) }
-      })
-    )
-
-    dispatch(
-      setOpenAdminConfirmModal({
-        confirmModal: {
-          isOpen: true,
-          title: 'Delete Media File',
-          description: `Deleting will permanently remove this media file.`,
-          confirmText: 'Delete Appointment',
-          onConfirm: async () => {
-            await deleteMedia({ mediaId: item.id, fileName: item.fileName }).unwrap()
-            dispatch(setCloseAdminConfirmModal())
-          },
-          isDestructive: true
-        }
-      })
-    )
-  }
-
-  const UploadCard = () => (
-    <div
-      className="transition-all duration-300 hover:scale-[1.02] w-full h-full rounded-xl border-2 border-dashed border-gray-300 hover:border-gray-400 bg-gray-50 hover:bg-gray-100 overflow-hidden relative flex flex-col cursor-pointer aspect-square"
-      onClick={() => fileInputRef.current?.click()}
-    >
-      <div className="p-6 flex flex-col h-full items-center justify-center text-center">
-        <div className="p-4 rounded-lg bg-gradient-to-r from-blue-500 to-blue-600 shadow-md mb-4">
-          <Plus className="w-8 h-8 text-white" />
-        </div>
-        <h3 className="text-lg font-bold text-gray-700 mb-2">Upload New Media</h3>
-        <p className="text-sm text-gray-500 mb-4">Click here to browse</p>
-        <div className="flex flex-wrap gap-2 justify-center">
-          <span className="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-full">PDF</span>
-          <span className="px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full">PNG</span>
-          <span className="px-2 py-1 bg-purple-100 text-purple-700 text-xs rounded-full">JPG</span>
-        </div>
-      </div>
-      <input
-        ref={fileInputRef}
-        type="file"
-        multiple
-        accept=".pdf,.png,.jpg,.jpeg,.gif,.webp,.doc,.docx,.xlsx,.xls"
-        className="hidden"
-        onChange={(e) => e.target.files && handleFileUpload(e.target.files)}
-      />
-    </div>
-  )
-
-  const MediaCard = ({ item }: any) => {
-    const Icon = getTypeIcon(item.type)
-    const FormatIcon = getFormatIcon(item.format)
-
-    return (
-      <div
-        className={`
-          transition-all duration-300 hover:scale-[1.02] 
-          w-full h-full
-          rounded-xl border border-gray-200 shadow-md hover:shadow-lg 
-          overflow-hidden relative flex flex-col
-          bg-white hover:border-gray-300 aspect-square
-        `}
-      >
-        <div className="p-4 flex flex-col h-full">
-          {/* Icon and Stats */}
-          <div className="flex items-center justify-between mb-3">
-            <div className={`p-2 rounded-lg shadow-md bg-gradient-to-r ${getColorGradient(item.color)}`}>
-              <Icon className="w-4 h-4 text-white" />
-            </div>
-
-            <div className="flex items-center gap-3 text-xs text-gray-500">
-              <div className="flex items-center gap-1">
-                <Eye className="w-3 h-3" />
-                <span>{item.views}</span>
-              </div>
-              <div className="flex items-center gap-1">
-                <Download className="w-3 h-3" />
-                <span>{item.downloads}</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Content */}
-          <div className="flex-grow flex flex-col justify-between">
-            <div>
-              <h3 className="text-lg font-bold text-gray-900 mb-1 line-clamp-2">{item.title}</h3>
-              <p className="text-xs text-gray-600 capitalize mb-2">{item.type}</p>
-              <div className="flex items-center gap-2 text-xs text-gray-500">
-                <Calendar className="w-3 h-3" />
-                <span>{new Date(item.uploadDate).toLocaleDateString()}</span>
-                <span>•</span>
-                <span>{item.size}</span>
-              </div>
-              <div className="flex items-center gap-1 py-1">
-                <FormatIcon className="w-3 h-3" />
-                <span className="text-xs font-medium text-gray-600">{item.format}</span>
-              </div>
-            </div>
-
-            {/* Actions */}
-            <div className="flex items-center justify-end mt-4 pt-3 border-t border-gray-100">
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => handleDelete(item)}
-                className="p-1.5 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 transition-colors"
-              >
-                <Trash2 className="w-3 h-3" />
-              </motion.button>
-            </div>
-          </div>
-        </div>
-      </div>
-    )
-  }
 
   return (
     <>
@@ -532,7 +234,11 @@ const AdminMediaDashboard = () => {
           >
             {/* Upload Card */}
             <div className={viewMode === 'grid' ? 'min-h-[280px]' : 'h-32'}>
-              <UploadCard />
+              <UploadCard
+                setIsUploading={setIsUploading}
+                handleUploadProgress={handleUploadProgress}
+                mediaForm={mediaForm}
+              />
             </div>
 
             {/* Media Items */}
@@ -566,7 +272,7 @@ const AdminMediaDashboard = () => {
                     stiffness: 400
                   }}
                 >
-                  <MediaCard item={item} />
+                  <MediaCard item={item} uploadingFiles={mediaForm.inputs.uploadingFiles} />
                 </motion.div>
               ))}
             </AnimatePresence>

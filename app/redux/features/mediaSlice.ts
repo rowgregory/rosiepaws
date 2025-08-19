@@ -78,6 +78,12 @@ export const mediaSlice = createSlice({
       .addMatcher(mediaApi.endpoints.updateAnalytics.matchFulfilled, (state) => {
         state.loading = false
       })
+      .addMatcher(mediaApi.endpoints.updateMedia.matchPending, (state) => {
+        state.loading = true
+      })
+      .addMatcher(mediaApi.endpoints.updateMedia.matchFulfilled, (state) => {
+        state.loading = false
+      })
       .addMatcher(
         (action): action is { type: string; payload: ErrorPayload } =>
           action.type.endsWith('/rejected') && action.payload?.data?.sliceName === 'mediaApi',

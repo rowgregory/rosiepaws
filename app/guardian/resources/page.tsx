@@ -3,6 +3,7 @@
 import Picture from '@/app/components/common/Picture'
 import ResourcesHeader from '@/app/components/guardian/resources/ResourcesHeader'
 import { useGetAllMediaQuery, useUpdateAnalyticsMutation } from '@/app/redux/services/mediaApi'
+import { RootState, useAppSelector } from '@/app/redux/store'
 import { IMedia } from '@/app/types'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
@@ -303,16 +304,35 @@ const UserMediaLibrary = () => {
   const media = data?.media
   const [updateAnalytics] = useUpdateAnalyticsMutation()
   const [activeTab, setActiveTab] = useState('available')
+  const { user } = useAppSelector((state: RootState) => state.user)
 
   const toggleFavorite = (itemId: any) => {
     setFavorites((prev: any[]) => (prev.includes(itemId) ? prev.filter((id) => id !== itemId) : [...prev, itemId]))
   }
 
+  const canAccessTier = (userTier: string, itemTier: string) => {
+    const tierHierarchy = ['free', 'comfort', 'legacy']
+    const userLevel = tierHierarchy.indexOf(userTier)
+    const itemLevel = tierHierarchy.indexOf(itemTier)
+    return userLevel >= itemLevel
+  }
+
   // Filter and sort items
   const filteredItems = media
-    ?.filter((item: { isActive: any; type: string; title: string; description: string; tags: any[] }) => {
+    ?.filter((item: { isActive: any; type: string; title: string; description: string; tags: any[]; tier: string }) => {
       // Only show active items
       if (!item.isActive) return false
+
+      // Tier-based access control
+      const userTier = user?.isFreeUser
+        ? 'free'
+        : user?.isComfortUser
+          ? 'comfort'
+          : user?.isLegacyUser
+            ? 'legacy'
+            : 'free'
+
+      if (!canAccessTier(userTier, item.tier)) return false
 
       // Category filter
       const matchesCategory = selectedCategory === 'all' || item.type === selectedCategory
