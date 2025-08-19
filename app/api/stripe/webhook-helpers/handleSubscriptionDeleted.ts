@@ -20,6 +20,7 @@ async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
     data: {
       status: 'canceled',
       canceledAt: new Date(),
+      cancelAtPeriodEnd: false, // Reset this flag
       subscriptionId: null // Clear the subscription ID since it's deleted
     }
   })
@@ -31,7 +32,7 @@ async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
       isFreeUser: true,
       isComfortUser: false,
       isLegacyUser: false,
-      role: 'Free'
+      role: 'free'
     }
   })
 

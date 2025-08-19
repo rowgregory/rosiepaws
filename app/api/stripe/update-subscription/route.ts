@@ -12,11 +12,10 @@ export async function POST(req: NextRequest) {
   try {
     const { userId, newPlanId } = await req.json()
 
-    // Define your subscription plans (same as checkout)
-    const plans: Record<string, { priceId: string; name: string }> = {
-      basic: { priceId: 'price_xxxxx', name: 'Basic Plan' },
-      pro: { priceId: 'price_yyyyy', name: 'Pro Plan' },
-      premium: { priceId: 'price_zzzzz', name: 'Premium Plan' }
+    // Define your subscription plans (match your current structure)
+    const plans: Record<string, { priceId: string; name: string; userRole: string }> = {
+      comfort: { priceId: process.env.STRIPE_COMFORT_MONTHLY_PRICE_ID!, name: 'COMFORT', userRole: 'comfort_user' },
+      legacy: { priceId: process.env.STRIPE_LEGACY_MONTHLY_PRICE_ID!, name: 'LEGACY', userRole: 'legacy_user' }
     }
 
     if (!plans[newPlanId]) {
@@ -41,56 +40,22 @@ export async function POST(req: NextRequest) {
 
     // Get current subscription from Stripe
     const stripeSubscription = await stripe.subscriptions.retrieve(currentSubscription.subscriptionId)
-    const subscriptionData = stripeSubscription as any
 
-    // Update subscription in Stripe
+    // Update subscription in Stripe (this triggers the webhook!)
     const updatedSubscription = await stripe.subscriptions.update(currentSubscription.subscriptionId, {
       items: [
         {
-          id: subscriptionData.items.data[0].id, // Current subscription item ID
+          id: stripeSubscription.items.data[0].id, // Current subscription item ID
           price: plans[newPlanId].priceId // New price ID
         }
       ],
       proration_behavior: 'create_prorations' // Pro-rate the difference
     })
 
-    // Get the new price details
-    const newPrice = await stripe.prices.retrieve(plans[newPlanId].priceId)
-
-    // Map plan to user roles
-    const planMapping: Record<string, { name: string; userRole: string }> = {
-      basic: { name: 'basic', userRole: 'basic' },
-      pro: { name: 'pro', userRole: 'premium' },
-      premium: { name: 'premium', userRole: 'premium' }
-    }
-
-    const planInfo = planMapping[newPlanId]
-
-    // Update subscription in your database
-    await prisma.stripeSubscription.update({
-      where: { id: currentSubscription.id },
-      data: {
-        plan: planInfo.name,
-        planPrice: (newPrice as any).unit_amount || 0,
-        status: (updatedSubscription as any).status,
-        currentPeriodEnd: new Date((updatedSubscription as any).current_period_end * 1000)
-      }
-    })
-
-    // Update user role
-    // await prisma.user.update({
-    //   where: { id: userId },
-    //   data: {
-    //     isBasicUser: planInfo.userRole === 'basic',
-    //     isPremiumUser: planInfo.userRole === 'premium',
-    //     role: planInfo.userRole
-    //   }
-    // })
-
     return NextResponse.json({
       success: true,
       subscription: updatedSubscription,
-      message: `Successfully upgraded to ${plans[newPlanId].name}!`
+      message: `Successfully switched to ${plans[newPlanId].name}!`
     })
   } catch (error: any) {
     await createLog('error', `Subscription update failed: ${error.message}`, {
@@ -103,6 +68,6 @@ export async function POST(req: NextRequest) {
       stripeErrorCode: error.code || null,
       stripeErrorType: error.type || null
     })
-    return NextResponse.json({ error: 'Failed to upgrade subscription' }, { status: 500 })
+    return NextResponse.json({ error: 'Failed to update subscription' }, { status: 500 })
   }
 }

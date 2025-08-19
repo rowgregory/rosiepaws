@@ -1,8 +1,10 @@
 import { Reducer, createSlice } from '@reduxjs/toolkit'
 import { userApi } from '../services/userApi'
 import { Pet } from '@/app/types'
+import { initialStripeSubscriptionState } from '@/app/lib/initial-states/stripe-subscription'
 
 export interface IUser {
+  stripeSubscription: any
   id: string
   firstName: string
   lastName: string
@@ -24,6 +26,7 @@ export interface IUser {
 }
 
 const userState: IUser = {
+  stripeSubscription: initialStripeSubscriptionState,
   id: '',
   firstName: '',
   lastName: '',

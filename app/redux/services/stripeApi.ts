@@ -6,10 +6,10 @@ export const stripeApi = api.injectEndpoints({
   overrideExisting: true,
   endpoints: (builder) => ({
     createCheckoutSession: builder.mutation({
-      query: ({ planId }) => ({
+      query: ({ planId, userId }) => ({
         url: `${BASE_URL}/create-checkout-session`,
         method: 'POST',
-        body: { planId }
+        body: { planId, userId }
       }),
       // Invalidate subscription cache to trigger refetch
       invalidatesTags: ['Stripe']
@@ -34,10 +34,10 @@ export const stripeApi = api.injectEndpoints({
     }),
 
     cancelSubscription: builder.mutation({
-      query: ({ email, cancelAtPeriodEnd = true }) => ({
-        url: 'stripe/cancel-subscription',
+      query: ({ userId }) => ({
+        url: `${BASE_URL}/cancel-subscription`,
         method: 'POST',
-        body: { email, cancelAtPeriodEnd }
+        body: { userId }
       }),
       invalidatesTags: ['Stripe']
     }),

@@ -1,158 +1,236 @@
 import React, { FC } from 'react'
-import { motion } from 'framer-motion'
 import { setOpenSubscriptionModal } from '@/app/redux/features/appSlice'
 import { useAppDispatch } from '@/app/redux/store'
-import { useCreateCheckoutSessionMutation } from '@/app/redux/services/stripeApi'
+import { useCancelSubscriptionMutation, useCreateCheckoutSessionMutation } from '@/app/redux/services/stripeApi'
 import { useRouter } from 'next/navigation'
+import { Check, Crown } from 'lucide-react'
 
 interface IPricingCard {
   plan: any
-  index: number
   user?: any
 }
 
-const PricingCard: FC<IPricingCard> = ({ plan, index, user }) => {
+const PricingCard: FC<IPricingCard> = ({ plan, user }) => {
   const dispatch = useAppDispatch()
-  const activePlan = plan.name === user?.stripeSubscription?.plan || (user?.isFreeUser && plan.name === 'Free')
-
-  const [createCheckoutSession, { isLoading }] = useCreateCheckoutSessionMutation()
   const { push } = useRouter()
 
+  const [createCheckoutSession, { isLoading: isCreating }] = useCreateCheckoutSessionMutation()
+  const [cancelSubscription, { isLoading: isCancelling }] = useCancelSubscriptionMutation()
+
+  // Determine if this is the user's current plan using the boolean flags
+  const activePlan = user.stripeSubscription?.plan?.toLowerCase() === plan.id
+
   const handlePlanSelect = async (planId: string) => {
-    const response = await createCheckoutSession({ planId }).unwrap()
+    const response = await createCheckoutSession({ planId, userId: user.id }).unwrap()
     push(response.url)
   }
 
+  const handleCancelSubscription = async () => {
+    const response = await cancelSubscription({ userId: user.id }).unwrap()
+    push(response.url)
+  }
+
+  const isLoading = isCreating || isCancelling
+
   return (
-    <motion.div
-      key={plan.id}
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6, delay: index * 0.1 }}
-      className={`relative bg-white rounded-2xl shadow-lg`}
+    <div
+      className={`relative bg-white rounded-lg border-2 transition-all duration-200 hover:shadow-xl ${
+        activePlan
+          ? plan.id === 'free'
+            ? 'border-gray-400 shadow-lg bg-gray-50'
+            : plan.id === 'comfort'
+              ? 'border-blue-500 shadow-xl bg-blue-50'
+              : 'border-purple-500 shadow-xl bg-purple-50'
+          : plan.popular
+            ? 'border-blue-600 shadow-xl scale-105'
+            : 'border-gray-200 shadow-lg'
+      }`}
     >
-      <div className="p-4">
+      {/* Current Plan Badge */}
+      {activePlan && (
+        <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 z-10">
+          <div
+            className={`px-4 py-1 rounded-full text-sm font-medium flex items-center gap-1 ${
+              plan.id === 'free'
+                ? 'bg-gray-600 text-white'
+                : plan.id === 'comfort'
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-purple-600 text-white'
+            }`}
+          >
+            <Crown className="w-3 h-3" />
+            Current Plan
+          </div>
+        </div>
+      )}
+
+      {/* Popular Badge (only show if not current plan) */}
+      {plan.popular && !activePlan && (
+        <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
+          <div className="bg-blue-600 text-white px-4 py-1 rounded-full text-sm font-medium">Most Popular</div>
+        </div>
+      )}
+
+      <div className="p-8">
         {/* Plan Header */}
-        <div className="mb-8 text-center">
-          <motion.span
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: index * 0.1 + 0.4 }}
-            className={`${activePlan ? 'text-gray-800' : 'bg-gradient-to-r from-orange-500 via-pink-500 to-red-500 bg-clip-text text-transparent'} text-lg text-center font-semibold`}
-          >
-            {plan.name}
-          </motion.span>
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.4, delay: index * 0.1 + 0.6 }}
-            className="flex items-baseline justify-center mb-4 mt-6"
-          >
+        <div className="mb-8">
+          <div className="flex items-center gap-2 mb-2">
+            <h3
+              className={`text-xl font-semibold ${
+                activePlan
+                  ? plan.id === 'free'
+                    ? 'text-gray-800'
+                    : plan.id === 'comfort'
+                      ? 'text-blue-700'
+                      : 'text-purple-700'
+                  : plan.id === 'free'
+                    ? 'text-gray-700'
+                    : plan.id === 'comfort'
+                      ? 'text-blue-600'
+                      : 'text-purple-600'
+              }`}
+            >
+              {plan.name}
+            </h3>
+            {activePlan && (
+              <div
+                className={`px-2 py-1 rounded text-xs font-medium ${
+                  plan.id === 'free'
+                    ? 'bg-gray-200 text-gray-700'
+                    : plan.id === 'comfort'
+                      ? 'bg-blue-200 text-blue-700'
+                      : 'bg-purple-200 text-purple-700'
+                }`}
+              >
+                ACTIVE
+              </div>
+            )}
+          </div>
+
+          <p className="text-gray-600 mb-4 h-12 text-sm leading-relaxed">{plan.subtitle}</p>
+
+          <div className="flex items-baseline mb-2">
             <span
-              className={`text-4xl font-bold ${activePlan ? 'text-gray-800' : 'bg-gradient-to-r from-orange-500 via-pink-500 to-red-500 bg-clip-text text-transparent'}`}
+              className={`text-4xl font-bold ${
+                activePlan
+                  ? plan.id === 'free'
+                    ? 'text-gray-800'
+                    : plan.id === 'comfort'
+                      ? 'text-blue-700'
+                      : 'text-purple-700'
+                  : plan.id === 'free'
+                    ? 'text-gray-900'
+                    : plan.id === 'comfort'
+                      ? 'text-blue-600'
+                      : 'text-purple-600'
+              }`}
             >
               {plan.price}
             </span>
-            <span className="text-gray-500 ml-1">{plan.period}</span>
-          </motion.div>
+            <span className="text-gray-600 ml-1">{plan.period}</span>
+          </div>
 
-          {/* CTA Button */}
-          {plan.id !== 'free' ? (
-            <motion.div
-              whileTap={{ scale: 0.98 }}
-              className={`h-10 w-full rounded-xl transition-all duration-200 mb-8 ${
-                activePlan ? '' : 'bg-gradient-to-r from-pink-500 via-orange-500 to-red-500 p-0.5'
-              }`}
-            >
-              <motion.button
-                onClick={() => (activePlan ? dispatch(setOpenSubscriptionModal()) : handlePlanSelect(plan.id))}
-                disabled={isLoading}
-                className={`w-full h-full font-semibold rounded-xl duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-sm ${
-                  activePlan
-                    ? 'bg-gradient-to-r from-pink-500 via-orange-500 to-red-500 text-white'
-                    : 'bg-white text-gray-900'
-                }`}
-              >
-                {isLoading ? (
-                  <div className="flex items-center justify-center">
-                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
-                    Processing...
-                  </div>
-                ) : user?.isFreeUser ? (
-                  // Free users see "Subscribe" on all paid plans
-                  'Subscribe'
-                ) : user?.stripeSubscription ? (
-                  // Users with subscription
-                  activePlan ? (
-                    'Manage Plan'
-                  ) : (
-                    'Switch Plan'
-                  )
-                ) : (
-                  // Users without subscription (but not free)
-                  'Subscribe'
-                )}
-              </motion.button>
-            </motion.div>
-          ) : (
-            <div className="h-10 w-10 mb-8" />
+          {plan.id === 'comfort' && (
+            <p className={`text-sm font-medium mb-4 ${activePlan ? 'text-blue-700' : 'text-blue-600'}`}>
+              67x more tokens than free!
+            </p>
           )}
-
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.4, delay: index * 0.1 + 0.5 }}
-            className={`text-sm text-center text-pink-500 font-medium`}
-          >
-            Perfect for
-          </motion.p>
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.4, delay: index * 0.1 + 0.5 }}
-            className={`text-sm text-center font-medium mb-4`}
-          >
-            {plan.subtitle}
-          </motion.p>
-
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.4, delay: index * 0.1 + 0.7 }}
-            className="text-gray-600 text-sm"
-          >
-            {plan.description}
-          </motion.p>
+          {plan.id === 'legacy' && (
+            <p className={`text-sm font-medium mb-4 ${activePlan ? 'text-purple-700' : 'text-purple-600'}`}>
+              Unlimited usage
+            </p>
+          )}
         </div>
 
         {/* Features List */}
-        <div className="space-y-3 mb-8 bg-gray-50 p-2 rounded-2xl">
-          {plan.features.map((feature: any, featureIndex: number) => (
-            <motion.div
-              key={featureIndex}
-              initial={{ opacity: 0, x: -10 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.3, delay: index * 0.1 + featureIndex * 0.05 }}
-              className="flex"
-            >
+        <ul className="space-y-4 mb-8">
+          {plan.features.map((feature: string, featureIndex: number) => (
+            <li key={featureIndex} className="flex items-start gap-3">
               <div
-                className={`w-4 h-4 border-1 border-[#ef5572] rounded-full flex items-center justify-center mr-3 flex-shrink-0`}
+                className={`w-5 h-5 rounded-full flex items-center justify-center shrink-0 mt-0.5 ${
+                  activePlan
+                    ? plan.id === 'free'
+                      ? 'bg-gray-200'
+                      : plan.id === 'comfort'
+                        ? 'bg-blue-200'
+                        : 'bg-purple-200'
+                    : plan.id === 'free'
+                      ? 'bg-gray-100'
+                      : plan.id === 'comfort'
+                        ? 'bg-blue-100'
+                        : 'bg-purple-100'
+                }`}
               >
-                <svg className="w-3 h-3 text-white" fill="#ef5572" viewBox="0 0 20 20">
-                  <path
-                    fillRule="evenodd"
-                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                    clipRule="evenodd"
-                  />
-                </svg>
+                <Check
+                  className={`w-3 h-3 ${
+                    activePlan
+                      ? plan.id === 'free'
+                        ? 'text-gray-700'
+                        : plan.id === 'comfort'
+                          ? 'text-blue-700'
+                          : 'text-purple-700'
+                      : plan.id === 'free'
+                        ? 'text-gray-600'
+                        : plan.id === 'comfort'
+                          ? 'text-blue-600'
+                          : 'text-purple-600'
+                  }`}
+                />
               </div>
-              <span className="text-gray-700 text-sm font-medium">{feature}</span>
-            </motion.div>
+              <span className="text-gray-700 text-sm leading-relaxed">{feature}</span>
+            </li>
           ))}
-        </div>
+        </ul>
+
+        {/* CTA Button */}
+        {plan.id !== 'free' ? (
+          <button
+            onClick={() => (activePlan ? dispatch(setOpenSubscriptionModal()) : handlePlanSelect(plan.id))}
+            disabled={isLoading || activePlan}
+            className={`w-full py-3 px-4 rounded-md font-medium transition-colors disabled:cursor-not-allowed ${
+              activePlan
+                ? plan.id === 'comfort'
+                  ? 'bg-blue-100 text-blue-700 border border-blue-300'
+                  : 'bg-purple-100 text-purple-700 border border-purple-300'
+                : isLoading
+                  ? 'opacity-50 cursor-not-allowed bg-gray-400 text-white'
+                  : plan.id === 'comfort'
+                    ? 'bg-blue-600 hover:bg-blue-700 text-white'
+                    : 'bg-purple-600 hover:bg-purple-700 text-white'
+            }`}
+          >
+            {isLoading ? (
+              <div className="flex items-center justify-center">
+                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+                Processing...
+              </div>
+            ) : activePlan ? (
+              'Current Plan'
+            ) : user?.isFreeUser ? (
+              'Upgrade Now'
+            ) : user?.isComfortUser || user?.isLegacyUser ? (
+              'Switch Plan'
+            ) : (
+              'Get Started'
+            )}
+          </button>
+        ) : // Free tier - show different buttons based on user status
+        activePlan ? (
+          <div className="w-full py-3 px-4 rounded-md text-center font-medium bg-gray-200 text-gray-700 border border-gray-300">
+            Current Plan
+          </div>
+        ) : user?.isComfortUser || user?.isLegacyUser ? (
+          <button
+            onClick={() => handleCancelSubscription()} // This would trigger cancellation
+            className="w-full py-3 px-4 rounded-md font-medium bg-red-600 hover:bg-red-700 text-white transition-colors"
+          >
+            Cancel Subscription
+          </button>
+        ) : (
+          <div className="w-full py-3 px-4 rounded-md text-center font-medium bg-gray-100 text-gray-500">Free</div>
+        )}
       </div>
-    </motion.div>
+    </div>
   )
 }
-
 export default PricingCard

@@ -4,12 +4,13 @@ import { auth } from './app/lib/auth'
 // Routes that bypass authentication
 const publicRoutes = ['/auth/login', '/auth/custom-callback']
 const cronRoutes = ['/api/pet/check-med-reminders']
+const webhookRoutes = ['/api/stripe/webhook']
 
 export async function middleware(req: NextRequest) {
   const { nextUrl } = req
 
   // Allow cron jobs to pass through
-  if (cronRoutes.includes(nextUrl.pathname)) {
+  if (cronRoutes.includes(nextUrl.pathname) || webhookRoutes.includes(nextUrl.pathname)) {
     return NextResponse.next()
   }
 

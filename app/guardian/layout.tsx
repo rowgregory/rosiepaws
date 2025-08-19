@@ -1,6 +1,6 @@
 'use client'
 
-import React, { FC, useEffect, useState } from 'react'
+import React, { FC, useState } from 'react'
 import { IChildren } from '../types/common'
 import GuardianNavigation from '../components/guardian/GuardianNavigation'
 // import GuardianToolbar from '../components/guardian/GuardianToolbar'
@@ -13,87 +13,13 @@ import MovementDrawer from '../drawers/guardian/MovementDrawer'
 import BloodSugarDrawer from '../drawers/guardian/BloodSugarDrawer'
 import SeizureDrawer from '../drawers/guardian/SeizureDrawer'
 import VitalSignsDrawer from '../drawers/guardian/VitalSignsDrawer'
-import { useFetchMeQuery } from '../redux/services/userApi'
-import { IFeeding, IUser, PainScore, Pet } from '../types'
-import { useSession } from 'next-auth/react'
-import { useAppDispatch } from '../redux/store'
-import { clearUser, setTokenTransactions, setUser } from '../redux/features/userSlice'
-import {
-  setChartData,
-  setPet,
-  setPets,
-  setPetStats,
-  setPetsWithNoLogs,
-  setSelectedPetWithChartData
-} from '../redux/features/petSlice'
 import FeedingDrawer from '../drawers/guardian/FeedingDrawer'
 import PainDrawer from '../drawers/guardian/PainDrawer'
 import NeedToUpgradeDrawer from '../drawers/general/NeedToUpgradeDrawer'
-import { setPainScores } from '../redux/features/painSlice'
-import { setFeedings } from '../redux/features/feedingSlice'
-import { setWaters } from '../redux/features/waterSlice'
-import { setVitalSigns } from '../redux/features/vitalSignsSlice'
-import { setMovements } from '../redux/features/movementSlice'
-import { setMedications } from '../redux/features/medicationSlice'
 import AppointmentDrawer from '../drawers/guardian/AppointmentDrawer'
-import { setAppointments } from '../redux/features/appointmentSlice'
-import { setBloodSugars } from '../redux/features/bloodSugarSlice'
-import { setSeizures } from '../redux/features/seizureSlice'
-import { setGalleryItems } from '../redux/features/galleryItemSlice'
-
-interface IFetchMe {
-  data: {
-    user: IUser
-    pets: Pet[]
-    pet: Pet
-    feedings: IFeeding[]
-    tokenTransactions: any[]
-    painScores: PainScore[]
-    stats: any[]
-    chartData: any
-    noLogs: boolean
-    petsWithNoLogs: any[]
-    waters: any[]
-    vitalSigns: any[]
-    movements: any[]
-    medications: any[]
-    appointments: any[]
-    bloodSugars: any[]
-    seizures: any[]
-  }
-  isLoading: boolean
-}
 
 const GuardianLayout: FC<IChildren> = ({ children }) => {
-  const { status } = useSession()
-  const dispatch = useAppDispatch()
-  const { data } = useFetchMeQuery(undefined) as IFetchMe
   const [toggleSidebar, setToggleSidebar] = useState(false)
-
-  useEffect(() => {
-    if (status === 'authenticated' && data?.user) {
-      dispatch(setUser(data.user))
-      dispatch(setTokenTransactions(data?.tokenTransactions))
-      dispatch(setPets(data?.pets))
-      dispatch(setPet(data?.pets[0]))
-      dispatch(setPetStats(data?.stats))
-      dispatch(setPetsWithNoLogs(data?.petsWithNoLogs))
-      dispatch(setChartData(data?.chartData))
-      dispatch(setPainScores(data?.painScores))
-      dispatch(setFeedings(data?.feedings))
-      dispatch(setWaters(data?.waters))
-      dispatch(setVitalSigns(data?.vitalSigns))
-      dispatch(setMovements(data?.movements))
-      dispatch(setMedications(data?.medications))
-      dispatch(setAppointments(data?.appointments))
-      dispatch(setBloodSugars(data?.bloodSugars))
-      dispatch(setSeizures(data?.seizures))
-      dispatch(setGalleryItems(data?.user?.galleryItems))
-      dispatch(setSelectedPetWithChartData({ stats: data?.stats, chartData: data.chartData, pet: data.pets[0] }))
-    } else if (status === 'unauthenticated') {
-      dispatch(clearUser())
-    }
-  }, [data, status, dispatch])
 
   return (
     <>

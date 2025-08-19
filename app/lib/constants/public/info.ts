@@ -74,70 +74,19 @@ export const faqData = [
 ]
 
 export const planFeatures = [
-  {
-    feature: 'Token Allowance',
-    free: '750 Daily',
-    comfort: '45,000 Monthly',
-    legacy: 'Unlimited'
-  },
-  {
-    feature: 'Basic Care Logs (Pain, Feeding, Water)',
-    free: '✓',
-    comfort: '✓',
-    legacy: '✓'
-  },
-  {
-    feature: 'Mobility Tracking (Walks, Movement)',
-    free: '✗',
-    comfort: '✓',
-    legacy: '✓'
-  },
-  {
-    feature: 'Medical Records (Appointments, Medications)',
-    free: '✗',
-    comfort: '✓',
-    legacy: '✓'
-  },
-  {
-    feature: 'Critical Health Monitoring (Blood Sugar, Seizures)',
-    free: '✗',
-    comfort: 'Limited',
-    legacy: '✓'
-  },
-  {
-    feature: 'Data Export & Sharing',
-    free: '✗',
-    comfort: '✗',
-    legacy: '✓'
-  },
-  {
-    feature: 'Veterinary Report Generation',
-    free: '✗',
-    comfort: '✗',
-    legacy: '✓'
-  },
-  {
-    feature: 'End-of-Life Care Documentation',
-    free: '✗',
-    comfort: '✗',
-    legacy: '✓'
-  },
-  {
-    feature: 'Emergency Health Alerts',
-    free: '✗',
-    comfort: '✗',
-    legacy: '✓'
-  },
-  {
-    feature: '24/7 Support for Critical Care',
-    free: '✗',
-    comfort: '✗',
-    legacy: '✓'
-  },
-  {
-    feature: 'Dr. Jaci Coble Veterinary Ebook Collection',
-    free: '✗',
-    comfort: '✗',
-    legacy: '✓'
-  }
+  { feature: 'Daily Token Allowance', free: '180', comfort: '12,000/month', legacy: 'Unlimited' },
+  { feature: 'Pet Profiles', free: '1', comfort: '3', legacy: 'Unlimited' },
+  { feature: 'Pain Scoring', free: '✓', comfort: '✓', legacy: '✓' },
+  { feature: 'Feeding Tracking', free: '✓', comfort: '✓', legacy: '✓' },
+  { feature: 'Water Intake Logging', free: '✓', comfort: '✓', legacy: '✓' },
+  { feature: 'Vital Signs Tracking', free: '✗', comfort: '✓', legacy: '✓' },
+  { feature: 'Movement & Activity Monitoring', free: '✗', comfort: '✓', legacy: '✓' },
+  { feature: 'Medication Management', free: '✗', comfort: '✓', legacy: '✓' },
+  { feature: 'Appointment Tracking', free: '✗', comfort: '✗', legacy: '✓' },
+  { feature: 'Blood Sugar Monitoring', free: '✗', comfort: '✗', legacy: '✓' },
+  { feature: 'Seizure Tracking', free: '✗', comfort: '✗', legacy: '✓' },
+  { feature: 'Photo & Video Galleries', free: '✗', comfort: '✓', legacy: '✓' },
+  { feature: 'Data Export', free: '✗', comfort: 'Basic', legacy: 'Premium' },
+  { feature: 'Support Level', free: 'Email', comfort: '1 ticket/week', legacy: 'Unlimited tickets' },
+  { feature: 'Resources', free: '✗', comfort: '✓', legacy: '✓' }
 ]

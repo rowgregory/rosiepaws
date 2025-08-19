@@ -9,7 +9,7 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json()
     const planId = body.planId
-    console.log('PLAN ID ', planId)
+    const userId = body.userId
 
     // Define your subscription plans
     const plans: Record<string, { priceId: string; name: string; userRole: string }> = {
@@ -23,6 +23,10 @@ export async function POST(req: NextRequest) {
 
     console.log('plans[planId]: ', plans[planId])
 
+    if (!userId) {
+      return NextResponse.json({ error: 'User ID required' }, { status: 400 })
+    }
+
     const session = await stripe.checkout.sessions.create({
       mode: 'subscription',
       line_items: [
@@ -31,16 +35,10 @@ export async function POST(req: NextRequest) {
           quantity: 1
         }
       ],
-
-      subscription_data: {
-        trial_period_days: 7
-      },
-
-      success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}`,
-
+      client_reference_id: userId,
+      success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/guardian/home`,
+      cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/guardian/home`,
       payment_method_types: ['card', 'link', 'us_bank_account', 'paypal'],
-
       billing_address_collection: 'required'
     } as Stripe.Checkout.SessionCreateParams)
 

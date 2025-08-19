@@ -24,6 +24,17 @@ export async function POST(req: NextRequest) {
 
     const subscriptionId = user.stripeSubscription.subscriptionId
 
+    // Check if already scheduled for cancellation
+    if (user.stripeSubscription.cancelAtPeriodEnd) {
+      return NextResponse.json(
+        {
+          error: 'Subscription is already scheduled for cancellation',
+          accessUntil: user.stripeSubscription.currentPeriodEnd
+        },
+        { status: 400 }
+      )
+    }
+
     // Cancel at period end - user keeps access until billing period ends
     const canceledSubscription = await stripe.subscriptions.update(subscriptionId, {
       cancel_at_period_end: true
@@ -33,7 +44,8 @@ export async function POST(req: NextRequest) {
     await prisma.stripeSubscription.update({
       where: { id: user.stripeSubscription.id },
       data: {
-        cancelAtPeriodEnd: true
+        cancelAtPeriodEnd: true,
+        status: canceledSubscription.status // Keep status in sync
       }
     })
 
@@ -42,7 +54,8 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({
       success: true,
       message: `Subscription canceled. Access until ${periodEnd.toLocaleDateString()}`,
-      accessUntil: periodEnd
+      accessUntil: periodEnd,
+      url: '/guardian/home'
     })
   } catch (error: any) {
     await createLog('error', `Subscription cancellation failed: ${error.message}`, {

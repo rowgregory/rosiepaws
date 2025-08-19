@@ -4,6 +4,8 @@ import handleCheckoutCompleted from '../webhook-helpers/handleCheckoutCompleted'
 import handlePaymentFailed from '../webhook-helpers/handlePaymentFailed'
 import handleSubscriptionUpdated from '../webhook-helpers/handleSubscriptionUpdated'
 import handleSubscriptionDeleted from '../webhook-helpers/handleSubscriptionDeleted'
+import handlePaymentSucceeded from '../webhook-helpers/handlePaymentSucceeded'
+import handleSubscriptionCreated from '../webhook-helpers/handleSubscriptionCreated'
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2025-06-30.basil'
@@ -11,13 +13,6 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 
 // Stripe webhook secret (You get this from your Stripe dashboard)
 const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET!
-
-// Disable the body parsing so that we can get the raw body (required by Stripe)
-export const config = {
-  api: {
-    bodyParser: false
-  }
-}
 
 // Handle the Stripe webhook events
 export async function POST(request: NextRequest) {
@@ -33,7 +28,7 @@ export async function POST(request: NextRequest) {
 
   try {
     event = stripe.webhooks.constructEvent(body, sig, endpointSecret)
-    console.log('EVENT!: ', event)
+    console.log('EVENT!: ', event.data.object.object)
   } catch (err: any) {
     console.log(`Webhook signature verification failed.`, err.message)
     return NextResponse.json({ error: 'Webhook signature verification failed' }, { status: 400 })
@@ -46,12 +41,20 @@ export async function POST(request: NextRequest) {
         await handleCheckoutCompleted(event.data.object as Stripe.Checkout.Session)
         break
 
-      case 'customer.subscription.updated':
-        await handleSubscriptionUpdated(event.data.object as Stripe.Subscription)
+      case 'invoice.payment_succeeded':
+        await handlePaymentSucceeded(event.data.object as Stripe.Invoice)
         break
 
       case 'invoice.payment_failed':
         await handlePaymentFailed(event.data.object as Stripe.Invoice)
+        break
+
+      case 'customer.subscription.updated':
+        await handleSubscriptionUpdated(event.data.object as Stripe.Subscription)
+        break
+
+      case 'customer.subscription.created':
+        await handleSubscriptionCreated(event.data.object as Stripe.Subscription)
         break
 
       case 'customer.subscription.deleted':

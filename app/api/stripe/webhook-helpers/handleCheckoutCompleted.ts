@@ -6,128 +6,94 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 })
 
 async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
-  console.log('Checkout completed:', session.id)
+  console.log('HANDLE CHECKOUT COMPLETED INITIATED')
 
-  // Get the customer details from Stripe
-  const customer = (await stripe.customers.retrieve(session.customer as string)) as Stripe.Customer
+  // Check if we already processed this session
+  const existingSubscription = await prisma.stripeSubscription.findFirst({
+    where: {
+      subscriptionId: session.subscription as string
+    }
+  })
 
-  console.log('CUSTOMER: ', customer)
-
-  if (!customer.email) {
-    console.error('No email found for customer')
+  if (existingSubscription) {
+    console.log('Session already processed, skipping...')
     return
   }
 
-  // Check if user already exists
-  let user = await prisma.user.findUnique({
-    where: { email: customer.email }
-  })
-  console.log('USER: ', user)
+  const customerId = session.customer as string
+  const subscriptionId = session.subscription as string
+  const userId = session.client_reference_id! // Make sure you pass this when creating checkout
 
-  // If user doesn't exist, create them
-  if (!user) {
-    // Extract name from customer or use defaults
-    const fullName = customer.name || customer.email.split('@')[0]
-    const [firstName, ...lastNameParts] = fullName.split(' ')
-    const lastName = lastNameParts.join(' ') || ''
+  // Get the subscription details
+  const subscription = await stripe.subscriptions.retrieve(subscriptionId)
+  const priceId = subscription.items.data[0]?.price.id
 
-    user = await prisma.user.create({
-      data: {
-        email: customer.email,
-        firstName: firstName || 'User',
-        lastName: lastName || '',
-        role: 'user',
-        stripeCustomerId: customer.id
-      }
-    })
-  } else {
-    // Update existing user with Stripe customer ID if not set
-    if (!user.stripeCustomerId) {
-      user = await prisma.user.update({
-        where: { id: user.id },
-        data: { stripeCustomerId: customer.id }
-      })
-    }
+  // Determine plan details based on what they purchased
+  let plan = 'COMFORT'
+  let tokensToAdd = 0
+  let planPrice = 1000
+  let isComfortUser = false
+  let isLegacyUser = false
+
+  if (priceId === process.env.STRIPE_COMFORT_MONTHLY_PRICE_ID) {
+    plan = 'COMFORT'
+    tokensToAdd = 12000 // Comfort gets 12K tokens
+    planPrice = 1000 // adjust for yearly
+    isComfortUser = true
+  } else if (priceId === process.env.STRIPE_LEGACY_MONTHLY_PRICE_ID) {
+    plan = 'LEGACY'
+    tokensToAdd = 0 // Legacy = unlimited, no need to add tokens
+    planPrice = 2500 // adjust for yearly
+    isLegacyUser = true
   }
 
-  // Get the subscription details from Stripe
-  const subscriptionResponse = await stripe.subscriptions.retrieve(session.subscription as string, {
-    expand: ['items.data.price']
-  })
-  console.log('subscriptionResponse: ', subscriptionResponse)
+  const currentPeriodEnd = (subscription as any).current_period_end
+    ? new Date((subscription as any).current_period_end * 1000)
+    : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
 
-  // Extract the actual subscription data from the response
-  const subscription = subscriptionResponse as any
-
-  // Get the price details to determine the plan
-  const priceId = subscription.items.data[0].price.id
-  const price = subscription.items.data[0].price
-
-  // Map price ID to plan name (customize this based on your plans)
-  const planMapping: Record<string, { name: string; userRole: string }> = {
-    [`${process.env.STRIPE_COMFORT_MONTHLY_PRICE_ID}`]: { name: 'COMFORT', userRole: 'COMFORT' },
-    [`${process.env.STRIPE_LEGACY_MONTHLY_PRICE_ID}`]: { name: 'LEGACY', userRole: 'LECACY' }
-  }
-
-  const planInfo = planMapping[priceId] || { name: 'COMFORT', userRole: 'basic_user' }
-
-  // Get default payment method
-  const paymentMethodId = (subscription.default_payment_method as string) || ''
-
-  let paymentMethodType = 'unknown'
-  let paymentMethodDetails = null
-
-  if (session.payment_intent) {
-    const paymentIntent = await stripe.paymentIntents.retrieve(session.payment_intent as string)
-    const paymentIntentData = paymentIntent as any
-
-    if (paymentIntentData.charges?.data?.[0]?.payment_method_details) {
-      const details = paymentIntentData.charges.data[0].payment_method_details
-      paymentMethodType = details.type
-      paymentMethodDetails = details
-    }
-  }
-
-  console.log('paymentMethodDetails: ', paymentMethodDetails)
-
-  const currentPeriodEnd = subscription.current_period_end
-    ? new Date((subscription.current_period_end as number) * 1000)
-    : null
-
-  const trialEndsAt = subscription.trial_end ? new Date((subscription.trial_end as number) * 1000) : null
-
-  // Create StripeSubscription record
-  await prisma.stripeSubscription.create({
-    data: {
-      userId: user.id,
-      customerId: customer.id,
-      paymentMethodId: paymentMethodId,
-      subscriptionId: subscription.id,
+  // Update or create the subscription record
+  await prisma.stripeSubscription.upsert({
+    where: { userId: userId },
+    create: {
+      userId: userId,
+      customerId: customerId,
+      subscriptionId: subscriptionId,
+      paymentMethodId: (session as any).payment_method_id || '',
       status: subscription.status,
-      plan: planInfo.name,
-      planPrice: (price as any).unit_amount || 0,
-      trialEndsAt: trialEndsAt,
-      cancelAtPeriodEnd: subscription.cancel_at_period_end,
-      currentPeriodEnd: currentPeriodEnd, // Use the validated date
-      paymentMethod: paymentMethodType,
-      paymentMethodBrand: paymentMethodDetails?.card?.brand || null,
-      paymentMethodLast4: paymentMethodDetails?.card?.last4 || null
+      plan: plan,
+      planPrice: planPrice,
+      tokensIncluded: tokensToAdd,
+      currentPeriodEnd: currentPeriodEnd,
+      cancelAtPeriodEnd: subscription.cancel_at_period_end
+    },
+    update: {
+      subscriptionId: subscriptionId,
+      status: subscription.status,
+      plan: plan,
+      planPrice: planPrice,
+      tokensIncluded: tokensToAdd,
+      currentPeriodEnd: currentPeriodEnd
     }
   })
 
-  // Update user role based on plan
+  // Update user role (Legacy users get unlimited tokens via role check)
+  const updateData: any = {
+    isFreeUser: false,
+    isComfortUser: isComfortUser,
+    isLegacyUser: isLegacyUser,
+    role: plan.toLowerCase() // 'comfort' or 'legacy'
+  }
+
+  // Only add tokens for Comfort users (Legacy is unlimited)
+  if (plan === 'COMFORT') {
+    updateData.tokens = { increment: tokensToAdd }
+  }
+
   await prisma.user.update({
-    where: { id: user.id },
-    data: {
-      isFreeUser: planInfo.userRole === 'Free',
-      isComfortUser: planInfo.userRole === 'Comfort',
-      isLegacyUser: planInfo.userRole === 'Legacy',
-      role: planInfo.userRole
-    }
+    where: { id: userId },
+    data: updateData
   })
 
-  console.log('Subscription created successfully for user:', user.id)
-  console.log('User created/updated:', user.id)
+  console.log('HANDLE CHECKOUT COMPLETED FINISHED')
 }
-
 export default handleCheckoutCompleted

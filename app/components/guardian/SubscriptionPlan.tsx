@@ -1,83 +1,110 @@
 import React from 'react'
-import { Crown, Calendar, CreditCard, User, HelpCircle, Zap } from 'lucide-react'
+import { Crown, Calendar, CreditCard } from 'lucide-react'
+import TokensSVG from '@/public/svg/TokensSVG'
 
-const tokenItems = (tokens: number) => [
-  {
-    icon: <Zap className="w-4 h-4" />,
-    label: 'Fast Tokens',
-    value: tokens,
-    total: tokens,
-    hasInfo: true
+const SubscriptionPlan = ({ user }: any) => {
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString)
+    return date.toLocaleDateString('en-US', {
+      day: '2-digit',
+      month: '2-digit',
+      year: '2-digit'
+    })
   }
-]
 
-const SubscriptionPlan = ({ user }: { user: any }) => {
+  const formatPrice = (priceInCents: number) => {
+    return `$${(priceInCents / 100).toFixed(2)}`
+  }
+
+  const getPlanDisplayName = () => {
+    if (user.isFreeUser) return 'Free'
+    if (user.isComfortUser) return 'Comfort'
+    if (user.isLegacyUser) return 'Legacy'
+    return user.stripeSubscription?.plan || 'Free'
+  }
+
+  const getPlanBadgeColor = () => {
+    if (user.isFreeUser) return 'bg-gray-100 text-gray-700'
+    if (user.isComfortUser) return 'bg-blue-100 text-blue-700'
+    if (user.isLegacyUser) return 'bg-purple-100 text-purple-700'
+    return 'bg-gray-100 text-gray-700'
+  }
+
+  const getTokensDisplay = () => {
+    if (user.isLegacyUser) return 'Unlimited'
+    return user.tokens?.toLocaleString() || '0'
+  }
+
   return (
-    <div className="flex items-center justify-center">
-      <div className="bg-white rounded-2xl max-w-2xl w-full shadow-lg grid grid-cols-2 mb-14">
+    <div className="w-full">
+      <div className="bg-white rounded-2xl border border-gray-200 shadow-lg hover:shadow-xl transition-shadow duration-300">
         {/* Header Section */}
-        <div className="border-r-1 border-r-border-gray-200 p-4">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-2">
-              <Crown className="w-5 h-5 text-yellow-500" />
-              <span className="text-gray-700 font-medium">My Plan</span>
-            </div>
-            <span className="text-purple-600 font-semibold">{user.stripeSubscription?.plan || 'Free'}</span>
-          </div>
-
-          <div className="flex items-center justify-between mb-8">
-            <div className="flex items-center gap-2">
-              <Calendar className="w-4 h-4 text-gray-500" />
-              <span className="text-gray-600 text-sm">Billing Period</span>
-            </div>
-            <span className="text-gray-600 text-sm">Monthly</span>
-          </div>
-
-          {!user.isFreeUser && (
-            <div className="flex items-center justify-between mb-2">
-              <div className="flex items-center gap-2">
-                <CreditCard className="w-4 h-4 text-gray-500" />
-                <span className="text-gray-600 text-sm">Next Payment</span>
+        <div className="p-6 border-b border-gray-100">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-yellow-50 rounded-lg">
+                <Crown className="w-5 h-5 text-yellow-600" />
               </div>
-              <span className="text-gray-600 text-sm">24/07/25</span>
+              <div>
+                <h3 className="font-semibold text-gray-900">Current Plan</h3>
+                <p className="text-sm text-gray-500">Active subscription</p>
+              </div>
             </div>
-          )}
-          {/* Bottom Buttons */}
-          <div className="flex gap-3 justify-between">
-            <button className="flex items-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-700 px-2.5 py-1.5 rounded-lg text-sm font-medium transition-colors w-fit">
-              <User className="w-4 h-4" />
-              Manage Subscription
-            </button>
-            <button className="flex items-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-700 px-2.5 py-1.5 rounded-lg text-sm font-medium transition-colors">
-              <HelpCircle className="w-4 h-4" />
-              FAQ
-            </button>
+            <div className={`px-3 py-1 rounded-full text-sm font-medium ${getPlanBadgeColor()}`}>
+              {getPlanDisplayName()}
+            </div>
           </div>
         </div>
 
-        <div className="border-l-1 border-l-transparent p-4 flex justify-between flex-col">
-          {tokenItems(user.tokens).map((item, index) => (
-            <div key={index} className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <div className="text-gray-500">{item.icon}</div>
-                <span className="text-gray-600 text-sm">{item.label}</span>
-                {item.hasInfo && <HelpCircle className="w-3 h-3 text-gray-400" />}
+        {/* Plan Details - Compact Horizontal Layout */}
+        <div className="px-6 py-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            {/* Billing Period */}
+            <div className="flex flex-col items-center text-center p-2 bg-gray-50 rounded-lg">
+              <div className="p-1 bg-white rounded mb-2">
+                <Calendar className="w-4 h-4 text-gray-600" />
               </div>
-              <div className="text-right">
-                {item.value !== null && (
-                  <span className="text-gray-600 text-sm">
-                    {item.total ? `${item.value} / ${item.total}` : item.value}
-                  </span>
-                )}
+              <span className="text-gray-900 font-medium text-xs mb-1">Billing</span>
+              <span className="text-gray-700 font-semibold text-sm">{user.isFreeUser ? 'N/A' : 'Monthly'}</span>
+            </div>
+
+            {/* Tokens */}
+            <div className="flex flex-col items-center text-center p-2 bg-gray-50 rounded-lg">
+              <div className="p-1 bg-white rounded mb-2">
+                <TokensSVG color1="#6b7280" color2="#6b7280" id="tokensIcon" />
+              </div>
+              <span className="text-gray-900 font-medium text-xs mb-1">Tokens</span>
+              <div className="text-center">
+                <span className="text-gray-700 font-semibold text-sm">{getTokensDisplay()}</span>
+                {user.isLegacyUser && <p className="text-xs text-purple-600">No limits</p>}
               </div>
             </div>
-          ))}
 
-          {/* Upgrade Button */}
-          <div className="flex justify-end">
-            <button className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 transform hover:scale-105">
-              ✨ Upgrade
-            </button>
+            {/* Pricing */}
+            {!user.isFreeUser && user.stripeSubscription && (
+              <div className="flex flex-col items-center text-center p-2 bg-gray-50 rounded-lg">
+                <div className="p-1 bg-white rounded mb-2">
+                  <CreditCard className="w-4 h-4 text-gray-600" />
+                </div>
+                <span className="text-gray-900 font-medium text-xs mb-1">Cost</span>
+                <span className="text-gray-700 font-semibold text-sm">
+                  {formatPrice(user.stripeSubscription.planPrice)}
+                </span>
+              </div>
+            )}
+
+            {/* Next Payment */}
+            {!user.isFreeUser && user.stripeSubscription?.currentPeriodEnd && (
+              <div className="flex flex-col items-center text-center p-2 bg-gray-50 rounded-lg">
+                <div className="p-1 bg-white rounded mb-2">
+                  <Calendar className="w-4 h-4 text-gray-600" />
+                </div>
+                <span className="text-gray-900 font-medium text-xs mb-1">Next Payment</span>
+                <span className="text-gray-700 font-semibold text-sm">
+                  {formatDate(user.stripeSubscription.currentPeriodEnd)}
+                </span>
+              </div>
+            )}
           </div>
         </div>
       </div>
