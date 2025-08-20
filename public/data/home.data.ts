@@ -1,3 +1,5 @@
+import { Crown, Gift, Sparkles } from 'lucide-react'
+
 export const plans = [
   {
     id: 'free',
@@ -18,7 +20,8 @@ export const plans = [
     textColor: 'text-gray-600',
     bgColor: 'bg-gray-50',
     borderColor: 'border-gray-200',
-    popular: false
+    popular: false,
+    icon: Gift
   },
   {
     id: 'comfort',
@@ -40,7 +43,9 @@ export const plans = [
     textColor: 'text-blue-600',
     bgColor: 'bg-blue-50',
     borderColor: 'border-blue-200',
-    popular: true
+    popular: true,
+    icon: Sparkles,
+    gradient: 'from-blue-500 to-purple-600'
   },
   {
     id: 'legacy',
@@ -63,6 +68,8 @@ export const plans = [
     textColor: 'text-purple-600',
     bgColor: 'bg-purple-50',
     borderColor: 'border-purple-200',
-    popular: false
+    popular: false,
+    icon: Crown,
+    gradient: 'from-purple-600 to-pink-600'
   }
 ]

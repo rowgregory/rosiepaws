@@ -123,7 +123,7 @@ const Login = () => {
             <div className="text-center mb-8">
               🎉
               <span className="mx-2 bg-gradient-to-r from-orange-600 to-pink-600 bg-clip-text text-transparent font-semibold">
-                Sign up now and get 750 tokens daily
+                Sign up now and get 180 tokens daily
               </span>
               🎉
               <h2 className="text-2xl font-bold text-gray-900 mb-2">

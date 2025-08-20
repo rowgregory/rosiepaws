@@ -2,13 +2,13 @@
 
 import React, { FC } from 'react'
 import { Provider } from 'react-redux'
-import PageWrapper from './page-wrapper'
 import { store } from './redux/store'
+import PageWrapper from './page-wrapper'
 
-const ReduxWrapper: FC<{ children: any; session: any }> = ({ children, session }) => {
+const ReduxWrapper: FC<{ children: any }> = ({ children }) => {
   return (
     <Provider store={store}>
-      <PageWrapper user={session?.user || {}}>{children}</PageWrapper>
+      <PageWrapper>{children}</PageWrapper>
     </Provider>
   )
 }

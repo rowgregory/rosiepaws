@@ -35,8 +35,8 @@ export const seizureDeleteTokenCost = parseInt(process.env.NEXT_PUBLIC_SEIZURE_D
 export const movementDeleteTokenCost = parseInt(process.env.NEXT_PUBLIC_MOVEMENT_DELETE_TOKEN_COST!) || 60
 
 // Other costs
-export const galleryUploadTokenCost = parseInt(process.env.NEXT_PUBLIC_GALLERY_UPLOAD_TOKEN_COST!) || 45
-export const galleryDeleteTokenCost = parseInt(process.env.NEXT_PUBLIC_GALLERY_DELETE_TOKEN_COST!) || 25
+export const galleryUploadTokenCost = parseInt(process.env.NEXT_PUBLIC_GALLERY_UPLOAD_TOKEN_COST!) || 10
+export const galleryDeleteTokenCost = parseInt(process.env.NEXT_PUBLIC_GALLERY_DELETE_TOKEN_COST!) || 5
 
 // Tier prices
 export const freeTierPrice = parseFloat(process.env.NEXT_PUBLIC_FREE_TIER_PRICE!) || 0
@@ -49,20 +49,10 @@ export const comfortTierName = 'Comfort'
 export const legacyTierName = 'Legacy'
 
 // Tier tokens
-export const freeTierDailyTokens = parseInt(process.env.FREE_TIER_DAILY_TOKENS!) || 750
+export const freeTierDailyTokens = parseInt(process.env.FREE_TIER_DAILY_TOKENS!) || 180
 export const freeTierMonthlyTokens = 0
-export const comfortTierMonthlyTokens = parseInt(process.env.COMFORT_TIER_MONTHLY_TOKENS!) || 17500
+export const comfortTierMonthlyTokens = parseInt(process.env.COMFORT_TIER_MONTHLY_TOKENS!) || 12000
 export const legacyTierMonthlyTokens = 'Unlimited'
-
-// Free (750 tokens daily - pain, feeding, water only)
-// Basic care: 3 feedings (255) + 3 water (270) + 2 pain scores (150) = 675 tokens
-// Pain focus: 2 feedings (170) + 2 water (180) + 5 pain scores (375) = 725 tokens
-// Maximum: 2 feedings (170) + 2 water (180) + 6 pain scores (450) = 800 tokens (over limit)
-
-// Comfort (17,500 monthly / ~1,500 daily)
-// Daily care: 2 feedings (170) + 3 water (270) + 2 pain (150) + 1 movement (225) + 1 medication (225) + 1 walk (125) = 1,165 tokens
-// Medical focus: 1 feeding (85) + 2 water (180) + 3 pain (225) + 2 medications (450) + 1 blood sugar (300) = 1,240 tokens
-// Active day: 3 feedings (255) + 2 water (180) + 2 pain (150) + 2 movements (450) + 1 appointment (150) + editing (200) = 1,385 tokens
 
 // Premium (Unlimited)
 // No limits: Track everything, edit freely, handle medical emergencies without token anxiety

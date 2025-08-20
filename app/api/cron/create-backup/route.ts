@@ -101,5 +101,7 @@ export async function GET(req: NextRequest) {
       action: 'Send backup data',
       sliceName: sliceAdmin
     })
+  } finally {
+    await prisma.$disconnect()
   }
 }

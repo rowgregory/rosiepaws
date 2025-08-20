@@ -19,6 +19,19 @@ export const backdropVariants = {
   exit: { opacity: 0 }
 }
 
+export const cardVariants: any = {
+  hidden: { y: 20, opacity: 0 },
+  visible: (i: number) => ({
+    y: 0,
+    opacity: 1,
+    transition: {
+      delay: i * 0.1,
+      duration: 0.3,
+      ease: 'easeOut'
+    }
+  })
+}
+
 export * from './public/blood-sugar'
 export * from './public/feeding'
 export * from './public/medication'

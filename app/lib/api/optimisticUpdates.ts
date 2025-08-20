@@ -33,9 +33,8 @@ export const createOptimisticHandlers = (entityConfig: {
           })
         )
         dispatch(updateTokensAction(response.user))
-      } catch (error) {
+      } catch {
         dispatch(removeAction(tempId))
-        throw error
       }
     }
 
@@ -65,7 +64,7 @@ export const createOptimisticHandlers = (entityConfig: {
           })
         )
         dispatch(updateTokensAction(response.user))
-      } catch (error) {
+      } catch {
         if (originalEntity) {
           dispatch(
             updateAction({
@@ -74,7 +73,6 @@ export const createOptimisticHandlers = (entityConfig: {
             })
           )
         }
-        throw error
       }
     }
 

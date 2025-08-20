@@ -70,6 +70,7 @@ export const useAppDispatch: () => AppDispatch = useDispatch
 
 export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector
 
+export const useUserSelector = () => useAppSelector((state) => state.user)
 export const usePetSelector = () => useAppSelector((state) => state.pet)
 export const usePainScoreSelector = () => useAppSelector((state) => state.painScore)
 export const useFeedingSelector = () => useAppSelector((state) => state.feeding)

@@ -8,6 +8,9 @@ import { IGalleryItemUpload } from '@/app/guardian/gallery/page'
 import { MediaType } from '@prisma/client'
 import { Filter, Grid3X3, ImageIcon, List, Plus, Search, Upload, Video, X } from 'lucide-react'
 import formatFileSize from '@/app/lib/utils/public/dashboard/formatFileSize'
+import { setOpenNotEnoughTokensModal } from '@/app/redux/features/appSlice'
+import { setOpenNeedToUpgradeDrawer } from '@/app/redux/features/dashboardSlice'
+import { galleryUploadTokenCost } from '@/app/lib/constants/public/token'
 
 interface IUploadSectionMyGallery {
   searchTerm: any
@@ -55,6 +58,7 @@ const UploadSectionMyGallery: FC<IUploadSectionMyGallery> = ({
 
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault()
+
     setDragOver(false)
     const files = e.dataTransfer.files
     if (files && files[0]) {
@@ -64,6 +68,15 @@ const UploadSectionMyGallery: FC<IUploadSectionMyGallery> = ({
 
   const handleUpload = async () => {
     if (!selectedFile) return
+
+    if (user.isFreeUser) {
+      dispatch(setOpenNeedToUpgradeDrawer())
+      return
+    }
+    if (user.tokens < galleryUploadTokenCost) {
+      dispatch(setOpenNotEnoughTokensModal(galleryUploadTokenCost))
+      return
+    }
 
     setUploading(true)
 

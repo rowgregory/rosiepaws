@@ -1,6 +1,6 @@
 import { useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { HelpCircle, ChevronDown, ChevronUp } from 'lucide-react'
+import { motion } from 'framer-motion'
+import { ChevronDown } from 'lucide-react'
 import { faqData } from '@/app/lib/constants'
 
 const FAQ = () => {
@@ -11,57 +11,48 @@ const FAQ = () => {
   }
 
   return (
-    <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-6">
-      {/* FAQ Section */}
-      <div className="bg-gradient-to-r from-purple-50 to-violet-50 p-6 rounded-xl border border-purple-200">
-        <div className="flex items-center space-x-3 mb-6">
-          <HelpCircle className="w-6 h-6 text-purple-600" />
-          <h3 className="text-lg font-semibold text-gray-900">Frequently Asked Questions</h3>
-        </div>
+    <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-6 p-6">
+      <div className="text-center mb-12">
+        <h2 className="text-3xl font-bold text-gray-900 mb-4">Frequently Asked Questions</h2>
+      </div>
 
-        <div className="space-y-4">
-          {faqData.map((faq, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.05 }}
-              className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm"
+      <div className="space-y-3">
+        {faqData.map((faq, index) => (
+          <div
+            key={index}
+            className="group border border-gray-200 rounded-2xl bg-white hover:shadow-lg hover:border-gray-300 transition-all duration-300"
+          >
+            <button
+              onClick={() => toggleItem(index)}
+              className="w-full px-8 py-6 text-left focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 rounded-2xl"
             >
-              <button
-                onClick={() => toggleItem(index)}
-                className="w-full px-6 py-4 text-left hover:bg-gray-50 transition-colors focus:outline-none"
-              >
-                <div className="flex items-center justify-between">
-                  <h4 className="font-medium text-gray-900 pr-4">{faq.question}</h4>
-                  {expandedItems.includes(index) ? (
-                    <ChevronUp className="w-5 h-5 text-purple-600 flex-shrink-0" />
-                  ) : (
-                    <ChevronDown className="w-5 h-5 text-purple-600 flex-shrink-0" />
-                  )}
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-semibold text-gray-900 group-hover:text-purple-700 transition-colors pr-4">
+                  {faq.question}
+                </h3>
+                <div
+                  className={`transform transition-transform duration-300 ${
+                    expandedItems.includes(index) ? 'rotate-180' : 'rotate-0'
+                  }`}
+                >
+                  <ChevronDown className="w-6 h-6 text-gray-400 group-hover:text-purple-600" />
                 </div>
-              </button>
+              </div>
+            </button>
 
-              <AnimatePresence>
-                {expandedItems.includes(index) && (
-                  <motion.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: 'auto', opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.3, ease: 'easeInOut' }}
-                    className="overflow-hidden"
-                  >
-                    <div className="px-6 pb-4 border-t border-gray-100">
-                      <div className="pt-4">
-                        <p className="text-sm text-gray-600 leading-relaxed">{faq.answer}</p>
-                      </div>
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </motion.div>
-          ))}
-        </div>
+            <div
+              className={`overflow-hidden transition-all duration-500 ease-in-out ${
+                expandedItems.includes(index) ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
+              }`}
+            >
+              <div className="px-8 pb-6 border-t border-gray-100 mt-2">
+                <div className="pt-6">
+                  <p className="text-gray-700 leading-7 text-base">{faq.answer}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}
       </div>
     </motion.div>
   )

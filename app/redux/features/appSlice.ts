@@ -56,6 +56,8 @@ export interface AppStatePayload {
   lastTempId: string
   firstPetModal: boolean
   petName: string // For FirstPetModal
+  notEnoughTokensModal: boolean
+  tokensNeeded: number
 }
 
 const mediaDataInitialState: ModalUploaderPayload = {
@@ -101,7 +103,9 @@ const initialAppState: AppStatePayload = {
   hasInitiallyLoaded: false,
   lastTempId: '',
   firstPetModal: false,
-  petName: ''
+  petName: '',
+  notEnoughTokensModal: false,
+  tokensNeeded: 0
 }
 
 interface FetchAppDataPayload {
@@ -242,7 +246,14 @@ export const appSlice = createSlice({
       state.petName = payload
     },
     setCloseFirstPetModal: (state) => {
-      state.firstPetModal = true
+      state.firstPetModal = false
+    },
+    setOpenNotEnoughTokensModal: (state, { payload }) => {
+      state.notEnoughTokensModal = true
+      state.tokensNeeded = payload
+    },
+    setCloseNotEnoughTokensModal: (state) => {
+      state.notEnoughTokensModal = false
     }
   },
   extraReducers: (builder) => {
@@ -307,5 +318,7 @@ export const {
   setInitiallyLoaded,
   setLastTempId,
   setOpenFirstPetModal,
-  setCloseFirstPetModal
+  setCloseFirstPetModal,
+  setOpenNotEnoughTokensModal,
+  setCloseNotEnoughTokensModal
 } = appSlice.actions

@@ -141,79 +141,72 @@ const TodaysProgressSection = ({ waters, feedings, painScores, pets }: any) => {
   ]
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.2 }}
-      className="lg:col-span-5"
-    >
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 h-full">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-lg font-semibold text-gray-900">Today&apos;s Progress</h2>
-          <BarChart3 className="w-5 h-5 text-gray-400" />
-        </div>
+    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 h-full">
+      <div className="flex items-center justify-between mb-6">
+        <h2 className="text-lg font-semibold text-gray-900">Today&apos;s Progress</h2>
+        <BarChart3 className="w-5 h-5 text-gray-400" />
+      </div>
 
-        <div className="space-y-6">
-          {progressItems.map((item) => (
-            <div key={item.label}>
-              <div className="flex justify-between items-center mb-2">
-                <span className="text-sm font-medium text-gray-700">{item.label}</span>
-                <span className="text-sm font-semibold text-gray-900">{item.value}%</span>
-              </div>
-              <div className="w-full bg-gray-200 rounded-full h-2">
-                <div
-                  className={`${item.color} h-2 rounded-full transition-all duration-300`}
-                  style={{ width: `${item.value}%` }}
-                ></div>
-              </div>
-              <p className="text-xs text-gray-500 mt-1">{item.description}</p>
+      <div className="space-y-6">
+        {progressItems.map((item) => (
+          <div key={item.label}>
+            <div className="flex justify-between items-center mb-2">
+              <span className="text-sm font-medium text-gray-700">{item.label}</span>
+              <span className="text-sm font-semibold text-gray-900">{item.value}%</span>
             </div>
-          ))}
-
-          {/* Collapsible Progress Calculation Explanation */}
-          <div className="mt-6 pt-4 border-t border-gray-200">
-            <button
-              onClick={() => setShowExplanation(!showExplanation)}
-              className="group flex items-center justify-between w-full text-left hover:bg-gray-50 p-2 rounded transition-colors"
-            >
-              <span className="text-xs font-medium text-gray-600">How are these percentages calculated?</span>
-              <ChevronRight
-                className={`w-3 h-3 text-gray-400 group-hover:text-gray-600 transition-all duration-200 ${
-                  showExplanation ? 'transform rotate-90' : ''
-                }`}
-              />
-            </button>
-
-            {showExplanation && (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                exit={{ opacity: 0, height: 0 }}
-                transition={{ duration: 0.2 }}
-                className="mt-3 space-y-2 text-xs text-gray-500 overflow-hidden"
-              >
-                <div className="p-2 bg-gray-50 rounded border-l-2 border-red-300">
-                  <strong className="text-red-700">Pain Monitoring:</strong> Based on 3 pain assessments per day
-                  (morning, afternoon, evening) for optimal comfort management.
-                </div>
-                <div className="p-2 bg-gray-50 rounded border-l-2 border-green-300">
-                  <strong className="text-green-700">Activity Goal:</strong> Senior pets (10+ years): 30 min/day for
-                  dogs, 15 min/day for cats. Younger pets need 60 min/day (dogs) or 30 min/day (cats).
-                </div>
-                <div className="p-2 bg-gray-50 rounded border-l-2 border-cyan-300">
-                  <strong className="text-cyan-700">Hydration Target:</strong> Calculated as 60ml per kg body weight for
-                  dogs, 50ml per kg for cats (veterinary standard).
-                </div>
-                <div className="p-2 bg-gray-50 rounded border-l-2 border-orange-300">
-                  <strong className="text-orange-700">Feeding Schedule:</strong> Based on 3 meals per day for optimal
-                  medication absorption and blood sugar stability.
-                </div>
-              </motion.div>
-            )}
+            <div className="w-full bg-gray-200 rounded-full h-2">
+              <div
+                className={`${item.color} h-2 rounded-full transition-all duration-300`}
+                style={{ width: `${item.value}%` }}
+              ></div>
+            </div>
+            <p className="text-xs text-gray-500 mt-1">{item.description}</p>
           </div>
+        ))}
+
+        {/* Collapsible Progress Calculation Explanation */}
+        <div className="mt-6 pt-4 border-t border-gray-200">
+          <button
+            onClick={() => setShowExplanation(!showExplanation)}
+            className="group flex items-center justify-between w-full text-left hover:bg-gray-50 p-2 rounded transition-colors"
+          >
+            <span className="text-xs font-medium text-gray-600">How are these percentages calculated?</span>
+            <ChevronRight
+              className={`w-3 h-3 text-gray-400 group-hover:text-gray-600 transition-all duration-200 ${
+                showExplanation ? 'transform rotate-90' : ''
+              }`}
+            />
+          </button>
+
+          {showExplanation && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.2 }}
+              className="mt-3 space-y-2 text-xs text-gray-500 overflow-hidden"
+            >
+              <div className="p-2 bg-gray-50 rounded border-l-2 border-red-300">
+                <strong className="text-red-700">Pain Monitoring:</strong> Based on 3 pain assessments per day (morning,
+                afternoon, evening) for optimal comfort management.
+              </div>
+              <div className="p-2 bg-gray-50 rounded border-l-2 border-green-300">
+                <strong className="text-green-700">Activity Goal:</strong> Senior pets (10+ years): 30 min/day for dogs,
+                15 min/day for cats. Younger pets need 60 min/day (dogs) or 30 min/day (cats).
+              </div>
+              <div className="p-2 bg-gray-50 rounded border-l-2 border-cyan-300">
+                <strong className="text-cyan-700">Hydration Target:</strong> Calculated as 60ml per kg body weight for
+                dogs, 50ml per kg for cats (veterinary standard).
+              </div>
+              <div className="p-2 bg-gray-50 rounded border-l-2 border-orange-300">
+                <strong className="text-orange-700">Feeding Schedule:</strong> Based on 3 meals per day for optimal
+                medication absorption and blood sugar stability.
+              </div>
+            </motion.div>
+          )}
         </div>
       </div>
-    </motion.div>
+    </div>
   )
 }
 

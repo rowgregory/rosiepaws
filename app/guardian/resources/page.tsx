@@ -2,8 +2,9 @@
 
 import Picture from '@/app/components/common/Picture'
 import ResourcesHeader from '@/app/components/guardian/resources/ResourcesHeader'
+import { setOpenNeedToUpgradeDrawer } from '@/app/redux/features/dashboardSlice'
 import { useGetAllMediaQuery, useUpdateAnalyticsMutation } from '@/app/redux/services/mediaApi'
-import { RootState, useAppSelector } from '@/app/redux/store'
+import { RootState, useAppDispatch, useAppSelector } from '@/app/redux/store'
 import { IMedia } from '@/app/types'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
@@ -20,7 +21,8 @@ import {
   X,
   Filter,
   SortAsc,
-  File
+  File,
+  Lock
 } from 'lucide-react'
 import { useState } from 'react'
 
@@ -294,6 +296,7 @@ const MediaModal = ({ item, onClose, toggleFavorite, handleDownload, favorites }
 }
 
 const UserMediaLibrary = () => {
+  const dispatch = useAppDispatch()
   const [viewMode, setViewMode] = useState('grid')
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('all')
@@ -317,13 +320,15 @@ const UserMediaLibrary = () => {
     return userLevel >= itemLevel
   }
 
-  // Filter and sort items
-  const filteredItems = media
-    ?.filter((item: { isActive: any; type: string; title: string; description: string; tags: any[]; tier: string }) => {
-      // Only show active items
-      if (!item.isActive) return false
+  const { accessibleItems, lockedItems } = media?.reduce(
+    (
+      acc: { accessibleItems: any[]; lockedItems: any[] },
+      item: { isActive: any; type: string; title: string; description: string; tags: any[]; tier: string }
+    ) => {
+      // Only process active items
+      if (!item.isActive) return acc
 
-      // Tier-based access control
+      // Determine user tier
       const userTier = user?.isFreeUser
         ? 'free'
         : user?.isComfortUser
@@ -332,12 +337,10 @@ const UserMediaLibrary = () => {
             ? 'legacy'
             : 'free'
 
-      if (!canAccessTier(userTier, item.tier)) return false
-
-      // Category filter
+      // Check if item matches category filter
       const matchesCategory = selectedCategory === 'all' || item.type === selectedCategory
 
-      // Search filter
+      // Check if item matches search filter
       const searchLower = searchQuery.toLowerCase()
       const matchesSearch =
         searchQuery === '' ||
@@ -345,9 +348,23 @@ const UserMediaLibrary = () => {
         (item.description && item.description.toLowerCase().includes(searchLower)) ||
         item.tags.some((tag) => tag.toLowerCase().includes(searchLower))
 
-      return matchesCategory && matchesSearch
-    })
-    .sort((a: any, b: any) => {
+      // Only include items that match category and search filters
+      if (matchesCategory && matchesSearch) {
+        if (canAccessTier(userTier, item.tier)) {
+          acc.accessibleItems.push(item)
+        } else {
+          acc.lockedItems.push({ ...item, isLocked: true })
+        }
+      }
+
+      return acc
+    },
+    { accessibleItems: [], lockedItems: [] }
+  ) || { accessibleItems: [], lockedItems: [] }
+
+  // Sort function
+  const sortItems = (items: any[]) => {
+    return items.sort((a: any, b: any) => {
       switch (sortBy) {
         case 'newest':
           return new Date(b.uploadDate).getTime() - new Date(a.uploadDate).getTime()
@@ -363,6 +380,11 @@ const UserMediaLibrary = () => {
           return 0
       }
     })
+  }
+
+  // Apply sorting to both arrays
+  const filteredItems = sortItems(accessibleItems)
+  const filteredLockedItems = sortItems(lockedItems)
 
   const handleDownload = async (item: { type: string; id: any; filePath: string | URL | undefined }) => {
     if (item.type === 'EBOOK') {
@@ -395,11 +417,14 @@ const UserMediaLibrary = () => {
     }
   }
 
-  const locked: [] = []
-
   return (
     <div>
-      <ResourcesHeader setActiveTab={setActiveTab} activeTab={activeTab} available={filteredItems} locked={locked} />
+      <ResourcesHeader
+        setActiveTab={setActiveTab}
+        activeTab={activeTab}
+        available={filteredItems}
+        locked={filteredLockedItems}
+      />
 
       {/* Filters */}
       <div className="w-full min-h-[calc(100dvh-64px)] mx-auto p-6 bg-gray-50">
@@ -482,61 +507,86 @@ const UserMediaLibrary = () => {
           }`}
         >
           <AnimatePresence>
-            {filteredItems?.map((item: IMedia, index: number) => (
+            {/* Show items if they exist */}
+            {((activeTab === 'available' && filteredItems?.length > 0) ||
+              (activeTab === 'locked' && filteredLockedItems?.length > 0)) &&
+              (activeTab === 'locked' ? filteredLockedItems : filteredItems)?.map(
+                (item: IMedia & { isLocked: boolean }, index: number) => (
+                  <motion.div
+                    key={item.id}
+                    layout
+                    className={viewMode === 'grid' ? 'min-h-[280px]' : 'h-32'}
+                    initial={{
+                      opacity: 0,
+                      y: 30,
+                      scale: 0.9
+                    }}
+                    animate={{
+                      opacity: 1,
+                      y: 0,
+                      scale: 1
+                    }}
+                    exit={{
+                      opacity: 0,
+                      scale: 0.8,
+                      y: -20
+                    }}
+                    transition={{
+                      duration: 0.4,
+                      delay: index * 0.05,
+                      ease: [0.25, 0.4, 0.25, 1],
+                      type: 'spring',
+                      damping: 25,
+                      stiffness: 400
+                    }}
+                  >
+                    <div className="relative">
+                      {item.isLocked && (
+                        <div
+                          className="absolute inset-0 z-10 bg-black/20 backdrop-blur-md cursor-pointer flex items-center justify-center group transition-all duration-200 hover:bg-black/30"
+                          onClick={() => dispatch(setOpenNeedToUpgradeDrawer())}
+                        >
+                          <div className="bg-white/10 backdrop-blur-sm rounded-full p-4 border border-white/20 shadow-lg group-hover:scale-110 transition-transform duration-200">
+                            <Lock className="w-6 h-6 text-white drop-shadow-sm" />
+                          </div>
+                        </div>
+                      )}
+                      <MediaCard
+                        key={item.id}
+                        item={item}
+                        favorites={favorites}
+                        handleView={handleView}
+                        setFavorites={setFavorites}
+                        toggleFavorite={toggleFavorite}
+                        handleDownload={handleDownload}
+                      />
+                    </div>
+                  </motion.div>
+                )
+              )}
+
+            {/* Show empty state if no items */}
+            {((activeTab === 'available' && filteredItems?.length === 0) ||
+              (activeTab === 'locked' && filteredLockedItems?.length === 0)) && (
               <motion.div
-                key={item.id}
-                layout
-                className={viewMode === 'grid' ? 'min-h-[280px]' : 'h-32'}
-                initial={{
-                  opacity: 0,
-                  y: 30,
-                  scale: 0.9
-                }}
-                animate={{
-                  opacity: 1,
-                  y: 0,
-                  scale: 1
-                }}
-                exit={{
-                  opacity: 0,
-                  scale: 0.8,
-                  y: -20
-                }}
-                transition={{
-                  duration: 0.4,
-                  delay: index * 0.05,
-                  ease: [0.25, 0.4, 0.25, 1],
-                  type: 'spring',
-                  damping: 25,
-                  stiffness: 400
-                }}
+                key="empty-state"
+                className="col-span-full flex justify-center items-center min-h-[400px]"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.3 }}
               >
-                <MediaCard
-                  key={item.id}
-                  item={item}
-                  favorites={favorites}
-                  handleView={handleView}
-                  setFavorites={setFavorites}
-                  toggleFavorite={toggleFavorite}
-                  handleDownload={handleDownload}
-                />
+                <div className="text-center py-20">
+                  <div className="w-32 h-32 mx-auto mb-8 bg-slate-100 rounded-3xl flex items-center justify-center">
+                    <File className="w-16 h-16 text-slate-300" />
+                  </div>
+                  <h3 className="text-2xl font-light text-slate-600 mb-3">No resources found</h3>
+                  <p className="text-slate-500">No resources available at the moment</p>
+                </div>
               </motion.div>
-            ))}
+            )}
           </AnimatePresence>
         </div>
-
-        {/* Empty State */}
-        {filteredItems?.length === 0 && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }}>
-            <div className="text-center py-20">
-              <div className="w-32 h-32 mx-auto mb-8 bg-slate-100 rounded-3xl flex items-center justify-center">
-                <File className="w-16 h-16 text-slate-300" />
-              </div>
-              <h3 className="text-2xl font-light text-slate-600 mb-3">No resources found</h3>
-              <p className="text-slate-500">No resources available at the moment</p>
-            </div>
-          </motion.div>
-        )}
       </div>
 
       {/* Modal */}

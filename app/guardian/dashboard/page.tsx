@@ -17,14 +17,13 @@ import LargeSeizureGraph from '@/app/components/guardian/dashboard/LargeSeizureG
 import LargeBloodSugarGraph from '@/app/components/guardian/dashboard/LargeBloodSugarGraph'
 import LargeAppointmentChart from '@/app/components/guardian/dashboard/LargeAppointmentChart'
 import MiniAppointmentChart from '@/app/components/guardian/dashboard/MiniAppointmentChart'
-import TokenCounter from '@/app/components/guardian/TokenCounter'
 import { Activity, ArrowDown, ArrowLeftIcon, ArrowRightIcon, Droplets, Heart, Plus, Utensils } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import LargeVitalSignsGraph from '@/app/components/guardian/dashboard/LargeVitalSignsGraph'
 import { motion } from 'framer-motion'
 import MiniMovementsGraph from '@/app/components/guardian/dashboard/MiniMovementGraph'
 import LargeMovementsGraph from '@/app/components/guardian/dashboard/LargeMovementGraph'
-import { metricConfigButton, metricsConfigCards } from '@/app/lib/constants/public/dashboard/displayConstants'
+import { metricsConfigCards } from '@/app/lib/constants/public/dashboard/displayConstants'
 import { setOpenPainDrawer } from '@/app/redux/features/painSlice'
 import Link from 'next/link'
 import { setOpenFeedingDrawer } from '@/app/redux/features/feedingSlice'
@@ -34,15 +33,17 @@ import { setOpenMovementDrawer } from '@/app/redux/features/movementSlice'
 import { setOpenAppointmentDrawer } from '@/app/redux/features/appointmentSlice'
 import { setOpenBloodSugarDrawer } from '@/app/redux/features/bloodSugarSlice'
 import { setOpenSeizureDrawer } from '@/app/redux/features/seizureSlice'
-import { getTodaysBloodSugarLogs } from '@/app/lib/utils'
 import { setOpenVitalSignsDrawer } from '@/app/redux/features/vitalSignsSlice'
 import MiniVitalSignsGraph from '@/app/components/guardian/dashboard/MiniVitalSignsGraph'
+import { setOpenNeedToUpgradeDrawer } from '@/app/redux/features/dashboardSlice'
+import { setOpenNotEnoughTokensModal } from '@/app/redux/features/appSlice'
 
 const GuardianDashboard = () => {
   const dispatch = useAppDispatch()
   const { push } = useRouter()
   const [selectedMetric, setSelectedMetric] = useState('overview')
   const { pet, loading, chartData, stats, onboardingBanner, noLogs } = useAppSelector((state: RootState) => state.pet)
+  const { user } = useAppSelector((state: RootState) => state.user)
 
   const renderChart = () => {
     switch (selectedMetric) {
@@ -89,14 +90,62 @@ const GuardianDashboard = () => {
       return
     }
 
+    // Define tier access levels
+    const tierAccess: Record<string, Array<{ id: string; tokenCost: number }>> = {
+      free: [
+        { id: 'pain-scores', tokenCost: 75 },
+        { id: 'feedings', tokenCost: 85 },
+        { id: 'waters', tokenCost: 90 }
+      ],
+      comfort: [
+        { id: 'pain-scores', tokenCost: 75 },
+        { id: 'feedings', tokenCost: 85 },
+        { id: 'waters', tokenCost: 90 },
+        { id: 'vital-signs', tokenCost: 125 },
+        { id: 'movements', tokenCost: 275 },
+        { id: 'medications', tokenCost: 275 }
+      ],
+      legacy: [
+        { id: 'pain-scores', tokenCost: 75 },
+        { id: 'feedings', tokenCost: 85 },
+        { id: 'waters', tokenCost: 90 },
+        { id: 'vital-signs', tokenCost: 125 },
+        { id: 'movements', tokenCost: 275 },
+        { id: 'medications', tokenCost: 275 },
+        { id: 'appointments', tokenCost: 350 },
+        { id: 'blood-sugars', tokenCost: 400 },
+        { id: 'seizures', tokenCost: 500 }
+      ]
+    }
+
+    // Check if user has access to this metric
+    const userTier = user?.role?.toLowerCase() || 'free'
+    const allowedMetrics = tierAccess[userTier] || tierAccess.free
+    const metricAccess = allowedMetrics.find((m) => m.id === metric.id)
+
+    // Check tier access first
+    if (!metricAccess) {
+      dispatch(setOpenNeedToUpgradeDrawer())
+      return
+    }
+
+    // Check if user has enough tokens
+    const userTokens = user?.tokens || 0
+    const requiredTokens = metricAccess.tokenCost
+
+    if (userTokens < requiredTokens && !metric.hasLogs) {
+      dispatch(setOpenNotEnoughTokensModal(requiredTokens))
+      return
+    }
+
     // Handle metrics with no data - open drawer and navigate
     const noDataActions: Record<string, { drawer: any; route: string }> = {
       'pain-scores': { drawer: setOpenPainDrawer(), route: '/guardian/pets/pain' },
       feedings: { drawer: setOpenFeedingDrawer(), route: '/guardian/pets/feedings' },
       waters: { drawer: setOpenWaterDrawer(), route: '/guardian/pets/water' },
       'vital-signs': { drawer: setOpenVitalSignsDrawer(), route: '/guardian/pets/vital-signs' },
-      medications: { drawer: setOpenMedicationDrawer(), route: '/guardian/pets/medication' },
       movements: { drawer: setOpenMovementDrawer(), route: '/guardian/pets/movements' },
+      medications: { drawer: setOpenMedicationDrawer(), route: '/guardian/pets/medication' },
       appointments: { drawer: setOpenAppointmentDrawer(), route: '/guardian/pets/appointments' },
       'blood-sugars': { drawer: setOpenBloodSugarDrawer(), route: '/guardian/pets/blood-sugar' },
       seizures: { drawer: setOpenSeizureDrawer(), route: '/guardian/pets/seizure' }
@@ -109,8 +158,8 @@ const GuardianDashboard = () => {
       'feedings',
       'waters',
       'vital-signs',
-      'medications',
       'movements',
+      'medications',
       'appointments',
       'blood-sugars',
       'seizures'
@@ -254,27 +303,6 @@ const GuardianDashboard = () => {
                 <div className="flex items-center gap-x-3">
                   {selectedMetric !== 'overview' && (
                     <>
-                      <button
-                        onClick={() => {
-                          const config = metricConfigButton[selectedMetric as keyof typeof metricConfigButton]
-
-                          const todaysBloodSugars = getTodaysBloodSugarLogs(chartData.bloodSugars || [])
-                          const todaysBloodSugarsCount = todaysBloodSugars?.length
-                          const dailyLimit = 4
-                          const remainingReadings = Math.max(0, dailyLimit - todaysBloodSugarsCount)
-                          const canAddMore = remainingReadings > 0
-                          if (config && canAddMore) {
-                            dispatch(config.action)
-                          }
-                        }}
-                        className="inline-flex items-center gap-x-2 px-4 py-2 bg-gradient-to-r from-pink-500 to-orange-500 hover:from-pink-600 hover:to-orange-600 text-white text-sm font-medium rounded-full shadow-sm transition-all duration-200"
-                      >
-                        Log {metricConfigButton[selectedMetric as keyof typeof metricConfigButton]?.label || ''}
-                        <TokenCounter
-                          tokens={metricConfigButton[selectedMetric as keyof typeof metricConfigButton]?.tokens || 0}
-                        />
-                      </button>
-
                       <button
                         onClick={() => setSelectedMetric('overview')}
                         className={`px-4 py-2 rounded-full font-medium text-sm transition-colors flex items-center gap-x-1.5 bg-gray-100 text-gray-600 hover:bg-gray-200`}

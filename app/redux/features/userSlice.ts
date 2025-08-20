@@ -1,51 +1,7 @@
 import { Reducer, createSlice } from '@reduxjs/toolkit'
 import { userApi } from '../services/userApi'
-import { Pet } from '@/app/types'
-import { initialStripeSubscriptionState } from '@/app/lib/initial-states/stripe-subscription'
-
-export interface IUser {
-  stripeSubscription: any
-  id: string
-  firstName: string
-  lastName: string
-  email: string
-  image?: string
-  name?: string
-  role: string
-  isAdmin: boolean
-  isSuperUser: boolean
-  isFreeUser: boolean
-  isComfortUser: boolean
-  isLegacyUser: boolean
-  tokens: number
-  tokensUsed: number
-  createdAt: Date
-  updatedAt: Date
-
-  pets?: Pet[]
-}
-
-const userState: IUser = {
-  stripeSubscription: initialStripeSubscriptionState,
-  id: '',
-  firstName: '',
-  lastName: '',
-  email: '',
-  image: '',
-  name: '',
-  role: '',
-  isAdmin: false,
-  isSuperUser: false,
-  isFreeUser: false,
-  isComfortUser: false,
-  isLegacyUser: false,
-  tokens: 0,
-  tokensUsed: 0,
-  createdAt: new Date(),
-  updatedAt: new Date(),
-
-  pets: []
-}
+import { IUser } from '@/app/types'
+import { initialUserState } from '@/app/lib/initial-states/user'
 
 export interface UserStatePayload {
   loading: boolean
@@ -58,12 +14,12 @@ export interface UserStatePayload {
   tokenTransactions: any[]
 }
 
-const initialUserState: UserStatePayload = {
+const userInitialState: UserStatePayload = {
   loading: true,
   error: null,
   success: false,
   users: [],
-  user: userState,
+  user: initialUserState,
   usersCount: 0,
   noUsers: false,
   tokenTransactions: []
@@ -71,13 +27,13 @@ const initialUserState: UserStatePayload = {
 
 export const userSlice = createSlice({
   name: 'user',
-  initialState: initialUserState,
+  initialState: userInitialState,
   reducers: {
     clearUser: (state) => {
       state.error = null
       state.loading = false
       state.success = false
-      state.user = userState
+      state.user = initialUserState
     },
     setUsers: (state, { payload }: any) => {
       state.users = payload

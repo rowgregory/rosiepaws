@@ -3,7 +3,7 @@ import {
   guardianHomeLink,
   guardianPetsLink,
   guardianGalleryLink,
-  guardianSettingsLink,
+  guardianSettingsVetLink,
   guardianInfoLink,
   guardianResourcesLink,
   authLoginLink
@@ -84,8 +84,8 @@ export const publicDashboardLinks = (path: string, zeroPets: boolean) => [
   {
     icon: Settings,
     textKey: 'Settings',
-    linkKey: guardianSettingsLink,
-    isActive: path === guardianSettingsLink
+    linkKey: guardianSettingsVetLink,
+    isActive: path.includes('settings')
   },
   {
     icon: Info,

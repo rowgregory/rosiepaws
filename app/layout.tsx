@@ -28,7 +28,7 @@ export default async function RootLayout({
     <html lang="en">
       <body className={`${inter.variable} antialiased`}>
         <SessionProvider session={session}>
-          <ReduxWrapper session={session}>{children}</ReduxWrapper>
+          <ReduxWrapper>{children}</ReduxWrapper>
         </SessionProvider>
       </body>
     </html>

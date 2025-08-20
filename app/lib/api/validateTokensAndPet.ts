@@ -28,8 +28,25 @@ export async function validateTokensAndPet({
   user
 }: ValidationOptions): Promise<ValidationResult> {
   try {
+    const existingUser = await prisma.user.findFirst({
+      where: { id: user.id }
+    })
+
+    if (!existingUser) {
+      return {
+        success: false,
+        response: NextResponse.json(
+          {
+            message: `User not found`,
+            sliceName: slicePet
+          },
+          { status: 400 }
+        )
+      }
+    }
+
     // Check token balance
-    if (!user.isLegacyUser && user.tokens < tokenCost) {
+    if (!existingUser.isLegacyUser && existingUser.tokens < tokenCost) {
       await createLog('warning', `Insufficient tokens for ${actionName}`, {
         location: [`api route - ${req.method} ${req.url}`],
         name: 'InsufficientTokens',
@@ -38,13 +55,13 @@ export async function validateTokensAndPet({
         method: req.method,
         userId,
         requiredTokens: tokenCost,
-        availableTokens: user.tokens
+        availableTokens: existingUser.tokens
       })
       return {
         success: false,
         response: NextResponse.json(
           {
-            message: `Insufficient tokens. Required: ${tokenCost}, Available: ${user.tokens}`,
+            message: `Insufficient tokens. Required: ${tokenCost}, Available: ${existingUser.tokens}`,
             sliceName: slicePet
           },
           { status: 400 }

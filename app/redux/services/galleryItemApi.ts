@@ -1,5 +1,6 @@
 import { createOptimisticHandlers } from '@/app/lib/api/optimisticUpdates'
 import { api } from './api'
+import { setCloseGalleryItemDrawer } from '../features/galleryItemSlice'
 
 const BASE_URL = '/gallery'
 
@@ -22,6 +23,7 @@ const getGalleryItemHandlers = async () => {
         updateAction: updateGalleryItemInState,
         removeAction: removeGalleryItemFromState,
         updateTokensAction: updateUserTokens,
+        closeDrawer: setCloseGalleryItemDrawer,
         responseKey: 'galleryItem',
         getEntityFromState: (state: { galleryItem: { galleryItems: any[] } }, id: any) =>
           state.galleryItem.galleryItems.find((galleryItem) => galleryItem.id === id)

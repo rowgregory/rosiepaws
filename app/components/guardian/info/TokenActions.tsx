@@ -5,14 +5,15 @@ import { tokenActions } from '@/app/lib/constants'
 
 const TokenActions = () => {
   return (
-    <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-6">
+    <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-6 p-6">
       <div className="bg-gradient-to-r from-orange-50 to-red-50 p-6 rounded-xl border border-orange-200">
         <div className="flex items-center space-x-3 mb-4">
           <Activity className="w-6 h-6 text-orange-600" />
           <h3 className="text-lg font-semibold text-gray-900">Health Tracking Actions</h3>
         </div>
         <p className="text-gray-700 mb-4">
-          Each health logging action requires tokens to record vital information for disabled or end-of-life pet care.
+          Each health logging action requires tokens. Token costs vary by action type and operation (create, edit,
+          delete).
         </p>
       </div>
 
@@ -27,19 +28,39 @@ const TokenActions = () => {
               transition={{ delay: index * 0.1 }}
               className="bg-white p-6 rounded-xl border border-gray-200 hover:border-pink-300 transition-colors shadow-sm hover:shadow-md"
             >
-              <div className="flex items-center space-x-3 mb-3">
+              <div className="flex items-center space-x-3 mb-4">
                 <div className="p-2 bg-gradient-to-r from-pink-500/10 to-purple-500/10 rounded-lg">
                   <Icon className="w-6 h-6 text-pink-600" />
                 </div>
-                <div>
-                  <h4 className="font-semibold text-gray-900">{action.name}</h4>
+                <div className="flex-1">
+                  <h4 className="font-semibold text-gray-900 mb-1">{action.name}</h4>
+                  <p className="text-sm text-gray-600">{action.description}</p>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-gray-600">Create:</span>
                   <div className="flex items-center space-x-1">
-                    <Coins className="w-4 h-4 text-yellow-500" />
-                    <span className="text-sm font-medium text-gray-700">{action.cost} tokens</span>
+                    <Coins className="w-3 h-3 text-yellow-500" />
+                    <span className="font-medium text-gray-700">{action.createCost}</span>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-gray-600">Edit:</span>
+                  <div className="flex items-center space-x-1">
+                    <Coins className="w-3 h-3 text-blue-500" />
+                    <span className="font-medium text-gray-700">{action.editCost}</span>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-gray-600">Delete:</span>
+                  <div className="flex items-center space-x-1">
+                    <Coins className="w-3 h-3 text-red-500" />
+                    <span className="font-medium text-gray-700">{action.deleteCost}</span>
                   </div>
                 </div>
               </div>
-              <p className="text-sm text-gray-600">{action.description}</p>
             </motion.div>
           )
         })}
@@ -54,15 +75,29 @@ const TokenActions = () => {
           <div className="bg-white p-4 rounded-lg border border-cyan-100">
             <h4 className="font-medium text-gray-900 mb-2">Essential Care Priority</h4>
             <p className="text-sm text-gray-600">
-              Free users should prioritize pain (75), feeding (85), and water (90) logs for basic comfort monitoring.
-              These are the most important daily metrics.
+              Focus on Pain Score (75), Feeding (85), and Water Intake (90) for basic daily care. These provide the most
+              critical health insights for your pet&apos;s comfort.
             </p>
           </div>
           <div className="bg-white p-4 rounded-lg border border-cyan-100">
             <h4 className="font-medium text-gray-900 mb-2">Advanced Health Tracking</h4>
             <p className="text-sm text-gray-600">
-              Paid subscribers can track movements (225), medications (225), blood sugar (300), and seizures (400) for
-              comprehensive medical documentation.
+              Movement (275), Medication (275), Blood Sugar (400), and Seizure tracking (500) offer comprehensive
+              medical documentation for complex conditions.
+            </p>
+          </div>
+          <div className="bg-white p-4 rounded-lg border border-cyan-100">
+            <h4 className="font-medium text-gray-900 mb-2">Cost Management</h4>
+            <p className="text-sm text-gray-600">
+              Edit costs are lower than creation costs. Delete costs are higher to discourage accidental removals. Plan
+              your entries carefully to optimize token usage.
+            </p>
+          </div>
+          <div className="bg-white p-4 rounded-lg border border-cyan-100">
+            <h4 className="font-medium text-gray-900 mb-2">Pro Tip</h4>
+            <p className="text-sm text-gray-600">
+              Consider upgrading to a paid plan for unlimited access to all tracking features without token limitations
+              for comprehensive pet care management.
             </p>
           </div>
         </div>
