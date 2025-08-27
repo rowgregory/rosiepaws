@@ -1,52 +1,51 @@
 'use client'
 
+import React from 'react'
 import { motion } from 'framer-motion'
 import {
+  FileText,
   Shield,
-  Heart,
+  CheckCircle,
   Mail,
   Phone,
   MapPin,
-  FileText,
+  Heart,
   AlertTriangle,
-  CheckCircle,
-  Calendar,
-  CreditCard,
-  PawPrint
+  Users,
+  Database,
+  Lock,
+  Eye,
+  Download
 } from 'lucide-react'
 
-export default function TermsOfServicePage() {
+const TermsOfService = () => {
   const containerVariants: any = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.1,
-        delayChildren: 0.2
+        duration: 0.6,
+        staggerChildren: 0.1
       }
     }
   }
 
   const itemVariants: any = {
-    hidden: { y: 20, opacity: 0 },
+    hidden: { opacity: 0, y: 30 },
     visible: {
-      y: 0,
       opacity: 1,
-      transition: {
-        duration: 0.5
-      }
+      y: 0,
+      transition: { duration: 0.6 }
     }
   }
 
   const iconVariants: any = {
-    hidden: { scale: 0, rotate: -180 },
+    hidden: { scale: 0 },
     visible: {
       scale: 1,
-      rotate: 0,
       transition: {
         type: 'spring',
-        stiffness: 260,
-        damping: 20
+        duration: 0.8
       }
     }
   }
@@ -66,8 +65,8 @@ export default function TermsOfServicePage() {
             </motion.div>
             <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Terms of Service</h1>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Welcome to Rosie Paws! These terms govern your use of our pet care services and platform. By using our
-              services, you agree to these terms and conditions.
+              These terms govern your use of our pet health tracking platform and services. By creating an account, you
+              agree to these terms and conditions.
             </p>
             <motion.div
               initial={{ opacity: 0 }}
@@ -75,7 +74,7 @@ export default function TermsOfServicePage() {
               transition={{ delay: 0.8 }}
               className="mt-6 text-sm text-gray-500"
             >
-              Effective Date: {new Date().toLocaleDateString()} | Version 2.1
+              Effective Date: {new Date().toLocaleDateString()} | Version 1.0
             </motion.div>
           </motion.div>
 
@@ -85,81 +84,83 @@ export default function TermsOfServicePage() {
             className="bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl p-8 text-white"
           >
             <div className="text-center mb-8">
-              <PawPrint className="w-12 h-12 mx-auto mb-4" />
+              <Database className="w-12 h-12 mx-auto mb-4" />
               <h2 className="text-2xl font-bold mb-4">Quick Overview</h2>
               <p className="text-blue-100 max-w-2xl mx-auto">
-                Here&apos;s what you need to know about using Rosie Paws services in simple terms.
+                Here&apos;s what you need to know about using our pet health tracking platform in simple terms.
               </p>
             </div>
             <div className="grid md:grid-cols-3 gap-6">
               <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 text-center">
-                <CheckCircle className="w-8 h-8 mx-auto mb-4" />
-                <h3 className="font-semibold mb-2">Safe & Caring</h3>
-                <p className="text-sm text-blue-100">
-                  We provide professional pet care with your pet&apos;s safety as our priority
-                </p>
-              </div>
-              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 text-center">
-                <Calendar className="w-8 h-8 mx-auto mb-4" />
-                <h3 className="font-semibold mb-2">Flexible Booking</h3>
-                <p className="text-sm text-blue-100">
-                  Easy scheduling with clear cancellation and rescheduling policies
-                </p>
-              </div>
-              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 text-center">
                 <Shield className="w-8 h-8 mx-auto mb-4" />
-                <h3 className="font-semibold mb-2">Protected</h3>
-                <p className="text-sm text-blue-100">Fully insured services with transparent pricing and billing</p>
+                <h3 className="font-semibold mb-2">Privacy First</h3>
+                <p className="text-sm text-blue-100">
+                  Your pet&apos;s health data belongs to you and is kept completely private and secure
+                </p>
+              </div>
+              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 text-center">
+                <Users className="w-8 h-8 mx-auto mb-4" />
+                <h3 className="font-semibold mb-2">Free to Use</h3>
+                <p className="text-sm text-blue-100">
+                  Core health tracking features are completely free with optional premium resources
+                </p>
+              </div>
+              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 text-center">
+                <CheckCircle className="w-8 h-8 mx-auto mb-4" />
+                <h3 className="font-semibold mb-2">Your Control</h3>
+                <p className="text-sm text-blue-100">
+                  Export, edit, or delete your data anytime - you&apos;re always in complete control
+                </p>
               </div>
             </div>
           </motion.section>
 
-          {/* Service Agreement */}
+          {/* Platform Services */}
           <motion.section variants={itemVariants} className="bg-white rounded-2xl p-8 shadow-xl">
             <div className="flex items-center mb-6">
               <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center mr-4">
-                <PawPrint className="w-6 h-6 text-green-600" />
+                <Database className="w-6 h-6 text-green-600" />
               </div>
-              <h2 className="text-2xl font-bold text-gray-900">Service Agreement</h2>
+              <h2 className="text-2xl font-bold text-gray-900">Platform Services</h2>
             </div>
             <div className="space-y-6">
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-3">Our Services Include:</h3>
+                <h3 className="text-lg font-semibold text-gray-900 mb-3">Our Platform Includes:</h3>
                 <div className="grid md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <div className="flex items-center space-x-2">
                       <div className="w-2 h-2 bg-pink-500 rounded-full"></div>
-                      <span className="text-gray-700">Pet sitting and boarding</span>
+                      <span className="text-gray-700">Pain and symptom tracking</span>
                     </div>
                     <div className="flex items-center space-x-2">
                       <div className="w-2 h-2 bg-pink-500 rounded-full"></div>
-                      <span className="text-gray-700">Dog walking and exercise</span>
+                      <span className="text-gray-700">Medication and treatment logs</span>
                     </div>
                     <div className="flex items-center space-x-2">
                       <div className="w-2 h-2 bg-pink-500 rounded-full"></div>
-                      <span className="text-gray-700">Pet grooming and hygiene</span>
+                      <span className="text-gray-700">Feeding and water intake monitoring</span>
                     </div>
                     <div className="flex items-center space-x-2">
                       <div className="w-2 h-2 bg-pink-500 rounded-full"></div>
-                      <span className="text-gray-700">Veterinary coordination</span>
+                      <span className="text-gray-700">Exercise and movement tracking</span>
                     </div>
                   </div>
                   <div className="space-y-2">
                     <div className="flex items-center space-x-2">
                       <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
-                      <span className="text-gray-700">Pet transportation</span>
+                      <span className="text-gray-700">Appointment scheduling and reminders</span>
                     </div>
                     <div className="flex items-center space-x-2">
                       <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
-                      <span className="text-gray-700">Emergency pet care</span>
+                      <span className="text-gray-700">Vital signs and health monitoring</span>
                     </div>
                     <div className="flex items-center space-x-2">
                       <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
-                      <span className="text-gray-700">Pet training sessions</span>
+                      <span className="text-gray-700">Educational resources and guides</span>
                     </div>
                     <div className="flex items-center space-x-2">
                       <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
-                      <span className="text-gray-700">Health monitoring</span>
+                      <span className="text-gray-700">Data export for veterinary visits</span>
                     </div>
                   </div>
                 </div>
@@ -169,10 +170,10 @@ export default function TermsOfServicePage() {
                 <div className="flex items-start space-x-3">
                   <AlertTriangle className="w-5 h-5 text-yellow-600 mt-0.5 flex-shrink-0" />
                   <div>
-                    <h4 className="font-semibold text-yellow-800 mb-1">Service Requirements</h4>
+                    <h4 className="font-semibold text-yellow-800 mb-1">Not a Medical Service</h4>
                     <p className="text-sm text-yellow-700">
-                      All pets must be up-to-date on vaccinations and provide medical records. Aggressive or unsafe
-                      animals may be refused service for safety reasons.
+                      Our platform is a tracking tool only. We do not provide medical advice, diagnosis, or treatment.
+                      Always consult your veterinarian for medical decisions.
                     </p>
                   </div>
                 </div>
@@ -180,76 +181,74 @@ export default function TermsOfServicePage() {
             </div>
           </motion.section>
 
-          {/* Booking & Cancellation */}
+          {/* Data Privacy & Ownership */}
           <motion.section variants={itemVariants} className="bg-white rounded-2xl p-8 shadow-xl">
             <div className="flex items-center mb-6">
               <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mr-4">
-                <Calendar className="w-6 h-6 text-blue-600" />
+                <Lock className="w-6 h-6 text-blue-600" />
               </div>
-              <h2 className="text-2xl font-bold text-gray-900">Booking & Cancellation Policy</h2>
+              <h2 className="text-2xl font-bold text-gray-900">Data Privacy & Ownership</h2>
             </div>
             <div className="grid md:grid-cols-2 gap-8">
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Booking Guidelines</h3>
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">Your Data Rights</h3>
                 <div className="space-y-3">
                   <div className="flex items-start space-x-3">
                     <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
                       <CheckCircle className="w-4 h-4 text-white" />
                     </div>
                     <div>
-                      <p className="font-medium text-gray-900">24-Hour Advance Booking</p>
-                      <p className="text-sm text-gray-600">Most services require at least 24 hours notice</p>
+                      <p className="font-medium text-gray-900">Complete Ownership</p>
+                      <p className="text-sm text-gray-600">All health data you enter belongs entirely to you</p>
                     </div>
                   </div>
                   <div className="flex items-start space-x-3">
                     <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-                      <CheckCircle className="w-4 h-4 text-white" />
+                      <Eye className="w-4 h-4 text-white" />
                     </div>
                     <div>
-                      <p className="font-medium text-gray-900">Meet & Greet Required</p>
-                      <p className="text-sm text-gray-600">First-time clients must schedule an initial consultation</p>
+                      <p className="font-medium text-gray-900">Access Anytime</p>
+                      <p className="text-sm text-gray-600">View, edit, or download your complete data history</p>
                     </div>
                   </div>
                   <div className="flex items-start space-x-3">
                     <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-                      <CheckCircle className="w-4 h-4 text-white" />
+                      <Download className="w-4 h-4 text-white" />
                     </div>
                     <div>
-                      <p className="font-medium text-gray-900">Service Confirmation</p>
-                      <p className="text-sm text-gray-600">
-                        You&apos;ll receive confirmation within 2 hours of booking
-                      </p>
+                      <p className="font-medium text-gray-900">Easy Export</p>
+                      <p className="text-sm text-gray-600">Export data in formats suitable for veterinary visits</p>
                     </div>
                   </div>
                 </div>
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Cancellation Terms</h3>
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">Privacy Protection</h3>
                 <div className="space-y-3">
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                    <p className="font-medium text-blue-800">Encrypted Storage</p>
+                    <p className="text-sm text-blue-700">All data encrypted in transit and at rest</p>
+                  </div>
                   <div className="bg-green-50 border border-green-200 rounded-lg p-3">
-                    <p className="font-medium text-green-800">Free Cancellation</p>
-                    <p className="text-sm text-green-700">Cancel up to 24 hours before service with no fee</p>
+                    <p className="font-medium text-green-800">No Data Selling</p>
+                    <p className="text-sm text-green-700">We never sell or share your pet&apos;s health information</p>
                   </div>
-                  <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
-                    <p className="font-medium text-yellow-800">Late Cancellation</p>
-                    <p className="text-sm text-yellow-700">12-24 hours: 50% service fee applies</p>
-                  </div>
-                  <div className="bg-red-50 border border-red-200 rounded-lg p-3">
-                    <p className="font-medium text-red-800">Same-Day Cancellation</p>
-                    <p className="text-sm text-red-700">Less than 12 hours: Full service fee charged</p>
+                  <div className="bg-purple-50 border border-purple-200 rounded-lg p-3">
+                    <p className="font-medium text-purple-800">GDPR Compliant</p>
+                    <p className="text-sm text-purple-700">Full compliance with international privacy laws</p>
                   </div>
                 </div>
               </div>
             </div>
           </motion.section>
 
-          {/* Payment & Pricing */}
+          {/* Account & Usage */}
           <motion.section variants={itemVariants} className="bg-white rounded-2xl p-8 shadow-xl">
             <div className="flex items-center mb-6">
               <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center mr-4">
-                <CreditCard className="w-6 h-6 text-purple-600" />
+                <Users className="w-6 h-6 text-purple-600" />
               </div>
-              <h2 className="text-2xl font-bold text-gray-900">Payment & Pricing</h2>
+              <h2 className="text-2xl font-bold text-gray-900">Account & Usage Terms</h2>
             </div>
             <div className="space-y-6">
               <div className="grid md:grid-cols-3 gap-6">
@@ -257,48 +256,48 @@ export default function TermsOfServicePage() {
                   whileHover={{ scale: 1.02 }}
                   className="bg-gradient-to-br from-blue-50 to-blue-100 p-6 rounded-xl text-center"
                 >
-                  <CreditCard className="w-8 h-8 text-blue-600 mx-auto mb-3" />
-                  <h3 className="font-semibold text-gray-900 mb-2">Secure Payments</h3>
-                  <p className="text-sm text-gray-600">
-                    All payments processed through encrypted, PCI-compliant systems
-                  </p>
+                  <Users className="w-8 h-8 text-blue-600 mx-auto mb-3" />
+                  <h3 className="font-semibold text-gray-900 mb-2">Free Account</h3>
+                  <p className="text-sm text-gray-600">Core health tracking features are completely free to use</p>
                 </motion.div>
                 <motion.div
                   whileHover={{ scale: 1.02 }}
                   className="bg-gradient-to-br from-green-50 to-green-100 p-6 rounded-xl text-center"
                 >
-                  <CheckCircle className="w-8 h-8 text-green-600 mx-auto mb-3" />
-                  <h3 className="font-semibold text-gray-900 mb-2">Transparent Pricing</h3>
+                  <FileText className="w-8 h-8 text-green-600 mx-auto mb-3" />
+                  <h3 className="font-semibold text-gray-900 mb-2">Premium Resources</h3>
                   <p className="text-sm text-gray-600">
-                    No hidden fees - you&apos;ll know exactly what you&apos;re paying upfront
+                    Optional paid access to veterinary guides and educational materials
                   </p>
                 </motion.div>
                 <motion.div
                   whileHover={{ scale: 1.02 }}
                   className="bg-gradient-to-br from-purple-50 to-purple-100 p-6 rounded-xl text-center"
                 >
-                  <Calendar className="w-8 h-8 text-purple-600 mx-auto mb-3" />
-                  <h3 className="font-semibold text-gray-900 mb-2">Flexible Billing</h3>
-                  <p className="text-sm text-gray-600">Choose from one-time payments or convenient recurring billing</p>
+                  <Shield className="w-8 h-8 text-purple-600 mx-auto mb-3" />
+                  <h3 className="font-semibold text-gray-900 mb-2">Responsible Use</h3>
+                  <p className="text-sm text-gray-600">
+                    Use platform responsibly and provide accurate health information
+                  </p>
                 </motion.div>
               </div>
 
               <div className="bg-gray-50 rounded-xl p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Payment Terms</h3>
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">Account Guidelines</h3>
                 <div className="grid md:grid-cols-2 gap-4 text-sm text-gray-700">
                   <div>
                     <ul className="space-y-2">
                       <li className="flex items-center space-x-2">
                         <div className="w-1.5 h-1.5 bg-pink-500 rounded-full"></div>
-                        <span>Payment due at time of booking</span>
+                        <span>One account per user/household</span>
                       </li>
                       <li className="flex items-center space-x-2">
                         <div className="w-1.5 h-1.5 bg-pink-500 rounded-full"></div>
-                        <span>Major credit cards and digital wallets accepted</span>
+                        <span>Accurate contact information required</span>
                       </li>
                       <li className="flex items-center space-x-2">
                         <div className="w-1.5 h-1.5 bg-pink-500 rounded-full"></div>
-                        <span>Automatic billing available for recurring services</span>
+                        <span>Secure password and login practices</span>
                       </li>
                     </ul>
                   </div>
@@ -306,15 +305,15 @@ export default function TermsOfServicePage() {
                     <ul className="space-y-2">
                       <li className="flex items-center space-x-2">
                         <div className="w-1.5 h-1.5 bg-purple-500 rounded-full"></div>
-                        <span>Late payment fees may apply after 7 days</span>
+                        <span>No sharing of login credentials</span>
                       </li>
                       <li className="flex items-center space-x-2">
                         <div className="w-1.5 h-1.5 bg-purple-500 rounded-full"></div>
-                        <span>Refunds processed within 5-7 business days</span>
+                        <span>Report security issues immediately</span>
                       </li>
                       <li className="flex items-center space-x-2">
                         <div className="w-1.5 h-1.5 bg-purple-500 rounded-full"></div>
-                        <span>Disputed charges handled through secure process</span>
+                        <span>Account deletion available on request</span>
                       </li>
                     </ul>
                   </div>
@@ -323,29 +322,29 @@ export default function TermsOfServicePage() {
             </div>
           </motion.section>
 
-          {/* Liability & Insurance */}
+          {/* Limitation of Liability */}
           <motion.section variants={itemVariants} className="bg-white rounded-2xl p-8 shadow-xl">
             <div className="flex items-center mb-6">
               <div className="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center mr-4">
-                <Shield className="w-6 h-6 text-red-600" />
+                <AlertTriangle className="w-6 h-6 text-red-600" />
               </div>
-              <h2 className="text-2xl font-bold text-gray-900">Liability & Insurance</h2>
+              <h2 className="text-2xl font-bold text-gray-900">Limitation of Liability</h2>
             </div>
             <div className="space-y-6">
-              <div className="bg-green-50 border border-green-200 rounded-xl p-6">
+              <div className="bg-red-50 border border-red-200 rounded-xl p-6">
                 <div className="flex items-start space-x-3">
-                  <Shield className="w-6 h-6 text-green-600 mt-1 flex-shrink-0" />
+                  <AlertTriangle className="w-6 h-6 text-red-600 mt-1 flex-shrink-0" />
                   <div>
-                    <h3 className="text-lg font-semibold text-green-800 mb-2">We&apos;re Fully Insured</h3>
-                    <p className="text-green-700 mb-3">
-                      Rosie Paws carries comprehensive liability insurance and bonding for all our services and staff
-                      members.
+                    <h3 className="text-lg font-semibold text-red-800 mb-2">Important Disclaimer</h3>
+                    <p className="text-red-700 mb-3">
+                      Our platform is a tracking tool only and does not replace professional veterinary care. We are not
+                      liable for medical decisions made based on tracked data.
                     </p>
-                    <ul className="text-sm text-green-700 space-y-1">
-                      <li>• General liability coverage up to $2M</li>
-                      <li>• Professional liability insurance</li>
-                      <li>• All staff bonded and background checked</li>
-                      <li>• Emergency veterinary care coverage</li>
+                    <ul className="text-sm text-red-700 space-y-1">
+                      <li>• Always consult your veterinarian for medical decisions</li>
+                      <li>• Emergency situations require immediate veterinary attention</li>
+                      <li>• Platform availability not guaranteed 24/7</li>
+                      <li>• Data accuracy depends on user input</li>
                     </ul>
                   </div>
                 </div>
@@ -353,33 +352,29 @@ export default function TermsOfServicePage() {
 
               <div className="grid md:grid-cols-2 gap-6">
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-3">Your Responsibilities</h3>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-3">Platform Limitations</h3>
                   <ul className="space-y-2 text-gray-700">
                     <li className="flex items-start space-x-2">
                       <div className="w-2 h-2 bg-pink-500 rounded-full mt-2 flex-shrink-0"></div>
-                      <span className="text-sm">Provide accurate pet medical information</span>
+                      <span className="text-sm">Service interruptions may occur for maintenance</span>
                     </li>
                     <li className="flex items-start space-x-2">
                       <div className="w-2 h-2 bg-pink-500 rounded-full mt-2 flex-shrink-0"></div>
-                      <span className="text-sm">Disclose any behavioral issues or special needs</span>
+                      <span className="text-sm">Data accuracy depends on user input quality</span>
                     </li>
                     <li className="flex items-start space-x-2">
                       <div className="w-2 h-2 bg-pink-500 rounded-full mt-2 flex-shrink-0"></div>
-                      <span className="text-sm">Ensure pets are up-to-date on vaccinations</span>
-                    </li>
-                    <li className="flex items-start space-x-2">
-                      <div className="w-2 h-2 bg-pink-500 rounded-full mt-2 flex-shrink-0"></div>
-                      <span className="text-sm">Provide emergency contact information</span>
+                      <span className="text-sm">Features may be updated or changed over time</span>
                     </li>
                   </ul>
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-3">Limitation of Liability</h3>
-                  <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-                    <p className="text-sm text-yellow-800">
-                      While we take every precaution, pet care involves inherent risks. Our liability is limited to the
-                      direct cost of services provided. We recommend maintaining your own pet insurance for
-                      comprehensive coverage.
+                  <h3 className="text-lg font-semibold text-gray-900 mb-3">User Responsibilities</h3>
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <p className="text-sm text-blue-800">
+                      Users are responsible for the accuracy of health data entered and for consulting veterinary
+                      professionals for all medical decisions. The platform serves as a tracking aid only, not a medical
+                      diagnostic tool.
                     </p>
                   </div>
                 </div>
@@ -396,7 +391,7 @@ export default function TermsOfServicePage() {
               <h2 className="text-3xl font-bold mb-4">Questions About These Terms?</h2>
               <p className="text-pink-100 max-w-2xl mx-auto">
                 We&apos;re here to help clarify any questions about our terms of service. Don&apos;t hesitate to reach
-                out - we want you to feel completely comfortable with our agreement.
+                out if you need any clarification about how our platform works.
               </p>
             </div>
             <div className="grid md:grid-cols-3 gap-6">
@@ -406,7 +401,7 @@ export default function TermsOfServicePage() {
               >
                 <Mail className="w-8 h-8 mx-auto mb-4" />
                 <h3 className="font-semibold mb-2">Email Support</h3>
-                <p className="text-sm text-pink-100">legal@rosiepaws.com</p>
+                <p className="text-sm text-pink-100">[Your contact email]</p>
               </motion.div>
               <motion.div
                 whileHover={{ scale: 1.05 }}
@@ -414,15 +409,15 @@ export default function TermsOfServicePage() {
               >
                 <Phone className="w-8 h-8 mx-auto mb-4" />
                 <h3 className="font-semibold mb-2">Phone Support</h3>
-                <p className="text-sm text-pink-100">(555) 123-PAWS</p>
+                <p className="text-sm text-pink-100">[Your phone number]</p>
               </motion.div>
               <motion.div
                 whileHover={{ scale: 1.05 }}
                 className="bg-white/10 backdrop-blur-sm rounded-xl p-6 text-center"
               >
                 <MapPin className="w-8 h-8 mx-auto mb-4" />
-                <h3 className="font-semibold mb-2">Office Visit</h3>
-                <p className="text-sm text-pink-100">123 Pet Lane, Care City</p>
+                <h3 className="font-semibold mb-2">Business Address</h3>
+                <p className="text-sm text-pink-100">[Your business address]</p>
               </motion.div>
             </div>
           </motion.section>
@@ -433,14 +428,14 @@ export default function TermsOfServicePage() {
               <FileText className="w-12 h-12 mx-auto mb-4 text-pink-400" />
               <h2 className="text-2xl font-bold mb-4">Agreement Acknowledgment</h2>
               <p className="text-gray-300 max-w-3xl mx-auto mb-6">
-                By using Rosie Paws services, you acknowledge that you have read, understood, and agree to be bound by
-                these Terms of Service. These terms may be updated periodically, and continued use constitutes
-                acceptance of any changes.
+                By creating an account and using our pet health tracking platform, you acknowledge that you have read,
+                understood, and agree to be bound by these Terms of Service. These terms may be updated periodically,
+                and continued use constitutes acceptance of any changes.
               </p>
               <div className="flex items-center justify-center space-x-2 text-sm text-gray-400">
                 <span>Last updated: {new Date().toLocaleDateString()}</span>
                 <span>•</span>
-                <span>Version 2.1</span>
+                <span>Version 1.0</span>
               </div>
             </div>
           </motion.section>
@@ -460,10 +455,11 @@ export default function TermsOfServicePage() {
               <div className="w-8 h-8 bg-gradient-to-br from-pink-500 to-purple-600 rounded-full flex items-center justify-center">
                 <Heart className="w-4 h-4 text-white" />
               </div>
-              <span className="text-lg font-semibold">Rosie Paws</span>
+              <span className="text-lg font-semibold">[Your Company Name]</span>
             </div>
             <div className="text-sm text-gray-400">
-              © 2024 Rosie Paws. All rights reserved. Made with ❤️ for pets and their families.
+              © {new Date().getFullYear()} [Your Company Name]. All rights reserved. Made with care for pets and their
+              families.
             </div>
           </div>
         </div>
@@ -471,3 +467,5 @@ export default function TermsOfServicePage() {
     </div>
   )
 }
+
+export default TermsOfService

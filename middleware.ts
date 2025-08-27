@@ -10,7 +10,11 @@ export async function middleware(req: NextRequest) {
   const { nextUrl } = req
 
   // Allow cron jobs to pass through
-  if (cronRoutes.includes(nextUrl.pathname) || webhookRoutes.includes(nextUrl.pathname)) {
+  if (
+    cronRoutes.includes(nextUrl.pathname) ||
+    webhookRoutes.includes(nextUrl.pathname) ||
+    ['/api/media'].includes(nextUrl.pathname)
+  ) {
     return NextResponse.next()
   }
 

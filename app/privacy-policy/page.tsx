@@ -1,7 +1,8 @@
 'use client'
 
+import React from 'react'
 import { motion } from 'framer-motion'
-import { Shield, Heart, Users, Lock, Eye, Mail, Phone, MapPin } from 'lucide-react'
+import { Shield, Users, Eye, Lock, Download, Trash2, Edit } from 'lucide-react'
 
 const PrivacyPolicy = () => {
   const containerVariants: any = {
@@ -9,32 +10,28 @@ const PrivacyPolicy = () => {
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.1,
-        delayChildren: 0.2
+        duration: 0.6,
+        staggerChildren: 0.1
       }
     }
   }
 
   const itemVariants: any = {
-    hidden: { y: 20, opacity: 0 },
+    hidden: { opacity: 0, y: 30 },
     visible: {
-      y: 0,
       opacity: 1,
-      transition: {
-        duration: 0.5
-      }
+      y: 0,
+      transition: { duration: 0.6 }
     }
   }
 
   const iconVariants: any = {
-    hidden: { scale: 0, rotate: -180 },
+    hidden: { scale: 0 },
     visible: {
       scale: 1,
-      rotate: 0,
       transition: {
         type: 'spring',
-        stiffness: 260,
-        damping: 20
+        duration: 0.8
       }
     }
   }
@@ -54,8 +51,8 @@ const PrivacyPolicy = () => {
             </motion.div>
             <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Privacy Policy</h1>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              At Rosie Paws, protecting your privacy and your pet&apos;s information is our top priority. This policy
-              explains how we collect, use, and safeguard your data.
+              We&apos;re committed to protecting your privacy and being transparent about how we collect and use your
+              information.
             </p>
             <motion.div
               initial={{ opacity: 0 }}
@@ -75,32 +72,22 @@ const PrivacyPolicy = () => {
               </div>
               <h2 className="text-2xl font-bold text-gray-900">Information We Collect</h2>
             </div>
-            <div className="space-y-4 text-gray-700">
+            <div className="space-y-6 text-gray-700">
               <div>
-                <h3 className="font-semibold text-gray-900 mb-2">Personal Information</h3>
-                <ul className="list-disc list-inside space-y-1 ml-4">
-                  <li>Name, email address, and phone number</li>
-                  <li>Billing and shipping addresses</li>
-                  <li>Payment information (processed securely)</li>
-                  <li>Account preferences and settings</li>
+                <h3 className="font-semibold text-gray-900 mb-3">Information You Provide Directly</h3>
+                <ul className="list-disc list-inside space-y-2 ml-4">
+                  <li>Email address when you create an account or log in using magic link authentication</li>
+                  <li>Name, email address, and profile image when you sign in with Google</li>
+                  <li>
+                    Any additional information you voluntarily provide through contact forms or interactive features
+                  </li>
                 </ul>
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900 mb-2">Pet Information</h3>
-                <ul className="list-disc list-inside space-y-1 ml-4">
-                  <li>Pet names, breeds, ages, and medical history</li>
-                  <li>Vaccination records and health information</li>
-                  <li>Behavioral notes and special requirements</li>
-                  <li>Photos and videos (with your consent)</li>
-                </ul>
-              </div>
-              <div>
-                <h3 className="font-semibold text-gray-900 mb-2">Usage Information</h3>
-                <ul className="list-disc list-inside space-y-1 ml-4">
-                  <li>Website and app usage patterns</li>
-                  <li>Device information and IP addresses</li>
-                  <li>Cookies and tracking technologies</li>
-                  <li>Communication preferences</li>
+                <h3 className="font-semibold text-gray-900 mb-3">Information Collected Automatically</h3>
+                <ul className="list-disc list-inside space-y-2 ml-4">
+                  <li>Authentication cookies (JWT tokens) to keep you logged in securely</li>
+                  <li>View counts on media resources to show users how many people have viewed each resource</li>
                 </ul>
               </div>
             </div>
@@ -114,210 +101,205 @@ const PrivacyPolicy = () => {
               </div>
               <h2 className="text-2xl font-bold text-gray-900">How We Use Your Information</h2>
             </div>
-            <div className="grid md:grid-cols-2 gap-6">
-              <div className="space-y-4">
-                <h3 className="font-semibold text-gray-900">Service Delivery</h3>
-                <ul className="text-gray-700 space-y-2">
-                  <li className="flex items-start">
-                    <div className="w-2 h-2 bg-pink-500 rounded-full mt-2 mr-3 flex-shrink-0"></div>
-                    <span>Provide pet care services and appointments</span>
-                  </li>
-                  <li className="flex items-start">
-                    <div className="w-2 h-2 bg-pink-500 rounded-full mt-2 mr-3 flex-shrink-0"></div>
-                    <span>Process payments and manage accounts</span>
-                  </li>
-                  <li className="flex items-start">
-                    <div className="w-2 h-2 bg-pink-500 rounded-full mt-2 mr-3 flex-shrink-0"></div>
-                    <span>Send service updates and reminders</span>
-                  </li>
-                </ul>
+            <div className="space-y-6">
+              <div>
+                <h3 className="font-semibold text-gray-900 mb-4">Currently, we collect this information for:</h3>
+                <div className="grid md:grid-cols-3 gap-4">
+                  <div className="flex items-start space-x-3">
+                    <div className="w-2 h-2 bg-pink-500 rounded-full mt-2 flex-shrink-0"></div>
+                    <span>To authenticate users and manage secure account access</span>
+                  </div>
+                  <div className="flex items-start space-x-3">
+                    <div className="w-2 h-2 bg-purple-500 rounded-full mt-2 flex-shrink-0"></div>
+                    <span>To provide view count statistics to authenticated users</span>
+                  </div>
+                  <div className="flex items-start space-x-3">
+                    <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
+                    <span>To respond to inquiries submitted through our forms</span>
+                  </div>
+                </div>
               </div>
-              <div className="space-y-4">
-                <h3 className="font-semibold text-gray-900">Communication</h3>
-                <ul className="text-gray-700 space-y-2">
-                  <li className="flex items-start">
-                    <div className="w-2 h-2 bg-purple-500 rounded-full mt-2 mr-3 flex-shrink-0"></div>
-                    <span>Send important service notifications</span>
-                  </li>
-                  <li className="flex items-start">
-                    <div className="w-2 h-2 bg-purple-500 rounded-full mt-2 mr-3 flex-shrink-0"></div>
-                    <span>Provide customer support</span>
-                  </li>
-                  <li className="flex items-start">
-                    <div className="w-2 h-2 bg-purple-500 rounded-full mt-2 mr-3 flex-shrink-0"></div>
-                    <span>Share pet care tips and updates</span>
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </motion.section>
 
-          {/* Data Security */}
-          <motion.section variants={itemVariants} className="bg-white rounded-2xl p-8 shadow-xl">
-            <div className="flex items-center mb-6">
-              <div className="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center mr-4">
-                <Lock className="w-6 h-6 text-red-600" />
-              </div>
-              <h2 className="text-2xl font-bold text-gray-900">Data Security & Protection</h2>
-            </div>
-            <div className="grid md:grid-cols-3 gap-6">
               <motion.div
                 whileHover={{ scale: 1.02 }}
-                className="bg-gradient-to-br from-blue-50 to-blue-100 p-6 rounded-xl"
+                className="bg-gradient-to-br from-amber-50 to-orange-100 p-6 rounded-xl border border-amber-200"
               >
-                <div className="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center mb-4">
-                  <Shield className="w-5 h-5 text-white" />
-                </div>
-                <h3 className="font-semibold text-gray-900 mb-2">Encryption</h3>
-                <p className="text-sm text-gray-600">
-                  All data is encrypted in transit and at rest using industry-standard protocols.
-                </p>
-              </motion.div>
-              <motion.div
-                whileHover={{ scale: 1.02 }}
-                className="bg-gradient-to-br from-green-50 to-green-100 p-6 rounded-xl"
-              >
-                <div className="w-10 h-10 bg-green-500 rounded-lg flex items-center justify-center mb-4">
-                  <Lock className="w-5 h-5 text-white" />
-                </div>
-                <h3 className="font-semibold text-gray-900 mb-2">Access Control</h3>
-                <p className="text-sm text-gray-600">
-                  Strict access controls ensure only authorized personnel can view your information.
-                </p>
-              </motion.div>
-              <motion.div
-                whileHover={{ scale: 1.02 }}
-                className="bg-gradient-to-br from-purple-50 to-purple-100 p-6 rounded-xl"
-              >
-                <div className="w-10 h-10 bg-purple-500 rounded-lg flex items-center justify-center mb-4">
-                  <Eye className="w-5 h-5 text-white" />
-                </div>
-                <h3 className="font-semibold text-gray-900 mb-2">Monitoring</h3>
-                <p className="text-sm text-gray-600">
-                  24/7 security monitoring to detect and prevent unauthorized access.
+                <h4 className="font-semibold text-amber-900 mb-2">Future Use</h4>
+                <p className="text-amber-800">
+                  We may use your information for additional purposes in the future, such as marketing communications or
+                  service updates. If we do, we will update this privacy policy and notify you of any significant
+                  changes to how we use your data.
                 </p>
               </motion.div>
             </div>
           </motion.section>
 
-          {/* Your Rights */}
+          {/* Your Rights & Controls */}
           <motion.section variants={itemVariants} className="bg-white rounded-2xl p-8 shadow-xl">
             <div className="flex items-center mb-6">
               <div className="w-12 h-12 bg-yellow-100 rounded-xl flex items-center justify-center mr-4">
-                <Users className="w-6 h-6 text-yellow-600" />
+                <Edit className="w-6 h-6 text-yellow-600" />
               </div>
-              <h2 className="text-2xl font-bold text-gray-900">Your Rights & Choices</h2>
+              <h2 className="text-2xl font-bold text-gray-900">Your Rights & Complete Control</h2>
             </div>
             <div className="space-y-4 text-gray-700">
-              <p className="text-lg">You have the right to:</p>
-              <div className="grid md:grid-cols-2 gap-4">
-                <div className="flex items-start space-x-3">
-                  <div className="w-6 h-6 bg-pink-500 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-                    <span className="text-white text-xs font-bold">✓</span>
-                  </div>
-                  <div>
+              <p className="text-lg font-medium text-gray-900">You have complete control over your personal data:</p>
+              <div className="grid md:grid-cols-2 gap-6">
+                <motion.div
+                  whileHover={{ scale: 1.02 }}
+                  className="bg-gradient-to-br from-blue-50 to-blue-100 p-6 rounded-xl"
+                >
+                  <div className="flex items-center space-x-3 mb-3">
+                    <div className="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center">
+                      <Eye className="w-5 h-5 text-white" />
+                    </div>
                     <h3 className="font-semibold text-gray-900">Access Your Data</h3>
-                    <p className="text-sm text-gray-600">
-                      Request a copy of all personal information we have about you
-                    </p>
                   </div>
-                </div>
-                <div className="flex items-start space-x-3">
-                  <div className="w-6 h-6 bg-pink-500 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-                    <span className="text-white text-xs font-bold">✓</span>
+                  <p className="text-sm text-gray-600">
+                    Request a copy of all personal information we have about you in a readable, portable format.
+                  </p>
+                </motion.div>
+
+                <motion.div
+                  whileHover={{ scale: 1.02 }}
+                  className="bg-gradient-to-br from-green-50 to-green-100 p-6 rounded-xl"
+                >
+                  <div className="flex items-center space-x-3 mb-3">
+                    <div className="w-10 h-10 bg-green-500 rounded-lg flex items-center justify-center">
+                      <Download className="w-5 h-5 text-white" />
+                    </div>
+                    <h3 className="font-semibold text-gray-900">Download Your Data</h3>
                   </div>
-                  <div>
-                    <h3 className="font-semibold text-gray-900">Correct Information</h3>
-                    <p className="text-sm text-gray-600">Update or correct any inaccurate personal information</p>
-                  </div>
-                </div>
-                <div className="flex items-start space-x-3">
-                  <div className="w-6 h-6 bg-pink-500 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-                    <span className="text-white text-xs font-bold">✓</span>
-                  </div>
-                  <div>
+                  <p className="text-sm text-gray-600">
+                    Get a complete export of your personal information that you can save or transfer.
+                  </p>
+                </motion.div>
+
+                <motion.div
+                  whileHover={{ scale: 1.02 }}
+                  className="bg-gradient-to-br from-red-50 to-red-100 p-6 rounded-xl"
+                >
+                  <div className="flex items-center space-x-3 mb-3">
+                    <div className="w-10 h-10 bg-red-500 rounded-lg flex items-center justify-center">
+                      <Trash2 className="w-5 h-5 text-white" />
+                    </div>
                     <h3 className="font-semibold text-gray-900">Delete Your Data</h3>
-                    <p className="text-sm text-gray-600">
-                      Request deletion of your personal information (subject to legal requirements)
-                    </p>
                   </div>
-                </div>
-                <div className="flex items-start space-x-3">
-                  <div className="w-6 h-6 bg-pink-500 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-                    <span className="text-white text-xs font-bold">✓</span>
+                  <p className="text-sm text-gray-600">
+                    Request permanent removal of your data from our systems at any time.
+                  </p>
+                </motion.div>
+
+                <motion.div
+                  whileHover={{ scale: 1.02 }}
+                  className="bg-gradient-to-br from-purple-50 to-purple-100 p-6 rounded-xl"
+                >
+                  <div className="flex items-center space-x-3 mb-3">
+                    <div className="w-10 h-10 bg-purple-500 rounded-lg flex items-center justify-center">
+                      <Edit className="w-5 h-5 text-white" />
+                    </div>
+                    <h3 className="font-semibold text-gray-900">Update Information</h3>
                   </div>
-                  <div>
-                    <h3 className="font-semibold text-gray-900">Opt-Out</h3>
-                    <p className="text-sm text-gray-600">Unsubscribe from marketing communications at any time</p>
-                  </div>
-                </div>
+                  <p className="text-sm text-gray-600">
+                    Request corrections to any inaccurate personal information we hold about you.
+                  </p>
+                </motion.div>
               </div>
             </div>
           </motion.section>
 
-          {/* Contact Information */}
-          <motion.section
-            variants={itemVariants}
-            className="bg-gradient-to-br from-pink-500 to-purple-600 rounded-2xl p-8 text-white"
-          >
-            <div className="text-center mb-8">
-              <h2 className="text-3xl font-bold mb-4">Questions About Your Privacy?</h2>
-              <p className="text-pink-100 max-w-2xl mx-auto">
-                We&apos;re here to help! If you have any questions about this privacy policy or how we handle your data,
-                please don&apos;t hesitate to reach out to us.
-              </p>
+          {/* Data Sharing */}
+          <motion.section variants={itemVariants} className="bg-white rounded-2xl p-8 shadow-xl">
+            <div className="flex items-center mb-6">
+              <div className="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center mr-4">
+                <Shield className="w-6 h-6 text-red-600" />
+              </div>
+              <h2 className="text-2xl font-bold text-gray-900">Data Sharing & Protection</h2>
             </div>
-            <div className="grid md:grid-cols-3 gap-6">
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                className="bg-white/10 backdrop-blur-sm rounded-xl p-6 text-center"
-              >
-                <Mail className="w-8 h-8 mx-auto mb-4" />
-                <h3 className="font-semibold mb-2">Email Us</h3>
-                <p className="text-sm text-pink-100">privacy@rosiepaws.com</p>
-              </motion.div>
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                className="bg-white/10 backdrop-blur-sm rounded-xl p-6 text-center"
-              >
-                <Phone className="w-8 h-8 mx-auto mb-4" />
-                <h3 className="font-semibold mb-2">Call Us</h3>
-                <p className="text-sm text-pink-100">(555) 123-PAWS</p>
-              </motion.div>
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                className="bg-white/10 backdrop-blur-sm rounded-xl p-6 text-center"
-              >
-                <MapPin className="w-8 h-8 mx-auto mb-4" />
-                <h3 className="font-semibold mb-2">Visit Us</h3>
-                <p className="text-sm text-pink-100">123 Pet Lane, Care City</p>
-              </motion.div>
+            <div className="space-y-6">
+              <p className="text-gray-700">
+                We do not currently sell, trade, or share your personal information with third parties, except:
+              </p>
+              <div className="grid md:grid-cols-3 gap-6">
+                <motion.div
+                  whileHover={{ scale: 1.02 }}
+                  className="bg-gradient-to-br from-red-50 to-red-100 p-6 rounded-xl"
+                >
+                  <div className="w-10 h-10 bg-red-500 rounded-lg flex items-center justify-center mb-4">
+                    <Shield className="w-5 h-5 text-white" />
+                  </div>
+                  <h3 className="font-semibold text-gray-900 mb-2">Legal Requirements</h3>
+                  <p className="text-sm text-gray-600">When required by law or legal process</p>
+                </motion.div>
+                <motion.div
+                  whileHover={{ scale: 1.02 }}
+                  className="bg-gradient-to-br from-orange-50 to-orange-100 p-6 rounded-xl"
+                >
+                  <div className="w-10 h-10 bg-orange-500 rounded-lg flex items-center justify-center mb-4">
+                    <Lock className="w-5 h-5 text-white" />
+                  </div>
+                  <h3 className="font-semibold text-gray-900 mb-2">Protection</h3>
+                  <p className="text-sm text-gray-600">To protect our rights, privacy, safety, or property</p>
+                </motion.div>
+                <motion.div
+                  whileHover={{ scale: 1.02 }}
+                  className="bg-gradient-to-br from-blue-50 to-blue-100 p-6 rounded-xl"
+                >
+                  <div className="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center mb-4">
+                    <Users className="w-5 h-5 text-white" />
+                  </div>
+                  <h3 className="font-semibold text-gray-900 mb-2">Service Providers</h3>
+                  <p className="text-sm text-gray-600">
+                    With providers who help operate our website (bound by confidentiality)
+                  </p>
+                </motion.div>
+              </div>
+            </div>
+          </motion.section>
+
+          {/* Data Security & Retention */}
+          <motion.section variants={itemVariants} className="bg-white rounded-2xl p-8 shadow-xl">
+            <div className="flex items-center mb-6">
+              <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center mr-4">
+                <Lock className="w-6 h-6 text-purple-600" />
+              </div>
+              <h2 className="text-2xl font-bold text-gray-900">Security & Retention</h2>
+            </div>
+            <div className="space-y-4 text-gray-700">
+              <p>
+                We implement appropriate security measures to protect your personal information against unauthorized
+                access, alteration, disclosure, or destruction. However, no internet transmission is completely secure,
+                and we cannot guarantee absolute security.
+              </p>
+              <p>
+                We retain your personal information only as long as necessary for the purposes outlined in this policy
+                or as required by law. You can request deletion of your data at any time.
+              </p>
+              <div className="bg-gradient-to-br from-purple-50 to-indigo-100 p-6 rounded-xl mt-4">
+                <h4 className="font-semibold text-gray-900 mb-2">Authentication Cookies</h4>
+                <p className="text-gray-700">
+                  We use a single authentication cookie containing a JWT (JSON Web Token) to keep you securely logged in
+                  to your account. This cookie is essential for the website&apos;s functionality and cannot be disabled
+                  if you want to remain logged in. The JWT contains only necessary session information and expires
+                  automatically for your security.
+                </p>
+              </div>
+            </div>
+          </motion.section>
+
+          {/* Changes to Policy */}
+          <motion.section variants={itemVariants} className="bg-white rounded-2xl p-8 shadow-xl">
+            <div className="text-center">
+              <h3 className="text-2xl font-bold text-gray-900 mb-4">Changes to This Policy</h3>
+              <p className="text-gray-700 max-w-2xl mx-auto">
+                We may update this privacy policy from time to time. When we do, we will post the updated policy on this
+                page, update the &quot;Last updated&quot; date, and notify users of significant changes via email or
+                prominent website notice.
+              </p>
             </div>
           </motion.section>
         </motion.div>
       </main>
-
-      {/* Footer */}
-      <motion.footer
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1.5 }}
-        className="bg-gray-900 text-white py-8 mt-16"
-      >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row justify-between items-center">
-            <div className="flex items-center space-x-3 mb-4 md:mb-0">
-              <div className="w-8 h-8 bg-gradient-to-br from-pink-500 to-purple-600 rounded-full flex items-center justify-center">
-                <Heart className="w-4 h-4 text-white" />
-              </div>
-              <span className="text-lg font-semibold">Rosie Paws</span>
-            </div>
-            <div className="text-sm text-gray-400">
-              © {new Date().getFullYear()} Rosie Paws. All rights reserved. Made with ❤️ for pets and their families.
-            </div>
-          </div>
-        </div>
-      </motion.footer>
     </div>
   )
 }

@@ -2,17 +2,20 @@
 
 import React, { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ChevronDown, Menu, X } from 'lucide-react'
+import { Menu, X } from 'lucide-react'
 import Link from 'next/link'
-import FeaturesDropdown from './FeaturesDropdown'
+import { MotionLink } from '../common/MotionLink'
+import useCustomPathname from '@/app/hooks/useCustomPathname'
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const [activeDropdown, setActiveDropdown] = useState<null | string>(null)
+  const path = useCustomPathname()
+  const isHome = path === '/'
 
   const navItems = [
-    { name: 'Features', hasDropdown: true },
-    { name: 'Ebooks', linkKey: '/ebooks' }
+    { name: 'Activiy Center', linkKey: '/activity-center', isActive: path === '/activity-center' },
+    { name: 'Resources', linkKey: '/resources', isActive: path === '/resources' },
+    { name: 'About', linkKey: '/about', isActive: path === '/about' }
   ]
 
   const mobileMenuVariants = {
@@ -22,7 +25,7 @@ const Header = () => {
   }
 
   return (
-    <div className="bg-transparent">
+    <div>
       {/* Announcement Bar */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
@@ -56,35 +59,16 @@ const Header = () => {
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
             {navItems.map((item, index) => (
-              <Link
-                href={item.linkKey || ''}
-                key={item.name}
-                className="relative"
-                onMouseEnter={() => setActiveDropdown(item.name)}
-                onMouseLeave={() => setActiveDropdown(null)}
-              >
+              <Link href={item.linkKey || ''} key={item.name} className="relative">
                 <motion.button
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.5, delay: index * 0.1 }}
                   whileHover={{ y: -2 }}
-                  className="flex items-center space-x-1 text-white hover:bg-gradient-to-r hover:from-red-500 hover:via-pink-500 hover:to-orange-500 hover:bg-clip-text hover:text-transparent transition-all duration-300 font-medium"
+                  className={`${item.isActive ? 'text-pink-600' : isHome ? 'text-white' : 'text-slate-900'} flex items-center space-x-1 hover:bg-gradient-to-r hover:from-red-500 hover:via-pink-500 hover:to-orange-500 hover:bg-clip-text hover:text-transparent transition-all duration-300 font-medium`}
                 >
                   <span>{item.name}</span>
-                  {item.hasDropdown && (
-                    <motion.div
-                      animate={{ rotate: activeDropdown === item.name ? 180 : 0 }}
-                      transition={{ duration: 0.2 }}
-                    >
-                      <ChevronDown className="w-4 h-4 text-white" />
-                    </motion.div>
-                  )}
                 </motion.button>
-
-                {/* Dropdown Menu */}
-                <AnimatePresence>
-                  {activeDropdown === item.name && item.hasDropdown && <FeaturesDropdown />}
-                </AnimatePresence>
               </Link>
             ))}
           </nav>
@@ -92,18 +76,28 @@ const Header = () => {
           {/* Right Side Actions */}
           <div className="flex items-center space-x-4">
             {/* Sign Up Button */}
-            <Link
-              href="/auth/login"
-              className="relative px-5 py-2.5 rounded-full text-lg text-white backdrop-blur-lg border border-white/10 mt-6 overflow-hidden group transition-all duration-300 hover:border-white/30"
-            >
-              <span className="relative z-10">Launch App</span>
+            {path === '/' ? (
+              <Link
+                href="/auth/login"
+                className="relative px-5 py-2.5 rounded-full text-lg text-white backdrop-blur-lg border border-white/10 overflow-hidden group transition-all duration-300 hover:border-white/30"
+              >
+                <span className="relative z-10">Launch App</span>
 
-              {/* Shiny sweep effect */}
-              <div className="absolute inset-0 -left-full bg-gradient-to-r from-transparent via-white/20 to-transparent skew-x-12 group-hover:left-full transition-all duration-1000 ease-out" />
+                {/* Shiny sweep effect */}
+                <div className="absolute inset-0 -left-full bg-gradient-to-r from-transparent via-white/20 to-transparent skew-x-12 group-hover:left-full transition-all duration-1000 ease-out" />
 
-              {/* Subtle glow on hover */}
-              <div className="absolute inset-0 bg-gradient-to-r from-white/5 via-white/10 to-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-            </Link>
+                {/* Subtle glow on hover */}
+                <div className="absolute inset-0 bg-gradient-to-r from-white/5 via-white/10 to-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              </Link>
+            ) : (
+              <Link
+                href="/auth/login"
+                className="relative px-5 py-2.5 rounded-full text-lg text-white backdrop-blur-lg border border-white/10 overflow-hidden group transition-all duration-300 bg-gradient-to-r from-pink-500 to-orange-500"
+              >
+                {' '}
+                <span className="relative z-10">Launch App</span>
+              </Link>
+            )}
 
             {/* Mobile Menu Button */}
             <motion.button
@@ -151,9 +145,9 @@ const Header = () => {
             >
               <div className="px-4 py-4 space-y-4">
                 {navItems.map((item, index) => (
-                  <motion.a
+                  <MotionLink
                     key={item.name}
-                    href="#"
+                    href={item.linkKey}
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ duration: 0.3, delay: index * 0.1 }}
@@ -161,8 +155,7 @@ const Header = () => {
                     className="flex items-center justify-between text-gray-300 hover:text-white transition-colors duration-200 py-2"
                   >
                     <span className="font-medium">{item.name}</span>
-                    {item.hasDropdown && <ChevronDown className="w-4 h-4" />}
-                  </motion.a>
+                  </MotionLink>
                 ))}
               </div>
             </motion.div>
