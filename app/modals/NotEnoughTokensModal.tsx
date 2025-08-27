@@ -13,7 +13,7 @@ const NotEnoughTokensModal = () => {
 
   if (!notEnoughTokensModal) return null
 
-  const tokensShort = Math.max(0, tokensNeeded - user.tokens)
+  const tokensShort = Math.max(0, tokensNeeded - (user?.tokens ?? 0))
 
   return (
     <AnimatePresence>
@@ -86,7 +86,7 @@ const NotEnoughTokensModal = () => {
                     <Zap className="w-4 h-4 text-blue-600 mr-2" />
                     <span className="text-sm font-medium text-gray-700">Current Balance</span>
                   </div>
-                  <span className="text-lg font-semibold text-gray-900">{user.tokens.toLocaleString()}</span>
+                  <span className="text-lg font-semibold text-gray-900">{user?.tokens.toLocaleString()}</span>
                 </div>
                 <div className="flex items-center justify-between mb-3">
                   <span className="text-sm font-medium text-gray-700">Tokens Required</span>

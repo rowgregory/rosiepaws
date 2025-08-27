@@ -20,8 +20,10 @@ const WeeklyMetrics: FC<{ pet: Pet }> = ({ pet }) => {
   ).length
 
   const thisWeeksAppointments = pet?.appointments?.filter(
-    (a) => new Date(a.createdAt) >= new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
+    (v) => new Date(v.createdAt) >= new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
   ).length
+
+  const totalMedications = pet?.medications?.length
 
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 h-full">
@@ -95,19 +97,37 @@ const WeeklyMetrics: FC<{ pet: Pet }> = ({ pet }) => {
           </div>
         </div>
 
+        {pet?.appointments?.length > 0 && (
+          <div className="flex items-center justify-between">
+            <div className="flex items-center">
+              <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center mr-3">
+                <Heart className="w-4 h-4 text-gray-600" />
+              </div>
+              <div>
+                <p className="text-sm font-medium text-gray-900">Appointments</p>
+                <p className="text-xs text-gray-500">Comfort</p>
+              </div>
+            </div>
+            <div className="text-right">
+              <p className="text-2xl font-semibold text-gray-900">{thisWeeksAppointments}</p>
+              <p className="text-xs text-gray-500 lowercase">{pet?.appointments[0]?.serviceType} (most recent)</p>
+            </div>
+          </div>
+        )}
+
         <div className="flex items-center justify-between">
           <div className="flex items-center">
             <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center mr-3">
               <Calendar className="w-4 h-4 text-gray-600" />
             </div>
             <div>
-              <p className="text-sm font-medium text-gray-900">Appointments</p>
+              <p className="text-sm font-medium text-gray-900">Medications</p>
               <p className="text-xs text-gray-500">Legacy</p>
             </div>
           </div>
           <div className="text-right">
-            <p className="text-2xl font-semibold text-gray-900">{thisWeeksAppointments}</p>
-            <p className="text-xs text-gray-500">scheduled</p>
+            <p className="text-2xl font-semibold text-gray-900">{totalMedications}</p>
+            <p className="text-xs text-gray-500">prescribed</p>
           </div>
         </div>
       </div>

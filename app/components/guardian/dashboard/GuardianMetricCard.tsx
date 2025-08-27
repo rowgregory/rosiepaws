@@ -1,4 +1,4 @@
-import { Crown, TrendingUp, TrendingDown } from 'lucide-react'
+import { Crown, TrendingUp, TrendingDown, Star, Heart } from 'lucide-react'
 
 interface GuardianMetricCardProps {
   title: string
@@ -83,7 +83,9 @@ const GuardianMetricCard = ({
   hasLogs
 }: GuardianMetricCardProps) => {
   const isEmpty = !hasLogs
-  const isLegacy = id === 'blood-sugars' || id === 'seizures'
+  const isFree = id === 'pain-scores' || id === 'feedings' || id === 'waters'
+  const isComfort = id === 'vital-signs' || id === 'movements' || id === 'appointments'
+  const isLegacy = id === 'medications' || id === 'blood-sugars' || id === 'seizures'
 
   return (
     <div
@@ -96,9 +98,19 @@ const GuardianMetricCard = ({
       `}
     >
       {/* Premium Crown */}
+      {isFree && (
+        <div className="absolute top-2 right-2 z-10">
+          <Heart className="w-4 h-4 text-lime-500" />
+        </div>
+      )}
+      {isComfort && (
+        <div className="absolute top-2 right-2 z-10">
+          <Star className="w-4 h-4 text-cyan-500" />
+        </div>
+      )}
       {isLegacy && (
         <div className="absolute top-2 right-2 z-10">
-          <Crown className="w-4 h-4 text-yellow-500" />
+          <Crown className="w-4 h-4 text-purple-500" />
         </div>
       )}
 

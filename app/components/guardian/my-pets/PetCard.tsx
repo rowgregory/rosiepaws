@@ -24,7 +24,7 @@ const PetCard: FC<{ pet: Pet; index: number }> = ({ pet, index }) => {
   const { push } = useRouter()
 
   const handleEdit = () => {
-    if (user.tokens < petUpdateTokenCost) {
+    if ((user?.tokens ?? 0) < petUpdateTokenCost) {
       dispatch(setOpenNotEnoughTokensModal(petUpdateTokenCost))
       return
     }
@@ -34,7 +34,7 @@ const PetCard: FC<{ pet: Pet; index: number }> = ({ pet, index }) => {
   }
 
   const handleDelete = () => {
-    if (user.tokens < petDeleteTokenCost) {
+    if ((user?.tokens ?? 0) < petDeleteTokenCost) {
       dispatch(setOpenNotEnoughTokensModal(petUpdateTokenCost))
       return
     }
@@ -142,9 +142,9 @@ const PetCard: FC<{ pet: Pet; index: number }> = ({ pet, index }) => {
             ) : (
               <button
                 onClick={() =>
-                  user.isFreeUser
+                  user?.isFreeUser
                     ? dispatch(setOpenNeedToUpgradeDrawer())
-                    : user.tokens < appointmentCreateTokenCost
+                    : (user?.tokens ?? 0) < appointmentCreateTokenCost
                       ? dispatch(setOpenNotEnoughTokensModal(appointmentCreateTokenCost))
                       : push('/guardian/pets/appointments')
                 }

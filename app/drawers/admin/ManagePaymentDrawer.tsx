@@ -182,7 +182,7 @@ const ManagePaymentDrawer = () => {
                     </div>
                     <div>
                       <h2 className="text-xl font-bold text-gray-900">Manage Payment</h2>
-                      <p className="text-sm text-gray-600">{subscription.user.email}</p>
+                      <p className="text-sm text-gray-600">{subscription?.user?.email}</p>
                     </div>
                   </div>
                   <button onClick={onClose} className="p-2 hover:bg-gray-200 rounded-lg transition-colors">
@@ -191,7 +191,7 @@ const ManagePaymentDrawer = () => {
                 </div>
 
                 {/* Status Alert */}
-                {subscription.status === 'past_due' && (
+                {subscription?.status === 'past_due' && (
                   <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg flex items-center gap-2">
                     <AlertTriangle className="w-4 h-4 text-red-600" />
                     <span className="text-sm text-red-800">Payment is past due - immediate attention required</span>

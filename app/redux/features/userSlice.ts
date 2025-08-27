@@ -1,14 +1,13 @@
 import { Reducer, createSlice } from '@reduxjs/toolkit'
 import { userApi } from '../services/userApi'
 import { IUser } from '@/app/types'
-import { initialUserState } from '@/app/lib/initial-states/user'
 
 export interface UserStatePayload {
   loading: boolean
   error: any
   success: boolean
   users: IUser[]
-  user: IUser
+  user: IUser | null
   usersCount: number
   noUsers: boolean
   tokenTransactions: any[]
@@ -19,7 +18,7 @@ const userInitialState: UserStatePayload = {
   error: null,
   success: false,
   users: [],
-  user: initialUserState,
+  user: null,
   usersCount: 0,
   noUsers: false,
   tokenTransactions: []
@@ -33,7 +32,7 @@ export const userSlice = createSlice({
       state.error = null
       state.loading = false
       state.success = false
-      state.user = initialUserState
+      state.user = null
     },
     setUsers: (state, { payload }: any) => {
       state.users = payload

@@ -6,8 +6,8 @@ export const updateUserTokensOnSuccess = (updateUserTokensAction: any) => {
       if (data?.user?.tokens !== undefined) {
         dispatch(
           updateUserTokensAction({
-            tokens: data.user.tokens,
-            tokensUsed: data.user.tokensUsed
+            tokens: data?.user?.tokens,
+            tokensUsed: data?.user?.tokensUsed
           })
         )
       }

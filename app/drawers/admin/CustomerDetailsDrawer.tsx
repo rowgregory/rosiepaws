@@ -30,10 +30,10 @@ const CustomerDetailsDrawer = () => {
   const onClose = () => dispatch(setCloseCustomerDetailsDrawer())
 
   const getUserTypeInfo = (user: any) => {
-    if (user.isSuperUser) return { type: 'Super User', icon: Crown, color: 'red' }
-    if (user.isAdmin) return { type: 'Admin', icon: Shield, color: 'purple' }
-    if (user.isComfortUser) return { type: 'Comfort', icon: Star, color: 'green' }
-    if (user.isLegacyUser) return { type: 'Legacy', icon: Clock, color: 'yellow' }
+    if (user?.isSuperUser) return { type: 'Super User', icon: Crown, color: 'red' }
+    if (user?.isAdmin) return { type: 'Admin', icon: Shield, color: 'purple' }
+    if (user?.isComfortUser) return { type: 'Comfort', icon: Star, color: 'green' }
+    if (user?.isLegacyUser) return { type: 'Legacy', icon: Clock, color: 'yellow' }
     return { type: 'Free', icon: User, color: 'gray' }
   }
 
@@ -46,8 +46,8 @@ const CustomerDetailsDrawer = () => {
   }
 
   const getTokenUsagePercentage = () => {
-    const total = user.tokens + user.tokensUsed
-    return total > 0 ? (user.tokensUsed / total) * 1000 : 0
+    const total = user?.tokens + user?.tokensUsed
+    return total > 0 ? (user?.tokensUsed / total) * 1000 : 0
   }
 
   const userTypeInfo = getUserTypeInfo(user)
@@ -112,17 +112,17 @@ const CustomerDetailsDrawer = () => {
                 <div className="flex items-center gap-4">
                   <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center">
                     <span className="text-2xl font-bold text-gray-600">
-                      {user.name ? user.name.charAt(0).toUpperCase() : user.email.charAt(0).toUpperCase()}
+                      {user?.name ? user?.name.charAt(0).toUpperCase() : user?.email.charAt(0).toUpperCase()}
                     </span>
                   </div>
                   <div className="flex-1">
                     <h3 className="text-xl font-bold text-gray-900">
-                      {user.name || `${user.firstName || ''} ${user.lastName || ''}`.trim() || 'No Name'}
+                      {user?.name || `${user?.firstName || ''} ${user?.lastName || ''}`.trim() || 'No Name'}
                     </h3>
                     <p className="text-gray-600 flex items-center gap-1">
                       <Mail className="w-4 h-4" />
-                      {user.email}
-                      {user.emailVerified && <CheckCircle className="w-4 h-4 text-green-500" />}
+                      {user?.email}
+                      {user?.emailVerified && <CheckCircle className="w-4 h-4 text-green-500" />}
                     </p>
                     <div className="flex items-center gap-2 mt-2">
                       <span
@@ -140,7 +140,7 @@ const CustomerDetailsDrawer = () => {
               <div className="bg-gray-50 px-6 py-4 border-b">
                 <div className="grid grid-cols-4 gap-4">
                   <div className="text-center">
-                    <div className="text-2xl font-bold text-gray-900">{user.tokens.toLocaleString()}</div>
+                    <div className="text-2xl font-bold text-gray-900">{user?.tokens.toLocaleString()}</div>
                     <div className="text-xs text-gray-500">Tokens</div>
                   </div>
                   <div className="text-center">
@@ -199,19 +199,19 @@ const CustomerDetailsDrawer = () => {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           <div>
                             <label className="text-sm font-medium text-gray-500">User ID</label>
-                            <p className="text-sm text-gray-900 font-mono">{user.id}</p>
+                            <p className="text-sm text-gray-900 font-mono">{user?.id}</p>
                           </div>
                           <div>
                             <label className="text-sm font-medium text-gray-500">Role</label>
-                            <p className="text-sm text-gray-900">{user.role}</p>
+                            <p className="text-sm text-gray-900">{user?.role}</p>
                           </div>
                           <div>
                             <label className="text-sm font-medium text-gray-500">Member Since</label>
-                            <p className="text-sm text-gray-900">{formatDate(user.createdAt)}</p>
+                            <p className="text-sm text-gray-900">{formatDate(user?.createdAt)}</p>
                           </div>
                           <div>
                             <label className="text-sm font-medium text-gray-500">Last Updated</label>
-                            <p className="text-sm text-gray-900">{formatDate(user.updatedAt)}</p>
+                            <p className="text-sm text-gray-900">{formatDate(user?.updatedAt)}</p>
                           </div>
                           <div>
                             <label className="text-sm font-medium text-gray-500">Email Verified</label>
@@ -219,7 +219,7 @@ const CustomerDetailsDrawer = () => {
                           </div>
                           <div>
                             <label className="text-sm font-medium text-gray-500">Stripe Customer</label>
-                            <p className="text-sm text-gray-900">{user.stripeCustomerId ? 'Yes' : 'No'}</p>
+                            <p className="text-sm text-gray-900">{user?.stripeCustomerId ? 'Yes' : 'No'}</p>
                           </div>
                         </div>
                       </div>
@@ -245,16 +245,18 @@ const CustomerDetailsDrawer = () => {
 
                         <div className="grid grid-cols-3 gap-4 mb-4">
                           <div className="text-center p-4 bg-green-50 rounded-lg">
-                            <div className="text-2xl font-bold text-green-600">{user.tokens.toLocaleString()}</div>
+                            <div className="text-2xl font-bold text-green-600">{user?.tokens.toLocaleString()}</div>
                             <div className="text-sm text-green-700">Available</div>
                           </div>
                           <div className="text-center p-4 bg-orange-50 rounded-lg">
-                            <div className="text-2xl font-bold text-orange-600">{user.tokensUsed.toLocaleString()}</div>
+                            <div className="text-2xl font-bold text-orange-600">
+                              {user?.tokensUsed.toLocaleString()}
+                            </div>
                             <div className="text-sm text-orange-700">Used</div>
                           </div>
                           <div className="text-center p-4 bg-blue-50 rounded-lg">
                             <div className="text-2xl font-bold text-blue-600">
-                              {(user.tokens + user.tokensUsed).toLocaleString()}
+                              {(user?.tokens + user?.tokensUsed).toLocaleString()}
                             </div>
                             <div className="text-sm text-blue-700">Total</div>
                           </div>
@@ -273,7 +275,9 @@ const CustomerDetailsDrawer = () => {
                           </div>
                         </div>
 
-                        <div className="text-sm text-gray-500">Last token reset: {formatDate(user.lastTokenReset)}</div>
+                        <div className="text-sm text-gray-500">
+                          Last token reset: {formatDate(user?.lastTokenReset)}
+                        </div>
                       </div>
 
                       {/* Activity Summary */}
@@ -319,8 +323,8 @@ const CustomerDetailsDrawer = () => {
                     >
                       <h3 className="text-lg font-semibold text-gray-900 mb-4">Recent Token Transactions</h3>
                       <div className="space-y-3 max-h-96 overflow-y-auto">
-                        {user.tokenTransactions?.length > 0 ? (
-                          user.tokenTransactions.map((transaction: any) => (
+                        {user?.tokenTransactions?.length > 0 ? (
+                          user?.tokenTransactions.map((transaction: any) => (
                             <div key={transaction.id} className="bg-white border border-gray-200 rounded-lg p-4">
                               <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-3">
@@ -370,8 +374,8 @@ const CustomerDetailsDrawer = () => {
                     >
                       <h3 className="text-lg font-semibold text-gray-900 mb-4">Registered Pets</h3>
                       <div className="space-y-4">
-                        {user.pets?.length > 0 ? (
-                          user.pets.map((pet: any) => (
+                        {user?.pets?.length > 0 ? (
+                          user?.pets.map((pet: any) => (
                             <div key={pet.id} className="bg-white border border-gray-200 rounded-lg p-4">
                               <div className="flex items-center gap-3">
                                 <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
@@ -407,8 +411,8 @@ const CustomerDetailsDrawer = () => {
                     >
                       <h3 className="text-lg font-semibold text-gray-900 mb-4">Support Tickets</h3>
                       <div className="space-y-4">
-                        {user.tickets?.length > 0 ? (
-                          user.tickets.map((ticket: any) => (
+                        {user?.tickets?.length > 0 ? (
+                          user?.tickets.map((ticket: any) => (
                             <div key={ticket.id} className="bg-white border border-gray-200 rounded-lg p-4">
                               <div className="flex items-center justify-between">
                                 <div>

@@ -62,13 +62,13 @@ const quickActionsData = [
   }
 ]
 
-const QuickActions: FC<{ user: IUser }> = ({ user }) => {
+const QuickActions: FC<{ user: IUser | null }> = ({ user }) => {
   const dispatch = useAppDispatch()
 
   const handleQuickAction = (action: { isFree: boolean; tokenCost: number; func: any }) => {
-    if (user.isFreeUser && !action.isFree) {
+    if (user?.isFreeUser && !action.isFree) {
       dispatch(setOpenNeedToUpgradeDrawer())
-    } else if (user.tokens < action.tokenCost) {
+    } else if ((user?.tokens ?? 0) < action.tokenCost) {
       dispatch(setOpenNotEnoughTokensModal(action.tokenCost))
     } else {
       dispatch(action.func())

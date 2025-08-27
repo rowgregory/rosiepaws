@@ -56,7 +56,7 @@ const PhotoGalleryPage = () => {
   const getFilteredMedia = () => {
     const items = activeTab === 'my-gallery' ? galleryItems : data?.galleryItems
 
-    const filtered = items.filter((item) => {
+    const filtered = items?.filter((item) => {
       const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase())
       const matchesFilter =
         filterType === 'all' ||

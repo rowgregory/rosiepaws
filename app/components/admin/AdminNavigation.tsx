@@ -91,7 +91,7 @@ const AdminNavigation = ({ toggleSidebar, setToggleSidebar }: any) => {
       {/* Navigation Links */}
       <div className="pt-6 pb-4">
         <nav className={`px-3 space-y-1 ${toggleSidebar ? 'flex flex-col items-center' : ''}`}>
-          {adminNavigationLinks(path, user.isSuperUser).map((link, i) => (
+          {adminNavigationLinks(path, user?.isSuperUser || false).map((link, i) => (
             <motion.div
               key={i}
               initial={{ opacity: 0, y: 10 }}

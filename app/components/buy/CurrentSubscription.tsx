@@ -5,8 +5,9 @@ import { formatDate } from '@/app/lib/utils'
 import SubscriptionPlan from './SubscriptionPlan'
 import { IUser } from '@/app/types'
 
-const CurrentSubscription: FC<{ user: IUser }> = ({ user }) => {
-  if (user.isFreeUser) return
+const CurrentSubscription: FC<{ user: IUser | null }> = ({ user }) => {
+  if (user?.isFreeUser) return
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -29,9 +30,9 @@ const CurrentSubscription: FC<{ user: IUser }> = ({ user }) => {
               <div className="flex-1">
                 <h4 className="font-medium text-amber-900 mb-1">Subscription Cancellation Scheduled</h4>
                 <p className="text-amber-800 text-sm mb-2">
-                  Your {user.isComfortUser ? 'Comfort' : 'Legacy'} plan will be canceled on{' '}
+                  Your {user?.isComfortUser ? 'Comfort' : 'Legacy'} plan will be canceled on{' '}
                   <span className="font-medium">
-                    {formatDate(user.stripeSubscription.currentPeriodEnd, { includeTime: true })}
+                    {formatDate(user?.stripeSubscription.currentPeriodEnd, { includeTime: true })}
                   </span>
                   . You&apos;ll continue to have full access until then.
                 </p>
@@ -39,14 +40,6 @@ const CurrentSubscription: FC<{ user: IUser }> = ({ user }) => {
                   After this date, you&apos;ll be moved to the Free plan with 180 tokens per month.
                 </p>
               </div>
-              <button
-                onClick={() => {
-                  /* Handle reactivation */
-                }}
-                className="text-amber-700 hover:text-amber-900 text-sm font-medium"
-              >
-                Reactivate
-              </button>
             </div>
           </div>
         </motion.div>

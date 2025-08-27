@@ -3,7 +3,6 @@
 import React, { FC } from 'react'
 import { ResponsiveContainer, XAxis, YAxis, Line, Tooltip, CartesianGrid, Area, AreaChart } from 'recharts'
 import { Activity } from 'lucide-react'
-import { formatDate, getPainScoreColor } from '@/app/lib/utils'
 
 const LargePainScoreGraph: FC<{ chartData: any }> = ({ chartData }) => {
   const formatDateForTick = (dateStr: string) => {
@@ -17,7 +16,7 @@ const LargePainScoreGraph: FC<{ chartData: any }> = ({ chartData }) => {
       ? (chartData.reduce((sum: number, item: any) => sum + item.score, 0) / chartData.length).toFixed(1)
       : '--'
 
-  const reversed = [...chartData]?.reverse()
+  const reversed = [...(chartData || [])].reverse()
 
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
@@ -142,63 +141,6 @@ const LargePainScoreGraph: FC<{ chartData: any }> = ({ chartData }) => {
           <div className="text-xs text-gray-600">Recordings</div>
         </div>
       </div>
-
-      {/* Recent Pain Details */}
-      {chartData?.length > 0 && (
-        <div className="mt-6">
-          <h4 className="font-medium text-gray-700 mb-4">Recent Pain Assessments</h4>
-          <div className="space-y-3">
-            {reversed
-              ?.slice(0, 10)
-              .map((pain: any, index: number) => (
-                <div key={index} className="p-4 rounded-lg border border-gray-200 bg-gray-50">
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center space-x-2 mb-2">
-                        <span className={`font-semibold ${getPainScoreColor(pain.score)}`}>{pain.score}/4</span>
-                        <span className="text-sm text-gray-500">
-                          {formatDate(pain?.timeRecorded, { style: 'full', includeSeconds: true })}
-                        </span>
-                      </div>
-
-                      {pain.symptoms && (
-                        <p className="text-sm text-gray-700 mb-1">
-                          <strong>Symptoms:</strong> {pain.symptoms}
-                        </p>
-                      )}
-
-                      {pain.location && (
-                        <p className="text-sm text-gray-700 mb-1">
-                          <strong>Location:</strong> {pain.location}
-                        </p>
-                      )}
-
-                      {pain.triggers && (
-                        <p className="text-sm text-gray-700 mb-1">
-                          <strong>Triggers:</strong> {pain.triggers}
-                        </p>
-                      )}
-
-                      {pain.relief && (
-                        <p className="text-sm text-gray-700 mb-1">
-                          <strong>Relief:</strong> {pain.relief}
-                        </p>
-                      )}
-
-                      {pain.notes && (
-                        <p className="text-sm text-gray-600">
-                          <strong>Notes:</strong> {pain.notes}
-                        </p>
-                      )}
-                    </div>
-                    <Activity className="w-5 h-5 text-red-500 flex-shrink-0" />
-                  </div>
-                </div>
-              ))
-              .reverse()}
-          </div>
-        </div>
-      )}
     </div>
   )
 }

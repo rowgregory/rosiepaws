@@ -31,7 +31,6 @@ const GuardianNavigation: FC<{ toggleSidebar: boolean; setToggleSidebar: any }> 
 
   const handlePetSelect = (selectedPet: any) => {
     setPetDropdownOpen(false)
-    push('/guardian/dashboard')
     const chartData = processChartDataForPet(selectedPet)
     const stats = calculatePetStats(selectedPet, chartData)
     dispatch(
@@ -95,7 +94,6 @@ const GuardianNavigation: FC<{ toggleSidebar: boolean; setToggleSidebar: any }> 
                 <div className="w-8 h-8 bg-gray-900 rounded-lg flex items-center justify-center">
                   <span className="text-white font-bold text-sm">{user?.firstName?.charAt(0)}</span>
                 </div>
-
                 <div>
                   <h2 className="text-sm font-semibold text-gray-900">Guardian Panel</h2>
                   <p className="text-xs text-gray-500">{user?.email}</p>
@@ -125,7 +123,7 @@ const GuardianNavigation: FC<{ toggleSidebar: boolean; setToggleSidebar: any }> 
         >
           <div className="flex items-center justify-center">
             <TokensSVG color1="#f472b6" color2="#fb923c" id="pinkToOrange" />
-            <span className="text-12">{user?.isLegacyUser ? '♾️' : user?.tokens}</span>
+            <span className="text-12">{user?.isLegacyUser ? '♾️' : user?.tokens?.toLocaleString()}</span>
           </div>
           {!toggleSidebar && (
             <div className="bg-gradient-to-r from-pink-500 via-orange-500 to-red-500 rounded-full h-7 flex items-center justify-center text-12 font-semibold text-white px-2 border-1 border-pink-500 hover:bg-gradient-to-r hover:from-zinc-500 hover:to-zinc-600 hover:border-zinc-500">

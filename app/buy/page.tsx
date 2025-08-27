@@ -3,7 +3,7 @@
 import React from 'react'
 import PricingCard from '../components/home/PricingCard'
 import { plans } from '@/public/data/home.data'
-import { RootState, useAppSelector } from '../redux/store'
+import { useUserSelector } from '../redux/store'
 import { motion } from 'framer-motion'
 import Header from '../components/buy/Header'
 import CurrentSubscription from '../components/buy/CurrentSubscription'
@@ -11,7 +11,7 @@ import FeatureComparison from '../components/buy/FeatureComparison'
 import TokenEconomics from '../components/buy/TokenEconomics'
 
 const Buy = () => {
-  const { user } = useAppSelector((state: RootState) => state.user)
+  const { user } = useUserSelector()
 
   return (
     <>

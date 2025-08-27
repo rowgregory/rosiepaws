@@ -49,7 +49,8 @@ export const galleryItemApi = api.injectEndpoints({
       onQueryStarted: async (data: any, { dispatch, queryFulfilled }: any) => {
         const handlers = await getGalleryItemHandlers()
         await handlers.handleCreate(dispatch)(data, queryFulfilled)
-      }
+      },
+      invalidatesTags: ['User', 'Gallery-Item']
     }),
     updateGalleryItem: build.mutation({
       query: (body: any) => ({ url: `${BASE_URL}/${body.galleryItemId}/update-is-public`, method: 'PATCH', body }),
@@ -59,14 +60,15 @@ export const galleryItemApi = api.injectEndpoints({
         const updateData = { id: galleryItemId, ...updateFields }
         await handlers.handleUpdate(dispatch, getState)(updateData, queryFulfilled)
       },
-      invalidatesTags: ['Gallery-Item']
+      invalidatesTags: ['User', 'Gallery-Item']
     }),
     deleteGalleryItem: build.mutation({
       query: ({ id }: any) => ({ url: `${BASE_URL}/${id}`, method: 'DELETE' }),
       onQueryStarted: async (data: { id: any }, { dispatch, queryFulfilled, getState }: any) => {
         const handlers = await getGalleryItemHandlers()
         await handlers.handleDelete(dispatch, getState)(data, queryFulfilled)
-      }
+      },
+      invalidatesTags: ['User', 'Gallery-Item']
     })
   })
 })

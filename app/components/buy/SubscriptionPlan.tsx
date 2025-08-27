@@ -17,22 +17,22 @@ const SubscriptionPlan = ({ user }: any) => {
   }
 
   const getPlanDisplayName = () => {
-    if (user.isFreeUser) return 'Free'
-    if (user.isComfortUser) return 'Comfort'
-    if (user.isLegacyUser) return 'Legacy'
-    return user.stripeSubscription?.plan || 'Free'
+    if (user?.isFreeUser) return 'Free'
+    if (user?.isComfortUser) return 'Comfort'
+    if (user?.isLegacyUser) return 'Legacy'
+    return user?.stripeSubscription?.plan || 'Free'
   }
 
   const getPlanBadgeColor = () => {
-    if (user.isFreeUser) return 'bg-gray-100 text-gray-700'
-    if (user.isComfortUser) return 'bg-blue-100 text-blue-700'
-    if (user.isLegacyUser) return 'bg-purple-100 text-purple-700'
+    if (user?.isFreeUser) return 'bg-gray-100 text-gray-700'
+    if (user?.isComfortUser) return 'bg-blue-100 text-blue-700'
+    if (user?.isLegacyUser) return 'bg-purple-100 text-purple-700'
     return 'bg-gray-100 text-gray-700'
   }
 
   const getTokensDisplay = () => {
-    if (user.isLegacyUser) return 'Unlimited'
-    return user.tokens?.toLocaleString() || '0'
+    if (user?.isLegacyUser) return 'Unlimited'
+    return user?.tokens?.toLocaleString() || '0'
   }
 
   return (
@@ -65,7 +65,7 @@ const SubscriptionPlan = ({ user }: any) => {
                 <Calendar className="w-4 h-4 text-gray-600" />
               </div>
               <span className="text-gray-900 font-medium text-xs mb-1">Billing</span>
-              <span className="text-gray-700 font-semibold text-sm">{user.isFreeUser ? 'N/A' : 'Monthly'}</span>
+              <span className="text-gray-700 font-semibold text-sm">{user?.isFreeUser ? 'N/A' : 'Monthly'}</span>
             </div>
 
             {/* Tokens */}
@@ -76,33 +76,46 @@ const SubscriptionPlan = ({ user }: any) => {
               <span className="text-gray-900 font-medium text-xs mb-1">Tokens</span>
               <div className="text-center">
                 <span className="text-gray-700 font-semibold text-sm">{getTokensDisplay()}</span>
-                {user.isLegacyUser && <p className="text-xs text-purple-600">No limits</p>}
+                {user?.isLegacyUser && <p className="text-xs text-purple-600">No limits</p>}
               </div>
             </div>
 
             {/* Pricing */}
-            {!user.isFreeUser && user.stripeSubscription && (
+            {!user?.isFreeUser && user?.stripeSubscription && (
               <div className="flex flex-col items-center text-center p-2 bg-gray-50 rounded-lg">
                 <div className="p-1 bg-white rounded mb-2">
                   <CreditCard className="w-4 h-4 text-gray-600" />
                 </div>
                 <span className="text-gray-900 font-medium text-xs mb-1">Cost</span>
                 <span className="text-gray-700 font-semibold text-sm">
-                  {formatPrice(user.stripeSubscription.planPrice)}
+                  {formatPrice(user?.stripeSubscription.planPrice)}
                 </span>
               </div>
             )}
 
             {/* Next Payment */}
-            {!user.isFreeUser && user.stripeSubscription?.currentPeriodEnd && (
+            {!user?.isFreeUser && user?.stripeSubscription?.currentPeriodEnd && (
               <div className="flex flex-col items-center text-center p-2 bg-gray-50 rounded-lg">
                 <div className="p-1 bg-white rounded mb-2">
                   <Calendar className="w-4 h-4 text-gray-600" />
                 </div>
-                <span className="text-gray-900 font-medium text-xs mb-1">Next Payment</span>
-                <span className="text-gray-700 font-semibold text-sm">
-                  {formatDate(user.stripeSubscription.currentPeriodEnd)}
-                </span>
+
+                {/* Check if user cancelled but still has access */}
+                {user?.stripeSubscription.cancelAtPeriodEnd ? (
+                  <>
+                    <span className="text-red-600 font-medium text-xs mb-1">Plan Cancelled</span>
+                    <span className="text-gray-700 font-semibold text-sm">
+                      Access until {formatDate(user?.stripeSubscription.currentPeriodEnd)}
+                    </span>
+                  </>
+                ) : (
+                  <>
+                    <span className="text-gray-900 font-medium text-xs mb-1">Next Payment</span>
+                    <span className="text-gray-700 font-semibold text-sm">
+                      {formatDate(user?.stripeSubscription.currentPeriodEnd)}
+                    </span>
+                  </>
+                )}
               </div>
             )}
           </div>

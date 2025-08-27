@@ -22,11 +22,9 @@ const CleanHeader: FC<ICleanHeader> = ({ func, tokens, btnText, formName }) => {
     <div className="flex items-center pt-4">
       <button
         onClick={() => {
-          if (user.isFreeUser && user.pets?.length === 1) {
+          if ((user?.isFreeUser && user?.pets?.length === 1) || (user?.isComfortUser && user?.pets?.length === 3)) {
             dispatch(setOpenNeedToUpgradeDrawer())
-          } else if (user.isComfortUser && user.pets?.length === 3) {
-            dispatch(setOpenNeedToUpgradeDrawer())
-          } else if (tokens > user.tokens) {
+          } else if (tokens > (user?.tokens ?? 0)) {
             dispatch(setOpenNotEnoughTokensModal(tokens))
           } else if (func) {
             dispatch(func())

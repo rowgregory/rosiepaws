@@ -69,11 +69,11 @@ const UploadSectionMyGallery: FC<IUploadSectionMyGallery> = ({
   const handleUpload = async () => {
     if (!selectedFile) return
 
-    if (user.isFreeUser) {
+    if (user?.isFreeUser) {
       dispatch(setOpenNeedToUpgradeDrawer())
       return
     }
-    if (user.tokens < galleryUploadTokenCost) {
+    if ((user?.tokens ?? 0) < galleryUploadTokenCost) {
       dispatch(setOpenNotEnoughTokensModal(galleryUploadTokenCost))
       return
     }

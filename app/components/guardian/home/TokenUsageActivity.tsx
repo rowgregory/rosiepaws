@@ -3,14 +3,14 @@ import React, { FC } from 'react'
 import { IUser } from '@/app/types'
 import { formatDate } from '@/app/lib/utils'
 
-const TokenUsageActivity: FC<{ user: IUser; tokenTransactions: any[] }> = ({ user, tokenTransactions }) => {
+const TokenUsageActivity: FC<{ user: IUser | null; tokenTransactions: any[] }> = ({ user, tokenTransactions }) => {
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 h-full">
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-lg font-semibold text-gray-900">Token Activity</h2>
         <div className="flex items-center text-sm text-gray-600">
           <div className="w-2 h-2 bg-blue-500 rounded-full mr-2"></div>
-          Current Balance: {user.isLegacyUser ? '♾️' : `${user?.tokens?.toLocaleString()} tokens`}
+          Current Balance: {user?.isLegacyUser ? '♾️' : `${user?.tokens?.toLocaleString()} tokens`}
         </div>
       </div>
       <div className="flex-1 overflow-y-auto pr-2 max-h-[400px]">

@@ -97,6 +97,7 @@ const PetDropdownMenu: FC<IPetDropdownMenu> = ({
   zeroPets,
   user
 }) => {
+  const userRole = user?.role?.toLowerCase()
   return (
     <AnimatePresence mode="wait">
       {petDropdownOpen && (
@@ -172,16 +173,19 @@ const PetDropdownMenu: FC<IPetDropdownMenu> = ({
             {/* Add New Pet Option */}
             <motion.div variants={itemVariants} className={`${zeroPets ? '' : 'border-t border-gray-100  p-2'}`}>
               <Link
-                href={user.role !== 'Free' && !user.isFreeUser ? '/guardian/pets/my-pets' : ''}
+                href={userRole !== 'free' && !user?.isFreeUser ? '/guardian/pets/my-pets' : ''}
+                className="block"
                 onClick={() => {
-                  if (user.role === 'Free' && user.isFreeUser && user.pets.length === 1) {
+                  if (
+                    (userRole === 'free' && user?.isFreeUser && user?.pets?.length === 1) ||
+                    (userRole === 'comfort' && user?.isComfortUser && user?.pets?.length === 3)
+                  ) {
                     dispatch(setOpenNeedToUpgradeDrawer())
                   } else {
                     dispatch(setOpenPetDrawer())
                   }
                   setPetDropdownOpen(false)
                 }}
-                className="block"
               >
                 <motion.div
                   className="flex items-center gap-x-3 p-3 rounded-lg cursor-pointer hover:bg-gray-50 text-gray-700 transition-colors duration-200"

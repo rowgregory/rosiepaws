@@ -18,15 +18,15 @@ const PricingCard: FC<IPricingCard> = ({ plan, user }) => {
   const [cancelSubscription, { isLoading: isCancelling }] = useCancelSubscriptionMutation()
 
   // Determine if this is the user's current plan using the boolean flags
-  const activePlan = user.stripeSubscription?.plan?.toLowerCase() === plan.id
+  const activePlan = user?.stripeSubscription?.plan?.toLowerCase() === plan.id
 
   const handlePlanSelect = async (planId: string) => {
-    const response = await createCheckoutSession({ planId, userId: user.id }).unwrap()
+    const response = await createCheckoutSession({ planId, userId: user?.id }).unwrap()
     push(response.url)
   }
 
   const handleCancelSubscription = async () => {
-    const response = await cancelSubscription({ userId: user.id }).unwrap()
+    const response = await cancelSubscription({ userId: user?.id }).unwrap()
     push(response.url)
   }
 
@@ -221,8 +221,9 @@ const PricingCard: FC<IPricingCard> = ({ plan, user }) => {
           </div>
         ) : user?.isComfortUser || user?.isLegacyUser ? (
           <button
+            disabled={user?.stripeSubscription?.cancelAtPeriodEnd}
             onClick={() => handleCancelSubscription()} // This would trigger cancellation
-            className="w-full py-3 px-4 rounded-md font-medium bg-red-600 hover:bg-red-700 text-white transition-colors"
+            className="w-full py-3 px-4 rounded-md font-medium bg-red-600 hover:bg-red-700 text-white transition-colors disabled:cursor-not-allowed"
           >
             Cancel Subscription
           </button>

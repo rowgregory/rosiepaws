@@ -125,17 +125,6 @@ export const metricsConfigCards = (stats: any) => [
     totalLogs: stats?.movements?.totalLogs
   },
   {
-    id: 'medications',
-    title: 'Medications',
-    value: `${stats?.medications?.mostRecent ?? 'No data'}`, // Show most recent distance
-    subtitle: `${stats?.medications?.dosage || 0}${stats?.medications?.dosageUnit} • ${stats?.medications?.totalLogs || 0} log${stats?.medications?.totalLogs !== 1 ? 's' : ''}`,
-    icon: Pill,
-    color: 'purple',
-    trend: '--',
-    hasLogs: stats?.medications?.hasMedications,
-    totalLogs: stats?.medications?.totalLogs
-  },
-  {
     id: 'appointments',
     title: 'Appointments',
     value: `${stats?.appointments?.mostRecent ?? 'No data'}`, // Show most recent distance
@@ -145,6 +134,17 @@ export const metricsConfigCards = (stats: any) => [
     trend: '--',
     hasLogs: stats?.appointments?.hasAppointments,
     totalLogs: stats?.appointments?.totalLogs
+  },
+  {
+    id: 'medications',
+    title: 'Medications',
+    value: `${stats?.medications?.mostRecent ?? 'No data'}`, // Show most recent distance
+    subtitle: `${stats?.medications?.dosage || 0}${stats?.medications?.dosageUnit} • ${stats?.medications?.totalLogs || 0} log${stats?.medications?.totalLogs !== 1 ? 's' : ''}`,
+    icon: Pill,
+    color: 'purple',
+    trend: '--',
+    hasLogs: stats?.medications?.hasMedications,
+    totalLogs: stats?.medications?.totalLogs
   },
   {
     id: 'blood-sugars',

@@ -103,7 +103,7 @@ const GuardianDashboard = () => {
         { id: 'waters', tokenCost: 90 },
         { id: 'vital-signs', tokenCost: 125 },
         { id: 'movements', tokenCost: 275 },
-        { id: 'medications', tokenCost: 275 }
+        { id: 'appointments', tokenCost: 300 }
       ],
       legacy: [
         { id: 'pain-scores', tokenCost: 75 },
@@ -111,8 +111,8 @@ const GuardianDashboard = () => {
         { id: 'waters', tokenCost: 90 },
         { id: 'vital-signs', tokenCost: 125 },
         { id: 'movements', tokenCost: 275 },
-        { id: 'medications', tokenCost: 275 },
-        { id: 'appointments', tokenCost: 350 },
+        { id: 'appointments', tokenCost: 300 },
+        { id: 'medications', tokenCost: 350 },
         { id: 'blood-sugars', tokenCost: 400 },
         { id: 'seizures', tokenCost: 500 }
       ]
@@ -145,8 +145,8 @@ const GuardianDashboard = () => {
       waters: { drawer: setOpenWaterDrawer(), route: '/guardian/pets/water' },
       'vital-signs': { drawer: setOpenVitalSignsDrawer(), route: '/guardian/pets/vital-signs' },
       movements: { drawer: setOpenMovementDrawer(), route: '/guardian/pets/movements' },
-      medications: { drawer: setOpenMedicationDrawer(), route: '/guardian/pets/medication' },
       appointments: { drawer: setOpenAppointmentDrawer(), route: '/guardian/pets/appointments' },
+      medications: { drawer: setOpenMedicationDrawer(), route: '/guardian/pets/medication' },
       'blood-sugars': { drawer: setOpenBloodSugarDrawer(), route: '/guardian/pets/blood-sugar' },
       seizures: { drawer: setOpenSeizureDrawer(), route: '/guardian/pets/seizure' }
     }
@@ -159,8 +159,8 @@ const GuardianDashboard = () => {
       'waters',
       'vital-signs',
       'movements',
-      'medications',
       'appointments',
+      'medications',
       'blood-sugars',
       'seizures'
     ].includes(metric.id)

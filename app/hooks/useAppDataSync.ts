@@ -8,7 +8,7 @@ import { setAppointments } from '../redux/features/appointmentSlice'
 import { setBloodSugars } from '../redux/features/bloodSugarSlice'
 import { setSeizures } from '../redux/features/seizureSlice'
 import { setGalleryItems } from '../redux/features/galleryItemSlice'
-import { useAppDispatch, useAppSelector } from '../redux/store'
+import { useAppDispatch } from '../redux/store'
 import { clearUser, setTokenTransactions, setUser } from '../redux/features/userSlice'
 import {
   setChartData,
@@ -20,6 +20,7 @@ import {
 } from '../redux/features/petSlice'
 import { useEffect, useRef } from 'react'
 import { useFetchMeQuery } from '../redux/services/userApi'
+import { useSession } from 'next-auth/react'
 
 interface IFetchMe {
   data: {
@@ -44,14 +45,13 @@ interface IFetchMe {
 }
 
 function useAppDataSync() {
-  const { user } = useAppSelector((state) => state.user)
   const dispatch = useAppDispatch()
-
+  const session = useSession()
   // Use a ref to track previous data for deep compare
   const prevDataRef = useRef<any>(null)
 
   const { data, error } = useFetchMeQuery(undefined, {
-    skip: Object.keys(user).length === 0
+    skip: session.status === 'unauthenticated'
   }) as IFetchMe
 
   useEffect(() => {
