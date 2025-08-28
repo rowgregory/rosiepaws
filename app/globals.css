@@ -38,3 +38,56 @@ input:-webkit-autofill:active {
   box-shadow: 0 0 0 30px theme("colors.gray.200") inset !important;
   transition: background-color 5000s ease-in-out 0s;
 }
+
+@font-face {
+  font-family: "OpenDyslexic";
+  src: url("/fonts/open-dyslexic/OpenDyslexic-Regular.otf") format("opentype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+.dyslexia-friendly h1,
+.dyslexia-friendly h2,
+.dyslexia-friendly h3,
+.dyslexia-friendly h4,
+.dyslexia-friendly h5,
+.dyslexia-friendly h6,
+.dyslexia-friendly a,
+.dyslexia-friendly p,
+.dyslexia-friendly label,
+.dyslexia-friendly li,
+.dyslexia-friendly span,
+.dyslexia-friendly button,
+.dyslexia-friendly input,
+.dyslexia-friendly textarea {
+  font-family: "OpenDyslexic", sans-serif !important;
+}
+
+body.high-contrast {
+  background-color: #000000; /* Dark background */
+  color: #ffffff; /* Light text */
+}
+
+body.high-contrast button,
+body.high-contrast input,
+body.high-contrast select,
+body.high-contrast textarea {
+  background-color: #ffffff; /* Light background for inputs */
+  color: #000000; /* Dark text for inputs */
+  border: 2px solid #000000; /* Strong border for better focus visibility */
+}
+
+body.high-contrast .main-content {
+  background-color: #000000; /* Dark background for main content */
+  color: #ffffff; /* Light text for the main content */
+}
+
+body.high-contrast h1,
+body.high-contrast h2,
+body.high-contrast h3,
+body.high-contrast h4,
+body.high-contrast h5,
+body.high-contrast h6 {
+  color: #ff00ff; /* High-contrast headers in bright color */
+}

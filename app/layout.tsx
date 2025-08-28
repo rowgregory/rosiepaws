@@ -1,4 +1,4 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
 import ReduxWrapper from './redux-wrapper'
@@ -11,6 +11,11 @@ const inter = Inter({
   weight: ['100', '200', '300', '400', '500', '600', '700', '800', '900'],
   preload: false
 })
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1
+}
 
 export const metadata: Metadata = {
   title: 'Rosie Paws',
