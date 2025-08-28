@@ -1,10 +1,10 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import HomeHero from './components/common/HomeHero'
+import HomeHero from './components/home/HomeHero'
 import AnnouncementBanner from './components/home/AnnouncementBanner'
 import Audience from './components/home/Audience'
-import InsideTheApp from './components/home/InsideTheApp'
+import PeaceOfMindShowcase from './components/home/PeaceOfMindShowcase'
 import SnapshotDashboard from './components/home/SnapshotDashboard'
 import Solution from './components/home/Solution'
 
@@ -23,7 +23,7 @@ const Home = () => {
       <SnapshotDashboard />
       <Audience />
       <AnnouncementBanner />
-      <InsideTheApp />
+      <PeaceOfMindShowcase />
       <Solution />
     </>
   )

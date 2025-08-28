@@ -1,7 +1,7 @@
 'use client'
 
 import React from 'react'
-import PricingCard from '../components/home/PricingCard'
+import PricingCard from '../components/buy/PricingCard'
 import { plans } from '@/public/data/home.data'
 import { useUserSelector } from '../redux/store'
 import { motion } from 'framer-motion'

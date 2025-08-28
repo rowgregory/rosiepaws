@@ -1,8 +1,6 @@
-'use client'
-
 import React from 'react'
 import { motion } from 'framer-motion'
-import { ArrowUpRight } from 'lucide-react'
+import { Heart, Users, Stethoscope } from 'lucide-react'
 
 const Audience = () => {
   const containerVariants: any = {
@@ -16,65 +14,108 @@ const Audience = () => {
     }
   }
 
+  const cardVariants: any = {
+    hidden: { opacity: 0, y: 30 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.6,
+        ease: 'easeOut'
+      }
+    }
+  }
+
   const cards = [
     {
+      icon: Heart,
       title: 'For Pet Owners',
       description:
-        "Monitor your pet's health with comprehensive tracking tools for pain, feeding, hydration, and vital signs. Keep detailed records and never miss important care milestones."
+        "Monitor your pet's health with comprehensive tracking tools for pain, feeding, hydration, and vital signs. Keep detailed records and never miss important care milestones.",
+      gradient: 'from-rose-500 to-pink-500'
     },
     {
+      icon: Users,
       title: 'For Families',
       description:
-        'Share pet care responsibilities seamlessly across family members. Coordinate feeding schedules, medication reminders, and health updates in real-time collaboration.'
+        'Share pet care responsibilities seamlessly across family members. Coordinate feeding schedules, medication reminders, and health updates in real-time collaboration.',
+      gradient: 'from-pink-500 to-orange-500'
     },
     {
-      title: 'For Veterinarians',
+      icon: Stethoscope,
+      title: 'For Vet Visits',
       description:
-        'Access comprehensive patient data with detailed health analytics and tracking history. Streamline consultations with organized medical records and trend analysis.'
+        'Generate comprehensive health reports from your tracking data to share with your veterinarian. Provide detailed insights into symptoms, behaviors, and care patterns for informed discussions.',
+      gradient: 'from-orange-500 to-red-500'
     }
   ]
 
   return (
-    <div className="max-w-6xl mx-auto flex flex-col items-center justify-center">
-      <h1 className="uppercase text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-pink-400 to-red-400 font-semibold tracking-wide mb-2">
-        Honoring Sacred Time
-      </h1>
-      <h2 className="text-5xl font-medium text-zinc-800 mb-20">Facing life&apos;s final chapter</h2>
-      <motion.div
-        className="grid grid-cols-1 lg:grid-cols-3 gap-6 w-full"
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
-      >
-        {cards.map((card, index) => {
-          return (
-            <motion.div key={index} variants={containerVariants} className="group relative">
-              {/* Gradient glow layer */}
-              <div className="absolute inset-[-1px] rounded-2xl bg-gradient-to-br from-red-500 via-pink-500 to-orange-500 opacity-0 group-hover:opacity-100 blur-md transition-opacity duration-200 pointer-events-none" />
+    <section className="w-full py-16 md:py-24 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="text-center mb-12 md:mb-16">
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="uppercase text-sm font-semibold tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-orange-500 via-pink-500 to-red-500 mb-4"
+          >
+            Honoring Sacred Time
+          </motion.p>
+          <motion.h2
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 leading-tight"
+          >
+            Facing life&apos;s final chapter
+          </motion.h2>
+        </div>
 
-              <div className="relative bg-white border border-gray-200 rounded-2xl p-8 h-full shadow-lg transition-all duration-200">
-                {/* Arrow Icon */}
-                <div className="absolute top-6 right-6">
-                  <div className="w-12 h-12 bg-gray-300 rounded-full flex items-center justify-center transition-colors duration-200 shadow-sm">
-                    <div className="w-9 h-9 rounded-full group-hover:bg-gradient-to-tr group-hover:from-red-500 group-hover:via-pink-500 group-hover:to-orange-500 flex items-center justify-center">
-                      <ArrowUpRight size={20} className="text-white group-hover:rotate-45 duration-200" />
-                    </div>
+        {/* Cards Grid */}
+        <motion.div
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8"
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: '-100px' }}
+        >
+          {cards.map((card, index) => (
+            <motion.div key={index} variants={cardVariants} className="group relative h-full">
+              {/* Gradient glow layer */}
+              <div
+                className={`absolute inset-0 rounded-2xl bg-gradient-to-br ${card.gradient} opacity-0 group-hover:opacity-20 blur-xl transition-all duration-300 pointer-events-none`}
+              />
+
+              {/* Card */}
+              <div className="relative bg-white border border-gray-200 rounded-2xl p-6 md:p-8 h-full shadow-sm hover:shadow-xl transition-all duration-300 group-hover:border-gray-300">
+                {/* Icon Only */}
+                <div className="flex items-start justify-between mb-6">
+                  <div
+                    className={`w-12 h-12 rounded-xl bg-gradient-to-br ${card.gradient} flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300`}
+                  >
+                    <card.icon className="w-6 h-6 text-white" />
                   </div>
                 </div>
 
                 {/* Content */}
-                <div className="space-y-6">
-                  <h3 className="text-2xl font-bold text-gray-900">{card.title}</h3>
-                  <p className="text-gray-600 leading-relaxed group-hover:text-gray-700 transition-colors duration-200">
+                <div className="space-y-4">
+                  <h3 className="text-xl md:text-2xl font-bold text-gray-900 group-hover:text-gray-800 transition-colors duration-300">
+                    {card.title}
+                  </h3>
+                  <p className="text-gray-600 leading-relaxed text-sm md:text-base group-hover:text-gray-700 transition-colors duration-300">
                     {card.description}
                   </p>
                 </div>
               </div>
             </motion.div>
-          )
-        })}
-      </motion.div>
-    </div>
+          ))}
+        </motion.div>
+      </div>
+    </section>
   )
 }
 
