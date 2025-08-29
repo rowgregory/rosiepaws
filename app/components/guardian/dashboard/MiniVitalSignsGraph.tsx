@@ -72,9 +72,9 @@ const MiniVitalSignsGraph = ({ vitalSigns, pet }: any) => {
   const normalRanges = NORMAL_RANGES[petType as keyof typeof NORMAL_RANGES]
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+    <div className="bg-white lg:rounded-xl lg:shadow-sm border border-gray-100 p-3 lg:p-6">
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-6">
         <div className="flex items-center space-x-3">
           <div className="p-2 bg-gradient-to-br from-slate-500 to-stone-500 rounded-lg">
             <Stethoscope className="w-5 h-5 text-white" />
@@ -84,7 +84,7 @@ const MiniVitalSignsGraph = ({ vitalSigns, pet }: any) => {
             <p className="text-sm text-gray-500">Last 7 assessments</p>
           </div>
         </div>
-        <div className="text-right">
+        <div className="mt-2 lg:mt-0 lg:text-right">
           <div className="flex items-center space-x-2">
             <Thermometer className="w-4 h-4 text-red-500" />
             <div className="text-2xl font-bold text-gray-600">{latestTemperature}°F</div>
@@ -220,7 +220,7 @@ const MiniVitalSignsGraph = ({ vitalSigns, pet }: any) => {
 
       {/* Quick Stats */}
       <div className="mt-4 pt-4 border-t border-gray-100">
-        <div className="grid grid-cols-3 gap-4 text-center">
+        <div className="grid grid-cols-2 gap-4 text-center">
           <div>
             <div className="text-lg font-bold text-gray-900">{chartData.length}</div>
             <div className="text-xs text-gray-500">Recent Records</div>
@@ -233,7 +233,7 @@ const MiniVitalSignsGraph = ({ vitalSigns, pet }: any) => {
       </div>
 
       {/* Legend */}
-      <div className="flex items-center justify-center space-x-4 mt-4 text-xs text-gray-600">
+      <div className="grid sm:grid-cols-4 lg:items-center lg:justify-center gap-4 mt-4 text-xs text-gray-600">
         <div className="flex items-center space-x-1">
           <div className="w-2 h-2 rounded-full bg-green-500"></div>
           <span>Normal</span>

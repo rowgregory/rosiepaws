@@ -30,8 +30,8 @@ const MedicationIntake = () => {
   if (zeroMedications) {
     return (
       <ZeroLogs
-        btnText="Add medication"
-        title="No medications added yet"
+        btnText="Log medication"
+        title="No medications logged"
         subtitle="Track your pet's medications, set reminders, and monitor dosage schedules."
         tokens={medicationCreateTokenCost}
         func={setOpenMedicationDrawer}

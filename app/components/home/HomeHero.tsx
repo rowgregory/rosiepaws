@@ -9,7 +9,7 @@ const HomeHero = () => {
   return (
     <div className="relative w-full h-full -mt-20 sm:mt-[-112px]">
       <video
-        className="object-cover w-full h-dvh min-h-[1200px]"
+        className="object-cover w-full h-dvh sm:min-h-[1200px]"
         controls={false}
         autoPlay={true}
         loop
@@ -26,7 +26,7 @@ const HomeHero = () => {
       <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-white to-transparent z-30"></div>
 
       <div className="absolute inset-0 max-w-[1320px] mx-auto z-40 px-4 sm:px-6 lg:px-8">
-        <div className="absolute inset-0 flex flex-col items-center justify-center md:mt-40">
+        <div className="absolute inset-0 flex flex-col items-center justify-center">
           <motion.div className="max-w-4xl w-full px-4">
             <motion.div
               initial={{ opacity: 0, x: -50 }}

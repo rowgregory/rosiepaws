@@ -20,7 +20,7 @@ const FeedingForm: FC<IForm> = ({ inputs, handleInput, close, handleSubmit, load
 
           <div className="space-y-3">
             <label className="text-sm font-medium text-gray-700">Food Type</label>
-            <div className="grid grid-cols-3 gap-2">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-2">
               {FOOD_TYPES.map((food) => (
                 <label
                   key={food.id}
@@ -42,7 +42,7 @@ const FeedingForm: FC<IForm> = ({ inputs, handleInput, close, handleSubmit, load
 
           <div className="space-y-3">
             <label className="text-sm font-medium text-gray-700">Amount</label>
-            <div className="grid grid-cols-4 gap-2">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
               {AMOUNTS.map((amount) => (
                 <label
                   key={amount.id}

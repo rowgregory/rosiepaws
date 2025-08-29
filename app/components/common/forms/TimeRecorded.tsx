@@ -21,7 +21,7 @@ const TimeRecorded: FC<{ inputs: any; handleInput: any; errors: any }> = ({ inpu
   return (
     <div className="space-y-3">
       <label className="text-sm font-medium text-gray-700">Time Recorded</label>
-      <div className="grid grid-cols-2 gap-2 mb-3">
+      <div className="grid lg:grid-cols-2 gap-2 mb-3">
         {QUICK_TIMES.map((time, index) => (
           <label
             key={index}

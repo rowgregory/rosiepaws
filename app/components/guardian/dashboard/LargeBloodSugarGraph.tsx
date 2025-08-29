@@ -1,8 +1,8 @@
 import React, { useMemo } from 'react'
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ReferenceLine } from 'recharts'
-import { Heart, Clock, Calendar, Utensils, Pill, TrendingUp, AlertTriangle } from 'lucide-react'
+import { Heart, Clock, Calendar, Utensils, Pill, TrendingUp, AlertTriangle, FileText } from 'lucide-react'
 import { motion } from 'framer-motion'
-import { containerVariants, itemVariants } from '@/app/lib/constants'
+import { itemVariants } from '@/app/lib/constants'
 import { getBloodSugarStats, getBloodSugarStatus, getMealIcon } from '@/app/lib/utils'
 
 interface BloodSugarReading {
@@ -61,14 +61,9 @@ const LargeBloodSugarGraph: React.FC<LargeBloodSugarGraphProps> = ({ bloodSugarD
   if (!stats) return
 
   return (
-    <motion.div
-      variants={containerVariants}
-      initial="hidden"
-      animate="visible"
-      className="bg-white rounded-xl shadow-sm border border-gray-100 p-6"
-    >
+    <div className="bg-white lg:rounded-xl lg:shadow-sm border border-gray-100 p-3 lg:p-6">
       {/* Header */}
-      <motion.div variants={itemVariants} className="flex items-center justify-between mb-6">
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-6">
         <div className="flex items-center space-x-3">
           <motion.div
             whileHover={{ scale: 1.05 }}
@@ -81,12 +76,12 @@ const LargeBloodSugarGraph: React.FC<LargeBloodSugarGraphProps> = ({ bloodSugarD
             <p className="text-sm text-gray-600">Comprehensive glucose monitoring and insights</p>
           </div>
         </div>
-        <motion.div initial={{ scale: 0.8 }} animate={{ scale: 1 }} className="text-right">
+        <motion.div initial={{ scale: 0.8 }} animate={{ scale: 1 }} className="mt-2 lg:mt-0 lg:text-right">
           <div className={`text-2xl font-bold ${stats.latestStatus.color}`}>{stats.latestValue}</div>
           <div className="text-sm text-gray-500">mg/dL ({stats.latestStatus.priority})</div>
           <div className="text-xs text-gray-400 mt-1">Most Recent</div>
         </motion.div>
-      </motion.div>
+      </div>
 
       {/* Chart */}
       <motion.div variants={itemVariants}>
@@ -323,40 +318,56 @@ const LargeBloodSugarGraph: React.FC<LargeBloodSugarGraphProps> = ({ bloodSugarD
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: index * 0.1 }}
                   whileHover={{ scale: 1.02 }}
-                  className={`p-4 rounded-xl border ${status.bgColor} ${
+                  className={`p-3 sm:p-4 rounded-xl border ${status.bgColor} ${
                     isOutOfRange ? 'border-red-200' : 'border-pink-200'
                   }`}
                 >
-                  <div className="flex items-center justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center space-x-2 mb-2">
+                  <div className="flex flex-col sm:flex-row sm:items-start justify-between space-y-2 sm:space-y-0">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex flex-wrap items-center gap-2 mb-2">
                         <span className="text-lg">{getMealIcon(reading.mealRelation)}</span>
-                        <h4 className="font-semibold">Blood Sugar Reading</h4>
+                        <h4 className="font-semibold text-gray-900">Blood Sugar Reading</h4>
                         {reading.medicationGiven && (
-                          <span className="px-2 py-1 bg-purple-100 text-purple-700 rounded-full text-xs">
-                            💊 Medication
+                          <span className="px-2 py-1 bg-purple-100 text-purple-700 rounded-full text-xs flex items-center space-x-1">
+                            <Pill className="w-3 h-3" />
+                            <span>Medication</span>
                           </span>
                         )}
                       </div>
-                      <p className="text-sm text-gray-600">
-                        Level: {reading.value} mg/dL • Status: <span className={status.color}>{status.priority}</span>
-                      </p>
-                      <p className="text-xs text-gray-500">
-                        {reading.date} at {reading.time} • {reading?.mealRelation?.replace?.('_', ' ')?.toLowerCase()}
-                      </p>
-                      {reading.symptoms && reading.symptoms !== 'None observed' && (
-                        <p className="text-xs text-red-600 mt-1">Symptoms: {reading.symptoms}</p>
-                      )}
-                      {reading.notes && <p className="text-xs text-gray-600 mt-1 italic">Notes: {reading.notes}</p>}
+
+                      <div className="space-y-1">
+                        <p className="text-sm text-gray-600">
+                          <span className="font-medium">{reading.value} mg/dL</span> •
+                          <span className={`ml-1 ${status.color}`}>{status.priority}</span>
+                        </p>
+                        <p className="text-xs text-gray-500">
+                          {reading.date} at {reading.time} • {reading?.mealRelation?.replace?.('_', ' ')?.toLowerCase()}
+                        </p>
+                        {reading.symptoms && reading.symptoms !== 'None observed' && (
+                          <p className="text-xs text-red-600 flex items-start space-x-1">
+                            <AlertTriangle className="w-3 h-3 mt-0.5 flex-shrink-0" />
+                            <span>Symptoms: {reading.symptoms}</span>
+                          </p>
+                        )}
+                        {reading.notes && (
+                          <p className="text-xs text-gray-600 flex items-start space-x-1">
+                            <FileText className="w-3 h-3 mt-0.5 flex-shrink-0" />
+                            <span className="italic">Notes: {reading.notes}</span>
+                          </p>
+                        )}
+                      </div>
                     </div>
-                    <status.icon className={`w-5 h-5 ${status.color.replace('text-', 'text-')}`} />
+
+                    <div className="flex-shrink-0 self-start sm:self-center">
+                      <status.icon className={`w-5 h-5 ${status.color.replace('text-', 'text-')}`} />
+                    </div>
                   </div>
                 </motion.div>
               )
             }) || <p className="text-gray-500 text-center py-8">No blood sugar readings recorded</p>}
         </div>
       </motion.div>
-    </motion.div>
+    </div>
   )
 }
 

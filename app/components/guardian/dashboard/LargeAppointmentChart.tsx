@@ -209,9 +209,9 @@ const LargeAppointmentChart: FC<LargeAppointmentChartProps> = ({ appointments })
   }, [appointments])
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+    <div className="bg-white lg:rounded-xl lg:shadow-sm border border-gray-100 p-3 lg:p-6">
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-6">
         <div className="flex items-center space-x-3">
           <div className="p-2 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg">
             <Calendar className="w-5 h-5 text-white" />
@@ -221,7 +221,7 @@ const LargeAppointmentChart: FC<LargeAppointmentChartProps> = ({ appointments })
             <p className="text-sm text-gray-500">Comprehensive appointment tracking and insights</p>
           </div>
         </div>
-        <div className="text-right">
+        <div className="mt-2 lg:mt-0 lg:text-right">
           <div className="text-2xl font-bold text-gray-600">{appointments?.length}</div>
           <div className="text-sm text-gray-500">Total Appointments</div>
           <div className="text-xs text-gray-400 mt-1">

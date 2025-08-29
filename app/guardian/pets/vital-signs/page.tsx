@@ -76,8 +76,8 @@ const VitalSigns = () => {
   if (zeroVitalSigns) {
     return (
       <ZeroLogs
-        btnText="Record Vital Signs"
-        title="No vital signs recorded yet"
+        btnText="Log Vital Signs"
+        title="No vital signs logged yet"
         subtitle="Start tracking your pet's vital signs to monitor their health, detect issues early, and maintain comprehensive medical records."
         tokens={vitalSignsCreateTokenCost}
         func={setOpenVitalSignsDrawer}
@@ -109,7 +109,6 @@ const VitalSigns = () => {
                 <div className="p-6">
                   <div className="flex items-center justify-between mb-4">
                     <h2 className="text-xl font-semibold text-gray-800">Latest Assessment</h2>
-                    <span className="text-sm text-gray-500">Most recent</span>
                   </div>
 
                   {(() => {

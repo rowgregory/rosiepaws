@@ -71,12 +71,12 @@ const MovementCard: FC<IMovementCard> = ({ movement, index, shouldAnimate }) => 
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: index * 0.05 }}
         whileTap={{ scale: 0.96 }}
-        className="bg-white rounded-xl border border-gray-200 p-5 cursor-pointer hover:shadow-md transition-shadow group relative"
+        className="bg-white rounded-xl border border-gray-200 p-3 sm:p-5 cursor-pointer hover:shadow-md transition-shadow group relative"
       >
         {/* Delete button - top right */}
         <motion.button
           onClick={handleDelete}
-          className="absolute top-3 right-3 w-8 h-8 bg-red-50 hover:bg-red-100 rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10"
+          className="absolute top-2 right-2 sm:top-3 sm:right-3 w-8 h-8 bg-red-50 hover:bg-red-100 rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10"
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
         >
@@ -84,10 +84,8 @@ const MovementCard: FC<IMovementCard> = ({ movement, index, shouldAnimate }) => 
         </motion.button>
 
         {/* Header */}
-        <div className="p-4 border-b border-gray-100">
-          <div className="flex items-start justify-between pr-10">
-            {' '}
-            {/* Add pr-10 for delete button space */}
+        <div className="p-3 sm:p-4 border-b border-gray-100">
+          <div className="flex flex-col sm:flex-row sm:items-start justify-between pr-8 sm:pr-10 space-y-2 sm:space-y-0">
             <div className="flex items-center space-x-3">
               <div className={`p-2 rounded-lg bg-gray-50 ${typeInfo.color}`}>
                 <TypeIcon className="w-5 h-5" />
@@ -105,7 +103,7 @@ const MovementCard: FC<IMovementCard> = ({ movement, index, shouldAnimate }) => 
             {/* Activity Level Badge */}
             {movement.activityLevel && (
               <span
-                className={`px-2 py-1 rounded-full text-xs font-medium border text-center ${getActivityLevelColor(movement.activityLevel)}`}
+                className={`px-2 py-1 rounded-full text-xs font-medium border text-center self-start ${getActivityLevelColor(movement.activityLevel)}`}
               >
                 {movement.activityLevel.replace('_', ' ').toLowerCase()}
               </span>
@@ -114,15 +112,15 @@ const MovementCard: FC<IMovementCard> = ({ movement, index, shouldAnimate }) => 
         </div>
 
         {/* Content */}
-        <div className="p-4 space-y-3">
+        <div className="p-3 sm:p-4 space-y-3">
           {/* Duration and Distance */}
-          <div className="flex items-center justify-between text-sm">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between text-sm space-y-1 sm:space-y-0">
             <div className="flex items-center space-x-1 text-gray-600">
               <Clock className="w-4 h-4" />
               <span>{movement.durationMinutes || '0'} min</span>
             </div>
             {movement.distanceMeters && (
-              <div className="text-gray-600">
+              <div className="text-gray-600 text-left sm:text-right">
                 {movement.distanceMeters >= 1000
                   ? `${(movement.distanceMeters / 1000).toFixed(1)}km`
                   : `${movement.distanceMeters}m`}
@@ -132,15 +130,19 @@ const MovementCard: FC<IMovementCard> = ({ movement, index, shouldAnimate }) => 
 
           {/* Location */}
           {movement.location && (
-            <div className="flex items-center space-x-1 text-sm text-gray-600">
-              <MapPin className="w-4 h-4" />
-              <span className="truncate">{movement.location}</span>
-              {movement.indoor && <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">Indoor</span>}
+            <div className="flex flex-col sm:flex-row sm:items-center space-y-1 sm:space-y-0 sm:space-x-1 text-sm text-gray-600">
+              <div className="flex items-center space-x-1">
+                <MapPin className="w-4 h-4" />
+                <span className="truncate">{movement.location}</span>
+              </div>
+              {movement.indoor && (
+                <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded self-start">Indoor</span>
+              )}
             </div>
           )}
 
           {/* Pain and Energy Trends */}
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-start space-x-4 sm:justify-between">
             {painTrend && (
               <div className="flex items-center space-x-1">
                 <painTrend.icon className={`w-4 h-4 ${painTrend.color}`} />
@@ -168,9 +170,9 @@ const MovementCard: FC<IMovementCard> = ({ movement, index, shouldAnimate }) => 
 
           {/* Equipment Used */}
           {(movement.wheelchair || movement.harness || movement.leash) && (
-            <div className="flex items-center space-x-2">
+            <div className="flex flex-col sm:flex-row sm:items-center space-y-1 sm:space-y-0 sm:space-x-2">
               <span className="text-xs text-gray-500">Equipment:</span>
-              <div className="flex space-x-1">
+              <div className="flex flex-wrap gap-1">
                 {movement.wheelchair && (
                   <span className="text-xs bg-blue-100 text-blue-600 px-2 py-1 rounded">Wheelchair</span>
                 )}
@@ -210,8 +212,8 @@ const MovementCard: FC<IMovementCard> = ({ movement, index, shouldAnimate }) => 
         </div>
 
         {/* Footer */}
-        <div className="px-4 py-3 bg-gray-50 border-t border-gray-100">
-          <div className="flex items-center justify-between text-xs text-gray-500">
+        <div className="px-3 py-2 sm:px-4 sm:py-3 bg-gray-50 border-t border-gray-100">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between text-xs text-gray-500 space-y-1 sm:space-y-0">
             <span>{new Date(movement.timeRecorded).toLocaleDateString()}</span>
             <span>
               {new Date(movement.timeRecorded).toLocaleTimeString([], {

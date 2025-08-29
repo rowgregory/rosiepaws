@@ -78,7 +78,7 @@ const NeedToUpgradeDrawer = () => {
                         variants={cardVariants}
                         initial="hidden"
                         animate="visible"
-                        className={`relative border-2 rounded-xl p-6 cursor-pointer transition-all duration-200 ${
+                        className={`relative border-2 rounded-xl p-4 sm:p-6 cursor-pointer transition-all duration-200 ${
                           selectedPlan === plan.id
                             ? 'border-purple-500 bg-purple-50'
                             : 'border-gray-200 hover:border-gray-300 hover:shadow-md'
@@ -87,33 +87,35 @@ const NeedToUpgradeDrawer = () => {
                       >
                         {plan.popular && (
                           <div
-                            className={`absolute -top-3 left-6 px-3 py-1 rounded-full text-xs font-semibold text-white bg-gradient-to-r ${plan.gradient}`}
+                            className={`absolute -top-3 left-4 sm:left-6 px-3 py-1 rounded-full text-xs font-semibold text-white bg-gradient-to-r ${plan.gradient}`}
                           >
                             Most Popular
                           </div>
                         )}
 
-                        <div className="flex items-start justify-between mb-4">
+                        <div className="flex flex-col sm:flex-row sm:items-start justify-between mb-4 space-y-3 sm:space-y-0">
                           <div className="flex items-center">
-                            <div className={`p-3 rounded-lg bg-gradient-to-r ${plan.gradient} mr-4`}>
-                              <Icon className="w-6 h-6 text-white" />
+                            <div
+                              className={`p-2 sm:p-3 rounded-lg bg-gradient-to-r ${plan.gradient} mr-3 sm:mr-4 flex-shrink-0`}
+                            >
+                              <Icon className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                             </div>
-                            <div>
-                              <h3 className="text-xl font-bold text-gray-900">{plan.name}</h3>
+                            <div className="flex-1 min-w-0">
+                              <h3 className="text-lg sm:text-xl font-bold text-gray-900">{plan.name}</h3>
                               <p className="text-gray-600 text-sm">{plan.subtitle}</p>
                             </div>
                           </div>
-                          <div className="text-right">
-                            <div className="text-2xl font-bold text-gray-900">{plan.price}</div>
+                          <div className="text-left sm:text-right flex-shrink-0">
+                            <div className="text-xl sm:text-2xl font-bold text-gray-900">{plan.price}</div>
                             <div className="text-sm text-gray-600">{plan.period}</div>
                           </div>
                         </div>
 
                         <ul className="space-y-2">
                           {plan.features.map((feature, featureIndex) => (
-                            <li key={featureIndex} className="flex items-center text-sm text-gray-700">
-                              <Check className="w-4 h-4 text-green-500 mr-2 flex-shrink-0" />
-                              {feature}
+                            <li key={featureIndex} className="flex items-start text-sm text-gray-700">
+                              <Check className="w-4 h-4 text-green-500 mr-2 flex-shrink-0 mt-0.5" />
+                              <span className="flex-1">{feature}</span>
                             </li>
                           ))}
                         </ul>

@@ -7,7 +7,6 @@ import { processedSeizureData } from '@/app/lib/utils'
 
 interface MiniSeizureScatterProps {
   seizures?: any[] | null
-  className?: string
 }
 
 // Severity color mapping
@@ -56,7 +55,7 @@ export const CustomSeizureTooltip = ({ active, payload }: any) => {
   return null
 }
 
-const MiniSeizureScatter: FC<MiniSeizureScatterProps> = ({ seizures = [], className = '' }) => {
+const MiniSeizureScatter: FC<MiniSeizureScatterProps> = ({ seizures = [] }) => {
   // Process seizure data for scatter plot
   const processedData = processedSeizureData(seizures)
 
@@ -71,9 +70,9 @@ const MiniSeizureScatter: FC<MiniSeizureScatterProps> = ({ seizures = [], classN
   if (totalSeizures === 0) return
 
   return (
-    <div className={`bg-white rounded-xl shadow-sm border border-gray-100 p-6 ${className}`}>
+    <div className="bg-white lg:rounded-xl lg:shadow-sm border border-gray-100 p-3 lg:p-6">
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-6">
         <div className="flex items-center space-x-3">
           <div className="p-2 bg-gradient-to-br from-red-500 to-orange-500 rounded-lg">
             <AlertTriangle className="w-5 h-5 text-white" />
@@ -83,7 +82,7 @@ const MiniSeizureScatter: FC<MiniSeizureScatterProps> = ({ seizures = [], classN
             <p className="text-sm text-gray-500">Last 7 Days</p>
           </div>
         </div>
-        <div className="text-right">
+        <div className="mt-2 lg:mt-0 lg:text-right">
           <div className="text-2xl font-bold text-red-500">{totalSeizures}</div>
           <div className="text-sm text-gray-500">Total Seizures</div>
         </div>
@@ -128,7 +127,7 @@ const MiniSeizureScatter: FC<MiniSeizureScatterProps> = ({ seizures = [], classN
       </div>
 
       {/* Summary Statistics */}
-      <div className="grid grid-cols-3 gap-4 mt-6 pt-4 border-t border-gray-100">
+      <div className="grid lg:grid-cols-3 gap-4 mt-6 pt-4 border-t border-gray-100">
         <div className="text-center">
           <div className="text-sm text-gray-600">Avg Duration</div>
           <div className="text-lg font-bold text-orange-600">{averageDuration}s</div>

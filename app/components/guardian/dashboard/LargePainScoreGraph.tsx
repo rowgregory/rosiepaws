@@ -19,9 +19,9 @@ const LargePainScoreGraph: FC<{ chartData: any }> = ({ chartData }) => {
   const reversed = [...(chartData || [])].reverse()
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+    <div className="bg-white lg:rounded-xl lg:shadow-sm border border-gray-100 p-3 lg:p-6">
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-6">
         <div className="flex items-center space-x-3">
           <div className="p-2 bg-gradient-to-br from-red-500 to-orange-500 rounded-lg">
             <Activity className="w-5 h-5 text-white" />
@@ -31,14 +31,14 @@ const LargePainScoreGraph: FC<{ chartData: any }> = ({ chartData }) => {
             <p className="text-sm text-gray-600">Monitor your pet&apos;s pain levels over time</p>
           </div>
         </div>
-        <div className="text-right">
+        <div className="mt-2 lg:mt-0 lg:text-right">
           <div className="text-2xl font-bold text-red-600">{latestScore}</div>
           <div className="text-sm text-gray-500">Latest Score</div>
         </div>
       </div>
 
       {/* Chart */}
-      <ResponsiveContainer width="100%" height={300}>
+      <ResponsiveContainer width="100%" height={400}>
         <AreaChart data={reversed} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
           <defs>
             <linearGradient id="painGradient" x1="0" y1="0" x2="0" y2="1">
@@ -127,7 +127,7 @@ const LargePainScoreGraph: FC<{ chartData: any }> = ({ chartData }) => {
       </ResponsiveContainer>
 
       {/* Stats Footer */}
-      <div className="grid grid-cols-3 gap-4 mt-6 pt-6 border-t border-gray-100">
+      <div className="grid lg:grid-cols-3 gap-4 mt-6 pt-6 border-t border-gray-100">
         <div className="text-center p-3 bg-red-50 rounded-lg">
           <div className="text-lg font-bold text-red-600">{latestScore}</div>
           <div className="text-xs text-gray-600">Current</div>

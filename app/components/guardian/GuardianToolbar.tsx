@@ -1,8 +1,6 @@
 'use client'
 
-import { setOpenGuardianActionMenu, setOpenPetDrawer } from '@/app/redux/features/petSlice'
-import { RootState, useAppDispatch, useAppSelector } from '@/app/redux/store'
-import GuardianActionMenuButton from './GuardianActionMenuButton'
+import { useAppDispatch } from '@/app/redux/store'
 import { ArrowLeft, Bell, Settings, User } from 'lucide-react'
 import Link from 'next/link'
 import { setOpenNotificationDrawer } from '@/app/redux/features/dashboardSlice'
@@ -10,7 +8,6 @@ import { motion } from 'framer-motion'
 
 const GuardianToolbar = () => {
   const dispatch = useAppDispatch()
-  const { zeroPets } = useAppSelector((state: RootState) => state.pet)
 
   return (
     <div className="bg-white border-b border-gray-100 px-6 py-4 fixed top-0 left-0 right-0 z-50">
@@ -30,10 +27,6 @@ const GuardianToolbar = () => {
         </div>
         {/* Right side - actions */}
         <div className="flex items-center gap-3">
-          {/* Guardian Action Menu Button */}
-          <GuardianActionMenuButton
-            onClick={() => (zeroPets ? dispatch(setOpenPetDrawer()) : dispatch(setOpenGuardianActionMenu()))}
-          />
           {/* Notifications */}
           <button
             onClick={() => dispatch(setOpenNotificationDrawer())}

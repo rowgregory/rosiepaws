@@ -13,7 +13,8 @@ export default {
         foreground: 'var(--foreground)'
       },
       backgroundImage: {
-        logo: "url('/images/rosie-logo.png')"
+        logo: "url('/images/rosie-logo.png')",
+        infinity: "url('/images/infinity.png')"
       },
       screens: {
         480: '480px',

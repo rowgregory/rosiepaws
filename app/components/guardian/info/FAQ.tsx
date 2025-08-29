@@ -45,7 +45,7 @@ const FAQ = () => {
                 expandedItems.includes(index) ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
               }`}
             >
-              <div className="px-8 pb-6 border-t border-gray-100 mt-2">
+              <div className="px-8 pb-6 border-t border-gray-100 mt-2 overflow-y-auto h-60">
                 <div className="pt-6">
                   <p className="text-gray-700 leading-7 text-base">{faq.answer}</p>
                 </div>

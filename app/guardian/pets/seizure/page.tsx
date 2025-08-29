@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react'
 import { motion } from 'framer-motion'
-import { AlertTriangle, Video, FileText, Phone } from 'lucide-react'
+import { AlertTriangle, Video, FileText, Phone, Calendar } from 'lucide-react'
 import { RootState, useAppDispatch, useAppSelector } from '@/app/redux/store'
 import VideoModal from '@/app/modals/VideoModal'
 import CleanHeader from '@/app/components/guardian/navigation/CleanHeader'
@@ -102,30 +102,32 @@ const Seizure = () => {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="bg-red-50 border border-red-200 rounded-2xl p-6"
+              className="bg-red-50 border border-red-200 rounded-2xl p-4 sm:p-6"
             >
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-semibold text-red-800 flex items-center">
-                  <AlertTriangle className="w-5 h-5 mr-2" />
-                  Seizure Activity Today
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-2">
+                <h2 className="text-lg sm:text-xl font-semibold text-red-800 flex items-center">
+                  <AlertTriangle className="w-5 h-5 mr-2 flex-shrink-0" />
+                  <span>Seizure Activity Today</span>
                 </h2>
-                <span className="text-sm text-red-600">
+                <span className="text-sm text-red-600 self-start sm:self-center">
                   {todaysSeizuresCount} episode{todaysSeizuresCount > 1 ? 's' : ''}
                 </span>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
                 {todaysSeizures.map((seizure) => (
-                  <div key={seizure.id} className="bg-white rounded-lg p-4 border border-red-200">
-                    <div className="flex items-center justify-between">
-                      <div>
+                  <div key={seizure.id} className="bg-white rounded-lg p-3 sm:p-4 border border-red-200">
+                    <div className="flex flex-col sm:flex-row sm:items-start justify-between space-y-2 sm:space-y-0">
+                      <div className="flex-1">
                         <h3 className="font-semibold text-gray-900">{seizure.pet?.name}</h3>
                         <p className="text-sm text-gray-600">{getTimeInfo(new Date(seizure.timeRecorded))?.time}</p>
                         {seizure.duration && (
                           <p className="text-sm text-red-600">Duration: {formatDuration(seizure.duration)}</p>
                         )}
                       </div>
-                      <div className="text-right">
-                        {seizure.videoUrl && <div className="text-xs text-blue-600 mb-1">📹 Video recorded</div>}
+                      <div className="text-left sm:text-right flex-shrink-0">
+                        {seizure.videoUrl && (
+                          <div className="text-xs text-blue-600 whitespace-nowrap">📹 Video recorded</div>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -143,14 +145,14 @@ const Seizure = () => {
                   animate={{ opacity: 1, y: 0 }}
                   className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden"
                 >
-                  <div className="p-6">
-                    <div className="flex items-center justify-between mb-4">
-                      <h2 className="text-xl font-semibold text-gray-800">Latest Seizure Episode</h2>
-                      <span className="text-sm text-gray-500">Most recent</span>
+                  <div className="p-4 sm:p-6">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-2">
+                      <h2 className="text-lg sm:text-xl font-semibold text-gray-800">Latest Seizure Episode</h2>
+                      <span className="text-sm text-gray-500 self-start sm:self-center">Most recent</span>
                     </div>
 
-                    <div className="flex items-center justify-between">
-                      <div>
+                    <div className="flex flex-col lg:flex-row lg:items-start justify-between space-y-4 lg:space-y-0">
+                      <div className="flex-1">
                         <h3 className="text-lg font-semibold text-gray-900">{latestSeizure.pet?.name}</h3>
                         <p className="text-sm text-gray-500">{getTimeInfo(latestSeizure.createdAt)?.relative}</p>
                         <p className="text-xs text-gray-400">
@@ -159,11 +161,11 @@ const Seizure = () => {
                         </p>
                       </div>
 
-                      <div className="flex items-center space-x-6">
-                        <div className="text-right">
+                      <div className="flex flex-col sm:flex-row sm:items-start gap-4 sm:gap-6">
+                        <div className="text-left sm:text-right">
                           {latestSeizure.duration ? (
                             <>
-                              <div className="text-2xl font-bold text-red-600">
+                              <div className="text-xl sm:text-2xl font-bold text-red-600">
                                 {formatDuration(latestSeizure.duration)}
                               </div>
                               <div className="text-sm text-gray-500">Duration</div>
@@ -177,14 +179,14 @@ const Seizure = () => {
                         </div>
                         <div className="flex flex-col space-y-2">
                           {latestSeizure.videoUrl && (
-                            <div className="flex items-center space-x-1 px-3 py-1 rounded-full bg-blue-100 text-blue-800 text-xs">
-                              <Video className="w-3 h-3" />
+                            <div className="flex items-center space-x-1 px-3 py-1 rounded-full bg-blue-100 text-blue-800 text-xs whitespace-nowrap">
+                              <Video className="w-3 h-3 flex-shrink-0" />
                               <span>Video Available</span>
                             </div>
                           )}
                           {latestSeizure.notes && (
-                            <div className="flex items-center space-x-1 px-3 py-1 rounded-full bg-gray-100 text-gray-800 text-xs">
-                              <FileText className="w-3 h-3" />
+                            <div className="flex items-center space-x-1 px-3 py-1 rounded-full bg-gray-100 text-gray-800 text-xs whitespace-nowrap">
+                              <FileText className="w-3 h-3 flex-shrink-0" />
                               <span>Notes Added</span>
                             </div>
                           )}
@@ -319,9 +321,12 @@ const Seizure = () => {
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.2 }}
-                className="bg-white rounded-xl shadow-sm border border-gray-100 p-6"
+                className="bg-white rounded-xl shadow-lg border border-gray-100 p-4 sm:p-6"
               >
-                <h3 className="text-lg font-semibold text-gray-800 mb-4">Quick Actions</h3>
+                <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                  <span className="w-2 h-2 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full mr-3"></span>
+                  Quick Actions
+                </h3>
                 <div className="space-y-3">
                   <button
                     onClick={() => {
@@ -338,21 +343,24 @@ const Seizure = () => {
                       )
                       dispatch(setOpenSeizureDrawer())
                     }}
-                    className="w-full bg-red-600 text-white rounded-lg py-2 px-4 hover:bg-red-700 transition-colors text-sm"
+                    className="w-full bg-gradient-to-r from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700 text-white rounded-xl py-3 px-4 font-medium text-sm shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center space-x-2"
                   >
-                    🚨 Log Emergency Seizure
+                    <AlertTriangle className="w-4 h-4" />
+                    <span>Log Emergency Seizure</span>
                   </button>
                   <button
                     onClick={handleDownload}
-                    className="w-full bg-blue-600 text-white rounded-lg py-2 px-4 hover:bg-blue-700 transition-colors text-sm"
+                    className="w-full bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white rounded-xl py-3 px-4 font-medium text-sm shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center space-x-2"
                   >
-                    📊 Generat{isGenerating ? 'ing' : 'e'} Report for Vet
+                    <FileText className="w-4 h-4" />
+                    <span>Generat{isGenerating ? 'ing' : 'e'} Report for Vet</span>
                   </button>
                   <button
                     onClick={() => dispatch(setOpenSeizureCalendarDrawer())}
-                    className="w-full bg-green-600 text-white rounded-lg py-2 px-4 hover:bg-green-700 transition-colors text-sm"
+                    className="w-full bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white rounded-xl py-3 px-4 font-medium text-sm shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center space-x-2"
                   >
-                    📅 View Seizure Calendar
+                    <Calendar className="w-4 h-4" />
+                    <span>View Seizure Calendar</span>
                   </button>
                 </div>
               </motion.div>

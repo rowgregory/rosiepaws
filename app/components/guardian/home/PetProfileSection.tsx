@@ -21,7 +21,7 @@ const PetProfileSection = ({ pet }: any) => {
       }}
       className="cursor-pointer h-full"
     >
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between mb-6">
         <h2 className="text-lg font-semibold text-gray-900">Pet Profile</h2>
         <div className="flex items-center text-sm text-gray-600">
           Last Updated: {formatDate(pet?.updatedAt, { includeTime: true })}

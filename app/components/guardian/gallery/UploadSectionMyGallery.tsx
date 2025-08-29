@@ -194,7 +194,7 @@ const UploadSectionMyGallery: FC<IUploadSectionMyGallery> = ({
               <motion.div
                 initial={{ scale: 0.9, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
-                className="flex items-center justify-center gap-4"
+                className="flex flex-col lg:items-center lg:justify-center gap-4"
               >
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center">

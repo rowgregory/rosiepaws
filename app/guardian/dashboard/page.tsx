@@ -12,7 +12,7 @@ import MiniMedicationChart from '@/app/components/guardian/dashboard/MiniMedicat
 import MiniBloodSugarGraph from '@/app/components/guardian/dashboard/MiniBloodSugarGraph'
 import MiniPainScoreGraph from '@/app/components/guardian/dashboard/MiniPainScoreGraph'
 import MiniFeedingGraph from '@/app/components/guardian/dashboard/MiniFeedingGraph'
-import GuardianMedicationGraph from '@/app/components/guardian/dashboard/GuardianMedicationGraph'
+import LargeMedicationGraph from '@/app/components/guardian/dashboard/LargeMedicationGraph'
 import LargeSeizureGraph from '@/app/components/guardian/dashboard/LargeSeizureGraph'
 import LargeBloodSugarGraph from '@/app/components/guardian/dashboard/LargeBloodSugarGraph'
 import LargeAppointmentChart from '@/app/components/guardian/dashboard/LargeAppointmentChart'
@@ -37,6 +37,7 @@ import { setOpenVitalSignsDrawer } from '@/app/redux/features/vitalSignsSlice'
 import MiniVitalSignsGraph from '@/app/components/guardian/dashboard/MiniVitalSignsGraph'
 import { setOpenNeedToUpgradeDrawer } from '@/app/redux/features/dashboardSlice'
 import { setOpenNotEnoughTokensModal } from '@/app/redux/features/appSlice'
+import GuardianActionMenuButton from '@/app/components/guardian/GuardianActionMenuButton'
 
 const GuardianDashboard = () => {
   const dispatch = useAppDispatch()
@@ -60,7 +61,7 @@ const GuardianDashboard = () => {
       case 'appointments':
         return <LargeAppointmentChart appointments={chartData?.appointments} />
       case 'medications':
-        return <GuardianMedicationGraph medicationData={chartData?.medications} />
+        return <LargeMedicationGraph medicationData={chartData?.medications} />
       case 'seizures':
         return <LargeSeizureGraph seizures={chartData?.seizures} />
       case 'movements':
@@ -177,18 +178,17 @@ const GuardianDashboard = () => {
 
   return (
     <div>
-      <div className="sticky top-0 flex items-center pl-6 border-b-1 border-b-gray-100 z-30 bg-white h-[64px]">
-        <span className="text-2xl bg-gradient-to-r from-orange-400 via-orange-600 to-pink-600 bg-clip-text text-transparent font-semibold">
-          {pet?.name}&apos;s Health Dashboard
-        </span>
+      <div className="sticky top-0 flex items-center gap-x-4 pl-6 border-b-1 border-b-gray-100 z-30 bg-white h-[64px]">
+        <GuardianActionMenuButton />
+        <span className="text-xl lg:text-2xl font-semibold">{pet?.name}&apos;s Dashboard</span>
       </div>
-      <div className="min-h-[calc(100dvh-64px)] mx-auto p-6 space-y-8 bg-gray-50">
+      <div className="min-h-[calc(100dvh-64px)] mx-auto py-6 lg:p-6 space-y-8 bg-gray-50">
         {onboardingBanner && (
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-6 mb-6"
+            className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-4 lg:p-6 mb-6"
           >
             <div className="flex justify-between items-start">
               <div className="flex-1">
@@ -242,7 +242,7 @@ const GuardianDashboard = () => {
           </motion.div>
         )}
         <>
-          <div className="flex gap-3.5 w-[calc(100vw-304px)] overflow-x-auto p-2 scrollbar-hide">
+          <div className="flex gap-3.5 lg:w-[calc(100vw-304px)] overflow-x-auto py-2 scrollbar-hide">
             {metricsConfigCards(stats).map((metric, index) => {
               return (
                 <motion.div
@@ -275,10 +275,10 @@ const GuardianDashboard = () => {
           </div>
           {!noLogs && (
             <div
-              className={`${!loading ? 'border-gray-100 bg-white' : 'border-gray-200 bg-gray-50 opacity-60'} rounded-2xl p-8 shadow-md border`}
+              className={`${!loading ? 'border-gray-100 bg-white' : 'border-gray-200 bg-gray-50 opacity-60'} lg:rounded-2xl lg:px-6 py-4 lg:p-8 shadow-md border`}
             >
-              <div className="flex items-center justify-between mb-6">
-                <div>
+              <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-6">
+                <div className="px-3 lg:px-0">
                   <h2 className="text-2xl font-bold text-gray-900">
                     {selectedMetric === 'blood-sugar'
                       ? 'Blood Sugar Monitoring'
@@ -300,12 +300,12 @@ const GuardianDashboard = () => {
                       : `Detailed ${selectedMetric.replace('-', ' ')} data and trends`}
                   </p>
                 </div>
-                <div className="flex items-center gap-x-3">
+                <div className="flex items-center gap-x-3 mt-4 lg:mt-0 px-3">
                   {selectedMetric !== 'overview' && (
                     <>
                       <button
                         onClick={() => setSelectedMetric('overview')}
-                        className={`px-4 py-2 rounded-full font-medium text-sm transition-colors flex items-center gap-x-1.5 bg-gray-100 text-gray-600 hover:bg-gray-200`}
+                        className={`flex-1 px-4 py-2 rounded-full font-medium text-sm transition-colors flex items-center gap-x-1.5 bg-gray-100 text-gray-600 hover:bg-gray-200`}
                       >
                         <ArrowLeftIcon size={16} /> Overview
                       </button>
@@ -329,9 +329,9 @@ const GuardianDashboard = () => {
                                           ? '/guardian/pets/vital-signs'
                                           : '/guardian/pets/appointments'
                         }
-                        className={`px-4 py-2 rounded-full font-medium text-sm transition-colors flex items-center gap-x-1.5 bg-gray-100 text-gray-600 hover:bg-gray-200`}
+                        className={`flex-1  whitespace-nowrap px-4 py-2 rounded-full font-medium text-sm transition-colors flex items-center gap-x-1.5 bg-gray-100 text-gray-600 hover:bg-gray-200`}
                       >
-                        View All{' '}
+                        <span className="hidden lg:block">View All</span>
                         {selectedMetric === 'blood-sugars'
                           ? 'Blood Sugars'
                           : selectedMetric === 'pain-scores'

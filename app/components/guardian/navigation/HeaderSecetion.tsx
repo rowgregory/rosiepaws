@@ -1,0 +1,51 @@
+import { IUser } from '@/app/types'
+import { AnimatePresence, motion } from 'framer-motion'
+import Link from 'next/link'
+import React, { FC } from 'react'
+
+const HeaderSecetion: FC<{ toggleSidebar: boolean; user: IUser | null }> = ({ toggleSidebar, user }) => {
+  return (
+    <Link
+      href="/"
+      className={`relative h-16 flex items-center border-b border-gray-100 hover:bg-gray-50 cursor-pointer ${
+        toggleSidebar ? 'justify-center px-2' : 'px-6'
+      }`}
+    >
+      <AnimatePresence mode="wait">
+        {!toggleSidebar ? (
+          <motion.div
+            key="expanded-header"
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -20 }}
+            transition={{ duration: 0.2 }}
+            className="flex items-center gap-3"
+          >
+            <div className="w-8 h-8 bg-gray-900 rounded-lg flex items-center justify-center">
+              <span className="text-white font-bold text-sm">{user?.firstName?.charAt(0)}</span>
+            </div>
+            <div>
+              <h2 className="text-sm font-semibold text-gray-900">Guardian Panel</h2>
+              <p className="text-xs text-gray-500">{user?.email}</p>
+            </div>
+          </motion.div>
+        ) : (
+          <motion.div
+            key="collapsed-header"
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.8 }}
+            transition={{ duration: 0.2 }}
+            className="w-10 h-10 bg-gray-900 rounded-lg flex items-center justify-center"
+          >
+            <div className="w-8 h-8 bg-gray-900 rounded-lg flex items-center justify-center">
+              <span className="text-white font-bold">{user?.firstName?.charAt(0)}</span>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </Link>
+  )
+}
+
+export default HeaderSecetion

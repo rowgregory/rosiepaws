@@ -55,7 +55,7 @@ const SeizureForm: FC<IForm> = ({
       animate="visible"
       variants={containerVariants}
     >
-      <div className="overflow-y-auto px-5 pt-9 pb-12 h-[calc(100dvh-132px)]">
+      <div className="overflow-y-auto px-5 pt-9 pb-12 h-[calc(100dvh-200px)]">
         <div className="space-y-6">
           {/* Pet Selection */}
           <motion.div variants={itemVariants}>

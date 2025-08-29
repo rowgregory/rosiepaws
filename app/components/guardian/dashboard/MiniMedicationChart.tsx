@@ -11,10 +11,9 @@ interface MedicationData {
 
 interface GuardianMiniMedicationChartProps {
   medications?: MedicationData[]
-  className?: string
 }
 
-const MiniMedicationChart: React.FC<GuardianMiniMedicationChartProps> = ({ medications = [], className = '' }) => {
+const MiniMedicationChart: React.FC<GuardianMiniMedicationChartProps> = ({ medications = [] }) => {
   const uniqueMedications = useMemo(() => {
     const medicationMap = new Map()
 
@@ -41,9 +40,9 @@ const MiniMedicationChart: React.FC<GuardianMiniMedicationChartProps> = ({ medic
   if (medications?.length === 0 || medications === null || medications === undefined) return
 
   return (
-    <div className={`bg-white rounded-xl shadow-sm border border-gray-100 p-6 ${className}`}>
+    <div className="bg-white lg:rounded-xl lg:shadow-sm border border-gray-100 p-3 lg:p-6">
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-6">
         <div className="flex items-center space-x-3">
           <div className="p-2 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-lg">
             <Pill className="w-5 h-5 text-white" />
@@ -53,7 +52,7 @@ const MiniMedicationChart: React.FC<GuardianMiniMedicationChartProps> = ({ medic
             <p className="text-sm text-gray-500">Prescribed treatment plan</p>
           </div>
         </div>
-        <div className="text-right">
+        <div className="mt-2 lg:mt-0 lg:text-right">
           <div className="text-2xl font-bold text-indigo-600">{medicationTypes.length}</div>
           <div className="text-sm text-gray-500">Medications</div>
         </div>

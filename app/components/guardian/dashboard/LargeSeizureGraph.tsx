@@ -14,18 +14,6 @@ enum SeizureSeverity {
   CRITICAL = 'CRITICAL'
 }
 
-// Framer Motion Variants
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      delayChildren: 0.2,
-      staggerChildren: 0.1
-    }
-  }
-}
-
 const itemVariants = {
   hidden: { y: 20, opacity: 0 },
   visible: {
@@ -58,11 +46,6 @@ const LargeSeizureGraph: FC<{
 
   const [selectedSeizure, setSelectedSeizure] = useState(null) as any
 
-  // const formatDate = (dateStr: string) => {
-  //   const date = new Date(dateStr)
-  //   return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
-  // }
-
   // Calculate statistics
   const latestSeizure = seizures[0]
   const latestDuration = latestSeizure?.duration ?? 0
@@ -81,25 +64,10 @@ const LargeSeizureGraph: FC<{
     {} as Record<SeizureSeverity, number>
   )
 
-  // Event handler for chart click with type safety
-  // const handleChartClick = (e: any) => {
-  //   if (e?.activePayload?.[0]?.payload) {
-  //     const index = chartData.findIndex((item: any) => item.date === e.activePayload[0].payload.date)
-  //     if (index !== -1) {
-  //       setSelectedSeizure(seizures[index])
-  //     }
-  //   }
-  // }
-
   return (
-    <motion.div
-      initial="hidden"
-      animate="visible"
-      variants={containerVariants}
-      className="bg-white rounded-xl shadow-sm border border-gray-100 p-6"
-    >
+    <div className="bg-white lg:rounded-xl lg:shadow-sm border border-gray-100 p-3 lg:p-6">
       {/* Header */}
-      <motion.div variants={itemVariants} className="flex items-center justify-between mb-6">
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-6">
         <div className="flex items-center space-x-3">
           <motion.div
             whileHover={{ scale: 1.1 }}
@@ -113,11 +81,11 @@ const LargeSeizureGraph: FC<{
             <p className="text-sm text-gray-600">Comprehensive seizure pattern analysis</p>
           </div>
         </div>
-        <div className="text-right">
+        <div className="mt-2 lg:mt-0 lg:text-right">
           <div className="text-2xl font-bold text-amber-600">{latestDuration}s</div>
           <div className="text-sm text-gray-500">Latest Duration</div>
         </div>
-      </motion.div>
+      </div>
 
       {/* Chart */}
       <motion.div variants={itemVariants}>
@@ -215,7 +183,7 @@ const LargeSeizureGraph: FC<{
       )}
 
       {/* Stats Footer */}
-      <motion.div variants={itemVariants} className="grid grid-cols-4 gap-4 mt-6 pt-6 border-t border-gray-100">
+      <motion.div variants={itemVariants} className="grid lg:grid-cols-4 gap-4 mt-6 pt-6 border-t border-gray-100">
         <motion.div
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
@@ -255,7 +223,7 @@ const LargeSeizureGraph: FC<{
       {/* Severity Distribution */}
       <motion.div variants={itemVariants} className="mt-6 p-4 bg-gray-50 rounded-lg">
         <h4 className="text-sm font-semibold text-gray-700 mb-3">Severity Distribution</h4>
-        <div className="flex justify-between">
+        <div className="flex flex-col lg:flex-row lg:justify-between">
           {Object.entries(severityDistribution).map(([severity, count]: any) => (
             <div key={severity} className="text-center">
               <div className={`text-lg font-bold ${getSeverityColor(severity as SeizureSeverity)}`}>{count}</div>
@@ -285,7 +253,7 @@ const LargeSeizureGraph: FC<{
           </div>
         </motion.div>
       )}
-    </motion.div>
+    </div>
   )
 }
 

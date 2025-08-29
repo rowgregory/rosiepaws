@@ -19,14 +19,14 @@ const FixedFooter: FC<IFixedFooter> = ({ inputs, loading, tokens, text, close, f
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.5 }}
-      className="sticky bottom-0 border-t border-zinc-200 bg-white pt-4 px-5 pb-5 flex justify-end gap-x-4 flex-shrink-0"
+      className="sticky bottom-0 border-t border-zinc-200 bg-white pt-4 px-5 pb-5 flex flex-col lg:flex-row justify-end gap-x-4 flex-shrink-0 gap-y-3 lg:gap-y-0"
     >
       <motion.button
         type="button"
         onClick={close}
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
-        className="px-4 py-2 border border-gray-300 text-gray-700 rounded-full font-medium hover:bg-gray-50 transition-colors"
+        className="order-2 lg:order-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-full font-medium hover:bg-gray-50 transition-colors"
       >
         Cancel
       </motion.button>
@@ -35,13 +35,15 @@ const FixedFooter: FC<IFixedFooter> = ({ inputs, loading, tokens, text, close, f
         disabled={!isFormValid || loading}
         whileHover={{ scale: isFormValid && !loading ? 1.02 : 1 }}
         whileTap={{ scale: isFormValid && !loading ? 0.98 : 1 }}
-        className="group relative inline-flex items-center rounded-full px-10 py-3 bg-gradient-to-r from-pink-600 to-orange-600 text-white font-bold overflow-hidden transition-all duration-500 cursor-pointer justify-center"
+        className={`${!isFormValid ? 'from-slate-600 to-gray-600 cursor-not-allowed' : 'from-pink-600 to-orange-600 cursor-pointer'} order-1 lg:order-2 group relative inline-flex items-center rounded-full px-10 py-3 bg-gradient-to-r  text-white font-bold overflow-hidden transition-all duration-500 justify-center`}
         style={{
           textShadow: '0 2px 4px rgba(0,0,0,0.3)'
         }}
       >
         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-1000 ease-out" />
-        <div className="absolute inset-0 rounded-full border-2 border-pink-300/50 group-hover:border-pink-200/80 transition-colors duration-300" />
+        <div
+          className={`${!isFormValid ? 'border-zinc-300/50 group-hover:border-zinc-200/80' : 'border-pink-300/50 group-hover:border-pink-200/80'} absolute inset-0 rounded-full border-2 transition-colors duration-300`}
+        />
         <span className="relative z-10 flex items-center gap-2 whitespace-nowrap">
           {loading ? (
             <>

@@ -10,13 +10,15 @@ const TokenCounter: FC<{ color1?: string; color2?: string; id?: string; tokens: 
 }) => {
   const { user } = useAppSelector((state: RootState) => state.user)
 
-  return !user?.isLegacyUser ? (
+  return (
     <div className="flex items-center justify-center">
       <TokensSVG color1={color1} color2={color2} id={id} />
-      <span className="text-12">{tokens}</span>
+      {user?.isLegacyUser ? (
+        <span className="bg-infinity bg-center bg-no-repeat bg-contain w-5 h-3" />
+      ) : (
+        <span className="text-12">{tokens}</span>
+      )}
     </div>
-  ) : (
-    <></>
   )
 }
 

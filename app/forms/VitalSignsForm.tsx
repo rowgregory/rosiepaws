@@ -214,7 +214,7 @@ const VitalSignsForm: FC<IForm> = ({ inputs, errors, handleInput, close, handleS
         inputs={inputs}
         loading={loading}
         tokens={isUpdating ? vitalSignsUpdateTokenCost : vitalSignsCreateTokenCost}
-        text="Vital Sign"
+        text="Vital Signs"
         close={close}
         func={() => isVitalSignsFormValid(inputs)}
         isUpdating={isUpdating}

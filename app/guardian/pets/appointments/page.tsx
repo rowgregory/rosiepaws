@@ -22,8 +22,8 @@ const Appointments = () => {
   if (zeroAppointments) {
     return (
       <ZeroLogs
-        btnText="Add appointment"
-        title="No appointments"
+        btnText="Log appointment"
+        title="No appointments logged"
         subtitle="Add your pet's first appointment to keep track of their health and wellness visits."
         tokens={appointmentCreateTokenCost}
         func={setOpenAppointmentDrawer}
@@ -35,7 +35,7 @@ const Appointments = () => {
   return (
     <>
       <div className="h-[calc(100dvh-96px)]">
-        <div className="mx-auto px-6 space-y-8">
+        <div className="mx-auto px-4 space-y-8">
           {/* Header */}
           <CleanHeader
             btnText="Log Appointment"

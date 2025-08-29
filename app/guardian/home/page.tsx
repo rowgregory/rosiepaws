@@ -17,6 +17,7 @@ import FirstPetModal from '@/app/modals/FirstPetModal'
 import TokenUsageActivity from '@/app/components/guardian/home/TokenUsageActivity'
 import QuickActions from '@/app/components/guardian/home/QuickActions'
 import WeeklyMetrics from '@/app/components/guardian/home/WeeklyMetrics'
+import GuardianActionMenuButton from '@/app/components/guardian/GuardianActionMenuButton'
 
 const Home = () => {
   const [currentTime] = useState(new Date())
@@ -43,11 +44,12 @@ const Home = () => {
             <MainActionCard />
           </div>
         ) : (
-          <div className="p-6 max-w-7xl mx-auto">
+          <div className="lg:p-6 max-w-7xl mx-auto">
             {/* Professional Header */}
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
-              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                <h1 className="text-3xl font-semibold text-gray-900 mb-2">
+              <div className="bg-white flex items-center gap-x-4 lg:rounded-lg shadow-sm border border-gray-200 p-6">
+                <GuardianActionMenuButton />
+                <h1 className="text-xl lg:text-3xl font-semibold text-gray-900">
                   Good {getTimeOfDay()}, {user?.firstName || 'Caregiver'}
                 </h1>
               </div>
@@ -107,7 +109,7 @@ const Home = () => {
                 transition={{ delay: 0.5 }}
                 className="lg:col-span-5"
               >
-                <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 h-full">
+                <div className="bg-white lg:rounded-lg lg:shadow-sm border border-t-gray-200 border-b-gray-200 lg:border-gray-200 p-4 lg:p-6 h-full">
                   <PetProfileSection pet={pets[0]} />
                 </div>
               </motion.div>
@@ -119,7 +121,7 @@ const Home = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.6 }}
-                className="bg-white rounded-lg shadow-sm border border-gray-200 p-6"
+                className="bg-white lg:rounded-lg lg:shadow-sm border border-t-gray-200 border-b-gray-200 lg:border-gray-200 p-4 lg:p-6"
               >
                 <CareResourcesAndInfo />
               </motion.div>
@@ -128,7 +130,7 @@ const Home = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.7 }}
-                className="bg-white rounded-lg shadow-sm border border-gray-200 p-6"
+                className="bg-white lg:rounded-lg lg:shadow-sm border border-t-gray-200 border-b-gray-200 lg:border-gray-200 p-4 lg:p-6"
               >
                 <SupportSection />
               </motion.div>

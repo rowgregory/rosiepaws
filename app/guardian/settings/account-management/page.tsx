@@ -30,7 +30,7 @@ const AccountManagement = () => {
           >
             <div className="p-6 border-b border-gray-100">
               <div className="flex items-center gap-3">
-                <div className="flex items-center justify-center w-10 h-10 bg-red-100 rounded-xl">
+                <div className="flex flex-shrink-0 items-center justify-center w-10 h-10 bg-red-100 rounded-xl">
                   <RotateCcw className="w-5 h-5 text-red-600" />
                 </div>
                 <div>
@@ -42,7 +42,7 @@ const AccountManagement = () => {
 
             <div className="p-6">
               <div className="bg-red-50 border border-red-200 rounded-xl p-6">
-                <div className="flex items-start gap-4">
+                <div className="flex flex-col lg:flex-row items-start gap-4">
                   <div className="flex items-center justify-center w-12 h-12 bg-red-100 rounded-xl flex-shrink-0">
                     <AlertTriangle className="w-6 h-6 text-red-600" />
                   </div>
@@ -52,9 +52,9 @@ const AccountManagement = () => {
                       This will reset all application settings, preferences, and configurations to their default values.
                       This action cannot be undone and may affect your user experience.
                     </p>
-                    <div className="flex gap-3">
+                    <div className="flex flex-col lg:flex-row gap-3">
                       <motion.button
-                        disabled={zeroPets}
+                        disabled={true}
                         onClick={() => setShowResetConfirm(true)}
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}

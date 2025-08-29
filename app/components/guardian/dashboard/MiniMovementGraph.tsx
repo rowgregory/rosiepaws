@@ -72,9 +72,9 @@ const MiniMovementsGraph = ({ movements }: any) => {
   }
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+    <div className="bg-white lg:rounded-xl lg:shadow-sm border border-gray-100 p-3 lg:p-6">
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-6">
         <div className="flex items-center space-x-3">
           <div className="p-2 bg-gradient-to-br from-orange-500 to-amber-500 rounded-lg">
             <Navigation className="w-5 h-5 text-white" />
@@ -84,7 +84,7 @@ const MiniMovementsGraph = ({ movements }: any) => {
             <p className="text-sm text-gray-500">Activity breakdown</p>
           </div>
         </div>
-        <div className="text-right">
+        <div className="mt-2 lg:mt-0 lg:text-right">
           <div className="text-2xl font-bold text-orange-600">{totalDurationToday}min</div>
           <div className="text-sm text-gray-500">Today</div>
         </div>

@@ -76,7 +76,7 @@ const QuickActions: FC<{ user: IUser | null }> = ({ user }) => {
   }
 
   return (
-    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 h-full">
+    <div className="bg-white lg:rounded-lg lg:shadow-sm border border-t-gray-200 border-b-gray-200 lg:border-gray-200 p-4 lg:p-6 h-full">
       <h2 className="text-lg font-semibold text-gray-900 mb-6">Quick Actions</h2>
 
       <div className="space-y-3">
@@ -87,7 +87,7 @@ const QuickActions: FC<{ user: IUser | null }> = ({ user }) => {
             className="w-full flex items-center p-3 rounded-lg border border-gray-200 bg-gray-50 hover:bg-gray-100 text-gray-700"
           >
             <div className="p-2 rounded-lg mr-3 bg-white">{action.icon}</div>
-            <span className="text-sm font-medium">{action.label}</span>
+            <span className="text-sm font-medium truncate">{action.label}</span>
             <ChevronRight className="w-4 h-4 ml-auto opacity-60" />
           </button>
         ))}

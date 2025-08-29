@@ -11,34 +11,34 @@ const NextAppointment: FC<{ nextAppointment: any }> = ({ nextAppointment }) => {
       animate={{ opacity: 1, y: 0 }}
       className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden"
     >
-      <div className="p-6">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-semibold text-gray-800">Next Appointment</h2>
+      <div className="p-4 sm:p-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-2">
+          <h2 className="text-lg sm:text-xl font-semibold text-gray-800">Next Appointment</h2>
           <span
-            className={`px-3 py-1 rounded-full text-sm font-medium ${statusConfig?.[nextAppointment?.status]?.color}`}
+            className={`px-3 py-1 rounded-full text-sm font-medium self-start sm:self-center ${statusConfig?.[nextAppointment?.status]?.color}`}
           >
             {statusConfig?.[nextAppointment?.status]?.label}
           </span>
         </div>
 
-        <div className="flex items-center justify-between">
-          <div>
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between space-y-4 lg:space-y-0">
+          <div className="flex-1">
             <h3 className="text-lg font-semibold text-gray-900">{nextAppointment?.pet?.name}</h3>
             <p className="text-sm text-gray-500">{formatAppointmentDate(new Date(nextAppointment?.date))}</p>
           </div>
 
-          <div className="flex items-center space-x-6">
-            <div className="text-center">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6">
+            <div className="text-left sm:text-center">
               <div className="text-2xl font-bold text-gray-900">{nextAppointment?.time}</div>
               <div className="text-sm text-gray-500">time</div>
             </div>
-            <div className="text-center">
+            <div className="text-left sm:text-center">
               <div className="text-2xl">{serviceTypeConfig[nextAppointment?.serviceType]?.icon}</div>
               <div className="text-sm text-gray-500">{serviceTypeConfig[nextAppointment?.serviceType]?.label}</div>
             </div>
             {nextAppointment?.veterinarian && (
-              <div className="text-center">
-                <Stethoscope className="w-6 h-6 mx-auto text-gray-400 mb-1" />
+              <div className="text-left sm:text-center">
+                <Stethoscope className="w-6 h-6 sm:mx-auto text-gray-400 mb-1" />
                 <div className="text-sm font-medium text-gray-900">{nextAppointment?.veterinarian}</div>
               </div>
             )}

@@ -5,6 +5,7 @@ import { IChildren } from '@/app/types/common'
 import Link from 'next/link'
 import useCustomPathname from '@/app/hooks/useCustomPathname'
 import { Shield, StethoscopeIcon } from 'lucide-react'
+import GuardianActionMenuButton from '@/app/components/guardian/GuardianActionMenuButton'
 
 interface PetLink {
   linkKey?: string
@@ -15,19 +16,19 @@ interface PetLink {
   isPremium?: boolean
 }
 
-const petLinks = (path: string): PetLink[] => [
+const settingsLinks = (path: string): PetLink[] => [
   {
     linkKey: '/guardian/settings/vet',
     textKey: 'Vet',
     isActive: path === '/guardian/settings/vet',
-    icon: <StethoscopeIcon className="w-4 h-4" />,
+    icon: <StethoscopeIcon className="w-3 h-3 lg:w-4 lg:h-4" />,
     gradient: 'from-purple-500 to-pink-500'
   },
   {
     linkKey: '/guardian/settings/account-management',
     textKey: 'Account Management',
     isActive: path === '/guardian/settings/account-management',
-    icon: <Shield className="w-4 h-4" />,
+    icon: <Shield className="w-3 h-3 lg:w-4 lg:h-4" />,
     gradient: 'from-red-500 to-orange-500'
   }
 ]
@@ -38,10 +39,11 @@ const GuardianSettingsLayout: FC<IChildren> = ({ children }) => {
   return (
     <div>
       <div className="sticky top-0 flex items-center justify-between px-6 border-b-1 border-b-gray-100 z-30 bg-white h-[64px]">
-        <div className="flex items-center gap-6">
-          <h1 className="text-2xl font-semibold">Settings</h1>
+        <GuardianActionMenuButton />
+        <div className="pl-4 lg:pl-0 flex items-center gap-6">
+          <h1 className="ext-lg lg:text-2xl font-semibold">Settings</h1>
           <div className="flex items-center bg-gray-100 rounded-lg p-1">
-            {petLinks(path).map((link, i) => (
+            {settingsLinks(path).map((link, i) => (
               <Link
                 key={i}
                 href={link.linkKey || ''}
@@ -52,7 +54,7 @@ const GuardianSettingsLayout: FC<IChildren> = ({ children }) => {
                 }`}
               >
                 {link.icon}
-                {link.textKey}
+                <span className="hidden md:block">{link.textKey}</span>
               </Link>
             ))}
           </div>

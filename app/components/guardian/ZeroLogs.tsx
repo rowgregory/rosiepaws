@@ -19,12 +19,12 @@ const ZeroLogs: FC<IZeroLogs> = ({ title, subtitle, btnText, tokens, func, formN
   const { pets } = usePetSelector()
 
   return (
-    <div className="p-6 bg-gray-50 min-h-[calc(100dvh-64px)]">
+    <div className="p-4 lg:p-6 bg-gray-50 min-h-[calc(100dvh-64px)]">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="flex flex-col items-center justify-center max-w-md mx-auto mt-16 relative bg-white shadow-lg rounded-xl p-8"
+        className="flex flex-col items-center justify-center max-w-md mx-auto mt-16 relative bg-white shadow-lg rounded-xl px-4 py-6 lg:p-8"
       >
         <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-16 h-1 bg-gradient-to-r from-pink-500 to-orange-500 rounded-full" />
         <div className="text-center mb-8">

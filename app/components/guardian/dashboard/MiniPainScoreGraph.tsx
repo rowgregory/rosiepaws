@@ -7,9 +7,9 @@ const MiniPainScoreGraph = ({ painScores }: any) => {
   const reversed = [...painScores]?.reverse()
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+    <div className="bg-white lg:rounded-xl lg:shadow-sm border border-gray-100 p-3 lg:p-6">
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-6">
         <div className="flex items-center space-x-3">
           <div className="p-2 bg-gradient-to-br from-red-500 to-orange-500 rounded-lg">
             <Activity className="w-5 h-5 text-white" />
@@ -19,7 +19,7 @@ const MiniPainScoreGraph = ({ painScores }: any) => {
             <p className="text-sm text-gray-500">Last 7 assessments</p>
           </div>
         </div>
-        <div className="text-right">
+        <div className="mt-2 lg:mt-0 lg:text-right">
           <div className="text-2xl font-bold text-red-600">{painScores[0]?.score ?? '--'}</div>
           <div className="text-sm text-gray-500">Latest Score</div>
         </div>

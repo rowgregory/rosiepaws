@@ -13,8 +13,8 @@ import {
 } from 'lucide-react'
 
 export const tabs = [
-  { id: 'actions', label: 'Token Actions', icon: <Play className="w-4 h-4" /> },
-  { id: 'faq', label: 'FAQ', icon: <HelpCircle className="w-4 h-4" /> }
+  { id: 'actions', label: 'Token Actions', icon: <Play className="w-3 h-3 lg:w-4 lg:h-4" /> },
+  { id: 'faq', label: 'FAQ', icon: <HelpCircle className="w-3 h-3 lg:w-4 lg:h-4" /> }
 ]
 
 export const tokenActions = [

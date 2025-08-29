@@ -57,10 +57,10 @@ const Water = () => {
               animate={{ opacity: 1, y: 0 }}
               className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden"
             >
-              <div className="p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-xl font-semibold text-gray-800">Latest Water Log</h2>
-                  <span className="text-sm text-gray-500">Most recent</span>
+              <div className="p-4 sm:p-6">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-2">
+                  <h2 className="text-lg sm:text-xl font-semibold text-gray-800">Latest Water Log</h2>
+                  <span className="text-sm text-gray-500 self-start sm:self-center">Most recent</span>
                 </div>
 
                 {(() => {
@@ -76,18 +76,20 @@ const Water = () => {
                   const IntakeIcon = intakeData.icon
 
                   return (
-                    <div className="flex items-center justify-between">
-                      <div>
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between space-y-4 sm:space-y-0">
+                      <div className="flex-1">
                         <h3 className="text-lg font-semibold text-gray-900">{latest?.pet?.name}</h3>
                         <p className="text-sm text-gray-500">{getTimeInfo(latest?.createdAt)?.relative}</p>
                       </div>
 
-                      <div className="flex items-center space-x-6">
-                        <div className="text-right">
+                      <div className="flex flex-col sm:flex-row sm:items-center space-y-3 sm:space-y-0 sm:space-x-6">
+                        <div className="text-left sm:text-right">
                           <div className="text-2xl font-bold text-blue-600">{latest?.milliliters}ml</div>
                           <div className="text-sm text-gray-500">{latest?.intakeType}</div>
                         </div>
-                        <div className={`flex items-center space-x-2 px-4 py-2 rounded-full ${intakeData.color}`}>
+                        <div
+                          className={`flex items-center space-x-2 px-4 py-2 rounded-full ${intakeData.color} self-start sm:self-center whitespace-nowrap`}
+                        >
                           <IntakeIcon className="w-4 h-4" />
                           <span className="font-medium capitalize">{relativeIntakeStatus}</span>
                         </div>

@@ -31,7 +31,7 @@ const MovementForm: FC<IForm> = ({
 }) => {
   return (
     <form onSubmit={handleSubmit} className="flex-1 flex flex-col min-h-full">
-      <div className="overflow-y-auto px-5 pt-9 pb-12 h-[calc(100dvh-132px)]">
+      <div className="overflow-y-auto px-5 pt-9 pb-12 h-[calc(100dvh-200px)]">
         <div className="space-y-6">
           {/* Pet Selection */}
           <PetSelection inputs={inputs} errors={errors} handleInput={handleInput} formName="movementForm" />
@@ -79,7 +79,7 @@ const MovementForm: FC<IForm> = ({
           </div>
 
           {/* Duration and Distance */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid lg:grid-cols-2 gap-4">
             <div className="space-y-3">
               <label className="text-sm font-medium text-gray-700">
                 Duration (minutes) <span className="text-gray-500 font-normal">(optional)</span>
@@ -176,7 +176,7 @@ const MovementForm: FC<IForm> = ({
           </div>
 
           {/* Energy Levels */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid lg:grid-cols-2 gap-4">
             <div className="space-y-3">
               <label className="text-sm font-medium text-gray-700">Energy Before</label>
               <select
@@ -218,7 +218,7 @@ const MovementForm: FC<IForm> = ({
           </div>
 
           {/* Pain Levels */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid lg:grid-cols-2 gap-4">
             <div className="space-y-3">
               <label className="text-sm font-medium text-gray-700">
                 Pain Before (0-10) <span className="text-gray-500 font-normal">(optional)</span>
@@ -285,7 +285,7 @@ const MovementForm: FC<IForm> = ({
           </div>
 
           {/* Mobility and Assistance */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid lg:grid-cols-2 gap-4">
             <div className="space-y-3">
               <label className="text-sm font-medium text-gray-700">Mobility Level</label>
               <select
@@ -323,7 +323,7 @@ const MovementForm: FC<IForm> = ({
           {/* Equipment Used */}
           <div className="space-y-3">
             <label className="text-sm font-medium text-gray-700">Equipment Used</label>
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid lg:grid-cols-3 gap-4">
               <div className="flex items-center space-x-2">
                 <input
                   type="checkbox"
@@ -359,7 +359,7 @@ const MovementForm: FC<IForm> = ({
 
           {/* Behavioral Observations */}
           <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid lg:grid-cols-2 gap-4">
               <div className="space-y-3">
                 <label className="text-sm font-medium text-gray-700">
                   Enthusiasm (1-10) <span className="text-gray-500 font-normal">(optional)</span>
@@ -389,7 +389,7 @@ const MovementForm: FC<IForm> = ({
                 </select>
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid lg:grid-cols-2 gap-4">
               <div className="flex items-center space-x-2">
                 <input
                   type="checkbox"
@@ -414,7 +414,7 @@ const MovementForm: FC<IForm> = ({
           </div>
 
           {/* Rest and Recovery */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid lg:grid-cols-2 gap-4">
             <div className="space-y-3">
               <label className="text-sm font-medium text-gray-700">
                 Rest Breaks <span className="text-gray-500 font-normal">(optional)</span>

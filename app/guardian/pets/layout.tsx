@@ -8,6 +8,7 @@ import { RootState, useAppDispatch, useAppSelector } from '@/app/redux/store'
 import useCustomPathname from '@/app/hooks/useCustomPathname'
 import { publicPetLinks } from '@/app/lib/utils'
 import { setOpenNeedToUpgradeDrawer } from '@/app/redux/features/dashboardSlice'
+import GuardianActionMenuButton from '@/app/components/guardian/GuardianActionMenuButton'
 
 interface ChildrenProps {
   children: React.ReactNode
@@ -103,8 +104,9 @@ const GuardianPetsLayout: FC<ChildrenProps> = ({ children }) => {
   return (
     <>
       <div className="sticky top-0 h-[64px] px-3 sm:px-6 border-b border-gray-100 z-30 bg-white flex items-center">
+        <GuardianActionMenuButton />
         {/* Navigation Links - Main content */}
-        <div className="flex items-center gap-x-1 sm:gap-x-2 overflow-x-auto scrollbar-hide flex-1 py-2">
+        <div className="pl-4 lg:pl-0 flex items-center gap-x-1 sm:gap-x-2 overflow-x-auto scrollbar-hide flex-1 py-2">
           <div className="flex items-center gap-x-1 sm:gap-x-2 md:max-w-screen-sm lg:max-w-screen-md w-full">
             {linksWithTiers.map((link) => {
               const isActive = link.isActive
@@ -215,7 +217,7 @@ const GuardianPetsLayout: FC<ChildrenProps> = ({ children }) => {
         </div>
 
         {/* Compact tier info on the right */}
-        <div className="flex items-center gap-2 ml-4 flex-shrink-0">
+        <div className="hidden lg:flex items-center gap-2 ml-4 flex-shrink-0">
           {/* Tier icons only */}
           <div className="hidden sm:flex items-center gap-1">
             <div className="flex items-center gap-0.5">

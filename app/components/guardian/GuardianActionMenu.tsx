@@ -1,99 +1,22 @@
 'use client'
 
 import { motion, AnimatePresence } from 'framer-motion'
-import { RootState, useAppDispatch, useAppSelector } from '@/app/redux/store'
-import { setCloseGuardianActionMenu, setOpenPetDrawer } from '@/app/redux/features/petSlice'
+import { useAppDispatch, usePetSelector } from '@/app/redux/store'
+import { setCloseGuardianActionMenu } from '@/app/redux/features/petSlice'
 import Link from 'next/link'
-import { Utensils, Pill, Heart, Sparkles, Crown, Zap, Activity, Droplets } from 'lucide-react'
-import { getTodaysBloodSugarLogs } from '@/app/lib/utils'
-import { setOpenPainDrawer } from '@/app/redux/features/painSlice'
-import { setOpenFeedingDrawer } from '@/app/redux/features/feedingSlice'
-import { setOpenWaterDrawer } from '@/app/redux/features/waterSlice'
-import { setOpenMedicationDrawer } from '@/app/redux/features/medicationSlice'
-import { setOpenBloodSugarDrawer } from '@/app/redux/features/bloodSugarSlice'
-import { setOpenSeizureDrawer } from '@/app/redux/features/seizureSlice'
+import { Menu } from 'lucide-react'
+import { publicDashboardLinks } from '@/app/lib/utils'
 
-const actions = (hasReachedBloodSugarLimit: boolean, todaysBloodSugarLogs: any) => [
-  {
-    label: 'Pet',
-    linkKey: '/guardian/pets/list',
-    func: setOpenPetDrawer,
-    icon: Heart,
-    color: 'from-purple-500 to-pink-500',
-    bgHover: 'hover:bg-purple-50',
-    description: 'Manage your pets'
-  },
-  {
-    label: 'Pain Score',
-    linkKey: '/guardian/pets/pain',
-    func: setOpenPainDrawer,
-    icon: Activity,
-    color: 'from-red-500 to-orange-500',
-    bgHover: 'hover:bg-red-50',
-    description: 'Track pain levels'
-  },
-  {
-    label: 'Feedings',
-    linkKey: '/guardian/pets/feedings',
-    func: setOpenFeedingDrawer,
-    icon: Utensils,
-    color: 'from-green-500 to-emerald-500',
-    bgHover: 'hover:bg-green-50',
-    description: 'Log meals & treats'
-  },
-  {
-    label: 'Water Intake',
-    linkKey: '/guardian/pets/water',
-    func: setOpenWaterDrawer,
-    icon: Droplets,
-    color: 'from-blue-500 to-cyan-500',
-    bgHover: 'hover:bg-blue-50',
-    description: 'Monitor hydration'
-  },
-  {
-    label: 'Medication',
-    linkKey: '/guardian/pets/medication',
-    func: setOpenMedicationDrawer,
-    icon: Pill,
-    color: 'from-indigo-500 to-purple-500',
-    bgHover: 'hover:bg-purple-50',
-    description: 'Medicine schedule'
-  },
-  {
-    label: hasReachedBloodSugarLimit ? 'Blood Sugar (Limit Reached)' : 'Blood Sugar',
-    linkKey: '#', // Use # since we're handling click differently
-    func: !hasReachedBloodSugarLimit ? setOpenBloodSugarDrawer : () => ({ type: '', payload: '' }),
-    icon: Heart,
-    color: hasReachedBloodSugarLimit ? 'from-gray-400 to-gray-500' : 'from-pink-500 to-rose-500',
-    bgHover: hasReachedBloodSugarLimit ? 'hover:bg-gray-50' : 'hover:bg-pink-50',
-    description: hasReachedBloodSugarLimit
-      ? `Daily limit reached (${todaysBloodSugarLogs.length}/4)`
-      : 'Log blood glucose readings',
-    isPremium: true,
-    isDisabled: hasReachedBloodSugarLimit
-  },
-  {
-    label: 'Seizure Tracking',
-    linkKey: '/guardian/pets/seizure',
-    func: setOpenSeizureDrawer,
-    icon: Zap,
-    color: 'from-yellow-500 to-orange-500',
-    bgHover: 'hover:bg-yellow-50',
-    description: 'Track seizure activity',
-    isPremium: true
-  }
-]
+import useCustomPathname from '@/app/hooks/useCustomPathname'
 
 const GuardianActionMenu = () => {
-  const { guardianActionMenu } = useAppSelector((state: RootState) => state.pet)
-  const { bloodSugars } = useAppSelector((state: RootState) => state.bloodSugar)
+  const { guardianActionMenu, zeroPets } = usePetSelector()
   const dispatch = useAppDispatch()
+  const path = useCustomPathname()
 
   const onClose = () => dispatch(setCloseGuardianActionMenu())
 
-  // Calculate today's blood sugar logs
-  const todaysBloodSugarLogs = getTodaysBloodSugarLogs(bloodSugars || [])
-  const hasReachedBloodSugarLimit = todaysBloodSugarLogs?.length >= 4
+  const linkData = publicDashboardLinks(path, zeroPets)
 
   return (
     <AnimatePresence>
@@ -119,81 +42,65 @@ const GuardianActionMenu = () => {
               stiffness: 300,
               duration: 0.3
             }}
-            className="fixed right-6 top-16 w-80 origin-top-right bg-white/95 backdrop-blur-xl border border-gray-200/50 rounded-2xl shadow-2xl z-50 overflow-hidden"
+            className="fixed left-6 top-16 w-64 lg:w-80 origin-top-right bg-white/95 backdrop-blur-xl border border-gray-200/50 rounded-2xl shadow-2xl z-50 overflow-hidden"
           >
             {/* Header */}
-            <div className="p-6 pb-4 bg-gradient-to-r from-blue-50 to-purple-50 border-b border-gray-100">
+            <div className="p-6 pb-4 bg-gradient-to-r from-pink-50 to-orange-50 border-b border-gray-100">
               <div className="flex items-center space-x-3">
-                <div className="p-2 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl">
-                  <Sparkles className="w-5 h-5 text-white" />
+                <div className="p-2 bg-gradient-to-r from-pink-500 to-orange-600 rounded-xl">
+                  <Menu onClick={onClose} className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-bold text-gray-900">Pet Care Actions</h3>
-                  <p className="text-sm text-gray-600">Choose what you&apos;d like to track</p>
+                  <h3 className="text-lg font-semibold text-gray-900">Menu</h3>
+                  <p className="text-sm text-gray-600">Quick access to all features</p>
                 </div>
               </div>
             </div>
 
             {/* Actions */}
             <div className="p-4 space-y-2 max-h-96 overflow-y-auto">
-              {actions(hasReachedBloodSugarLimit, todaysBloodSugarLogs).map(
-                ({ label, linkKey, func, icon: Icon, color, bgHover, description, isPremium }, index) => (
-                  <motion.div
-                    key={label}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: index * 0.05 }}
+              {linkData.map((link, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: index * 0.05 }}
+                >
+                  <Link
+                    href={link.linkKey}
+                    onClick={onClose}
+                    className={`group relative w-full flex items-center justify-between space-x-4 p-4 rounded-xl transition-all duration-200 hover:shadow-md hover:scale-[1.02] border hover:border-gray-200 ${link.isActive ? 'border border-gray-200 shadow-md' : 'border-transparent'}`}
                   >
-                    <Link
-                      href={linkKey}
-                      onClick={() => {
-                        onClose()
-                        dispatch(func())
-                      }}
-                      className={`group relative w-full flex items-center space-x-4 p-4 rounded-xl transition-all duration-200 ${bgHover} hover:shadow-md hover:scale-[1.02] border border-transparent hover:border-gray-200`}
-                    >
+                    <div className="flex items-center gap-x-3">
                       {/* Icon */}
-                      <div
-                        className={`relative p-3 bg-gradient-to-r ${color} rounded-xl shadow-lg group-hover:shadow-xl transition-shadow`}
-                      >
-                        {Icon && <Icon className="w-5 h-5 text-white" />}
-                        {isPremium && (
-                          <div className="absolute -top-1 -right-1 p-1 bg-yellow-400 rounded-full">
-                            <Crown className="w-3 h-3 text-yellow-800" />
-                          </div>
-                        )}
+                      <div className={`relative p-3 rounded-xl shadow-lg group-hover:shadow-xl transition-shadow`}>
+                        <link.icon className={`w-5 h-5 transition-colors duration-200 `} />
                       </div>
 
-                      {/* Content */}
-                      <div className="flex-1 min-w-0 text-left">
-                        <div className="flex items-center space-x-2">
-                          <h4 className="font-semibold text-gray-900 group-hover:text-gray-800 transition-colors">
-                            {label}
-                          </h4>
-                          {isPremium && (
-                            <span className="px-2 py-0.5 bg-gradient-to-r from-yellow-400 to-orange-400 text-yellow-900 text-xs font-bold rounded-full">
-                              PRO
-                            </span>
-                          )}
-                        </div>
-                        <p className="text-sm text-gray-600 group-hover:text-gray-700 transition-colors">
-                          {description}
-                        </p>
-                      </div>
+                      <AnimatePresence>
+                        <motion.span
+                          initial={{ opacity: 0, width: 0 }}
+                          animate={{ opacity: 1, width: 'auto' }}
+                          exit={{ opacity: 0, width: 0 }}
+                          transition={{ duration: 0.2 }}
+                          className={`text-sm font-medium whitespace-nowrap`}
+                        >
+                          {link.textKey}
+                        </motion.span>
+                      </AnimatePresence>
+                    </div>
+                    {/* Arrow indicator */}
+                    <div className="text-gray-400 group-hover:text-gray-600 group-hover:translate-x-1 transition-all">
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </div>
 
-                      {/* Arrow indicator */}
-                      <div className="text-gray-400 group-hover:text-gray-600 group-hover:translate-x-1 transition-all">
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                        </svg>
-                      </div>
-
-                      {/* Hover effect overlay */}
-                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity rounded-xl" />
-                    </Link>
-                  </motion.div>
-                )
-              )}
+                    {/* Hover effect overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity rounded-xl" />
+                  </Link>
+                </motion.div>
+              ))}
             </div>
 
             {/* Footer */}

@@ -35,9 +35,9 @@ const MiniFeedingGraph: FC<{ feedings: any }> = ({ feedings }) => {
     .reduce((sum: number, entry: any) => sum + (parseFraction(entry.foodAmount) || 0), 0)
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+    <div className="bg-white lg:rounded-xl lg:shadow-sm border border-gray-100 p-3 lg:p-6">
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-6">
         <div className="flex items-center space-x-3">
           <div className="p-2 bg-gradient-to-br from-green-500 to-emerald-500 rounded-lg">
             <Utensils className="w-5 h-5 text-white" />

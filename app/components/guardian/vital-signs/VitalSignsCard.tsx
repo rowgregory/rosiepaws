@@ -46,8 +46,7 @@ const VitalSignsCard: FC<{ vitalSigns: IVitalSigns; index: number; shouldAnimate
     vitalSigns.respiratoryRate <= normalRanges.respiratoryRate.max
 
   // Determine overall status
-  const hasAbnormalVitals =
-    !isTemperatureNormal || !isHeartRateNormal || !isRespiratoryNormal || vitalSigns.painScore > 1
+  const hasAbnormalVitals = !isTemperatureNormal || !isHeartRateNormal || !isRespiratoryNormal
   const statusColor = hasAbnormalVitals ? 'text-yellow-600 bg-yellow-50' : 'text-green-600 bg-green-50'
   const statusIcon = hasAbnormalVitals ? AlertTriangle : Heart
 

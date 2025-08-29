@@ -16,7 +16,7 @@ const BloodSugarForm: FC<IForm> = ({ inputs, handleInput, close, handleSubmit, l
 
   return (
     <form onSubmit={handleSubmit} className="flex-1 flex flex-col min-h-full">
-      <div className="overflow-y-auto px-5 pt-9 pb-12 h-[calc(100dvh-132px)]">
+      <div className="overflow-y-auto px-5 pt-9 pb-12 h-[calc(100dvh-200px)]">
         <div className="space-y-6">
           {/* Pet Selection */}
           <PetSelection handleInput={handleInput} inputs={inputs} errors={errors} formName="bloodSugarForm" />
@@ -24,7 +24,7 @@ const BloodSugarForm: FC<IForm> = ({ inputs, handleInput, close, handleSubmit, l
           {/* Measurement Unit Selection */}
           <div className="space-y-3">
             <label className="text-sm font-medium text-gray-700">Measurement Unit</label>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid lg:grid-cols-2 gap-3">
               {measurementUnitOptions.map((unit) => (
                 <button
                   key={unit.value}
@@ -133,7 +133,7 @@ const BloodSugarForm: FC<IForm> = ({ inputs, handleInput, close, handleSubmit, l
           {/* Meal Relation */}
           <div className="space-y-3">
             <label className="text-sm font-medium text-gray-700">When was this reading taken?</label>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid lg:grid-cols-2 gap-2">
               {mealRelationOptions.map((option) => (
                 <button
                   key={option.value}

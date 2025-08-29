@@ -26,7 +26,7 @@ const WeeklyMetrics: FC<{ pet: Pet }> = ({ pet }) => {
   const totalMedications = pet?.medications?.length
 
   return (
-    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 h-full">
+    <div className="bg-white lg:rounded-lg lg:shadow-sm border border-t-gray-200 border-b-gray-200 lg:border-gray-200 p-4 lg:p-6 h-full">
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-lg font-semibold text-gray-900">Weekly Summary</h2>
         <TrendingUp className="w-5 h-5 text-gray-400" />

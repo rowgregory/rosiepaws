@@ -22,6 +22,7 @@ const PageWrapper: FC<{ children: ReactNode }> = ({ children }) => {
   const { accessibility } = useAppSelector((state: RootState) => state.app)
   const toggleAccessibilityDrawer = () => dispatch(setToggleAccessibilityDrawer(accessibility))
   const hide = ['/guardian', '/auth/login', '/admin', '/buy', '/support'].some((item) => path.includes(item))
+  const isGuardianOrAdminLink = ['/guardian', '/admin'].some((item) => path.includes(item))
 
   const StaticComponents = useMemo(
     () => (
@@ -41,7 +42,9 @@ const PageWrapper: FC<{ children: ReactNode }> = ({ children }) => {
       {children}
       {!hide && <Footer />}
       <div onClick={toggleAccessibilityDrawer} className="relative cursor-pointer">
-        <Accessibility className="p-2 bg-indigo-600 text-white rounded-full w-8 h-8 fixed z-[110] bottom-5 left-5 cursor-pointer hover:animate-rotateToTwoOClock" />
+        <Accessibility
+          className={`${isGuardianOrAdminLink ? 'bottom-5 left-5 lg:left-auto lg:top-5 lg:right-5' : 'bottom-5 left-5'} p-2 bg-indigo-600 text-white rounded-full w-8 h-8 fixed z-[110]  cursor-pointer hover:animate-rotateToTwoOClock`}
+        />
         {isClient && showCheckmark && <CheckmarkSVG />}
       </div>
     </div>

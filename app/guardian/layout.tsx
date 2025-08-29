@@ -1,6 +1,6 @@
 'use client'
 
-import React, { FC, useState } from 'react'
+import React, { FC } from 'react'
 import { IChildren } from '../types/common'
 import GuardianNavigation from '../components/guardian/GuardianNavigation'
 // import GuardianToolbar from '../components/guardian/GuardianToolbar'
@@ -17,9 +17,10 @@ import FeedingDrawer from '../drawers/guardian/FeedingDrawer'
 import PainDrawer from '../drawers/guardian/PainDrawer'
 import NeedToUpgradeDrawer from '../drawers/general/NeedToUpgradeDrawer'
 import AppointmentDrawer from '../drawers/guardian/AppointmentDrawer'
+import { RootState, useAppSelector } from '../redux/store'
 
 const GuardianLayout: FC<IChildren> = ({ children }) => {
-  const [toggleSidebar, setToggleSidebar] = useState(false)
+  const { navigation } = useAppSelector((state: RootState) => state.app)
 
   return (
     <>
@@ -39,9 +40,9 @@ const GuardianLayout: FC<IChildren> = ({ children }) => {
 
       {/* <GuardianToolbar /> */}
       <div className="flex">
-        <GuardianNavigation toggleSidebar={toggleSidebar} setToggleSidebar={setToggleSidebar} />
+        <GuardianNavigation />
         <div
-          className={`flex flex-col mx-auto duration-300 w-full ${toggleSidebar ? 'lg:w-[calc(100vw-64px)] lg:ml-16' : 'lg:w-[calc(100vw-256px)] lg:ml-64'}`}
+          className={`flex flex-col mx-auto duration-300 w-full ${navigation ? 'lg:w-[calc(100vw-64px)] lg:ml-16' : 'lg:w-[calc(100vw-256px)] lg:ml-64'}`}
         >
           {children}
         </div>
