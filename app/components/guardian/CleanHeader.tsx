@@ -1,10 +1,10 @@
 import { useAppDispatch, usePetSelector, useUserSelector } from '@/app/redux/store'
 import React, { FC } from 'react'
-import TokenCounter from '../TokenCounter'
 import { ActionCreatorWithoutPayload } from '@reduxjs/toolkit'
 import { setInputs } from '@/app/redux/features/formSlice'
 import { setOpenNotEnoughTokensModal } from '@/app/redux/features/appSlice'
 import { setOpenNeedToUpgradeDrawer } from '@/app/redux/features/dashboardSlice'
+import TokenCounter from './TokenCounter'
 
 interface ICleanHeader {
   func: ActionCreatorWithoutPayload | null

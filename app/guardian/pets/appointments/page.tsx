@@ -3,7 +3,6 @@
 import React from 'react'
 import { RootState, useAppSelector } from '@/app/redux/store'
 import ZeroLogs from '@/app/components/guardian/ZeroLogs'
-import CleanHeader from '@/app/components/guardian/navigation/CleanHeader'
 import { getNextAppointment } from '@/app/lib/utils/public/my-pets/appointments/dateUtils'
 import AppointmentCard from '@/app/components/guardian/appointments/AppointmentCard'
 import NextAppointment from '@/app/components/guardian/appointments/NextAppointment'
@@ -12,6 +11,7 @@ import RecentActivity from '@/app/components/guardian/appointments/RecentActivit
 import { appointmentCreateTokenCost } from '@/app/lib/constants/public/token'
 import { setOpenAppointmentDrawer } from '@/app/redux/features/appointmentSlice'
 import { useInitialAnimation } from '@/app/hooks/useInitialAnimation'
+import CleanHeader from '@/app/components/guardian/CleanHeader'
 
 const Appointments = () => {
   const { appointments, zeroAppointments } = useAppSelector((state: RootState) => state.appointment)

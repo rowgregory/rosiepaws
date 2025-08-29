@@ -39,7 +39,7 @@ const SubscriptionsStats: FC<{ subscriptions: IStripeSubscription[] }> = ({ subs
   ]
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+    <div className="grid sm:grid-cols-2 xl:grid-cols-4 gap-6 mb-8">
       {subscriptionStatsData.map((stat, i) => (
         <AdminStatCard key={i} title={stat.title} value={stat.formatter(stat.value)} icon={stat.icon} index={i} />
       ))}

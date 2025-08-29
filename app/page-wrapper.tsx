@@ -21,7 +21,9 @@ const PageWrapper: FC<{ children: ReactNode }> = ({ children }) => {
   const dispatch = useAppDispatch()
   const { accessibility } = useAppSelector((state: RootState) => state.app)
   const toggleAccessibilityDrawer = () => dispatch(setToggleAccessibilityDrawer(accessibility))
-  const hide = ['/guardian', '/auth/login', '/admin', '/buy', '/support'].some((item) => path.includes(item))
+  const hide = ['/guardian', '/auth/login', '/admin', '/buy', '/support', '/auth/custom-callback'].some((item) =>
+    path.includes(item)
+  )
   const isGuardianOrAdminLink = ['/guardian', '/admin'].some((item) => path.includes(item))
 
   const StaticComponents = useMemo(

@@ -3,7 +3,13 @@ import { AnimatePresence, motion } from 'framer-motion'
 import Link from 'next/link'
 import React, { FC } from 'react'
 
-const HeaderSecetion: FC<{ toggleSidebar: boolean; user: IUser | null }> = ({ toggleSidebar, user }) => {
+interface IHeaderSection {
+  toggleSidebar: boolean
+  user: IUser | null
+  title: string
+}
+
+const HeaderSection: FC<IHeaderSection> = ({ toggleSidebar, user, title }) => {
   return (
     <Link
       href="/"
@@ -22,10 +28,10 @@ const HeaderSecetion: FC<{ toggleSidebar: boolean; user: IUser | null }> = ({ to
             className="flex items-center gap-3"
           >
             <div className="w-8 h-8 bg-gray-900 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-sm">{user?.firstName?.charAt(0)}</span>
+              <span className="text-white font-bold text-sm uppercase">{user?.email?.charAt(0)}</span>
             </div>
             <div>
-              <h2 className="text-sm font-semibold text-gray-900">Guardian Panel</h2>
+              <h2 className="text-sm font-semibold text-gray-900">{title} Panel</h2>
               <p className="text-xs text-gray-500">{user?.email}</p>
             </div>
           </motion.div>
@@ -39,7 +45,7 @@ const HeaderSecetion: FC<{ toggleSidebar: boolean; user: IUser | null }> = ({ to
             className="w-10 h-10 bg-gray-900 rounded-lg flex items-center justify-center"
           >
             <div className="w-8 h-8 bg-gray-900 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold">{user?.firstName?.charAt(0)}</span>
+              <span className="text-white font-bold uppercase">{user?.email?.charAt(0)}</span>
             </div>
           </motion.div>
         )}
@@ -48,4 +54,4 @@ const HeaderSecetion: FC<{ toggleSidebar: boolean; user: IUser | null }> = ({ to
   )
 }
 
-export default HeaderSecetion
+export default HeaderSection

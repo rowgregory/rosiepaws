@@ -1,14 +1,19 @@
-import { Download } from 'lucide-react'
+import { Download, RefreshCcw } from 'lucide-react'
 import React, { FC } from 'react'
 import { motion } from 'framer-motion'
 
-const AdminPageHeader: FC<{ title: string; subtitle: string; onExport?: any }> = ({ title, subtitle, onExport }) => {
+const AdminPageHeader: FC<{ title: string; subtitle: string; onExport?: any; isLoading?: boolean }> = ({
+  title,
+  subtitle,
+  onExport,
+  isLoading
+}) => {
   return (
     <motion.div
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, ease: 'easeOut' }}
-      className="flex items-center justify-between mb-6"
+      className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-6"
     >
       <motion.div
         initial={{ opacity: 0, x: -20 }}
@@ -37,7 +42,7 @@ const AdminPageHeader: FC<{ title: string; subtitle: string; onExport?: any }> =
         initial={{ opacity: 0, x: 20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.5, delay: 0.2, ease: 'easeOut' }}
-        className="flex items-center gap-3"
+        className="flex items-center gap-3 mt-4 lg:mt-0"
       >
         <motion.button
           onClick={onExport}
@@ -50,9 +55,13 @@ const AdminPageHeader: FC<{ title: string; subtitle: string; onExport?: any }> =
           className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
         >
           <motion.div initial={{ rotate: 0 }} whileHover={{ rotate: -5 }} transition={{ duration: 0.2 }}>
-            <Download className="w-4 h-4" />
+            {title === 'System Logs' ? (
+              <RefreshCcw className={`${isLoading ? 'animate-spin' : ''} w-4 h-4`} />
+            ) : (
+              <Download className="w-4 h-4" />
+            )}
           </motion.div>
-          Export
+          {title === 'System Logs' ? 'Refresh' : 'Export'}
         </motion.button>
       </motion.div>
     </motion.div>

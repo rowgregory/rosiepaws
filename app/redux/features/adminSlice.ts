@@ -51,6 +51,7 @@ interface IConfirmModal {
 }
 
 interface IAdminPet {
+  filePath: any
   id: string
   name: string
   type: string
@@ -123,6 +124,7 @@ export interface AdminStatePayload {
   customerDetailsDrawer: boolean
   petDetailsDrawer: boolean
   tickets: ITicket[]
+  adminMobileNavigation: boolean
 }
 
 const initialConfirmModal = {
@@ -205,7 +207,8 @@ const initialAdminPetState = {
   feedings: [],
   waters: [],
   vitalSigns: [],
-  movements: []
+  movements: [],
+  filePath: ''
 }
 
 export const initialAdminState: AdminStatePayload = {
@@ -236,7 +239,8 @@ export const initialAdminState: AdminStatePayload = {
   user: initialUserState,
   customerDetailsDrawer: false,
   petDetailsDrawer: false,
-  tickets: []
+  tickets: [],
+  adminMobileNavigation: false
 }
 
 export const adminSlice = createSlice({
@@ -308,6 +312,12 @@ export const adminSlice = createSlice({
     },
     setClosePetDetailsDrawer: (state) => {
       state.petDetailsDrawer = false
+    },
+    setOpenAdminMobileNavigation: (state) => {
+      state.adminMobileNavigation = true
+    },
+    setCloseAdminMobileNavigation: (state) => {
+      state.adminMobileNavigation = false
     }
   },
   extraReducers: (builder) => {
@@ -373,5 +383,7 @@ export const {
   setOpenCustomerDetailsDrawer,
   setCloseCustomerDetailsDrawer,
   setOpenPetDetailsDrawer,
-  setClosePetDetailsDrawer
+  setClosePetDetailsDrawer,
+  setOpenAdminMobileNavigation,
+  setCloseAdminMobileNavigation
 } = adminSlice.actions

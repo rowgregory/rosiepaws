@@ -1,9 +1,10 @@
 import React, { FC } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 
-const CollapsedProfileIndicator: FC<{ toggleSidebar: boolean; setPetDropdownOpen: any }> = ({
+const CollapsedProfileIndicator: FC<{ toggleSidebar: boolean; setPetDropdownOpen: any; initial: string }> = ({
   toggleSidebar,
-  setPetDropdownOpen
+  setPetDropdownOpen,
+  initial
 }) => {
   return (
     <AnimatePresence>
@@ -17,7 +18,7 @@ const CollapsedProfileIndicator: FC<{ toggleSidebar: boolean; setPetDropdownOpen
           className="absolute inset-x-0 bottom-4 flex justify-center cursor-pointer"
         >
           <div className="w-8 h-8 rounded-lg bg-gray-900 flex items-center justify-center relative">
-            <span className="text-sm font-semibold text-white">X</span>
+            <span className="text-sm font-semibold text-white uppercase">{initial}</span>
             <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
           </div>
         </motion.div>

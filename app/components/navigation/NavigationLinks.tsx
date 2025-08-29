@@ -1,17 +1,17 @@
-import useCustomPathname from '@/app/hooks/useCustomPathname'
-import { publicDashboardLinks } from '@/app/lib/utils'
 import { AnimatePresence, motion } from 'framer-motion'
 import { signOut } from 'next-auth/react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import React, { FC, useState } from 'react'
 
-const NavigationLinks: FC<{ zeroPets: boolean; toggleSidebar: boolean }> = ({ zeroPets, toggleSidebar }) => {
-  const path = useCustomPathname()
+interface INavigationLinks {
+  toggleSidebar: boolean
+  linkData: any
+}
+
+const NavigationLinks: FC<INavigationLinks> = ({ toggleSidebar, linkData }) => {
   const [isLoading, setIsLoading] = useState(false)
   const { push } = useRouter()
-
-  const linkData = publicDashboardLinks(path, zeroPets)
 
   const handleLogout = async (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
     e.preventDefault()
@@ -31,7 +31,7 @@ const NavigationLinks: FC<{ zeroPets: boolean; toggleSidebar: boolean }> = ({ ze
   return (
     <div className="pb-4">
       <nav className={`px-3 space-y-1 ${toggleSidebar ? 'flex flex-col items-center' : ''}`}>
-        {linkData.map((link, i) => (
+        {linkData.map((link: any, i: number) => (
           <motion.div
             key={i}
             initial={{ opacity: 0, y: 10 }}

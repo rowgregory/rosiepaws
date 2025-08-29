@@ -44,7 +44,6 @@ const CustomCallback = () => {
           Rosie Paws
         </h2>
         <p className="text-gray-600">Setting up your account...</p>
-        <p className="text-sm text-gray-400 mt-2">Determining your dashboard</p>
       </div>
     </div>
   )

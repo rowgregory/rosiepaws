@@ -3,7 +3,7 @@
 import { setOpenPetDrawer } from '@/app/redux/features/petSlice'
 import { RootState, useAppSelector } from '@/app/redux/store'
 import React from 'react'
-import CleanHeader from '@/app/components/guardian/navigation/CleanHeader'
+import CleanHeader from '@/app/components/guardian/CleanHeader'
 import ZeroLogs from '@/app/components/guardian/ZeroLogs'
 import PetCard from '@/app/components/guardian/my-pets/PetCard'
 import { Pet } from '@/app/types/entities'

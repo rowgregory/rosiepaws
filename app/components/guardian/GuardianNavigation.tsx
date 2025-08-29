@@ -7,12 +7,14 @@ import { setOpenPetDrawer, setSelectedPetWithChartData } from '@/app/redux/featu
 import { processChartDataForPet } from '@/app/lib/utils/public/dashboard/processChartData'
 import { calculatePetStats } from '@/app/lib/utils/public/dashboard/calculatePetStats'
 import { motion } from 'framer-motion'
-import HeaderSecetion from './navigation/HeaderSecetion'
-import NavigationLinks from './navigation/NavigationLinks'
+import HeaderSecetion from '../navigation/HeaderSection'
+import NavigationLinks from '../navigation/NavigationLinks'
 import BottomProfileSection from './navigation/BottomProfileSection'
 import Token from './navigation/Token'
-import ToggleButton from './navigation/ToggleButton'
-import CollapsedProfileIndicator from './navigation/CollapsedProfileIndicator'
+import ToggleButton from '../navigation/ToggleButton'
+import CollapsedProfileIndicator from '../navigation/CollapsedProfileIndicator'
+import { publicDashboardLinks } from '@/app/lib/utils'
+import useCustomPathname from '@/app/hooks/useCustomPathname'
 
 const GuardianNavigation = () => {
   const dispatch = useAppDispatch()
@@ -20,6 +22,7 @@ const GuardianNavigation = () => {
   const { user } = useUserSelector()
   const [petDropdownOpen, setPetDropdownOpen] = useState<boolean>(false)
   const { navigation } = useAppSelector((state: RootState) => state.app)
+  const path = useCustomPathname()
 
   const handlePetSelect = (selectedPet: any) => {
     setPetDropdownOpen(false)
@@ -33,6 +36,8 @@ const GuardianNavigation = () => {
       })
     )
   }
+
+  const linkData = publicDashboardLinks(path, zeroPets)
 
   return (
     <>
@@ -53,7 +58,7 @@ const GuardianNavigation = () => {
         className="hidden lg:block fixed top-0 left-0 min-h-screen bg-white border-r border-gray-200 z-20"
       >
         {/* Header Section */}
-        <HeaderSecetion toggleSidebar={navigation} user={user} />
+        <HeaderSecetion toggleSidebar={navigation} user={user} title="Guardian" />
 
         {/* Token */}
         <Token toggleSidebar={navigation} user={user} />
@@ -62,13 +67,17 @@ const GuardianNavigation = () => {
         <ToggleButton toggleSidebar={navigation} />
 
         {/* Navigation Links */}
-        <NavigationLinks zeroPets={zeroPets} toggleSidebar={navigation} />
+        <NavigationLinks toggleSidebar={navigation} linkData={linkData} />
 
         {/* Bottom Profile Section */}
         <BottomProfileSection toggleSidebar={navigation} setPetDropdownOpen={setPetDropdownOpen} user={user} />
 
         {/* Collapsed Profile Indicator */}
-        <CollapsedProfileIndicator toggleSidebar={navigation} setPetDropdownOpen={setPetDropdownOpen} />
+        <CollapsedProfileIndicator
+          toggleSidebar={navigation}
+          setPetDropdownOpen={setPetDropdownOpen}
+          initial={user?.email?.charAt(0) ?? ''}
+        />
       </motion.div>
     </>
   )

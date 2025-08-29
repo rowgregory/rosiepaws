@@ -9,6 +9,7 @@ import { useGetAllMediaQuery } from '@/app/redux/services/mediaApi'
 import { IMedia } from '@/app/types'
 import MediaCard from '@/app/components/admin/media-library/MediaCard'
 import UploadCard from '@/app/components/admin/media-library/UploadCard'
+import AdminPageHeader from '@/app/components/admin/common/AdminPageHeader'
 
 const tabs = [
   { id: 'all', label: 'All Media', icon: Grid3X3 },
@@ -17,7 +18,7 @@ const tabs = [
   { id: 'document', label: 'Documents', icon: FileText }
 ]
 
-const AdminMediaDashboard = () => {
+const AdminMediaLibrary = () => {
   const { data } = useGetAllMediaQuery(undefined) as { data: { media: IMedia[] | undefined } }
   const [activeTab, setActiveTab] = useState('all')
   const [viewMode, setViewMode] = useState('grid')
@@ -41,10 +42,7 @@ const AdminMediaDashboard = () => {
       <div className="min-h-screen bg-gray-50 p-6">
         <div className="max-w-7xl mx-auto">
           {/* Header */}
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Media Library</h1>
-            <p className="text-gray-600">Manage your posters, ebooks, and documents</p>
-          </div>
+          <AdminPageHeader title="Media Library" subtitle="Manage your posters, ebooks, and documents" />
 
           {/* Controls */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
@@ -76,7 +74,7 @@ const AdminMediaDashboard = () => {
               </div>
 
               {/* Search and View Controls */}
-              <div className="flex items-center gap-3">
+              <div className="flex flex-col lg:flex-row lg:items-center gap-3">
                 <div className="relative">
                   <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
                   <input
@@ -334,4 +332,4 @@ const AdminMediaDashboard = () => {
   )
 }
 
-export default AdminMediaDashboard
+export default AdminMediaLibrary

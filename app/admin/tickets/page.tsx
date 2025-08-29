@@ -32,6 +32,7 @@ import {
 import { useCreateTicketMessageMutation, useUpdateTicketStatusMutation } from '@/app/redux/services/ticketApi'
 import FilterSearch from '@/app/components/admin/form-elements/FilterSearch'
 import { statusButtons } from '@/app/lib/constants/admin/tickets'
+import AdminPageHeader from '@/app/components/admin/common/AdminPageHeader'
 
 const AdminTicketsPage = () => {
   const { tickets } = useAppSelector((state: RootState) => state.admin)
@@ -91,10 +92,7 @@ const AdminTicketsPage = () => {
   return (
     <div className="p-6 max-w-7xl mx-auto">
       {/* Header */}
-      <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Support Tickets</h1>
-        <p className="text-gray-600">Manage and respond to customer support requests</p>
-      </motion.div>
+      <AdminPageHeader title="Support Tickets" subtitle="Manage and respond to customer support requests" />
 
       {/* Stats Cards */}
       <motion.div

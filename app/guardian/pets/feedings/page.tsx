@@ -1,7 +1,7 @@
 'use client'
 
 import React from 'react'
-import CleanHeader from '@/app/components/guardian/navigation/CleanHeader'
+import CleanHeader from '@/app/components/guardian/CleanHeader'
 import ZeroLogs from '@/app/components/guardian/ZeroLogs'
 import { RootState, useAppSelector } from '@/app/redux/store'
 import { motion } from 'framer-motion'

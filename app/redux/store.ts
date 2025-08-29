@@ -81,3 +81,4 @@ export const useAppointmentSelector = () => useAppSelector((state) => state.appo
 export const useMedicationSelector = () => useAppSelector((state) => state.medication)
 export const useBloodSugarSelector = () => useAppSelector((state) => state.bloodSugar)
 export const useSeizureSelector = () => useAppSelector((state) => state.seizure)
+export const useAdminSelector = () => useAppSelector((state) => state.admin)

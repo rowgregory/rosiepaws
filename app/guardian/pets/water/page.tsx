@@ -1,6 +1,6 @@
 'use client'
 
-import CleanHeader from '@/app/components/guardian/navigation/CleanHeader'
+import CleanHeader from '@/app/components/guardian/CleanHeader'
 import WaterCard from '@/app/components/guardian/water/WaterCard'
 import ZeroLogs from '@/app/components/guardian/ZeroLogs'
 import { useInitialAnimation } from '@/app/hooks/useInitialAnimation'

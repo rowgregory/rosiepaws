@@ -11,6 +11,7 @@ import { SelectInput } from '@/app/forms/elements/admin/SelectInput'
 import { SettingCard } from '@/app/components/admin/settings/SettingsCard'
 import { createFormActions, setInputs } from '@/app/redux/features/formSlice'
 import { SETTINGS_BACKUP_FREQUENCIES } from '@/app/lib/constants/admin/settings'
+import AdminPageHeader from '@/app/components/admin/common/AdminPageHeader'
 
 const AdminSettings = () => {
   const dispatch = useAppDispatch()
@@ -40,18 +41,9 @@ const AdminSettings = () => {
   return (
     <>
       <SlideMessage message={error?.data?.message} type="Error" />
-
       <div className="bg-gray-50 min-h-screen p-6">
         {/* Header */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">System Settings</h1>
-              <p className="text-gray-600">Configure platform settings and preferences</p>
-            </div>
-          </div>
-        </div>
-
+        <AdminPageHeader title="System Settings" subtitle="Configure platform settings and preferences" />
         <form onSubmit={handleSaveSettings} className="space-y-8 max-w-6xl">
           {/* System Configuration */}
           <SettingCard
@@ -73,7 +65,7 @@ const AdminSettings = () => {
 
           {/* Save Button */}
           <div className="bg-white rounded-lg border border-gray-200 p-6">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
               <div className="text-sm text-gray-600">
                 <p className="font-medium text-gray-900 mb-1">Save Configuration</p>
                 <p>Changes will be applied immediately.</p>
@@ -83,7 +75,7 @@ const AdminSettings = () => {
                 disabled={isLoading}
                 whileHover={{ scale: isLoading ? 1 : 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className={`flex items-center gap-3 px-6 py-3 rounded-lg font-semibold transition-all ${
+                className={`mt-4 lg:mt-0 flex items-center gap-3 px-6 py-3 rounded-lg font-semibold transition-all ${
                   saved ? 'bg-green-600 text-white' : 'bg-gray-900 text-white hover:bg-gray-800'
                 } ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
               >
