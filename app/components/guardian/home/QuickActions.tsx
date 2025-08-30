@@ -8,7 +8,6 @@ import {
   feedingCreateTokenCost,
   movementCreateTokenCost,
   painScoreCreateTokenCost,
-  seizureCreateTokenCost,
   vitalSignsCreateTokenCost
 } from '@/app/lib/constants/public/token'
 import { useAppDispatch } from '@/app/redux/store'
@@ -57,7 +56,7 @@ const quickActionsData = [
     label: 'Seizure',
     icon: <Zap className="w-5 h-5" />,
     func: setOpenSeizureDrawer,
-    tokenCost: seizureCreateTokenCost,
+    tokenCost: 0,
     isFree: false
   }
 ]

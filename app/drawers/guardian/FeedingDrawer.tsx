@@ -1,5 +1,5 @@
 import React from 'react'
-import { AnimatePresence, motion } from 'framer-motion'
+import { AnimatePresence } from 'framer-motion'
 import { Utensils } from 'lucide-react'
 import { RootState, useAppDispatch, useAppSelector } from '@/app/redux/store'
 import { createFormActions, setInputs } from '@/app/redux/features/formSlice'
@@ -9,8 +9,9 @@ import FeedingGuide from '@/app/components/guardian/form-guides/FeedingGuide'
 import AnimatedDrawerHeader from '@/app/components/guardian/AnimatedDrawerHeader'
 import { setCloseFeedingDrawer } from '@/app/redux/features/feedingSlice'
 import { useCreateFeedingMutation, useUpdateFeedingMutation } from '@/app/redux/services/feedingApi'
-import { backdropVariants } from '@/app/lib/constants'
 import { feedingInitialState } from '@/app/lib/initial-states/feeding'
+import Backdrop from '@/app/components/common/Backdrop'
+import Drawer from '@/app/components/common/Drawer'
 
 const FeedingDrawer = () => {
   const dispatch = useAppDispatch()
@@ -70,25 +71,8 @@ const FeedingDrawer = () => {
     <AnimatePresence>
       {feedingDrawer && (
         <>
-          <motion.div
-            variants={backdropVariants}
-            initial="initial"
-            animate="animate"
-            exit="exit"
-            className="fixed inset-0 bg-black/20 backdrop-blur-sm z-50"
-            onClick={closeDrawer}
-          />
-          <motion.div
-            initial={{ x: '100%' }}
-            animate={{ x: 0 }}
-            exit={{ x: '100%' }}
-            transition={{
-              type: 'tween',
-              duration: 0.3,
-              ease: 'easeInOut'
-            }}
-            className="min-h-dvh w-full lg:w-[930px] fixed top-0 right-0 z-50 bg-white shadow-[-10px_0_30px_-5px_rgba(0,0,0,0.2)] flex flex-col"
-          >
+          <Backdrop close={closeDrawer} />
+          <Drawer>
             <AnimatedDrawerHeader
               title={isUpdateMode ? 'Edit Feeding' : 'Add Feeding'}
               subtitle="Track your pets diet"
@@ -110,7 +94,7 @@ const FeedingDrawer = () => {
 
               <FeedingGuide />
             </div>
-          </motion.div>
+          </Drawer>
         </>
       )}
     </AnimatePresence>

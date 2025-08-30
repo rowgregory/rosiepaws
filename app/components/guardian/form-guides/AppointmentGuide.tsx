@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Calendar, Clock, Shield, AlertTriangle, ChevronDown, Info } from 'lucide-react'
 import { quickFacts, tips } from '@/app/lib/constants/public/appointment'
 
-const AppointmentTips = () => {
+const AppointmentGuide = () => {
   const [expandedSection, setExpandedSection] = useState(null)
 
   const toggleSection = (sectionId: any) => {
@@ -156,4 +156,4 @@ const AppointmentTips = () => {
   )
 }
 
-export default AppointmentTips
+export default AppointmentGuide

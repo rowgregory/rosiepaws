@@ -5,14 +5,15 @@ import { RootState, useAppDispatch, useAppSelector } from '@/app/redux/store'
 import { createFormActions, setInputs } from '@/app/redux/features/formSlice'
 import MedicationForm from '@/app/forms/MedicationForm'
 import validateMedicationForm from '@/app/validations/validateMedicationForm'
-import GuardianMedicationChart from '@/app/components/guardian/medications/GuardianMedicationGuildlines'
+import MedicationGuide from '@/app/components/guardian/form-guides/MedicationGuide'
 import { useCreateMedicationMutation, useUpdateMedicationMutation } from '@/app/redux/services/medicationApi'
 import { setCloseMedicationDrawer } from '@/app/redux/features/medicationSlice'
-import { AnimatePresence, motion } from 'framer-motion'
-import { backdropVariants, drawerVariants } from '@/app/lib/constants'
+import { AnimatePresence } from 'framer-motion'
 import AnimatedDrawerHeader from '@/app/components/guardian/AnimatedDrawerHeader'
 import { Pill } from 'lucide-react'
 import { medicationInitialState } from '@/app/lib/initial-states/medication'
+import Backdrop from '@/app/components/common/Backdrop'
+import Drawer from '@/app/components/common/Drawer'
 
 const MedicationDrawer = () => {
   const dispatch = useAppDispatch()
@@ -77,26 +78,8 @@ const MedicationDrawer = () => {
     <AnimatePresence>
       {medicationDrawer && (
         <>
-          <motion.div
-            variants={backdropVariants}
-            initial="initial"
-            animate="animate"
-            exit="exit"
-            className="fixed inset-0 bg-black/20 backdrop-blur-sm z-50"
-            onClick={closeDrawer}
-          />
-          <motion.div
-            variants={drawerVariants}
-            initial="initial"
-            animate="animate"
-            exit="exit"
-            transition={{
-              type: 'tween',
-              duration: 0.3,
-              ease: 'easeInOut'
-            }}
-            className="min-h-dvh w-full lg:max-w-[930px] fixed top-0 right-0 z-50 bg-white shadow-[-10px_0_30px_-5px_rgba(0,0,0,0.2)] flex flex-col"
-          >
+          <Backdrop close={closeDrawer} />
+          <Drawer>
             <AnimatedDrawerHeader
               title={isUpdateMode ? 'Edit Medication' : 'Add Medication'}
               subtitle="Asses your pet's pain level"
@@ -115,9 +98,9 @@ const MedicationDrawer = () => {
                 loading={isLoading}
                 isUpdating={isUpdateMode}
               />
-              <GuardianMedicationChart />
+              <MedicationGuide />
             </div>
-          </motion.div>
+          </Drawer>
         </>
       )}
     </AnimatePresence>

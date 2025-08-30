@@ -5,7 +5,6 @@ import { getUserFromHeader } from '@/app/lib/api/getUserFromheader'
 import { validateTokensAndPet } from '@/app/lib/api/validateTokensAndPet'
 import { handleApiError } from '@/app/lib/api/handleApiError'
 import { createLog } from '@/app/lib/api/createLog'
-import { seizureUpdateTokenCost } from '@/app/lib/constants/public/token'
 
 export async function PATCH(req: NextRequest, { params }: any) {
   try {
@@ -50,7 +49,7 @@ export async function PATCH(req: NextRequest, { params }: any) {
     const validation = await validateTokensAndPet({
       userId: userAuth.userId!,
       petId,
-      tokenCost: seizureUpdateTokenCost,
+      tokenCost: 0,
       actionName: 'update seizure',
       req,
       user: userAuth?.user
@@ -103,8 +102,8 @@ export async function PATCH(req: NextRequest, { params }: any) {
         const updatedUser = await tx.user.update({
           where: { id: userAuth.userId },
           data: {
-            ...(!userAuth.user.isLegacyUser && { tokens: { decrement: seizureUpdateTokenCost } }),
-            tokensUsed: { increment: seizureUpdateTokenCost }
+            ...(!userAuth.user.isLegacyUser && { tokens: { decrement: 0 } }),
+            tokensUsed: { increment: 0 }
           }
         })
 
@@ -112,7 +111,7 @@ export async function PATCH(req: NextRequest, { params }: any) {
         await tx.tokenTransaction.create({
           data: {
             userId: userAuth.userId!,
-            amount: -seizureUpdateTokenCost,
+            amount: 0,
             type: userAuth.user.isLegacyUser ? 'SEIZURE_TRACKING_UPDATE_LEGACY' : 'SEIZURE_TRACKING_UPDATE',
             description: `Seizure tracking update${userAuth.user.isLegacyUser ? ' (Usage Tracking Only)' : ''}`,
             metadata: {

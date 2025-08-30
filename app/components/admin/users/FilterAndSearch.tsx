@@ -1,23 +1,15 @@
 import React, { FC } from 'react'
 import FilterSearch from '@/app/components/admin/form-elements/FilterSearch'
+import { comfortTierName, freeTierName, legacyTierName } from '@/app/lib/constants/public/token'
 
 interface IFilterAndSearch {
   searchTerm: any
   setSearchTerm: any
   setRoleFilter: any
   roleFilter: any
-  userTypeFilter: any
-  setUserTypeFilter: any
 }
 
-const FilterAndSearch: FC<IFilterAndSearch> = ({
-  searchTerm,
-  setSearchTerm,
-  setRoleFilter,
-  roleFilter,
-  userTypeFilter,
-  setUserTypeFilter
-}) => {
+const FilterAndSearch: FC<IFilterAndSearch> = ({ searchTerm, setSearchTerm, setRoleFilter, roleFilter }) => {
   return (
     <div className="bg-white p-4 rounded-xl border border-gray-200">
       <div className="flex flex-col sm:flex-row gap-4">
@@ -33,22 +25,10 @@ const FilterAndSearch: FC<IFilterAndSearch> = ({
             onChange={(e) => setRoleFilter(e.target.value)}
             className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           >
-            <option value="all">All Roles</option>
-            <option value="free">Free</option>
-            <option value="comfort">Comfort</option>
-            <option value="admin">Admin</option>
-          </select>
-          <select
-            value={userTypeFilter}
-            onChange={(e) => setUserTypeFilter(e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-          >
-            <option value="all">All Types</option>
-            <option value="super">Super Users</option>
-            <option value="admin">Admins</option>
-            <option value="comfort">Comfort</option>
-            <option value="legacy">Legacy</option>
-            <option value="free">Free</option>
+            <option value="all">All Tiers</option>
+            <option value="free">{freeTierName}</option>
+            <option value="comfort">{comfortTierName}</option>
+            <option value="comfort">{legacyTierName}</option>
           </select>
         </div>
       </div>

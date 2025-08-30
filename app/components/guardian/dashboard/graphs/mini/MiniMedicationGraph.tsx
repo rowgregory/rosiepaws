@@ -9,11 +9,11 @@ interface MedicationData {
   dosageUnit: string
 }
 
-interface GuardianMiniMedicationChartProps {
+interface MiniMedicationGraphProps {
   medications?: MedicationData[]
 }
 
-const MiniMedicationChart: React.FC<GuardianMiniMedicationChartProps> = ({ medications = [] }) => {
+const MiniMedicationGraph: React.FC<MiniMedicationGraphProps> = ({ medications = [] }) => {
   const uniqueMedications = useMemo(() => {
     const medicationMap = new Map()
 
@@ -106,4 +106,4 @@ const MiniMedicationChart: React.FC<GuardianMiniMedicationChartProps> = ({ medic
   )
 }
 
-export default MiniMedicationChart
+export default MiniMedicationGraph

@@ -18,8 +18,7 @@ const AdminUsersPage = () => {
   const { user: loggedInUser } = useAppSelector((state: RootState) => state.user)
   const [searchTerm, setSearchTerm] = useState('')
   const [roleFilter, setRoleFilter] = useState('all')
-  const [userTypeFilter, setUserTypeFilter] = useState('all')
-  const filteredUsers = userFilter(users, searchTerm, roleFilter, userTypeFilter)
+  const filteredUsers = userFilter(users, searchTerm, roleFilter)
 
   return (
     <>
@@ -38,8 +37,6 @@ const AdminUsersPage = () => {
             roleFilter={roleFilter}
             setRoleFilter={setRoleFilter}
             setSearchTerm={setSearchTerm}
-            setUserTypeFilter={setUserTypeFilter}
-            userTypeFilter={userTypeFilter}
           />
         </div>
         {/* Users Table */}

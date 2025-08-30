@@ -8,7 +8,6 @@ import ZeroLogs from '@/app/components/guardian/ZeroLogs'
 import CleanHeader from '@/app/components/guardian/CleanHeader'
 import { MedicationCard } from '@/app/components/guardian/medications/MedicationCard'
 import { IMedication } from '@/app/types'
-import { medicationCreateTokenCost } from '@/app/lib/constants/public/token'
 import {
   getActiveMedications,
   getMedicationStatus,
@@ -33,7 +32,7 @@ const MedicationIntake = () => {
         btnText="Log medication"
         title="No medications logged"
         subtitle="Track your pet's medications, set reminders, and monitor dosage schedules."
-        tokens={medicationCreateTokenCost}
+        tokens={0}
         func={setOpenMedicationDrawer}
         formName="medicationForm"
       />
@@ -44,12 +43,7 @@ const MedicationIntake = () => {
     <div className="h-[calc(100dvh-96px)]">
       <div className="mx-auto px-6 space-y-8">
         {/* Header */}
-        <CleanHeader
-          btnText="Add Medication"
-          func={setOpenMedicationDrawer}
-          tokens={medicationCreateTokenCost}
-          formName="medicationForm"
-        />
+        <CleanHeader btnText="Add Medication" func={setOpenMedicationDrawer} tokens={0} formName="medicationForm" />
         <div className="grid grid-cols-1 xl:grid-cols-4 gap-6">
           <div className="xl:col-span-3 space-y-6">
             {/* Alert Section for Upcoming Only */}

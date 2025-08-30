@@ -19,7 +19,7 @@ export const initialUserState: IUser = {
   image: '', // Optional profile image URL
 
   // Token fields
-  tokens: 180, // Starting tokens for new users
+  tokens: 250, // Starting tokens for new users
   tokensUsed: 0, // Track total tokens consumed
   lastTokenReset: null, // Optional token reset timestamp
 

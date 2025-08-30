@@ -1,3 +1,4 @@
+import { getStripeProductIds } from '@/app/lib/utils/common/stripe'
 import prisma from '@/prisma/client'
 import Stripe from 'stripe'
 
@@ -34,20 +35,26 @@ async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
     return
   }
 
-  // Handle plan changes (Comfort ↔ Legacy)
+  // Get environment-appropriate price IDs
+  const stripeProducts = getStripeProductIds()
+
+  // Handle plan changes
   const priceId = subscription.items.data[0]?.price.id
   let plan = 'COMFORT'
   let tokensToAdd = 0
   let planPrice = 1000
 
-  if (priceId === process.env.STRIPE_COMFORT_MONTHLY_PRICE_ID) {
+  if (priceId === stripeProducts.comfort.priceId) {
     plan = 'COMFORT'
     tokensToAdd = 12000
     planPrice = 1000 // $10.00 in cents
-  } else if (priceId === process.env.STRIPE_LEGACY_MONTHLY_PRICE_ID) {
+  } else if (priceId === stripeProducts.legacy.priceId) {
     plan = 'LEGACY'
     tokensToAdd = 0 // unlimited
     planPrice = 2500 // $25.00 in cents
+  } else {
+    console.error('Unknown price ID:', priceId)
+    return
   }
 
   // Only update if plan actually changed

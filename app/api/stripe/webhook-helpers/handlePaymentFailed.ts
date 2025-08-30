@@ -1,12 +1,11 @@
+import { createStripeInstance } from '@/app/lib/utils/common/stripe'
 import prisma from '@/prisma/client'
 import Stripe from 'stripe'
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2025-06-30.basil'
-})
-
 async function handlePaymentFailed(invoice: Stripe.Invoice) {
   console.log('Payment failed for invoice:', invoice.id)
+
+  const stripe = createStripeInstance()
 
   // Cast to any to handle TypeScript issues with Stripe types
   const invoiceData = invoice as any

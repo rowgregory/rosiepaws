@@ -1,10 +1,9 @@
 import React, { FC } from 'react'
 import { motion } from 'framer-motion'
-import GuardianNumberWheel from '@/app/components/guardian/GuardianNumberWheel'
+import NumberWheel from '@/app/components/guardian/blood-sugar/NumberWheel'
 import { IForm } from '../types'
 import PetSelection from '../components/common/forms/PetSelection'
 import FixedFooter from '../components/common/forms/FixedFooter'
-import { bloodSugarCreateTokenCost, bloodSugarUpdateTokenCost } from '../lib/constants/public/token'
 import Notes from '../components/common/forms/Notes'
 import TimeRecorded from '../components/common/forms/TimeRecorded'
 import { mealRelationOptions, measurementUnitOptions, symptomsOptions } from '../lib/constants'
@@ -50,7 +49,7 @@ const BloodSugarForm: FC<IForm> = ({ inputs, handleInput, close, handleSubmit, l
             </label>
 
             <div className="flex justify-center space-x-2">
-              <GuardianNumberWheel
+              <NumberWheel
                 value={Math.floor((value || 0) / 100)}
                 onChange={(val: number) => {
                   const tens = Math.floor(((value || 0) % 100) / 10)
@@ -61,7 +60,7 @@ const BloodSugarForm: FC<IForm> = ({ inputs, handleInput, close, handleSubmit, l
                 max={3}
                 label="Hundreds"
               />
-              <GuardianNumberWheel
+              <NumberWheel
                 value={Math.floor(((value || 0) % 100) / 10)}
                 onChange={(val: number) => {
                   const hundreds = Math.floor((value || 0) / 100)
@@ -72,7 +71,7 @@ const BloodSugarForm: FC<IForm> = ({ inputs, handleInput, close, handleSubmit, l
                 max={9}
                 label="Tens"
               />
-              <GuardianNumberWheel
+              <NumberWheel
                 value={(value || 0) % 10}
                 onChange={(val: number) => {
                   const hundreds = Math.floor((value || 0) / 100)
@@ -247,7 +246,7 @@ const BloodSugarForm: FC<IForm> = ({ inputs, handleInput, close, handleSubmit, l
       <FixedFooter
         inputs={inputs}
         loading={loading}
-        tokens={isUpdating ? bloodSugarUpdateTokenCost : bloodSugarCreateTokenCost}
+        tokens={0}
         text="Blood Sugar"
         close={close}
         func={() => isBloodSugarFormValid(inputs)}

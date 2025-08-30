@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState } from 'react'
+import { AnimatePresence } from 'framer-motion'
 import { RootState, useAppDispatch, useAppSelector } from '@/app/redux/store'
 import { setClosePetDrawer } from '@/app/redux/features/petSlice'
 import { clearInputs, createFormActions } from '@/app/redux/features/formSlice'
@@ -8,12 +9,12 @@ import { validatePetForm } from '@/app/validations/validatePetForm'
 import { useCreatePetMutation, useUpdatePetMutation } from '@/app/redux/services/petApi'
 import PetForm from '@/app/forms/PetForm'
 import { Heart } from 'lucide-react'
-import { motion, AnimatePresence } from 'framer-motion'
 import GuardianPetGuide from '@/app/components/guardian/form-guides/PetGuide'
 import AnimatedDrawerHeader from '@/app/components/guardian/AnimatedDrawerHeader'
-import { backdropVariants, drawerVariants } from '@/app/lib/constants'
 import { setOpenFirstPetModal, setOpenSlideMessage } from '@/app/redux/features/appSlice'
 import { deleteFileFromFirebase, uploadFileToFirebase } from '@/app/utils/firebase-helpers'
+import Backdrop from '@/app/components/common/Backdrop'
+import Drawer from '@/app/components/common/Drawer'
 
 const PetDrawer = () => {
   const { petDrawer } = useAppSelector((state: RootState) => state.pet)
@@ -24,7 +25,6 @@ const PetDrawer = () => {
   const [createPet, { isLoading: isCreating }] = useCreatePetMutation()
   const [updatePet, { isLoading: isUpdating }] = useUpdatePetMutation()
   const [submitting, setSubmitting] = useState(false)
-
   const closeDrawer = () => dispatch(setClosePetDrawer())
 
   const isLoading = isUpdating || isCreating || submitting
@@ -120,26 +120,8 @@ const PetDrawer = () => {
     <AnimatePresence>
       {petDrawer && (
         <>
-          <motion.div
-            variants={backdropVariants}
-            initial="initial"
-            animate="animate"
-            exit="exit"
-            className="fixed inset-0 bg-black/20 backdrop-blur-sm z-50"
-            onClick={closeDrawer}
-          />
-          <motion.div
-            variants={drawerVariants}
-            initial="initial"
-            animate="animate"
-            exit="exit"
-            transition={{
-              type: 'tween',
-              duration: 0.3,
-              ease: 'easeInOut'
-            }}
-            className="min-h-dvh w-full xl:w-3/4 fixed top-0 right-0 z-50 bg-white shadow-[-10px_0_30px_-5px_rgba(0,0,0,0.2)] flex flex-col"
-          >
+          <Backdrop close={closeDrawer} />
+          <Drawer>
             <AnimatedDrawerHeader
               title={isUpdateMode ? 'Edit Pet' : 'Add Pet'}
               subtitle="Let's get to know your furry friend!"
@@ -162,7 +144,7 @@ const PetDrawer = () => {
               />
               <GuardianPetGuide />
             </div>
-          </motion.div>
+          </Drawer>
         </>
       )}
     </AnimatePresence>

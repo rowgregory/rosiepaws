@@ -37,7 +37,7 @@ const CurrentSubscription: FC<{ user: IUser | null }> = ({ user }) => {
                   . You&apos;ll continue to have full access until then.
                 </p>
                 <p className="text-amber-700 text-xs">
-                  After this date, you&apos;ll be moved to the Free plan with 180 tokens per month.
+                  After this date, you&apos;ll be moved to the Free plan with 250 tokens per month.
                 </p>
               </div>
             </div>

@@ -1,4 +1,3 @@
-import { bloodSugarDeleteTokenCost } from '@/app/lib/constants/public/token'
 import { getBloodSugarStatus, getReadingContext, getTimeInfo, getTimeOfDay } from '@/app/lib/utils'
 import { setCloseAdminConfirmModal, setOpenAdminConfirmModal } from '@/app/redux/features/adminSlice'
 import { setOpenSlideMessage } from '@/app/redux/features/appSlice'
@@ -41,7 +40,7 @@ const BloodSugarCard: FC<BloodSugarCardProps> = ({ reading, index, status, Statu
               .catch(() => dispatch(setOpenSlideMessage()))
           },
           isDestructive: true,
-          tokenAmount: bloodSugarDeleteTokenCost
+          tokenAmount: 0
         }
       })
     )

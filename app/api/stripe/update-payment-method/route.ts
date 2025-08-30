@@ -1,16 +1,13 @@
 // app/api/admin/send-payment-update/route.ts
 import { NextRequest, NextResponse } from 'next/server'
-import Stripe from 'stripe'
 import { Resend } from 'resend'
 import prisma from '@/prisma/client'
 import updatePaymentTemplate from '@/app/lib/email-templates/update-payment-method'
 import { createLog } from '@/app/lib/api/createLog'
 import { handleApiError } from '@/app/lib/api/handleApiError'
 import { sliceStripe } from '@/public/data/api.data'
+import { createStripeInstance } from '@/app/lib/utils/common/stripe'
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2025-06-30.basil'
-})
 const resend = new Resend(process.env.RESEND_API_KEY)
 
 export async function POST(req: NextRequest) {
@@ -53,16 +50,18 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ message: 'No Stripe customer ID found', sliceName: sliceStripe }, { status: 400 })
     }
 
+    const stripe = createStripeInstance()
+
     // Create a Stripe billing portal session for secure payment method updates
     const portalSession = await stripe.billingPortal.sessions.create({
       customer: subscription.customerId,
-      return_url: `${process.env.NEXT_PUBLIC_BASE_URL}/admin/subscriptions`,
+      return_url: `${process.env.NEXTAUTH_URL}/admin/subscriptions`,
       flow_data: {
         type: 'payment_method_update',
         after_completion: {
           type: 'redirect',
           redirect: {
-            return_url: `${process.env.NEXT_PUBLIC_BASE_URL}/admin/subscriptions?updated=true`
+            return_url: `${process.env.NEXTAUTH_URL}/admin/subscriptions?updated=true`
           }
         }
       }
@@ -70,7 +69,7 @@ export async function POST(req: NextRequest) {
 
     // Send email using Resend
     const emailResult = await resend.emails.send({
-      from: process.env.FROM_EMAIL || 'no-reply@rosiepawsapp.com',
+      from: process.env.RESEND_FROM_EMAIL!,
       to: [subscription.user.email],
       subject: 'Update Your Payment Method - Action Required',
       html: updatePaymentTemplate(

@@ -1,5 +1,5 @@
 import React from 'react'
-import { AnimatePresence, motion } from 'framer-motion'
+import { AnimatePresence } from 'framer-motion'
 import { RootState, useAppDispatch, useAppSelector } from '@/app/redux/store'
 import { createFormActions, setInputs } from '@/app/redux/features/formSlice'
 import validateBloodSugarForm from '@/app/validations/validateBloodSugarForm'
@@ -9,8 +9,9 @@ import BloodSugarGuide from '@/app/components/guardian/form-guides/BloodSugarGui
 import { setCloseBloodSugarDrawer } from '@/app/redux/features/bloodSugarSlice'
 import { useCreateBloodSugarMutation, useUpdateBloodSugarMutation } from '@/app/redux/services/bloodSugarApi'
 import { bloodSugarInitialState } from '@/app/lib/initial-states/bloodSugar'
-import { backdropVariants, drawerVariants } from '@/app/lib/constants'
 import { Heart } from 'lucide-react'
+import Backdrop from '@/app/components/common/Backdrop'
+import Drawer from '@/app/components/common/Drawer'
 
 const BloodSugarDrawer = () => {
   const dispatch = useAppDispatch()
@@ -71,26 +72,8 @@ const BloodSugarDrawer = () => {
     <AnimatePresence>
       {bloodSugarDrawer && (
         <>
-          <motion.div
-            variants={backdropVariants}
-            initial="initial"
-            animate="animate"
-            exit="exit"
-            className="fixed inset-0 bg-black/20 backdrop-blur-sm z-50"
-            onClick={closeDrawer}
-          />
-          <motion.div
-            variants={drawerVariants}
-            initial="initial"
-            animate="animate"
-            exit="exit"
-            transition={{
-              type: 'tween',
-              duration: 0.3,
-              ease: 'easeInOut'
-            }}
-            className="min-h-dvh w-full max-w-[930px] fixed top-0 right-0 z-50 bg-white shadow-[-10px_0_30px_-5px_rgba(0,0,0,0.2)] flex flex-col"
-          >
+          <Backdrop close={closeDrawer} />
+          <Drawer>
             <AnimatedDrawerHeader
               title={isUpdateMode ? 'Edit Blood Sugar' : 'Add Blood Sugar'}
               subtitle="Track your pet's appointments"
@@ -111,7 +94,7 @@ const BloodSugarDrawer = () => {
               />
               <BloodSugarGuide />
             </div>
-          </motion.div>
+          </Drawer>
         </>
       )}
     </AnimatePresence>

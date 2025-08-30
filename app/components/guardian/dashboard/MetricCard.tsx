@@ -1,6 +1,6 @@
 import { Crown, TrendingUp, TrendingDown, Star, Heart } from 'lucide-react'
 
-interface GuardianMetricCardProps {
+interface MetricCardProps {
   title: string
   value: string | number
   subtitle?: string
@@ -70,7 +70,7 @@ const getTrendColor = (trend: string) => {
   }
 }
 
-const GuardianMetricCard = ({
+const MetricCard = ({
   title,
   value,
   subtitle,
@@ -81,7 +81,7 @@ const GuardianMetricCard = ({
   isActive,
   id,
   hasLogs
-}: GuardianMetricCardProps) => {
+}: MetricCardProps) => {
   const isEmpty = !hasLogs
   const isFree = id === 'pain-scores' || id === 'feedings' || id === 'waters'
   const isComfort = id === 'vital-signs' || id === 'movements' || id === 'appointments'
@@ -151,4 +151,4 @@ const GuardianMetricCard = ({
   )
 }
 
-export default GuardianMetricCard
+export default MetricCard

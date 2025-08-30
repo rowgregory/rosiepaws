@@ -9,7 +9,6 @@ import CleanHeader from '@/app/components/guardian/CleanHeader'
 import ZeroLogs from '@/app/components/guardian/ZeroLogs'
 import { IBloodSugar } from '@/app/types'
 import BloodSugarCard from '@/app/components/guardian/blood-sugar/BloodSugarCard'
-import { bloodSugarCreateTokenCost } from '@/app/lib/constants/public/token'
 import { setOpenBloodSugarDrawer } from '@/app/redux/features/bloodSugarSlice'
 import { useInitialAnimation } from '@/app/hooks/useInitialAnimation'
 
@@ -36,7 +35,7 @@ const BloodSugar = () => {
         btnText="Log blood sugar"
         title="No blood sugar logs yet"
         subtitle="Track your pet's blood glucose levels to monitor their health and diabetes management."
-        tokens={bloodSugarCreateTokenCost}
+        tokens={0}
         func={setOpenBloodSugarDrawer}
         formName="bloodSugarForm"
       />
@@ -50,7 +49,7 @@ const BloodSugar = () => {
         <CleanHeader
           btnText={canAddMore ? 'Log Blood Sugar' : 'Daily Limit Reached'}
           func={canAddMore ? setOpenBloodSugarDrawer : null}
-          tokens={bloodSugarCreateTokenCost}
+          tokens={0}
           formName="bloodSugarForm"
         />
 

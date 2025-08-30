@@ -6,15 +6,8 @@ import handleSubscriptionUpdated from '../webhook-helpers/handleSubscriptionUpda
 import handleSubscriptionDeleted from '../webhook-helpers/handleSubscriptionDeleted'
 import handlePaymentSucceeded from '../webhook-helpers/handlePaymentSucceeded'
 import handleSubscriptionCreated from '../webhook-helpers/handleSubscriptionCreated'
+import { createStripeInstance, getStripeWebhookSecret } from '@/app/lib/utils/common/stripe'
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2025-06-30.basil'
-})
-
-// Stripe webhook secret (You get this from your Stripe dashboard)
-const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET!
-
-// Handle the Stripe webhook events
 export async function POST(request: NextRequest) {
   const body = await request.text()
   const sig = request.headers.get('stripe-signature')!
@@ -25,11 +18,16 @@ export async function POST(request: NextRequest) {
 
   let event: Stripe.Event
 
+  const stripe = createStripeInstance()
+  const endpointSecret = getStripeWebhookSecret()
+
   try {
     event = stripe.webhooks.constructEvent(body, sig, endpointSecret)
-  } catch (err: any) {
-    console.log(`Webhook signature verification failed.`, err.message)
-    return NextResponse.json({ error: 'Webhook signature verification failed' }, { status: 400 })
+  } catch (error: any) {
+    return NextResponse.json(
+      { error: error.message, message: 'Webhook signature verification failed' },
+      { status: 400 }
+    )
   }
 
   try {
@@ -64,8 +62,7 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json({ received: true })
-  } catch (error) {
-    console.error('Webhook handler error:', error)
-    return NextResponse.json({ error: 'Webhook handler failed' }, { status: 500 })
+  } catch (error: any) {
+    return NextResponse.json({ error: error.message, message: 'Webhook handler failed' }, { status: 500 })
   }
 }

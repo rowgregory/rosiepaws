@@ -1,9 +1,6 @@
+import { createStripeInstance, getStripeProductIds } from '@/app/lib/utils/common/stripe'
 import prisma from '@/prisma/client'
 import Stripe from 'stripe'
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2025-06-30.basil'
-})
 
 async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
   console.log('HANDLE CHECKOUT COMPLETED INITIATED')
@@ -20,6 +17,8 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
     return
   }
 
+  const stripe = createStripeInstance()
+
   const customerId = session.customer as string
   const subscriptionId = session.subscription as string
   const userId = session.client_reference_id! // Make sure you pass this when creating checkout
@@ -28,6 +27,9 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
   const subscription = await stripe.subscriptions.retrieve(subscriptionId)
   const priceId = subscription.items.data[0]?.price.id
 
+  // Get environment-appropriate price IDs
+  const stripeProducts = getStripeProductIds()
+
   // Determine plan details based on what they purchased
   let plan = 'COMFORT'
   let tokensToAdd = 0
@@ -35,15 +37,15 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
   let isComfortUser = false
   let isLegacyUser = false
 
-  if (priceId === process.env.STRIPE_COMFORT_MONTHLY_PRICE_ID) {
+  if (priceId === stripeProducts.comfort.priceId) {
     plan = 'COMFORT'
     tokensToAdd = 12000 // Comfort gets 12K tokens
-    planPrice = 1000 // adjust for yearly
+    planPrice = 1000
     isComfortUser = true
-  } else if (priceId === process.env.STRIPE_LEGACY_MONTHLY_PRICE_ID) {
+  } else if (priceId === stripeProducts.legacy.priceId) {
     plan = 'LEGACY'
     tokensToAdd = 0 // Legacy = unlimited, no need to add tokens
-    planPrice = 2500 // adjust for yearly
+    planPrice = 2500
     isLegacyUser = true
   }
 

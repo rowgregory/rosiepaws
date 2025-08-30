@@ -1,7 +1,6 @@
 import prisma from '@/prisma/client'
 import { NextRequest, NextResponse } from 'next/server'
 import { slicePet } from '@/public/data/api.data'
-import { bloodSugarCreateTokenCost } from '@/app/lib/constants/public/token'
 import { createLog } from '@/app/lib/api/createLog'
 import { getUserFromHeader } from '@/app/lib/api/getUserFromheader'
 import { validateTokensAndPet } from '@/app/lib/api/validateTokensAndPet'
@@ -33,7 +32,7 @@ export async function POST(req: NextRequest) {
     const validation = await validateTokensAndPet({
       userId: userAuth.userId!,
       petId,
-      tokenCost: bloodSugarCreateTokenCost,
+      tokenCost: 0,
       actionName: 'blood sugar',
       req,
       user: userAuth?.user
@@ -67,8 +66,8 @@ export async function POST(req: NextRequest) {
       const updatedUser = await tx.user.update({
         where: { id: userAuth.userId },
         data: {
-          ...(!userAuth.user.isLegacyUser && { tokens: { decrement: bloodSugarCreateTokenCost } }),
-          tokensUsed: { increment: bloodSugarCreateTokenCost }
+          ...(!userAuth.user.isLegacyUser && { tokens: { decrement: 0 } }),
+          tokensUsed: { increment: 0 }
         }
       })
 
@@ -76,7 +75,7 @@ export async function POST(req: NextRequest) {
       await tx.tokenTransaction.create({
         data: {
           userId: userAuth.userId!,
-          amount: -bloodSugarCreateTokenCost, // Negative for debit
+          amount: 0, // Negative for debit
           type: userAuth.user.isLegacyUser ? 'BLOOD_SUGAR_CREATION_LEGACY' : 'BLOOD_SUGAR_CREATION',
           description: `Blood sugar creation${userAuth.user.isLegacyUser ? ' (Usage Tracking Only)' : ''}`,
           metadata: {

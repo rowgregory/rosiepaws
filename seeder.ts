@@ -179,7 +179,7 @@ const usersData = [
     lastName: 'Doe',
     name: 'John Doe',
     image: 'https://via.placeholder.com/150',
-    tokens: 180,
+    tokens: 250,
     tokensUsed: 0
   },
   {
@@ -195,7 +195,7 @@ const usersData = [
     lastName: 'Smith',
     name: 'Jane Smith',
     image: 'https://via.placeholder.com/150',
-    tokens: 180,
+    tokens: 250,
     tokensUsed: 0
   },
   {
@@ -274,7 +274,7 @@ const usersData = [
     lastName: 'Davis',
     name: 'Lisa Davis',
     image: 'https://via.placeholder.com/150',
-    tokens: 180,
+    tokens: 250,
     tokensUsed: 0
   },
   {

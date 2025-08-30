@@ -10,7 +10,8 @@ export const COLORS = ['#1f2937', '#374151', '#4b5563', '#6b7280', '#9ca3af', '#
 export const drawerVariants = {
   initial: { x: '100%' },
   animate: { x: 0 },
-  exit: { x: '100%' }
+  exit: { x: '100%' },
+  transition: { type: 'tween', duration: 0.3, ease: 'easeInOut' }
 }
 
 export const backdropVariants = {

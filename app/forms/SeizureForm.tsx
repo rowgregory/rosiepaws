@@ -4,7 +4,6 @@ import PetSelection from '../components/common/forms/PetSelection'
 import { isSeizureFormValid } from '../validations/validateSeizureForm'
 import { IForm } from '../types'
 import FixedFooter from '../components/common/forms/FixedFooter'
-import { seizureCreateTokenCost, seizureUpdateTokenCost } from '../lib/constants/public/token'
 import Notes from '../components/common/forms/Notes'
 import TimeRecorded from '../components/common/forms/TimeRecorded'
 import { AnimatePresence, motion } from 'framer-motion'
@@ -424,7 +423,7 @@ const SeizureForm: FC<IForm> = ({
       <FixedFooter
         inputs={inputs}
         loading={loading || uploadingVideo}
-        tokens={isUpdating ? seizureUpdateTokenCost : seizureCreateTokenCost}
+        tokens={0}
         text="Seizure"
         close={close}
         func={() => isSeizureFormValid(inputs)}

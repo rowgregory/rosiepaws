@@ -1,16 +1,28 @@
+import { Heart, Play, MapPin, Calendar, HelpCircle, UtensilsCrossed, AlertTriangle, Droplet } from 'lucide-react'
 import {
-  Heart,
-  Play,
-  MapPin,
-  Calendar,
-  Pill,
-  Zap,
-  HelpCircle,
-  UtensilsCrossed,
-  AlertTriangle,
-  TrendingUp,
-  Droplet
-} from 'lucide-react'
+  appointmentCreateTokenCost,
+  appointmentDeleteTokenCost,
+  appointmentUpdateTokenCost,
+  feedingCreateTokenCost,
+  feedingDeleteTokenCost,
+  feedingUpdateTokenCost,
+  freeTierDailyTokens,
+  movementCreateTokenCost,
+  movementDeleteTokenCost,
+  movementUpdateTokenCost,
+  painScoreCreateTokenCost,
+  painScoreDeleteTokenCost,
+  painScoreUpdateTokenCost,
+  petCreateTokenCost,
+  petDeleteTokenCost,
+  petUpdateTokenCost,
+  vitalSignsCreateTokenCost,
+  vitalSignsDeleteTokenCost,
+  vitalSignsUpdateTokenCost,
+  waterCreateTokenCost,
+  waterDeleteTokenCost,
+  waterUpdateTokenCost
+} from './token'
 
 export const tabs = [
   { id: 'actions', label: 'Token Actions', icon: <Play className="w-3 h-3 lg:w-4 lg:h-4" /> },
@@ -21,82 +33,58 @@ export const tokenActions = [
   {
     name: 'Pet Profile',
     icon: Heart,
-    createCost: 50,
-    editCost: 25,
-    deleteCost: 75,
+    createCost: petCreateTokenCost,
+    editCost: petUpdateTokenCost,
+    deleteCost: petDeleteTokenCost,
     description: "Create and manage your pet's basic profile information"
   },
   {
     name: 'Pain Score',
     icon: AlertTriangle,
-    createCost: 75,
-    editCost: 50,
-    deleteCost: 30,
+    createCost: painScoreCreateTokenCost,
+    editCost: painScoreUpdateTokenCost,
+    deleteCost: painScoreDeleteTokenCost,
     description: 'Log pain levels for comfort monitoring - essential for daily care'
   },
   {
     name: 'Feeding',
     icon: UtensilsCrossed,
-    createCost: 85,
-    editCost: 55,
-    deleteCost: 35,
+    createCost: feedingCreateTokenCost,
+    editCost: feedingUpdateTokenCost,
+    deleteCost: feedingDeleteTokenCost,
     description: 'Track feeding times and amounts - critical for nutrition management'
   },
   {
     name: 'Water Intake',
     icon: Droplet,
-    createCost: 90,
-    editCost: 55,
-    deleteCost: 35,
+    createCost: waterCreateTokenCost,
+    editCost: waterUpdateTokenCost,
+    deleteCost: waterDeleteTokenCost,
     description: 'Monitor hydration levels - essential for health maintenance'
   },
   {
     name: 'Vital Signs',
     icon: Heart,
-    createCost: 125,
-    editCost: 85,
-    deleteCost: 50,
+    createCost: vitalSignsCreateTokenCost,
+    editCost: vitalSignsUpdateTokenCost,
+    deleteCost: vitalSignsDeleteTokenCost,
     description: 'Monitor heart rate, temperature, and respiratory rate for health assessment'
   },
   {
     name: 'Movement',
     icon: MapPin,
-    createCost: 275,
-    editCost: 75,
-    deleteCost: 45,
+    createCost: movementCreateTokenCost,
+    editCost: movementUpdateTokenCost,
+    deleteCost: movementDeleteTokenCost,
     description: 'Advanced mobility and movement pattern documentation'
   },
   {
     name: 'Appointments',
     icon: Calendar,
-    createCost: 350,
-    editCost: 125,
-    deleteCost: 60,
+    createCost: appointmentCreateTokenCost,
+    editCost: appointmentUpdateTokenCost,
+    deleteCost: appointmentDeleteTokenCost,
     description: 'Schedule and track veterinary appointments and visits'
-  },
-  {
-    name: 'Medication',
-    icon: Pill,
-    createCost: 275,
-    editCost: 150,
-    deleteCost: 85,
-    description: 'Log medication administration and dosage tracking'
-  },
-  {
-    name: 'Blood Sugar',
-    icon: TrendingUp,
-    createCost: 400,
-    editCost: 200,
-    deleteCost: 100,
-    description: 'Monitor blood glucose levels for diabetic pet management'
-  },
-  {
-    name: 'Seizure Events',
-    icon: Zap,
-    createCost: 500,
-    editCost: 250,
-    deleteCost: 125,
-    description: 'Critical seizure documentation for neurological conditions'
   }
 ]
 
@@ -154,7 +142,7 @@ export const faqData = [
 ]
 
 export const planFeatures = [
-  { feature: 'Daily Token Allowance', free: '180', comfort: '12,000/month', legacy: 'Unlimited' },
+  { feature: 'Daily Token Allowance', free: freeTierDailyTokens, comfort: '12,000/month', legacy: 'Unlimited' },
   { feature: 'Pet Profiles', free: '1', comfort: '3', legacy: 'Unlimited' },
   { feature: 'Pain Scoring', free: '✓', comfort: '✓', legacy: '✓' },
   { feature: 'Feeding Tracking', free: '✓', comfort: '✓', legacy: '✓' },

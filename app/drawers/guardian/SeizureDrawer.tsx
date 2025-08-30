@@ -2,33 +2,26 @@ import React, { useState } from 'react'
 import { RootState, useAppDispatch, useAppSelector } from '@/app/redux/store'
 import { createFormActions, setInputs } from '@/app/redux/features/formSlice'
 import { AlertTriangle } from 'lucide-react'
-import { AnimatePresence, motion } from 'framer-motion'
+import { AnimatePresence } from 'framer-motion'
 import SeizureForm from '@/app/forms/SeizureForm'
 import { validateSeizureForm } from '@/app/validations/validateSeizureForm'
 import AnimatedDrawerHeader from '@/app/components/guardian/AnimatedDrawerHeader'
-import GuardianSeizureGuide from '@/app/components/guardian/seizure/GuardianSeizureGuide'
+import GuardianSeizureGuide from '@/app/components/guardian/form-guides/SeizureGuide'
 import { uploadFileToFirebase } from '@/app/utils/firebase-helpers'
 import { useCreateSeizureMutation, useUpdateSeizureMutation } from '@/app/redux/services/seizureApi'
 import { setCloseSeizureDrawer } from '@/app/redux/features/seizureSlice'
 import { seizureInitialState } from '@/app/lib/initial-states/seizure'
-import { backdropVariants, drawerVariants } from '@/app/lib/constants'
+import Backdrop from '@/app/components/common/Backdrop'
+import Drawer from '@/app/components/common/Drawer'
 
 const SeizureDrawer = () => {
   const dispatch = useAppDispatch()
   const { seizureDrawer } = useAppSelector((state: RootState) => state.seizure)
   const { seizureForm } = useAppSelector((state: RootState) => state.form)
-
   const { handleInput, setErrors, handleUploadProgress } = createFormActions('seizureForm', dispatch)
   const [updateSeizure, { isLoading: isUpdating }] = useUpdateSeizureMutation()
   const [createSeizure, { isLoading: isCreating }] = useCreateSeizureMutation()
   const [loading, setLoading] = useState(false)
-
-  const resetInputs = () =>
-    dispatch(setInputs({ formName: 'seizureForm', data: { ...seizureInitialState, isUpdating: false } }))
-  const closeDrawer = () => {
-    resetInputs()
-    dispatch(setCloseSeizureDrawer())
-  }
 
   const isLoading = isUpdating || isCreating || loading
   const isUpdateMode = seizureForm?.inputs?.isUpdating
@@ -84,30 +77,20 @@ const SeizureDrawer = () => {
     }
   }
 
+  const resetInputs = () =>
+    dispatch(setInputs({ formName: 'seizureForm', data: { ...seizureInitialState, isUpdating: false } }))
+
+  const closeDrawer = () => {
+    resetInputs()
+    dispatch(setCloseSeizureDrawer())
+  }
+
   return (
     <AnimatePresence>
       {seizureDrawer && (
         <>
-          <motion.div
-            variants={backdropVariants}
-            initial="initial"
-            animate="animate"
-            exit="exit"
-            className="fixed inset-0 bg-black/20 backdrop-blur-sm z-50"
-            onClick={closeDrawer}
-          />
-          <motion.div
-            variants={drawerVariants}
-            initial="initial"
-            animate="animate"
-            exit="exit"
-            transition={{
-              type: 'tween',
-              duration: 0.3,
-              ease: 'easeInOut'
-            }}
-            className="min-h-dvh w-full max-w-[930px] fixed top-0 right-0 z-50 bg-white shadow-[-10px_0_30px_-5px_rgba(0,0,0,0.2)] flex flex-col"
-          >
+          <Backdrop close={closeDrawer} />
+          <Drawer>
             <AnimatedDrawerHeader
               title={isUpdateMode ? 'Edit Seizure' : 'Add Seizure'}
               subtitle="Track your pet's appointments"
@@ -128,7 +111,7 @@ const SeizureDrawer = () => {
               />
               <GuardianSeizureGuide />
             </div>
-          </motion.div>
+          </Drawer>
         </>
       )}
     </AnimatePresence>

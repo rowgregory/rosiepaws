@@ -1,7 +1,6 @@
 import { createLog } from '@/app/lib/api/createLog'
 import { getUserFromHeader } from '@/app/lib/api/getUserFromheader'
 import { handleApiError } from '@/app/lib/api/handleApiError'
-import { bloodSugarDeleteTokenCost } from '@/app/lib/constants/public/token'
 import prisma from '@/prisma/client'
 import { sliceBloodSugar } from '@/public/data/api.data'
 import { NextRequest, NextResponse } from 'next/server'
@@ -58,8 +57,8 @@ export async function DELETE(req: NextRequest, { params }: any) {
         const updatedUser = await tx.user.update({
           where: { id: userAuth.userId },
           data: {
-            ...(!userAuth.user.isLegacyUser && { tokens: { decrement: bloodSugarDeleteTokenCost } }),
-            tokensUsed: { increment: bloodSugarDeleteTokenCost }
+            ...(!userAuth.user.isLegacyUser && { tokens: { decrement: 0 } }),
+            tokensUsed: { increment: 0 }
           }
         })
 
@@ -67,7 +66,7 @@ export async function DELETE(req: NextRequest, { params }: any) {
         await tx.tokenTransaction.create({
           data: {
             userId: userAuth.userId!,
-            amount: -bloodSugarDeleteTokenCost, // Negative for debit
+            amount: 0, // Negative for debit
             type: userAuth.user.isLegacyUser ? 'BLOOD_SUGAR_DELETE_LEGACY' : 'BLOOD_SUGAR_DELETE',
             description: `Blood sugar delete${userAuth.user.isLegacyUser ? ' (Usage Tracking Only)' : ''}`,
             metadata: {

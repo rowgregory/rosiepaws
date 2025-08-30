@@ -15,6 +15,7 @@ import {
   Pie,
   Cell
 } from 'recharts'
+import { formatDateShort } from '@/app/lib/utils'
 
 type AppointmentType = 'CHECKUP' | 'VACCINATION' | 'SURGERY' | 'DENTAL' | 'EMERGENCY'
 type AppointmentStatus = 'SCHEDULED' | 'COMPLETED' | 'CANCELLED' | 'RESCHEDULED'
@@ -63,11 +64,61 @@ interface ChartType {
   icon: React.ComponentType<{ className?: string }>
 }
 
-interface LargeAppointmentChartProps {
+interface LargeAppointmentGraphProps {
   appointments: any[]
 }
 
-const LargeAppointmentChart: FC<LargeAppointmentChartProps> = ({ appointments }) => {
+const COLORS: string[] = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8', '#82CA9D']
+
+const chartTypes: ChartType[] = [
+  { id: 'timeline', name: 'Timeline View', icon: Calendar },
+  { id: 'services', name: 'Service Types', icon: MapPin },
+  { id: 'status', name: 'Status Overview', icon: Clock },
+  { id: 'veterinarians', name: 'Veterinarians', icon: User },
+  { id: 'detailed', name: 'Detailed List', icon: ChevronRight }
+]
+
+const getStatusIcon = (status: AppointmentStatus) => {
+  switch (status) {
+    case 'COMPLETED':
+      return <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+    case 'SCHEDULED':
+      return <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
+    case 'CANCELLED':
+      return <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+    case 'RESCHEDULED':
+      return <div className="w-2 h-2 bg-pink-500 rounded-full"></div>
+    default:
+      return <div className="w-2 h-2 bg-gray-500 rounded-full"></div>
+  }
+}
+
+const getServiceTypeIcon = (serviceType: AppointmentType) => {
+  switch (serviceType) {
+    case 'CHECKUP':
+      return <Calendar className="w-4 h-4 text-blue-600" />
+    case 'VACCINATION':
+      return <AlertCircle className="w-4 h-4 text-yellow-600" />
+    case 'SURGERY':
+      return <MapPin className="w-4 h-4 text-red-600" />
+    case 'DENTAL':
+      return <User className="w-4 h-4 text-green-600" />
+    case 'EMERGENCY':
+      return <Clock className="w-4 h-4 text-orange-600" />
+    default:
+      return <Calendar className="w-4 h-4 text-gray-600" />
+  }
+}
+
+const formatTime = (time: string) => {
+  const [hours, minutes] = time.split(':')
+  const hour = parseInt(hours)
+  const ampm = hour >= 12 ? 'PM' : 'AM'
+  const displayHour = hour % 12 || 12
+  return `${displayHour}:${minutes} ${ampm}`
+}
+
+const LargeAppointmentGraph: FC<LargeAppointmentGraphProps> = ({ appointments }) => {
   const [selectedChart, setSelectedChart] = useState<string>('timeline')
 
   // Prepare data for different chart types
@@ -134,65 +185,6 @@ const LargeAppointmentChart: FC<LargeAppointmentChartProps> = ({ appointments })
       appointments: count
     }))
   }, [appointments])
-
-  const COLORS: string[] = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8', '#82CA9D']
-
-  const chartTypes: ChartType[] = [
-    { id: 'timeline', name: 'Timeline View', icon: Calendar },
-    { id: 'services', name: 'Service Types', icon: MapPin },
-    { id: 'status', name: 'Status Overview', icon: Clock },
-    { id: 'veterinarians', name: 'Veterinarians', icon: User },
-    { id: 'detailed', name: 'Detailed List', icon: ChevronRight }
-  ]
-
-  const getStatusIcon = (status: AppointmentStatus) => {
-    switch (status) {
-      case 'COMPLETED':
-        return <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-      case 'SCHEDULED':
-        return <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
-      case 'CANCELLED':
-        return <div className="w-2 h-2 bg-red-500 rounded-full"></div>
-      case 'RESCHEDULED':
-        return <div className="w-2 h-2 bg-pink-500 rounded-full"></div>
-      default:
-        return <div className="w-2 h-2 bg-gray-500 rounded-full"></div>
-    }
-  }
-
-  const getServiceTypeIcon = (serviceType: AppointmentType) => {
-    switch (serviceType) {
-      case 'CHECKUP':
-        return <Calendar className="w-4 h-4 text-blue-600" />
-      case 'VACCINATION':
-        return <AlertCircle className="w-4 h-4 text-yellow-600" />
-      case 'SURGERY':
-        return <MapPin className="w-4 h-4 text-red-600" />
-      case 'DENTAL':
-        return <User className="w-4 h-4 text-green-600" />
-      case 'EMERGENCY':
-        return <Clock className="w-4 h-4 text-orange-600" />
-      default:
-        return <Calendar className="w-4 h-4 text-gray-600" />
-    }
-  }
-
-  const formatDate = (date: Date) => {
-    return new Date(date).toLocaleDateString('en-US', {
-      weekday: 'short',
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    })
-  }
-
-  const formatTime = (time: string) => {
-    const [hours, minutes] = time.split(':')
-    const hour = parseInt(hours)
-    const ampm = hour >= 12 ? 'PM' : 'AM'
-    const displayHour = hour % 12 || 12
-    return `${displayHour}:${minutes} ${ampm}`
-  }
 
   const sortedAppointments = useMemo(() => {
     return [...appointments].sort((a, b) => {
@@ -423,7 +415,7 @@ const LargeAppointmentChart: FC<LargeAppointmentChartProps> = ({ appointments })
                         <div className="grid grid-cols-2 gap-4 text-sm">
                           <div className="flex items-center gap-2">
                             <Calendar className="w-3 h-3 text-gray-400" />
-                            <span className="text-gray-700">{formatDate(appointment.date)}</span>
+                            <span className="text-gray-700">{formatDateShort(appointment.date)}</span>
                           </div>
                           <div className="flex items-center gap-2">
                             <Clock className="w-3 h-3 text-gray-400" />
@@ -501,4 +493,4 @@ const LargeAppointmentChart: FC<LargeAppointmentChartProps> = ({ appointments })
   )
 }
 
-export default LargeAppointmentChart
+export default LargeAppointmentGraph

@@ -1,14 +1,10 @@
 import { createLog } from '@/app/lib/api/createLog'
 import getNextSteps from '@/app/lib/api/getNextSteps'
 import { handleApiError } from '@/app/lib/api/handleApiError'
+import { createStripeInstance } from '@/app/lib/utils/common/stripe'
 import prisma from '@/prisma/client'
 import { sliceStripe } from '@/public/data/api.data'
 import { NextRequest, NextResponse } from 'next/server'
-import Stripe from 'stripe'
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2025-06-30.basil'
-})
 
 export async function POST(req: NextRequest) {
   try {
@@ -56,6 +52,8 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       )
     }
+
+    const stripe = createStripeInstance()
 
     // Ensure we have a Stripe subscription ID and payment method
     if (!subscription.subscriptionId) {

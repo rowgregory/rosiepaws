@@ -11,7 +11,7 @@ export async function GET(req: NextRequest) {
         isFreeUser: true
       },
       data: {
-        tokens: 180
+        tokens: 250
       }
     })
 

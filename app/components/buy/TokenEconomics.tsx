@@ -1,6 +1,7 @@
 import React from 'react'
 import { motion } from 'framer-motion'
 import { Clock } from 'lucide-react'
+import { freeTierDailyTokens } from '@/app/lib/constants/public/token'
 
 const TokenEconomics = () => {
   return (
@@ -53,7 +54,7 @@ const TokenEconomics = () => {
               </p>
               <div className="mt-6 p-4 bg-blue-50 rounded-lg">
                 <p className="text-blue-900 font-medium text-sm">
-                  Free tier: 180 tokens daily. Comfort: 12,000 monthly. Legacy: Unlimited usage.
+                  Free tier: {freeTierDailyTokens} tokens daily. Comfort: 12,000 monthly. Legacy: Unlimited usage.
                 </p>
               </div>
             </div>

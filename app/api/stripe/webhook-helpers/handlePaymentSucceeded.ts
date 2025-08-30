@@ -1,13 +1,12 @@
+import { createStripeInstance } from '@/app/lib/utils/common/stripe'
 import prisma from '@/prisma/client'
 import Stripe from 'stripe'
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2025-06-30.basil'
-})
 
 async function handlePaymentSucceeded(invoice: Stripe.Invoice) {
   const customerId = invoice.customer as string
   const subscriptionId = (invoice as any).subscription as string
+
+  const stripe = createStripeInstance()
 
   // Find the subscription record
   const stripeSubscription = await prisma.stripeSubscription.findFirst({

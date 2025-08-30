@@ -6,6 +6,7 @@ import { useAppDispatch } from '@/app/redux/store'
 import { IMedia } from '@/app/types'
 import { BookOpen, Calendar, Crown, Download, Eye, File, Image, Settings, Trash2, Users, Zap } from 'lucide-react'
 import { setCloseAdminConfirmModal, setOpenAdminConfirmModal } from '@/app/redux/features/adminSlice'
+import { comfortTierName, freeTierName, legacyTierName } from '@/app/lib/constants/public/token'
 
 const getColorGradient = (color: string | number) => {
   const gradients: any = {
@@ -22,13 +23,13 @@ const getColorGradient = (color: string | number) => {
 const getTierInfo = (tier: string) => {
   switch (tier) {
     case 'free':
-      return { icon: Users, color: 'text-gray-600', bg: 'bg-gray-100', name: 'Free' }
+      return { icon: Users, color: 'text-gray-600', bg: 'bg-gray-100', name: freeTierName }
     case 'comfort':
-      return { icon: Zap, color: 'text-blue-600', bg: 'bg-blue-100', name: 'Comfort' }
+      return { icon: Zap, color: 'text-blue-600', bg: 'bg-blue-100', name: comfortTierName }
     case 'legacy':
-      return { icon: Crown, color: 'text-purple-600', bg: 'bg-purple-100', name: 'Legacy' }
+      return { icon: Crown, color: 'text-purple-600', bg: 'bg-purple-100', name: legacyTierName }
     default:
-      return { icon: Users, color: 'text-gray-600', bg: 'bg-gray-100', name: 'Free' }
+      return { icon: Users, color: 'text-gray-600', bg: 'bg-gray-100', name: freeTierName }
   }
 }
 
@@ -149,9 +150,9 @@ const MediaCard = ({ item, uploadingFiles }: any) => {
               >
                 <div className="p-1">
                   {[
-                    { tier: 'free', icon: Users, name: 'Free', color: 'text-gray-600' },
-                    { tier: 'comfort', icon: Zap, name: 'Comfort', color: 'text-blue-600' },
-                    { tier: 'legacy', icon: Crown, name: 'Legacy', color: 'text-purple-600' }
+                    { tier: 'free', icon: Users, name: freeTierName, color: 'text-gray-600' },
+                    { tier: 'comfort', icon: Zap, name: comfortTierName, color: 'text-blue-600' },
+                    { tier: 'legacy', icon: Crown, name: legacyTierName, color: 'text-purple-600' }
                   ].map(({ tier, icon: Icon, name, color }) => (
                     <button
                       key={tier}

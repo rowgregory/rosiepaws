@@ -3,7 +3,6 @@
 import React, { FC } from 'react'
 import { IChildren } from '../types/common'
 import GuardianNavigation from '../components/guardian/GuardianNavigation'
-// import GuardianToolbar from '../components/guardian/GuardianToolbar'
 import GuardianActionMenu from '../components/guardian/GuardianActionMenu'
 import MedicationDrawer from '../drawers/guardian/MedicationDrawer'
 import NotificationDrawer from '../drawers/general/NotificationDrawer'
@@ -37,8 +36,6 @@ const GuardianLayout: FC<IChildren> = ({ children }) => {
       <GuardianActionMenu />
       <NotificationDrawer />
       <NeedToUpgradeDrawer />
-
-      {/* <GuardianToolbar /> */}
       <div className="flex">
         <GuardianNavigation />
         <div

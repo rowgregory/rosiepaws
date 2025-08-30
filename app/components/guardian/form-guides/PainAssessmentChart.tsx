@@ -4,7 +4,7 @@ import { painAssessmentData } from '@/public/data/guardian.data'
 import { ChevronDown, ChevronUp } from 'lucide-react'
 import { useState } from 'react'
 
-const GuardianPainAssessmentChart = () => {
+const PainAssessmentChart = () => {
   const [openItems, setOpenItems] = useState(new Set([0])) // First item open by default
 
   const toggleItem = (index: number) => {
@@ -112,4 +112,4 @@ const GuardianPainAssessmentChart = () => {
   )
 }
 
-export default GuardianPainAssessmentChart
+export default PainAssessmentChart

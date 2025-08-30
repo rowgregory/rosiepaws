@@ -5,7 +5,7 @@ import { ScatterChart, Scatter, XAxis, YAxis, ZAxis, ResponsiveContainer, Toolti
 import { AlertTriangle, TrendingUp, Calendar } from 'lucide-react'
 import { processedSeizureData } from '@/app/lib/utils'
 
-interface MiniSeizureScatterProps {
+interface MiniSeizureGraphProps {
   seizures?: any[] | null
 }
 
@@ -55,7 +55,7 @@ export const CustomSeizureTooltip = ({ active, payload }: any) => {
   return null
 }
 
-const MiniSeizureScatter: FC<MiniSeizureScatterProps> = ({ seizures = [] }) => {
+const MiniSeizureGraph: FC<MiniSeizureGraphProps> = ({ seizures = [] }) => {
   // Process seizure data for scatter plot
   const processedData = processedSeizureData(seizures)
 
@@ -168,4 +168,4 @@ const MiniSeizureScatter: FC<MiniSeizureScatterProps> = ({ seizures = [] }) => {
   )
 }
 
-export default MiniSeizureScatter
+export default MiniSeizureGraph

@@ -2,31 +2,24 @@ import React from 'react'
 import { RootState, useAppDispatch, useAppSelector } from '@/app/redux/store'
 import { createFormActions, setInputs } from '../../redux/features/formSlice'
 import AppointmentForm from '../../forms/AppointmentForm'
-import { AnimatePresence, motion } from 'framer-motion'
+import { AnimatePresence } from 'framer-motion'
 import AnimatedDrawerHeader from '../../components/guardian/AnimatedDrawerHeader'
 import { Calendar } from 'lucide-react'
 import validateAppointmentForm from '../../validations/validateAppointmentForm'
-import AppointmentTips from '../../components/guardian/appointments/AppointmentTips'
+import AppointmentGuide from '../../components/guardian/form-guides/AppointmentGuide'
 import { useCreateAppointmentMutation, useUpdateAppointmentMutation } from '@/app/redux/services/appointmentApi'
 import { setCloseAppointmentDrawer } from '@/app/redux/features/appointmentSlice'
-import { backdropVariants, drawerVariants } from '@/app/lib/constants'
 import { appointmentInitialState } from '@/app/lib/initial-states/appointment'
+import Backdrop from '@/app/components/common/Backdrop'
+import Drawer from '@/app/components/common/Drawer'
 
 const AppointmentDrawer = () => {
   const dispatch = useAppDispatch()
   const { appointmentDrawer } = useAppSelector((state: RootState) => state.appointment)
   const { appointmentForm } = useAppSelector((state: RootState) => state.form)
-
   const { handleInput, setErrors } = createFormActions('appointmentForm', dispatch)
   const [updateAppointment, { isLoading: isUpdating }] = useUpdateAppointmentMutation()
   const [createAppointment, { isLoading: isCreating }] = useCreateAppointmentMutation()
-
-  const resetInputs = () =>
-    dispatch(setInputs({ formName: 'appointmentForm', data: { ...appointmentInitialState, isUpdating: false } }))
-  const closeDrawer = () => {
-    resetInputs()
-    dispatch(setCloseAppointmentDrawer())
-  }
 
   const isLoading = isUpdating || isCreating
   const isUpdateMode = appointmentForm?.inputs?.isUpdating
@@ -68,30 +61,20 @@ const AppointmentDrawer = () => {
     }
   }
 
+  const resetInputs = () =>
+    dispatch(setInputs({ formName: 'appointmentForm', data: { ...appointmentInitialState, isUpdating: false } }))
+
+  const closeDrawer = () => {
+    resetInputs()
+    dispatch(setCloseAppointmentDrawer())
+  }
+
   return (
     <AnimatePresence>
       {appointmentDrawer && (
         <>
-          <motion.div
-            variants={backdropVariants}
-            initial="initial"
-            animate="animate"
-            exit="exit"
-            className="fixed inset-0 bg-black/20 backdrop-blur-sm z-50"
-            onClick={closeDrawer}
-          />
-          <motion.div
-            variants={drawerVariants}
-            initial="initial"
-            animate="animate"
-            exit="exit"
-            transition={{
-              type: 'tween',
-              duration: 0.3,
-              ease: 'easeInOut'
-            }}
-            className="min-h-dvh w-full max-w-[930px] fixed top-0 right-0 z-50 bg-white shadow-[-10px_0_30px_-5px_rgba(0,0,0,0.2)] flex flex-col"
-          >
+          <Backdrop close={closeDrawer} />
+          <Drawer>
             <AnimatedDrawerHeader
               title={isUpdateMode ? 'Edit Appointment' : 'Add Appointment'}
               subtitle="Track your pet's appointments"
@@ -110,9 +93,9 @@ const AppointmentDrawer = () => {
                 loading={isLoading}
                 isUpdating={isUpdateMode}
               />
-              <AppointmentTips />
+              <AppointmentGuide />
             </div>
-          </motion.div>
+          </Drawer>
         </>
       )}
     </AnimatePresence>

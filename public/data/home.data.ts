@@ -9,7 +9,7 @@ export const plans = [
     price: '$0',
     period: '/month',
     features: [
-      '180 daily tokens (1-2 actions per day)',
+      '250 daily tokens (1-2 actions per day)',
       'Single pet profile only',
       'Pain scoring, feeding & water tracking only',
       'No advanced features or insights',

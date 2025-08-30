@@ -2,31 +2,24 @@ import React from 'react'
 import { RootState, useAppDispatch, useAppSelector } from '@/app/redux/store'
 import { createFormActions, setInputs } from '@/app/redux/features/formSlice'
 import MovementForm from '@/app/forms/MovementForm'
-import { AnimatePresence, motion } from 'framer-motion'
+import { AnimatePresence } from 'framer-motion'
 import { Activity } from 'lucide-react'
 import AnimatedDrawerHeader from '@/app/components/guardian/AnimatedDrawerHeader'
 import validateMovementForm from '@/app/validations/validateMovementForm'
-import MovementAssessmentGuide from '@/app/components/guardian/movements/MovementAssessmentGuide'
+import MovementAssessmentGuide from '@/app/components/guardian/form-guides/MovementAssessmentGuide'
 import { setCloseMovementDrawer } from '@/app/redux/features/movementSlice'
 import { useCreateMovementMutation, useUpdateMovementMutation } from '@/app/redux/services/movementApi'
-import { backdropVariants, drawerVariants } from '@/app/lib/constants'
 import { movementInitialState } from '@/app/lib/initial-states/movement'
+import Backdrop from '@/app/components/common/Backdrop'
+import Drawer from '@/app/components/common/Drawer'
 
 const MovementDrawer = () => {
   const dispatch = useAppDispatch()
   const { movementDrawer } = useAppSelector((state: RootState) => state.movement)
   const { movementForm } = useAppSelector((state: RootState) => state.form)
-
   const { handleInput, setErrors, handleToggle } = createFormActions('movementForm', dispatch)
   const [updateMovement, { isLoading: isUpdating }] = useUpdateMovementMutation()
   const [createMovement, { isLoading: isCreating }] = useCreateMovementMutation()
-
-  const resetInputs = () =>
-    dispatch(setInputs({ formName: 'movementForm', data: { ...movementInitialState, isUpdating: false } }))
-  const closeDrawer = () => {
-    resetInputs()
-    dispatch(setCloseMovementDrawer())
-  }
 
   const isLoading = isUpdating || isCreating
   const isUpdateMode = movementForm?.inputs?.isUpdating
@@ -83,30 +76,20 @@ const MovementDrawer = () => {
     }
   }
 
+  const resetInputs = () =>
+    dispatch(setInputs({ formName: 'movementForm', data: { ...movementInitialState, isUpdating: false } }))
+
+  const closeDrawer = () => {
+    resetInputs()
+    dispatch(setCloseMovementDrawer())
+  }
+
   return (
     <AnimatePresence>
       {movementDrawer && (
         <>
-          <motion.div
-            variants={backdropVariants}
-            initial="initial"
-            animate="animate"
-            exit="exit"
-            className="fixed inset-0 bg-black/20 backdrop-blur-sm z-50"
-            onClick={closeDrawer}
-          />
-          <motion.div
-            variants={drawerVariants}
-            initial="initial"
-            animate="animate"
-            exit="exit"
-            transition={{
-              type: 'tween',
-              duration: 0.3,
-              ease: 'easeInOut'
-            }}
-            className="min-h-dvh w-full max-w-[930px] fixed top-0 right-0 z-50 bg-white shadow-[-10px_0_30px_-5px_rgba(0,0,0,0.2)] flex flex-col"
-          >
+          <Backdrop close={closeDrawer} />
+          <Drawer>
             <AnimatedDrawerHeader
               title="Movement Assesment"
               subtitle="Asses your pet's movement"
@@ -128,7 +111,7 @@ const MovementDrawer = () => {
               />
               <MovementAssessmentGuide />
             </div>
-          </motion.div>
+          </Drawer>
         </>
       )}
     </AnimatePresence>

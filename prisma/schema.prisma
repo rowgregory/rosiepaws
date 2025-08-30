@@ -335,7 +335,7 @@ model User {
   image         String?
 
   // Token fields
-  tokens         Int       @default(180) // Starting tokens for new users
+  tokens         Int       @default(250) // Starting tokens for new users
   tokensUsed     Int       @default(0) // Track total tokens consumed
   lastTokenReset DateTime?
 

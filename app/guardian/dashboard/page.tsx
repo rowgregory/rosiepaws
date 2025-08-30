@@ -1,31 +1,32 @@
 'use client'
 
 import React, { useState } from 'react'
-import LargeFeedingGraph from '@/app/components/guardian/dashboard/LargeFeedingGraph'
-import LargePainScoreGraph from '@/app/components/guardian/dashboard/LargePainScoreGraph'
-import { RootState, useAppDispatch, useAppSelector } from '@/app/redux/store'
-import GuardianMetricCard from '@/app/components/guardian/dashboard/GuardianMetricCard'
-import LargeWaterGraph from '@/app/components/guardian/dashboard/LargeWaterGraph'
-import MiniWaterChart from '@/app/components/guardian/dashboard/MiniWaterChart'
-import MiniSeizureChart from '@/app/components/guardian/dashboard/MiniSeizureChart'
-import MiniMedicationChart from '@/app/components/guardian/dashboard/MiniMedicationChart'
-import MiniBloodSugarGraph from '@/app/components/guardian/dashboard/MiniBloodSugarGraph'
-import MiniPainScoreGraph from '@/app/components/guardian/dashboard/MiniPainScoreGraph'
-import MiniFeedingGraph from '@/app/components/guardian/dashboard/MiniFeedingGraph'
-import LargeMedicationGraph from '@/app/components/guardian/dashboard/LargeMedicationGraph'
-import LargeSeizureGraph from '@/app/components/guardian/dashboard/LargeSeizureGraph'
-import LargeBloodSugarGraph from '@/app/components/guardian/dashboard/LargeBloodSugarGraph'
-import LargeAppointmentChart from '@/app/components/guardian/dashboard/LargeAppointmentChart'
-import MiniAppointmentChart from '@/app/components/guardian/dashboard/MiniAppointmentChart'
-import { Activity, ArrowDown, ArrowLeftIcon, ArrowRightIcon, Droplets, Heart, Plus, Utensils } from 'lucide-react'
-import { useRouter } from 'next/navigation'
-import LargeVitalSignsGraph from '@/app/components/guardian/dashboard/LargeVitalSignsGraph'
 import { motion } from 'framer-motion'
-import MiniMovementsGraph from '@/app/components/guardian/dashboard/MiniMovementGraph'
-import LargeMovementsGraph from '@/app/components/guardian/dashboard/LargeMovementGraph'
+import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+import { RootState, useAppDispatch, useAppSelector } from '@/app/redux/store'
+import MetricCard from '@/app/components/guardian/dashboard/MetricCard'
+import LargeFeedingGraph from '@/app/components/guardian/dashboard/graphs/large/LargeFeedingGraph'
+import LargePainScoreGraph from '@/app/components/guardian/dashboard/graphs/large/LargePainScoreGraph'
+import LargeWaterGraph from '@/app/components/guardian/dashboard/graphs/large/LargeWaterGraph'
+import LargeMedicationGraph from '@/app/components/guardian/dashboard/graphs/large/LargeMedicationGraph'
+import LargeSeizureGraph from '@/app/components/guardian/dashboard/graphs/large/LargeSeizureGraph'
+import LargeBloodSugarGraph from '@/app/components/guardian/dashboard/graphs/large/LargeBloodSugarGraph'
+import LargeAppointmentGraph from '@/app/components/guardian/dashboard/graphs/large/LargeAppointmentGraph'
+import LargeMovementsGraph from '@/app/components/guardian/dashboard/graphs/large/LargeMovementGraph'
+import LargeVitalSignsGraph from '@/app/components/guardian/dashboard/graphs/large/LargeVitalSignsGraph'
+import MiniWaterGraph from '@/app/components/guardian/dashboard/graphs/mini/MiniWaterGraph'
+import MiniSeizureGraph from '@/app/components/guardian/dashboard/graphs/mini/MiniSeizureGraph'
+import MiniMedicationGraph from '@/app/components/guardian/dashboard/graphs/mini/MiniMedicationGraph'
+import MiniBloodSugarGraph from '@/app/components/guardian/dashboard/graphs/mini/MiniBloodSugarGraph'
+import MiniPainScoreGraph from '@/app/components/guardian/dashboard/graphs/mini/MiniPainScoreGraph'
+import MiniFeedingGraph from '@/app/components/guardian/dashboard/graphs/mini/MiniFeedingGraph'
+import MiniAppointmentGraph from '@/app/components/guardian/dashboard/graphs/mini/MiniAppointmentGraph'
+import MiniMovementsGraph from '@/app/components/guardian/dashboard/graphs/mini/MiniMovementGraph'
+import MiniVitalSignsGraph from '@/app/components/guardian/dashboard/graphs/mini/MiniVitalSignsGraph'
+import { Activity, ArrowDown, ArrowLeftIcon, ArrowRightIcon, Droplets, Heart, Plus, Utensils } from 'lucide-react'
 import { metricsConfigCards } from '@/app/lib/constants/public/dashboard/displayConstants'
 import { setOpenPainDrawer } from '@/app/redux/features/painSlice'
-import Link from 'next/link'
 import { setOpenFeedingDrawer } from '@/app/redux/features/feedingSlice'
 import { setOpenWaterDrawer } from '@/app/redux/features/waterSlice'
 import { setOpenMedicationDrawer } from '@/app/redux/features/medicationSlice'
@@ -34,7 +35,6 @@ import { setOpenAppointmentDrawer } from '@/app/redux/features/appointmentSlice'
 import { setOpenBloodSugarDrawer } from '@/app/redux/features/bloodSugarSlice'
 import { setOpenSeizureDrawer } from '@/app/redux/features/seizureSlice'
 import { setOpenVitalSignsDrawer } from '@/app/redux/features/vitalSignsSlice'
-import MiniVitalSignsGraph from '@/app/components/guardian/dashboard/MiniVitalSignsGraph'
 import { setOpenNeedToUpgradeDrawer } from '@/app/redux/features/dashboardSlice'
 import { setOpenNotEnoughTokensModal } from '@/app/redux/features/appSlice'
 import GuardianActionMenuButton from '@/app/components/guardian/GuardianActionMenuButton'
@@ -59,7 +59,7 @@ const GuardianDashboard = () => {
       case 'vital-signs':
         return <LargeVitalSignsGraph vitalSigns={chartData?.vitalSigns} pet={pet} />
       case 'appointments':
-        return <LargeAppointmentChart appointments={chartData?.appointments} />
+        return <LargeAppointmentGraph appointments={chartData?.appointments} />
       case 'medications':
         return <LargeMedicationGraph medicationData={chartData?.medications} />
       case 'seizures':
@@ -72,13 +72,13 @@ const GuardianDashboard = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <MiniPainScoreGraph painScores={chartData?.painScores} />
             <MiniFeedingGraph feedings={chartData?.feedings} />
-            <MiniWaterChart waters={chartData?.waters} />
+            <MiniWaterGraph waters={chartData?.waters} />
             <MiniVitalSignsGraph vitalSigns={chartData?.vitalSigns} />
             <MiniMovementsGraph movements={chartData?.movements} />
-            <MiniMedicationChart medications={chartData?.medications} />
-            <MiniAppointmentChart appointments={chartData?.appointments} />
+            <MiniMedicationGraph medications={chartData?.medications} />
+            <MiniAppointmentGraph appointments={chartData?.appointments} />
             <MiniBloodSugarGraph bloodSugars={chartData?.bloodSugars} />
-            <MiniSeizureChart seizures={chartData?.seizures} />
+            <MiniSeizureGraph seizures={chartData?.seizures} />
           </div>
         )
     }
@@ -256,7 +256,7 @@ const GuardianDashboard = () => {
                     ease: 'easeOut'
                   }}
                 >
-                  <GuardianMetricCard
+                  <MetricCard
                     key={metric.id}
                     title={metric.title}
                     value={metric.value}

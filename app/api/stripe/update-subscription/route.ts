@@ -1,25 +1,32 @@
 import { createLog } from '@/app/lib/api/createLog'
+import { createStripeInstance, getStripeProductIds } from '@/app/lib/utils/common/stripe'
 import prisma from '@/prisma/client'
 import { parseStack } from 'error-stack-parser-es/lite'
 import { NextRequest, NextResponse } from 'next/server'
-import Stripe from 'stripe'
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2025-06-30.basil'
-})
 
 export async function POST(req: NextRequest) {
   try {
     const { userId, newPlanId } = await req.json()
 
-    // Define your subscription plans (match your current structure)
-    const plans: Record<string, { priceId: string; name: string; userRole: string }> = {
-      comfort: { priceId: process.env.STRIPE_COMFORT_MONTHLY_PRICE_ID!, name: 'COMFORT', userRole: 'comfort_user' },
-      legacy: { priceId: process.env.STRIPE_LEGACY_MONTHLY_PRICE_ID!, name: 'LEGACY', userRole: 'legacy_user' }
+    if (!userId) {
+      return NextResponse.json({ error: 'User ID required' }, { status: 400 })
+    }
+
+    if (!newPlanId) {
+      return NextResponse.json({ error: 'Plan ID is required' }, { status: 400 })
+    }
+
+    const stripe = createStripeInstance()
+    const stripeProducts = getStripeProductIds()
+
+    // Define available subscription plans with environment-aware price IDs
+    const plans: Record<string, { priceId: string }> = {
+      comfort: { priceId: stripeProducts.comfort.priceId },
+      legacy: { priceId: stripeProducts.legacy.priceId }
     }
 
     if (!plans[newPlanId]) {
-      return NextResponse.json({ error: 'Invalid plan selected' }, { status: 400 })
+      return NextResponse.json({ error: 'Invalid plan selected. Available plans: comfort, legacy' }, { status: 400 })
     }
 
     // Get user's current subscription
@@ -55,7 +62,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({
       success: true,
       subscription: updatedSubscription,
-      message: `Successfully switched to ${plans[newPlanId].name}!`
+      message: `Successfully switched to ${newPlanId}!`
     })
   } catch (error: any) {
     await createLog('error', `Subscription update failed: ${error.message}`, {

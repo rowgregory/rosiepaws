@@ -16,7 +16,7 @@ import {
   BookOpen
 } from 'lucide-react'
 
-const GuardianVitalSignsGuide = () => {
+const VitalSignsGuide = () => {
   const [expandedSection, setExpandedSection] = useState<string | null>('temperature')
 
   const toggleSection = (section: string) => {
@@ -362,4 +362,4 @@ const GuardianVitalSignsGuide = () => {
   )
 }
 
-export default GuardianVitalSignsGuide
+export default VitalSignsGuide

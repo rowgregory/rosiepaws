@@ -11,6 +11,10 @@
     {
       "path": "/api/cron/reset-free-user-tokens",
       "schedule": "0 0 * * *"
+    },
+    {
+      "path": "/api/cron/reset-comfort-tokens",
+      "schedule": "0 0 * * *"
     }
   ]
 }

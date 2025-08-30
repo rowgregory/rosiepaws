@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server'
-import Stripe from 'stripe'
 import { Resend } from 'resend'
 import prisma from '@/prisma/client'
 import createRefundNotificationEmail from '@/app/lib/email-templates/refund-notification'
@@ -7,10 +6,7 @@ import { createLog } from '@/app/lib/api/createLog'
 import getRefundNextSteps from '@/app/lib/api/getRefundNextSteps'
 import { handleApiError } from '@/app/lib/api/handleApiError'
 import { sliceStripe } from '@/public/data/api.data'
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2025-06-30.basil'
-})
+import { createStripeInstance } from '@/app/lib/utils/common/stripe'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 
@@ -43,6 +39,8 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       )
     }
+
+    const stripe = createStripeInstance()
 
     // Get subscription from database
     const subscription = await prisma.stripeSubscription.findUnique({
@@ -134,7 +132,7 @@ export async function POST(req: NextRequest) {
     if (notifyCustomer) {
       try {
         emailResult = await resend.emails.send({
-          from: process.env.FROM_EMAIL || 'support@yourapp.com',
+          from: process.env.RESEND_FROM_EMAIL!,
           to: [subscription.user.email],
           subject: 'Refund Processed - Your Payment Has Been Refunded',
           html: createRefundNotificationEmail(

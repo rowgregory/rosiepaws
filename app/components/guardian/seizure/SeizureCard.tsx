@@ -8,26 +8,18 @@ import { useDeleteSeizureMutation } from '@/app/redux/services/seizureApi'
 import { setCloseAdminConfirmModal, setOpenAdminConfirmModal } from '@/app/redux/features/adminSlice'
 import { setOpenSeizureDrawer } from '@/app/redux/features/seizureSlice'
 import { setInputs } from '@/app/redux/features/formSlice'
-import { seizureDeleteTokenCost } from '@/app/lib/constants/public/token'
 import { setOpenSlideMessage } from '@/app/redux/features/appSlice'
 
 interface ISeizureCard {
-  seizure: ISeizure
   index: number
-  severity: ReturnType<typeof getSeizureSeverity>
-  SeverityIcon: React.ComponentType<any>
+  seizure: ISeizure
   setSelectedVideo: any
   shouldAnimate: boolean
 }
 
-export const SeizureCard: FC<ISeizureCard> = ({
-  seizure,
-  index,
-  severity,
-  SeverityIcon,
-  setSelectedVideo,
-  shouldAnimate
-}) => {
+export const SeizureCard: FC<ISeizureCard> = ({ index, seizure, setSelectedVideo, shouldAnimate }) => {
+  const severity = getSeizureSeverity(seizure.duration)
+  const SeverityIcon = severity.icon
   const emergencyLevel = getEmergencyLevel(seizure.duration)
   const dispatch = useAppDispatch()
   const [deleteSeizure] = useDeleteSeizureMutation()
@@ -50,7 +42,7 @@ export const SeizureCard: FC<ISeizureCard> = ({
               .catch(() => dispatch(setOpenSlideMessage()))
           },
           isDestructive: true,
-          tokenAmount: seizureDeleteTokenCost
+          tokenAmount: 0
         }
       })
     )

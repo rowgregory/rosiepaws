@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 
-const GuardianNumberWheel = ({ value, onChange, max = 9, label }: any) => {
+const NumberWheel = ({ value, onChange, max = 9, label }: any) => {
   const [isSpinning, setIsSpinning] = useState(false)
 
   const handleIncrement = () => {
@@ -61,4 +61,4 @@ const GuardianNumberWheel = ({ value, onChange, max = 9, label }: any) => {
   )
 }
 
-export default GuardianNumberWheel
+export default NumberWheel

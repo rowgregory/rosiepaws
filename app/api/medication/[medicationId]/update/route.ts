@@ -2,7 +2,6 @@ import { createLog } from '@/app/lib/api/createLog'
 import { getUserFromHeader } from '@/app/lib/api/getUserFromheader'
 import { handleApiError } from '@/app/lib/api/handleApiError'
 import { validateTokensAndPet } from '@/app/lib/api/validateTokensAndPet'
-import { medicationUpdateTokenCost } from '@/app/lib/constants/public/token'
 import prisma from '@/prisma/client'
 import { sliceMedication } from '@/public/data/api.data'
 import { NextRequest, NextResponse } from 'next/server'
@@ -29,7 +28,7 @@ export async function PATCH(req: NextRequest, { params }: any) {
     const validation = await validateTokensAndPet({
       userId: userAuth.userId!,
       petId: body.petId,
-      tokenCost: medicationUpdateTokenCost,
+      tokenCost: 0,
       actionName: 'update medication',
       req,
       user: userAuth?.user
@@ -95,8 +94,8 @@ export async function PATCH(req: NextRequest, { params }: any) {
       const updatedUser = await tx.user.update({
         where: { id: userAuth.userId },
         data: {
-          ...(!userAuth.user.isLegacyUser && { tokens: { decrement: medicationUpdateTokenCost } }),
-          tokensUsed: { increment: medicationUpdateTokenCost }
+          ...(!userAuth.user.isLegacyUser && { tokens: { decrement: 0 } }),
+          tokensUsed: { increment: 0 }
         }
       })
 
@@ -104,7 +103,7 @@ export async function PATCH(req: NextRequest, { params }: any) {
       await tx.tokenTransaction.create({
         data: {
           userId: userAuth.userId!,
-          amount: -medicationUpdateTokenCost, // Negative for debit
+          amount: 0, // Negative for debit
           type: userAuth.user.isLegacyUser ? 'MEDICATION_UPDATE_LEGACY' : 'MEDICATION_UPDATE',
           description: `Medication update${userAuth.user.isLegacyUser ? ' (Usage Tracking Only)' : ''}`,
           metadata: {

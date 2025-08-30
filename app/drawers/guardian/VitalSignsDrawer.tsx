@@ -2,31 +2,24 @@ import React from 'react'
 import { RootState, useAppDispatch, useAppSelector } from '@/app/redux/store'
 import { createFormActions, setInputs } from '@/app/redux/features/formSlice'
 import { TreePine } from 'lucide-react'
-import { AnimatePresence, motion } from 'framer-motion'
+import { AnimatePresence } from 'framer-motion'
 import AnimatedDrawerHeader from '@/app/components/guardian/AnimatedDrawerHeader'
-import GuardianVitalSignsGuide from '@/app/components/guardian/vital-signs/GuardianVitalSignsGuide'
+import VitalSignsGuide from '@/app/components/guardian/form-guides/VitalSignsGuide'
 import { useCreateVitalSignsMutation, useUpdateVitalSignsMutation } from '@/app/redux/services/vitalSignsApi'
 import { setCloseVitalSignsDrawer } from '@/app/redux/features/vitalSignsSlice'
 import validateVitalSignsForm from '@/app/validations/validateVitalSignsForm'
 import VitalSignsForm from '@/app/forms/VitalSignsForm'
-import { backdropVariants } from '@/app/lib/constants'
 import { vitalSignsInitialState } from '@/app/lib/initial-states/vital-signs'
+import Backdrop from '@/app/components/common/Backdrop'
+import Drawer from '@/app/components/common/Drawer'
 
 const VitalSignsDrawer = () => {
   const dispatch = useAppDispatch()
   const { vitalSignsDrawer } = useAppSelector((state: RootState) => state.vitalSigns)
   const { vitalSignsForm } = useAppSelector((state: RootState) => state.form)
-
   const { handleInput, setErrors } = createFormActions('vitalSignsForm', dispatch)
   const [updateVitalSigns, { isLoading: isUpdating }] = useUpdateVitalSignsMutation()
   const [createVitalSigns, { isLoading: isCreating }] = useCreateVitalSignsMutation()
-
-  const resetInputs = () =>
-    dispatch(setInputs({ formName: 'vitalSignsForm', data: { ...vitalSignsInitialState, isUpdating: false } }))
-  const closeDrawer = () => {
-    resetInputs()
-    dispatch(setCloseVitalSignsDrawer())
-  }
 
   const isLoading = isUpdating || isCreating
   const isUpdateMode = vitalSignsForm?.inputs?.isUpdating
@@ -73,29 +66,20 @@ const VitalSignsDrawer = () => {
     }
   }
 
+  const resetInputs = () =>
+    dispatch(setInputs({ formName: 'vitalSignsForm', data: { ...vitalSignsInitialState, isUpdating: false } }))
+
+  const closeDrawer = () => {
+    resetInputs()
+    dispatch(setCloseVitalSignsDrawer())
+  }
+
   return (
     <AnimatePresence>
       {vitalSignsDrawer && (
         <>
-          <motion.div
-            variants={backdropVariants}
-            initial="initial"
-            animate="animate"
-            exit="exit"
-            className="fixed inset-0 bg-black/20 backdrop-blur-sm z-50"
-            onClick={closeDrawer}
-          />
-          <motion.div
-            initial={{ x: '100%' }}
-            animate={{ x: 0 }}
-            exit={{ x: '100%' }}
-            transition={{
-              type: 'tween',
-              duration: 0.3,
-              ease: 'easeInOut'
-            }}
-            className="min-h-dvh w-full lg:w-[930px] fixed top-0 right-0 z-50 bg-white shadow-[-10px_0_30px_-5px_rgba(0,0,0,0.2)] flex flex-col"
-          >
+          <Backdrop close={closeDrawer} />
+          <Drawer>
             <AnimatedDrawerHeader
               title="Log Vital Signs"
               subtitle="Track your pet's vital signs"
@@ -114,9 +98,9 @@ const VitalSignsDrawer = () => {
                 loading={isLoading}
                 isUpdating={isUpdateMode}
               />
-              <GuardianVitalSignsGuide />
+              <VitalSignsGuide />
             </div>
-          </motion.div>
+          </Drawer>
         </>
       )}
     </AnimatePresence>

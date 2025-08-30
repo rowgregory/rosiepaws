@@ -80,10 +80,9 @@ export async function GET(req: NextRequest) {
 
     const backupData = await generateBackupData()
 
-    const adminEmails = [
-      // process.env.JACI_EMAIL || 'info@rosiepawsapp.com',
-      process.env.SUPER_USER || 'sqysh@sqysh.io'
-    ].filter((email) => email)
+    const adminEmails: string[] = [process.env.ADMIN_USER, process.env.SUPER_USER].filter((email): email is string =>
+      Boolean(email)
+    )
 
     // Email the backup file
     await sendBackupEmail(backupData, adminEmails, req, userAuth?.userId)

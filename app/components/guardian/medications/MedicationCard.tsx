@@ -1,4 +1,3 @@
-import { medicationDeleteTokenCost } from '@/app/lib/constants/public/token'
 import { getDaysRemaining, getFrequencyDisplay, getMedicationStatus } from '@/app/lib/utils'
 import { setCloseAdminConfirmModal, setOpenAdminConfirmModal } from '@/app/redux/features/adminSlice'
 import { setOpenSlideMessage } from '@/app/redux/features/appSlice'
@@ -50,7 +49,7 @@ export const MedicationCard: React.FC<MedicationCardProps> = ({
               .catch(() => dispatch(setOpenSlideMessage()))
           },
           isDestructive: true,
-          tokenAmount: medicationDeleteTokenCost
+          tokenAmount: 0
         }
       })
     )

@@ -1,7 +1,7 @@
 import React, { FC } from 'react'
 import { Calendar, Clock, User, FileText } from 'lucide-react'
 
-const MiniAppointmentsList: FC<{ appointments: any }> = ({ appointments }) => {
+const MiniAppointmentGraph: FC<{ appointments: any }> = ({ appointments }) => {
   if (appointments?.length === 0 || appointments === null || appointments === undefined) return
 
   const sortedAppointments = appointments
@@ -125,4 +125,4 @@ const MiniAppointmentsList: FC<{ appointments: any }> = ({ appointments }) => {
   )
 }
 
-export default MiniAppointmentsList
+export default MiniAppointmentGraph

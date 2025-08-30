@@ -8,7 +8,6 @@ import { COMMON_MEDICATIONS, DOSAGE_UNITS, FREQUENCIES } from '../lib/constants'
 import { getDefaultReminderTimes } from '../lib/utils'
 import PetSelection from '../components/common/forms/PetSelection'
 import FixedFooter from '../components/common/forms/FixedFooter'
-import { medicationCreateTokenCost } from '../lib/constants/public/token'
 import Notes from '../components/common/forms/Notes'
 import { isMedicationFormValid } from '../validations/validateMedicationForm'
 import { AnimatePresence, motion } from 'framer-motion'
@@ -407,7 +406,7 @@ const MedicationForm = ({ inputs, handleSubmit, close, errors, loading, isUpdati
       <FixedFooter
         inputs={inputs}
         loading={loading}
-        tokens={medicationCreateTokenCost}
+        tokens={0}
         text="Medication"
         close={close}
         func={() => isMedicationFormValid(inputs)}

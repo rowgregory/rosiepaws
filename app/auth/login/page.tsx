@@ -10,6 +10,7 @@ import { setOpenAuthErrorDrawer, setOpenSlideMessage } from '@/app/redux/feature
 import { useAppDispatch } from '@/app/redux/store'
 import SlideMessage from '@/app/components/auth/SlideMessage'
 import { CheckCircle } from 'lucide-react'
+import { freeTierDailyTokens } from '@/app/lib/constants/public/token'
 
 const STANDARD_EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
 
@@ -123,7 +124,7 @@ const Login = () => {
             <div className="text-center mb-8">
               🎉
               <span className="mx-2 bg-gradient-to-r from-orange-600 to-pink-600 bg-clip-text text-transparent font-semibold">
-                Sign up now and get 180 tokens daily
+                Sign up now and get {freeTierDailyTokens} tokens daily
               </span>
               🎉
               <h2 className="text-2xl font-bold text-gray-900 mb-2">

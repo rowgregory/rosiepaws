@@ -98,7 +98,7 @@ const sendTicketConfirmation = async (ticket: any, req: NextRequest, userId: str
           <p>This is an automated confirmation from your Support System</p>
           <p>Sent on ${new Date().toLocaleDateString()} at ${new Date().toLocaleTimeString()}</p>
           <p style="margin-top: 15px;">
-            <a href="${process.env.NEXT_PUBLIC_BASE_URL}/support/tickets/${ticket.id}" style="color: #3b82f6; text-decoration: none;">
+            <a href="${process.env.NEXTAUTH_URL}/support/tickets/${ticket.id}" style="color: #3b82f6; text-decoration: none;">
               View Ticket Online
             </a>
           </p>

@@ -1,11 +1,8 @@
 import {
   appointmentCreateTokenCost,
-  bloodSugarCreateTokenCost,
   feedingCreateTokenCost,
-  medicationCreateTokenCost,
   movementCreateTokenCost,
   painScoreCreateTokenCost,
-  seizureCreateTokenCost,
   vitalSignsCreateTokenCost,
   waterCreateTokenCost
 } from '@/app/lib/constants/public/token'
@@ -24,7 +21,7 @@ export const metricConfigButton = {
   'blood-sugars': {
     action: setOpenBloodSugarDrawer(),
     label: 'Blood Sugar',
-    tokens: bloodSugarCreateTokenCost
+    tokens: 0
   },
   'pain-scores': {
     action: setOpenPainDrawer(),
@@ -44,12 +41,12 @@ export const metricConfigButton = {
   medications: {
     action: setOpenMedicationDrawer(),
     label: 'Medication',
-    tokens: medicationCreateTokenCost
+    tokens: 0
   },
   seizures: {
     action: setOpenSeizureDrawer(),
     label: 'Seizure',
-    tokens: seizureCreateTokenCost
+    tokens: 0
   },
   appointments: {
     action: setOpenAppointmentDrawer(),

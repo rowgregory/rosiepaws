@@ -1,8 +1,8 @@
 import React, { useState } from 'react'
-import { ChevronDown, ChevronRight, Droplets, Scale, AlertTriangle, Lightbulb, TrendingUp } from 'lucide-react'
-import { waterGuidanceData, waterTipsData } from '../../../lib/constants/public/water'
+import { ChevronDown, ChevronRight, Pill, Scale, AlertTriangle, Lightbulb, Shield } from 'lucide-react'
+import { medicationGuidanceData, medicationTipsData } from '@/app/lib/constants'
 
-const GuardianWaterChart = () => {
+const MedicationGuide = () => {
   const [expandedCategory, setExpandedCategory] = useState<number | null>(null)
   const [activeTab, setActiveTab] = useState('guidelines')
 
@@ -11,17 +11,17 @@ const GuardianWaterChart = () => {
   }
 
   return (
-    <div className="w-full max-w-md bg-white border-l border-gray-200 h-full overflow-y-auto">
+    <div className="w-full max-w-sm bg-white border-l border-gray-200 h-full overflow-y-auto">
       {/* Header */}
       <div className="p-4 border-b border-gray-200">
-        <h3 className="text-lg font-semibold text-gray-900">Water Guidelines</h3>
-        <p className="text-sm text-gray-600">Essential hydration reference</p>
+        <h3 className="text-lg font-semibold text-gray-900">Medication Guidelines</h3>
+        <p className="text-sm text-gray-600">Safe medication management</p>
       </div>
 
       {/* Tabs */}
       <div className="flex border-b border-gray-200">
         {[
-          { id: 'guidelines', label: 'Guidelines', icon: Droplets },
+          { id: 'guidelines', label: 'Guidelines', icon: Pill },
           { id: 'tips', label: 'Tips', icon: Lightbulb }
         ].map((tab) => {
           const Icon = tab.icon
@@ -46,7 +46,7 @@ const GuardianWaterChart = () => {
       <div className="p-4">
         {activeTab === 'guidelines' && (
           <div className="space-y-3">
-            {waterGuidanceData.map((guide, index) => (
+            {medicationGuidanceData.map((guide, index) => (
               <div
                 key={index}
                 className="border border-gray-200 rounded-lg overflow-hidden"
@@ -60,7 +60,7 @@ const GuardianWaterChart = () => {
                     <div>
                       <h4 className="font-medium text-gray-900 text-sm">{guide.category}</h4>
                       <p className="text-xs text-gray-600 flex items-center mt-1">
-                        <Droplets size={12} className="mr-1" />
+                        <Pill size={12} className="mr-1" />
                         {guide.frequency}
                       </p>
                     </div>
@@ -74,11 +74,11 @@ const GuardianWaterChart = () => {
 
                 {expandedCategory === index && (
                   <div className="px-3 pb-3 space-y-3">
-                    {/* Portions */}
+                    {/* Administration Guidelines */}
                     <div>
                       <h5 className="text-xs font-semibold text-gray-700 mb-2 flex items-center">
                         <Scale size={12} className="mr-1" />
-                        Daily Requirements
+                        Administration Guidelines
                       </h5>
                       <ul className="space-y-1">
                         {guide.portions.map((portion, idx) => (
@@ -94,7 +94,7 @@ const GuardianWaterChart = () => {
                     <div>
                       <h5 className="text-xs font-semibold text-gray-700 mb-2 flex items-center">
                         <Lightbulb size={12} className="mr-1" />
-                        Tips
+                        Helpful Tips
                       </h5>
                       <ul className="space-y-1">
                         {guide.tips.map((tip, idx) => (
@@ -134,10 +134,10 @@ const GuardianWaterChart = () => {
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
               <h4 className="font-medium text-blue-900 text-sm mb-2 flex items-center">
                 <Lightbulb size={14} className="mr-2" />
-                General Tips
+                General Medication Safety
               </h4>
               <ul className="space-y-1">
-                {waterTipsData.generalTips.map((tip, idx) => (
+                {medicationTipsData.generalTips.map((tip, idx) => (
                   <li key={idx} className="text-xs text-blue-800 pl-3 relative">
                     <span className="absolute left-0 top-1.5 w-1 h-1 bg-blue-500 rounded-full"></span>
                     {tip}
@@ -150,10 +150,10 @@ const GuardianWaterChart = () => {
             <div className="bg-red-50 border border-red-200 rounded-lg p-3">
               <h4 className="font-medium text-red-900 text-sm mb-2 flex items-center">
                 <AlertTriangle size={14} className="mr-2" />
-                Red Flags
+                Emergency Warning Signs
               </h4>
               <ul className="space-y-1">
-                {waterTipsData.redFlags.map((flag, idx) => (
+                {medicationTipsData.redFlags.map((flag, idx) => (
                   <li key={idx} className="text-xs text-red-800 pl-3 relative">
                     <span className="absolute left-0 top-1.5 w-1 h-1 bg-red-500 rounded-full"></span>
                     {flag}
@@ -162,16 +162,16 @@ const GuardianWaterChart = () => {
               </ul>
             </div>
 
-            {/* Hydration Tips */}
-            <div className="bg-cyan-50 border border-cyan-200 rounded-lg p-3">
-              <h4 className="font-medium text-cyan-900 text-sm mb-2 flex items-center">
-                <TrendingUp size={14} className="mr-2" />
-                Encourage Hydration
+            {/* Administration Tips */}
+            <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+              <h4 className="font-medium text-green-900 text-sm mb-2 flex items-center">
+                <Shield size={14} className="mr-2" />
+                Administration Techniques
               </h4>
               <ul className="space-y-1">
-                {waterTipsData.hydrationTips.map((tip, idx) => (
-                  <li key={idx} className="text-xs text-cyan-800 pl-3 relative">
-                    <span className="absolute left-0 top-1.5 w-1 h-1 bg-cyan-500 rounded-full"></span>
+                {medicationTipsData.administrationTips.map((tip, idx) => (
+                  <li key={idx} className="text-xs text-green-800 pl-3 relative">
+                    <span className="absolute left-0 top-1.5 w-1 h-1 bg-green-500 rounded-full"></span>
                     {tip}
                   </li>
                 ))}
@@ -184,4 +184,4 @@ const GuardianWaterChart = () => {
   )
 }
 
-export default GuardianWaterChart
+export default MedicationGuide

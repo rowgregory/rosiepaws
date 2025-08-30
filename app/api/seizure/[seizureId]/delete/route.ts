@@ -1,7 +1,6 @@
 import { createLog } from '@/app/lib/api/createLog'
 import { getUserFromHeader } from '@/app/lib/api/getUserFromheader'
 import { handleApiError } from '@/app/lib/api/handleApiError'
-import { seizureDeleteTokenCost } from '@/app/lib/constants/public/token'
 import { deleteFileFromFirebase } from '@/app/utils/firebase-helpers'
 import prisma from '@/prisma/client'
 import { sliceSeizure } from '@/public/data/api.data'
@@ -65,8 +64,8 @@ export async function DELETE(req: NextRequest, { params }: any) {
         const updatedUser = await tx.user.update({
           where: { id: userAuth.userId },
           data: {
-            ...(!userAuth.user.isLegacyUser && { tokens: { decrement: seizureDeleteTokenCost } }),
-            tokensUsed: { increment: seizureDeleteTokenCost }
+            ...(!userAuth.user.isLegacyUser && { tokens: { decrement: 0 } }),
+            tokensUsed: { increment: 0 }
           }
         })
 
@@ -74,7 +73,7 @@ export async function DELETE(req: NextRequest, { params }: any) {
         await tx.tokenTransaction.create({
           data: {
             userId: userAuth.userId!,
-            amount: -seizureDeleteTokenCost, // Negative for debit
+            amount: 0, // Negative for debit
             type: userAuth.user.isLegacyUser ? 'SEIZURE_TRACKING_DELETE_LEGACY' : 'SEIZURE_TRACKING_DELETE',
             description: `Seizure tracking delete${userAuth.user.isLegacyUser ? ' (Usage Tracking Only)' : ''}`,
             metadata: {

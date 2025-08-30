@@ -4,7 +4,7 @@ import React, { FC, useState } from 'react'
 import { motion } from 'framer-motion'
 import { Zap, AlertTriangle } from 'lucide-react'
 import { XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer, ScatterChart, ZAxis, Scatter } from 'recharts'
-import { CustomSeizureTooltip } from './MiniSeizureChart'
+import { CustomSeizureTooltip } from '../mini/MiniSeizureGraph'
 import { processedSeizureData } from '@/app/lib/utils'
 
 enum SeizureSeverity {

@@ -2,7 +2,7 @@ import React, { FC } from 'react'
 import { AlertTriangle, Video, Shield, Info, Heart } from 'lucide-react'
 import { emergencySteps, safetyTips } from '@/app/lib/constants/public/seizure'
 
-const GuardianSeizureGuide: FC = () => {
+const SeizureGuide: FC = () => {
   return (
     <div className="max-w-md w-full bg-gradient-to-br from-red-50 to-orange-50 rounded-lg p-6 space-y-6">
       {/* Header */}
@@ -109,4 +109,4 @@ const GuardianSeizureGuide: FC = () => {
   )
 }
 
-export default GuardianSeizureGuide
+export default SeizureGuide
