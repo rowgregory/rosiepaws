@@ -1,7 +1,7 @@
+import React, { FC, MouseEvent, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { signOut } from 'next-auth/react'
 import Link from 'next/link'
-import React, { FC, useState } from 'react'
 
 interface INavigationLinks {
   toggleSidebar: boolean
@@ -11,18 +11,11 @@ interface INavigationLinks {
 const NavigationLinks: FC<INavigationLinks> = ({ toggleSidebar, linkData }) => {
   const [isLoading, setIsLoading] = useState(false)
 
-  const handleLogout = async (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
+  const handleLogout = async (e: MouseEvent<HTMLAnchorElement, globalThis.MouseEvent>) => {
     e.preventDefault()
 
-    try {
-      setIsLoading(true)
-      await signOut({
-        redirect: false, // Prevent automatic redirect
-        callbackUrl: '/auth/login' // Optional: specify where to redirect after signout
-      })
-
-      setIsLoading(false)
-    } catch {}
+    setIsLoading(true)
+    await signOut({ callbackUrl: '/auth/login' })
   }
 
   return (
