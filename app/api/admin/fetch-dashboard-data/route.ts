@@ -37,6 +37,15 @@ export async function GET(req: NextRequest) {
     })
     const pets = await prisma.pet.findMany({
       include: {
+        painScores: true,
+        medications: true,
+        appointments: true,
+        feedings: true,
+        seizures: true,
+        waters: true,
+        bloodSugars: true,
+        movements: true,
+        vitalSigns: true,
         owner: {
           select: {
             email: true,

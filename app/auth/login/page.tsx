@@ -348,7 +348,7 @@ const Login = () => {
 
               <div className="text-xl text-gray-600 mb-12">
                 Track your pet&apos;s wellbeing with advanced monitoring tools for pain scoring, water intake, feeding
-                records, movements and more!.
+                records, movements and more!
               </div>
 
               <div className="space-y-4 text-left max-w-md mx-auto mb-12">
@@ -398,9 +398,7 @@ const Login = () => {
                   </div>
                   <div>
                     <div className="font-semibold text-gray-900">Medication Reminders:</div>
-                    <div className="text-gray-600 text-sm">
-                      Never miss a dose with smart scheduling and notifications
-                    </div>
+                    <div className="text-gray-600 text-sm">Never miss a dose with email notifications</div>
                   </div>
                 </div>
 

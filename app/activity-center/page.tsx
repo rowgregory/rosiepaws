@@ -57,10 +57,7 @@ const ActivityCenter = () => {
   )
 
   const ActivityCard = ({ title, icon: Icon, description, fields, gradient, cardKey }: any) => (
-    <motion.div
-      variants={itemVariants}
-      className="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-200"
-    >
+    <motion.div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-200">
       <div
         className={`p-6 bg-gradient-to-br ${gradient} cursor-pointer`}
         onClick={() => setExpandedCard(expandedCard === cardKey ? null : cardKey)}

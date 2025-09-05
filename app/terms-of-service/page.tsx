@@ -2,21 +2,7 @@
 
 import React from 'react'
 import { motion } from 'framer-motion'
-import {
-  FileText,
-  Shield,
-  CheckCircle,
-  Mail,
-  Phone,
-  MapPin,
-  Heart,
-  AlertTriangle,
-  Users,
-  Database,
-  Lock,
-  Eye,
-  Download
-} from 'lucide-react'
+import { FileText, Shield, CheckCircle, Mail, AlertTriangle, Users, Database, Lock, Eye, Download } from 'lucide-react'
 
 const TermsOfService = () => {
   const containerVariants: any = {
@@ -39,17 +25,6 @@ const TermsOfService = () => {
     }
   }
 
-  const iconVariants: any = {
-    hidden: { scale: 0 },
-    visible: {
-      scale: 1,
-      transition: {
-        type: 'spring',
-        duration: 0.8
-      }
-    }
-  }
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50">
       {/* Main Content */}
@@ -57,12 +32,6 @@ const TermsOfService = () => {
         <motion.div variants={containerVariants} initial="hidden" animate="visible" className="space-y-12">
           {/* Hero Section */}
           <motion.div variants={itemVariants} className="text-center">
-            <motion.div
-              variants={iconVariants}
-              className="w-20 h-20 bg-gradient-to-br from-pink-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-6"
-            >
-              <FileText className="w-10 h-10 text-white" />
-            </motion.div>
             <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Terms of Service</h1>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
               These terms govern your use of our pet health tracking platform and services. By creating an account, you
@@ -289,30 +258,14 @@ const TermsOfService = () => {
                     <ul className="space-y-2">
                       <li className="flex items-center space-x-2">
                         <div className="w-1.5 h-1.5 bg-pink-500 rounded-full"></div>
-                        <span>One account per user/household</span>
-                      </li>
-                      <li className="flex items-center space-x-2">
-                        <div className="w-1.5 h-1.5 bg-pink-500 rounded-full"></div>
                         <span>Accurate contact information required</span>
                       </li>
                       <li className="flex items-center space-x-2">
-                        <div className="w-1.5 h-1.5 bg-pink-500 rounded-full"></div>
-                        <span>Secure password and login practices</span>
-                      </li>
-                    </ul>
-                  </div>
-                  <div>
-                    <ul className="space-y-2">
-                      <li className="flex items-center space-x-2">
-                        <div className="w-1.5 h-1.5 bg-purple-500 rounded-full"></div>
-                        <span>No sharing of login credentials</span>
-                      </li>
-                      <li className="flex items-center space-x-2">
-                        <div className="w-1.5 h-1.5 bg-purple-500 rounded-full"></div>
+                        <div className="w-1.5 h-1.5 bg-orange-500 rounded-full"></div>
                         <span>Report security issues immediately</span>
                       </li>
                       <li className="flex items-center space-x-2">
-                        <div className="w-1.5 h-1.5 bg-purple-500 rounded-full"></div>
+                        <div className="w-1.5 h-1.5 bg-red-500 rounded-full"></div>
                         <span>Account deletion available on request</span>
                       </li>
                     </ul>
@@ -394,30 +347,14 @@ const TermsOfService = () => {
                 out if you need any clarification about how our platform works.
               </p>
             </div>
-            <div className="grid md:grid-cols-3 gap-6">
+            <div className="grid md:grid-cols-1 gap-6">
               <motion.div
                 whileHover={{ scale: 1.05 }}
                 className="bg-white/10 backdrop-blur-sm rounded-xl p-6 text-center"
               >
                 <Mail className="w-8 h-8 mx-auto mb-4" />
                 <h3 className="font-semibold mb-2">Email Support</h3>
-                <p className="text-sm text-pink-100">[Your contact email]</p>
-              </motion.div>
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                className="bg-white/10 backdrop-blur-sm rounded-xl p-6 text-center"
-              >
-                <Phone className="w-8 h-8 mx-auto mb-4" />
-                <h3 className="font-semibold mb-2">Phone Support</h3>
-                <p className="text-sm text-pink-100">[Your phone number]</p>
-              </motion.div>
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                className="bg-white/10 backdrop-blur-sm rounded-xl p-6 text-center"
-              >
-                <MapPin className="w-8 h-8 mx-auto mb-4" />
-                <h3 className="font-semibold mb-2">Business Address</h3>
-                <p className="text-sm text-pink-100">[Your business address]</p>
+                <p className="text-sm text-pink-100">support@rosiepawsapp.com</p>
               </motion.div>
             </div>
           </motion.section>
@@ -441,29 +378,6 @@ const TermsOfService = () => {
           </motion.section>
         </motion.div>
       </main>
-
-      {/* Footer */}
-      <motion.footer
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1.5 }}
-        className="bg-gray-900 text-white py-8 mt-16"
-      >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row justify-between items-center">
-            <div className="flex items-center space-x-3 mb-4 md:mb-0">
-              <div className="w-8 h-8 bg-gradient-to-br from-pink-500 to-purple-600 rounded-full flex items-center justify-center">
-                <Heart className="w-4 h-4 text-white" />
-              </div>
-              <span className="text-lg font-semibold">[Your Company Name]</span>
-            </div>
-            <div className="text-sm text-gray-400">
-              © {new Date().getFullYear()} [Your Company Name]. All rights reserved. Made with care for pets and their
-              families.
-            </div>
-          </div>
-        </div>
-      </motion.footer>
     </div>
   )
 }

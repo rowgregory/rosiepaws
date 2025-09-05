@@ -16,6 +16,7 @@ import { PET_COLUMNS, PET_STATUS_OPTIONS, PET_TYPE_OPTIONS } from '@/app/lib/con
 import { formatDateTime } from '@/app/lib/utils/common/dateUtils'
 import { petFilter } from '@/app/lib/utils/admin/pets/filterUtils'
 import FilterSearch from '@/app/components/admin/form-elements/FilterSearch'
+import { exportPetsWithDetailedHealthData } from '@/app/lib/utils/exports/exportAllPetsData'
 
 const AdminPets = () => {
   const { pets } = useAppSelector((state: RootState) => state.admin)
@@ -29,7 +30,11 @@ const AdminPets = () => {
     <>
       <PetDetailsDrawer />
       <div className="bg-gray-50 min-h-screen p-6">
-        <AdminPageHeader title="Pet Management" subtitle="Monitor and manage all pets in the system" />
+        <AdminPageHeader
+          title="Pet Management"
+          subtitle="Monitor and manage all pets in the system"
+          onExport={() => exportPetsWithDetailedHealthData(pets)}
+        />
         <PetsStats pets={pets} />
         {/* Filters and Search */}
         <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6">

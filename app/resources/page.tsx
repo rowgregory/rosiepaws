@@ -21,126 +21,130 @@ import { useGetAllMediaQuery } from '../redux/services/mediaApi'
 import Picture from '../components/common/Picture'
 import { IMedia } from '../types'
 import { MotionLink } from '../components/common/MotionLink'
+import { RootState, useAppSelector } from '../redux/store'
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      duration: 0.6,
+      staggerChildren: 0.1
+    }
+  }
+}
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 30 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.6 }
+  }
+}
+
+const ResourceCard = ({ item }: { item: any }) => {
+  const isEbook = item.type === 'ebook'
+
+  return (
+    <motion.div
+      variants={itemVariants}
+      className="bg-white h-full rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group cursor-pointer relative"
+      whileHover={{ y: -5 }}
+    >
+      {/* Lock Overlay for Preview */}
+      <div className="absolute inset-0 bg-black/80 z-20 flex items-center justify-center transition-opacity duration-300">
+        <motion.div initial={{ scale: 0.8 }} whileHover={{ scale: 1 }} className="text-center text-white">
+          <Lock className="w-12 h-12 mx-auto mb-3" />
+          <p className="font-semibold mb-2">Sign Up to Access</p>
+          <p className="text-sm text-gray-300 mb-4">Preview available after login</p>
+          <MotionLink
+            href="/auth/login"
+            className="px-4 py-2 bg-gradient-to-r from-pink-500 to-orange-600 rounded-lg font-medium hover:from-pink-600 hover:to-orange-700 transition-all duration-200"
+          >
+            Get Access Now
+          </MotionLink>
+        </motion.div>
+      </div>
+
+      {/* Thumbnail - Blurred/Obscured */}
+      <div className="relative h-48 overflow-hidden">
+        {isEbook ? (
+          // PDF Preview/Placeholder for eBooks
+          <div className="w-full h-full bg-gradient-to-br from-red-50 to-red-100 flex items-center justify-center blur-sm">
+            <div className="text-center opacity-60">
+              <FileText className="w-16 h-16 text-red-500 mx-auto mb-2" />
+              <div className="text-sm font-medium text-red-700">PDF Document</div>
+              <div className="text-xs text-red-600">{item.size}</div>
+            </div>
+          </div>
+        ) : (
+          // Image thumbnail for Posters - Blurred
+          <div className="relative">
+            <Picture
+              priority={false}
+              src={item.thumbnail}
+              className="w-full h-full object-cover blur-sm opacity-70 transition-transform duration-300 group-hover:scale-105"
+            />
+            {/* Additional overlay to obscure content */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
+          </div>
+        )}
+      </div>
+
+      {/* Content - Limited Information */}
+      <div className="p-6">
+        <div className="flex items-start justify-between mb-3">
+          <div className="flex-1">
+            <span className="inline-block px-2 py-1 text-xs font-medium bg-blue-100 text-blue-700 rounded-full mb-2">
+              {item.category}
+            </span>
+            <h3 className="font-bold text-gray-900 text-lg leading-tight mb-2">{item.title}</h3>
+          </div>
+        </div>
+
+        {/* Truncated/Teaser Description */}
+        <p className="text-gray-600 text-sm mb-4 line-clamp-1">
+          {item?.description?.split(' ').slice(0, 6).join(' ')}...
+        </p>
+
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-4 text-sm text-gray-500">
+            <div className="flex items-center space-x-1">
+              <Eye className="w-4 h-4" />
+              <span>{item.views.toLocaleString()}</span>
+            </div>
+            <div className="flex items-center space-x-1">
+              <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+              <span>{item.rating}</span>
+            </div>
+          </div>
+          <div className="flex items-center space-x-2">
+            <div
+              className={`px-2 py-1 rounded text-xs font-medium ${
+                isEbook ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'
+              }`}
+            >
+              {isEbook ? 'eBook' : 'Poster'}
+            </div>
+            <Lock className="w-4 h-4 text-gray-400" />
+          </div>
+        </div>
+      </div>
+    </motion.div>
+  )
+}
 
 const ResourcesPage = () => {
   const { data } = useGetAllMediaQuery(undefined) as any
-  // const [hoveredCard, setHoveredCard] = useState<number | null>(null)
+  const { medias } = useAppSelector((state: RootState) => state.media)
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        duration: 0.6,
-        staggerChildren: 0.1
-      }
-    }
-  }
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 30 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.6 }
-    }
-  }
-
-  const ResourceCard = ({ item }: { item: any }) => {
-    const isEbook = item.type === 'ebook'
-
-    return (
-      <motion.div
-        variants={itemVariants}
-        className="bg-white h-full rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group cursor-pointer relative"
-        whileHover={{ y: -5 }}
-      >
-        {/* Lock Overlay for Preview */}
-        <div className="absolute inset-0 bg-black/80 z-20 flex items-center justify-center transition-opacity duration-300">
-          <motion.div initial={{ scale: 0.8 }} whileHover={{ scale: 1 }} className="text-center text-white">
-            <Lock className="w-12 h-12 mx-auto mb-3" />
-            <p className="font-semibold mb-2">Sign Up to Access</p>
-            <p className="text-sm text-gray-300 mb-4">Preview available after login</p>
-            <MotionLink
-              href="/auth/login"
-              className="px-4 py-2 bg-gradient-to-r from-pink-500 to-orange-600 rounded-lg font-medium hover:from-pink-600 hover:to-orange-700 transition-all duration-200"
-            >
-              Get Access Now
-            </MotionLink>
-          </motion.div>
-        </div>
-
-        {/* Thumbnail - Blurred/Obscured */}
-        <div className="relative h-48 overflow-hidden">
-          {isEbook ? (
-            // PDF Preview/Placeholder for eBooks
-            <div className="w-full h-full bg-gradient-to-br from-red-50 to-red-100 flex items-center justify-center blur-sm">
-              <div className="text-center opacity-60">
-                <FileText className="w-16 h-16 text-red-500 mx-auto mb-2" />
-                <div className="text-sm font-medium text-red-700">PDF Document</div>
-                <div className="text-xs text-red-600">{item.size}</div>
-              </div>
-            </div>
-          ) : (
-            // Image thumbnail for Posters - Blurred
-            <div className="relative">
-              <Picture
-                priority={false}
-                src={item.thumbnail}
-                className="w-full h-full object-cover blur-sm opacity-70 transition-transform duration-300 group-hover:scale-105"
-              />
-              {/* Additional overlay to obscure content */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
-            </div>
-          )}
-        </div>
-
-        {/* Content - Limited Information */}
-        <div className="p-6">
-          <div className="flex items-start justify-between mb-3">
-            <div className="flex-1">
-              <span className="inline-block px-2 py-1 text-xs font-medium bg-blue-100 text-blue-700 rounded-full mb-2">
-                {item.category}
-              </span>
-              <h3 className="font-bold text-gray-900 text-lg leading-tight mb-2">{item.title}</h3>
-            </div>
-          </div>
-
-          {/* Truncated/Teaser Description */}
-          <p className="text-gray-600 text-sm mb-4 line-clamp-1">
-            {item?.description?.split(' ').slice(0, 6).join(' ')}...
-          </p>
-
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4 text-sm text-gray-500">
-              <div className="flex items-center space-x-1">
-                <Eye className="w-4 h-4" />
-                <span>{item.views.toLocaleString()}</span>
-              </div>
-              <div className="flex items-center space-x-1">
-                <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                <span>{item.rating}</span>
-              </div>
-            </div>
-            <div className="flex items-center space-x-2">
-              <div
-                className={`px-2 py-1 rounded text-xs font-medium ${
-                  isEbook ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'
-                }`}
-              >
-                {isEbook ? 'eBook' : 'Poster'}
-              </div>
-              <Lock className="w-4 h-4 text-gray-400" />
-            </div>
-          </div>
-        </div>
-      </motion.div>
-    )
-  }
+  const eBooksAndGuides = medias?.filter((media) => media.type === 'EBOOK' || media.type === 'DOCUMENT')?.length
+  const posters = medias?.filter((media) => media.type === 'POSTER')?.length
 
   const stats = [
-    { icon: FileText, label: 'eBooks & Guides', value: '50+', color: 'text-red-500' },
-    { icon: FileImage, label: 'Reference Posters', value: '25+', color: 'text-green-500' },
+    { icon: FileText, label: 'eBooks & Guides', value: `${eBooksAndGuides}+`, color: 'text-red-500' },
+    { icon: FileImage, label: 'Reference Posters', value: `${posters}+`, color: 'text-green-500' },
     { icon: Video, label: 'Video Tutorials', value: 'Coming Soon', color: 'text-blue-500' },
     { icon: Calendar, label: 'Updated Monthly', value: 'Fresh Content', color: 'text-orange-500' }
   ]
