@@ -1,16 +1,20 @@
 import { backdropVariants, cardVariants, drawerVariants } from '@/app/lib/constants'
 import { setCloseNeedToUpgradeDrawer } from '@/app/redux/features/dashboardSlice'
-import { RootState, useAppDispatch, useAppSelector } from '@/app/redux/store'
+import { RootState, useAppDispatch, useAppSelector, useUserSelector } from '@/app/redux/store'
 import { plans } from '@/public/data/home.data'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Check, X, Zap } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 
 const NeedToUpgradeDrawer = () => {
   const dispatch = useAppDispatch()
   const [selectedPlan, setSelectedPlan] = useState(null) as any
   const { needToUpgradeDrawer } = useAppSelector((state: RootState) => state.dashboard)
+  const { user } = useUserSelector()
+  console.log('USER: ', user?.stripeSubscription?.plan)
   const onClose = () => dispatch(setCloseNeedToUpgradeDrawer())
+  const { push } = useRouter()
 
   return (
     <AnimatePresence>
@@ -71,7 +75,8 @@ const NeedToUpgradeDrawer = () => {
                 {plans.map((plan, index) => {
                   const Icon = plan.icon
                   return (
-                    plan.id !== 'free' && (
+                    plan.id !== 'free' &&
+                    plan.id !== user?.stripeSubscription?.plan?.toLowerCase() && (
                       <motion.div
                         key={plan.id}
                         custom={index}
@@ -133,6 +138,7 @@ const NeedToUpgradeDrawer = () => {
                 className="mt-8 space-y-3"
               >
                 <button
+                  onClick={() => push('/buy')}
                   className={`w-full py-3 px-6 rounded-lg font-semibold transition-all duration-200 ${
                     selectedPlan
                       ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:shadow-lg transform hover:scale-[1.02]'

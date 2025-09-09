@@ -36,7 +36,7 @@ export async function POST(req: NextRequest) {
     if (!name || !type || !breed || !age || !weight || !gender || !spayedNeutered) {
       return NextResponse.json(
         {
-          message: `Missing required fields: name:${name}, type:${type}, breed:${breed}, age:${age}, weight:${weight}, gender:${gender}, and sprayedNeutered:${spayedNeutered} are required`,
+          message: `Missing required fields: name:${name}, type:${type}, breed:${breed}, age:${age}, weight:${weight}, gender:${gender}, and spayedNeutered:${spayedNeutered} are required`,
           sliceName: slicePet
         },
         { status: 400 }

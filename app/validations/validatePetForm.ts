@@ -5,6 +5,7 @@ interface ValidationErrors {
   age: string
   gender: string
   weight: string
+  spayedNeutered: string
 }
 
 export const validatePetForm = (inputs: ValidationErrors, setErrors: any) => {
@@ -30,6 +31,9 @@ export const validatePetForm = (inputs: ValidationErrors, setErrors: any) => {
   if (!inputs?.weight?.trim()) {
     newErrors.weight = 'Weight is required'
   }
+  if (!inputs?.spayedNeutered?.trim()) {
+    newErrors.spayedNeutered = 'Spayed/Neutered is required'
+  }
 
   setErrors(newErrors)
   return Object.keys(newErrors).length === 0
@@ -42,6 +46,7 @@ export const isPetFormValid = (inputs: ValidationErrors) => {
     !!inputs.breed?.trim() &&
     !!inputs.age?.trim() &&
     !!inputs.gender?.trim() &&
-    !!inputs.weight?.trim()
+    !!inputs.weight?.trim() &&
+    !!inputs.spayedNeutered?.trim()
   )
 }
