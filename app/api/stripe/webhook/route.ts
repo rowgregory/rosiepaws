@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
 import Stripe from 'stripe'
-import handleCheckoutCompleted from '../webhook-helpers/handleCheckoutCompleted'
-import handlePaymentFailed from '../webhook-helpers/handlePaymentFailed'
-import handleSubscriptionUpdated from '../webhook-helpers/handleSubscriptionUpdated'
-import handleSubscriptionDeleted from '../webhook-helpers/handleSubscriptionDeleted'
-import handlePaymentSucceeded from '../webhook-helpers/handlePaymentSucceeded'
-import handleSubscriptionCreated from '../webhook-helpers/handleSubscriptionCreated'
 import { createStripeInstance, getStripeWebhookSecret } from '@/app/lib/utils/common/stripe'
+import handleCheckoutSessionCompleted from '../webhook-helpers/handleCheckoutSessionCompleted'
+import handleInvoicePaymentSuccess from '../webhook-helpers/handleInvoicePaymentSuccess'
+import handleInvoicePaymentFailed from '../webhook-helpers/handleInvoicePaymentFailed'
+import handleCustomerSubscriptionUpdated from '../webhook-helpers/handleCustomerSubscriptionUpdated'
+import handleCustomerSubscriptionDeleted from '../webhook-helpers/handleCustomerSubscriptionDeleted'
+import handlePaymentIntentPaymentFailed from '../webhook-helpers/handlePaymentIntentPaymentFailed'
 
 export async function POST(request: NextRequest) {
   const body = await request.text()
@@ -34,29 +34,32 @@ export async function POST(request: NextRequest) {
     switch (event.type) {
       // fires after the user has paid
       case 'checkout.session.completed':
-        await handleCheckoutCompleted(event.data.object as Stripe.Checkout.Session)
+        await handleCheckoutSessionCompleted(event.data.object as Stripe.Checkout.Session)
         break
 
       case 'invoice.payment_succeeded':
-        await handlePaymentSucceeded(event.data.object as Stripe.Invoice)
-        break
+        const invoice = event.data.object as Stripe.Invoice
 
+        // Only handle subscription invoices, but skip initial subscription creation
+        if ((invoice as any).subscription && invoice.billing_reason !== 'subscription_create') {
+          await handleInvoicePaymentSuccess(invoice)
+        }
+        break
       case 'invoice.payment_failed':
-        await handlePaymentFailed(event.data.object as Stripe.Invoice)
+        await handleInvoicePaymentFailed(event.data.object as Stripe.Invoice)
         break
 
       case 'customer.subscription.updated':
-        await handleSubscriptionUpdated(event.data.object as Stripe.Subscription)
+        console.log('CUSTOMER SUBSCRIPTION UPDATED')
+        await handleCustomerSubscriptionUpdated(event.data.object as Stripe.Subscription)
         break
-
-      case 'customer.subscription.created':
-        await handleSubscriptionCreated(event.data.object as Stripe.Subscription)
-        break
-
       case 'customer.subscription.deleted':
-        await handleSubscriptionDeleted(event.data.object as Stripe.Subscription)
+        await handleCustomerSubscriptionDeleted(event.data.object as Stripe.Subscription)
         break
 
+      case 'payment_intent.payment_failed':
+        await handlePaymentIntentPaymentFailed(event.data.object as Stripe.PaymentIntent)
+        break
       default:
         console.log(`Unhandled event type ${event.type}`)
     }

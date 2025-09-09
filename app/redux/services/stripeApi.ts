@@ -11,61 +11,17 @@ export const stripeApi = api.injectEndpoints({
         method: 'POST',
         body: { planId, userId }
       }),
-      // Invalidate subscription cache to trigger refetch
-      invalidatesTags: ['Stripe']
+      invalidatesTags: ['Stripe', 'User']
     }),
-    getSubscriptionStatus: builder.query({
-      query: (email) => ({
-        url: 'user/subscription-status',
-        method: 'POST',
-        body: { email }
-      }),
-      providesTags: ['Stripe']
-    }),
-
-    updateSubscription: builder.mutation({
-      query: ({ email, newPlan }) => ({
-        url: 'stripe/update-subscription',
-        method: 'POST',
-        body: { email, newPlan }
-      }),
-      // Invalidate subscription cache to trigger refetch
-      invalidatesTags: ['Stripe']
-    }),
-
     cancelSubscription: builder.mutation({
       query: ({ userId }) => ({
         url: `${BASE_URL}/cancel-subscription`,
         method: 'POST',
         body: { userId }
       }),
-      invalidatesTags: ['Stripe']
-    }),
-
-    createCustomer: builder.mutation({
-      query: (email) => ({
-        url: 'stripe/create-customer',
-        method: 'POST',
-        body: { email }
-      }),
-      invalidatesTags: ['Stripe']
-    }),
-
-    createSubscription: builder.mutation({
-      query: (email) => ({
-        url: 'stripe/create-subscription',
-        method: 'POST',
-        body: { email }
-      }),
-      invalidatesTags: ['Stripe']
+      invalidatesTags: ['Stripe', 'User']
     })
   })
 })
 
-export const {
-  useCreateCheckoutSessionMutation,
-  useGetSubscriptionStatusQuery,
-  useUpdateSubscriptionMutation,
-  useCancelSubscriptionMutation,
-  useCreateCustomerMutation
-} = stripeApi
+export const { useCreateCheckoutSessionMutation, useCancelSubscriptionMutation } = stripeApi

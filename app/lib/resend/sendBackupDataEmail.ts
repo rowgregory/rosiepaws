@@ -5,7 +5,7 @@ import { NextRequest } from 'next/server'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 
-export const sendBackupEmail = async (
+export const sendBackupDataEmail = async (
   backupData: any,
   adminEmails: string | string[], // Accept both string and array
   req: NextRequest,

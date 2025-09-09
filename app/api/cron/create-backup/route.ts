@@ -1,6 +1,6 @@
 import { getUserFromHeader } from '@/app/lib/api/getUserFromheader'
 import { handleApiError } from '@/app/lib/api/handleApiError'
-import { sendBackupEmail } from '@/app/lib/resend/sendBackupData'
+import { sendBackupDataEmail } from '@/app/lib/resend/sendBackupDataEmail'
 import prisma from '@/prisma/client'
 import { sliceAdmin } from '@/public/data/api.data'
 import { NextRequest, NextResponse } from 'next/server'
@@ -85,7 +85,7 @@ export async function GET(req: NextRequest) {
     )
 
     // Email the backup file
-    await sendBackupEmail(backupData, adminEmails, req, userAuth?.userId)
+    await sendBackupDataEmail(backupData, adminEmails, req, userAuth?.userId)
 
     return NextResponse.json(
       {

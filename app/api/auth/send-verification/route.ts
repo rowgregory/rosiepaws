@@ -1,6 +1,6 @@
 import { createLog } from '@/app/lib/api/createLog'
 import { handleApiError } from '@/app/lib/api/handleApiError'
-import magicLinkTemplate from '@/app/lib/email-templates/magic-link'
+import magicLinkTemplate from '@/app/lib/email-templates/magic-link-template'
 import { sliceAuth } from '@/public/data/api.data'
 import { NextRequest } from 'next/server'
 import { Resend } from 'resend'

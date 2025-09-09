@@ -1,4 +1,4 @@
-import React, { FC } from 'react'
+import React, { FC, useState } from 'react'
 import { setOpenSubscriptionModal } from '@/app/redux/features/appSlice'
 import { useAppDispatch } from '@/app/redux/store'
 import { useCancelSubscriptionMutation, useCreateCheckoutSessionMutation } from '@/app/redux/services/stripeApi'
@@ -13,24 +13,26 @@ interface IPricingCard {
 const PricingCard: FC<IPricingCard> = ({ plan, user }) => {
   const dispatch = useAppDispatch()
   const { push } = useRouter()
-
-  const [createCheckoutSession, { isLoading: isCreating }] = useCreateCheckoutSessionMutation()
+  const [createCheckoutSession] = useCreateCheckoutSessionMutation()
   const [cancelSubscription, { isLoading: isCancelling }] = useCancelSubscriptionMutation()
+  const [isLoading, setIsLoading] = useState(false)
 
   // Determine if this is the user's current plan using the boolean flags
   const activePlan = user?.stripeSubscription?.plan?.toLowerCase() === plan.id
 
   const handlePlanSelect = async (planId: string) => {
+    setIsLoading(true)
     const response = await createCheckoutSession({ planId, userId: user?.id }).unwrap()
-    push(response.url)
+    if (response.url) {
+      push(response.url)
+    }
   }
 
   const handleCancelSubscription = async () => {
+    setIsLoading(true)
     const response = await cancelSubscription({ userId: user?.id }).unwrap()
     push(response.url)
   }
-
-  const isLoading = isCreating || isCancelling
 
   return (
     <div
@@ -185,10 +187,19 @@ const PricingCard: FC<IPricingCard> = ({ plan, user }) => {
         {/* CTA Button */}
         {plan.id !== 'free' ? (
           <button
-            onClick={() => (activePlan ? dispatch(setOpenSubscriptionModal()) : handlePlanSelect(plan.id))}
-            disabled={isLoading || activePlan}
+            onClick={() => {
+              // If user has cancelled this plan, allow reactivation
+              if (activePlan && user?.stripeSubscription?.cancelAtPeriodEnd) {
+                handlePlanSelect(plan.id) // Reactivate the same plan
+              } else if (activePlan) {
+                dispatch(setOpenSubscriptionModal()) // Manage current active plan
+              } else {
+                handlePlanSelect(plan.id) // Upgrade/switch to new plan
+              }
+            }}
+            disabled={isLoading || (activePlan && !user?.stripeSubscription?.cancelAtPeriodEnd)}
             className={`w-full py-3 px-4 rounded-md font-medium transition-colors disabled:cursor-not-allowed ${
-              activePlan
+              activePlan && !user?.stripeSubscription?.cancelAtPeriodEnd
                 ? plan.id === 'comfort'
                   ? 'bg-blue-100 text-blue-700 border border-blue-300'
                   : 'bg-purple-100 text-purple-700 border border-purple-300'
@@ -204,6 +215,8 @@ const PricingCard: FC<IPricingCard> = ({ plan, user }) => {
                 <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
                 Processing...
               </div>
+            ) : activePlan && user?.stripeSubscription?.cancelAtPeriodEnd ? (
+              'Reactivate Plan'
             ) : activePlan ? (
               'Current Plan'
             ) : user?.isFreeUser ? (
@@ -221,11 +234,11 @@ const PricingCard: FC<IPricingCard> = ({ plan, user }) => {
           </div>
         ) : user?.isComfortUser || user?.isLegacyUser ? (
           <button
-            disabled={user?.stripeSubscription?.cancelAtPeriodEnd}
+            disabled={user?.stripeSubscription?.cancelAtPeriodEnd || isCancelling}
             onClick={() => handleCancelSubscription()} // This would trigger cancellation
             className="w-full py-3 px-4 rounded-md font-medium bg-red-600 hover:bg-red-700 text-white transition-colors disabled:cursor-not-allowed"
           >
-            Cancel Subscription
+            {isCancelling ? 'Cancelling...' : 'Cancel Subscription'}
           </button>
         ) : (
           <div className="w-full py-3 px-4 rounded-md text-center font-medium bg-gray-100 text-gray-500">Free</div>

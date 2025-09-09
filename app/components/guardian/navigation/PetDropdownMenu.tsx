@@ -210,7 +210,11 @@ const PetDropdownMenu: FC<IPetDropdownMenu> = ({
                   </motion.div>
                   <div className="flex-1 flex items-center gap-x-1">
                     <h3 className="text-sm font-medium">Create Pet Profile</h3>
-                    <TokenCounter tokens={petCreateTokenCost} id="pink-to-orange" color1="#ed4797" color2="#f97320" />
+                    {user?.isLegacyUser ? (
+                      <span>♾️</span>
+                    ) : (
+                      <TokenCounter tokens={petCreateTokenCost} id="pink-to-orange" color1="#ed4797" color2="#f97320" />
+                    )}
                   </div>
                 </motion.div>
               </Link>

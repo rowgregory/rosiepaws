@@ -60,6 +60,7 @@ export interface AppStatePayload {
   tokensNeeded: number
   accessibility: boolean
   navigation: boolean
+  changePlanModal: boolean
 }
 
 const mediaDataInitialState: ModalUploaderPayload = {
@@ -109,7 +110,8 @@ const initialAppState: AppStatePayload = {
   notEnoughTokensModal: false,
   tokensNeeded: 0,
   accessibility: false,
-  navigation: false
+  navigation: false,
+  changePlanModal: false
 }
 
 interface FetchAppDataPayload {
@@ -267,6 +269,12 @@ export const appSlice = createSlice({
     },
     setToggleNavigation: (state, { payload }) => {
       state.navigation = !payload
+    },
+    setOpenChangePlanModal: (state) => {
+      state.changePlanModal = true
+    },
+    setCloseChangePlanModal: (state) => {
+      state.changePlanModal = false
     }
   },
   extraReducers: (builder) => {
@@ -336,5 +344,7 @@ export const {
   setCloseNotEnoughTokensModal,
   setToggleAccessibilityDrawer,
   setCloseAccessibilityDrawer,
-  setToggleNavigation
+  setToggleNavigation,
+  setOpenChangePlanModal,
+  setCloseChangePlanModal
 } = appSlice.actions

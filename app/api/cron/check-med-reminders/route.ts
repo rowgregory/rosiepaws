@@ -1,4 +1,4 @@
-import sendMedicationReminder from '@/app/lib/resend/sendMedicationReminder'
+import sendMedicationReminder from '@/app/lib/resend/sendMedicationReminderEmail'
 import { createLog } from '@/app/lib/api/createLog'
 import prisma from '@/prisma/client'
 import { slicePet } from '@/public/data/api.data'

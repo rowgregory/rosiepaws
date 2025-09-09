@@ -7,8 +7,10 @@ import { NextRequest, NextResponse } from 'next/server'
 const stripe = createStripeInstance()
 
 export async function POST(req: NextRequest) {
+  let userId
   try {
-    const { userId } = await req.json()
+    const body = await req.json()
+    userId = body.userId
 
     // Get user's subscription
     const user = await prisma.user.findUnique({
@@ -38,16 +40,20 @@ export async function POST(req: NextRequest) {
       cancel_at_period_end: true
     })
 
-    // Update database
-    await prisma.stripeSubscription.update({
-      where: { id: user.stripeSubscription.id },
-      data: {
-        cancelAtPeriodEnd: true,
-        status: canceledSubscription.status // Keep status in sync
-      }
-    })
+    const rawPeriodEnd = (canceledSubscription as any).current_period_end
+    const periodEnd = rawPeriodEnd
+      ? new Date(rawPeriodEnd * 1000)
+      : new Date(user.stripeSubscription.currentPeriodEnd || Date.now() + 30 * 24 * 60 * 60 * 1000)
 
-    const periodEnd = new Date((canceledSubscription as any).current_period_end * 1000)
+    await createLog('info', 'Subscription cancellation scheduled', {
+      location: ['api - POST /api/stripe/cancel-subscription'],
+      name: 'SubscriptionCancellationScheduled',
+      timestamp: new Date().toISOString(),
+      userId: userId,
+      subscriptionId: subscriptionId,
+      accessUntil: periodEnd.toISOString(),
+      userEmail: user.email
+    })
 
     return NextResponse.json({
       success: true,
@@ -64,7 +70,8 @@ export async function POST(req: NextRequest) {
       url: req.url,
       method: req.method,
       stripeErrorCode: error.code || null,
-      stripeErrorType: error.type || null
+      stripeErrorType: error.type || null,
+      userId
     })
     return NextResponse.json({ error: 'Failed to cancel subscription' }, { status: 500 })
   }

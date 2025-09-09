@@ -23,16 +23,8 @@ export const stripeSlice = createSlice({
     builder.addMatcher(stripeApi.endpoints.createCheckoutSession.matchFulfilled, (state) => {
       state.loading = false
     })
-    builder.addMatcher(stripeApi.endpoints.createCustomer.matchFulfilled, (state) => {
-      state.loading = false
-    })
+
     builder.addMatcher(stripeApi.endpoints.cancelSubscription.matchFulfilled, (state) => {
-      state.loading = false
-    })
-    builder.addMatcher(stripeApi.endpoints.createSubscription.matchFulfilled, (state) => {
-      state.loading = false
-    })
-    builder.addMatcher(stripeApi.endpoints.updateSubscription.matchFulfilled, (state) => {
       state.loading = false
     })
   }

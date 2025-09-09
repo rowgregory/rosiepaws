@@ -1,16 +1,6 @@
-import { Resend } from 'resend'
-import { NextRequest } from 'next/server'
-import { parseStack } from 'error-stack-parser-es/lite'
-import { createLog } from '../api/createLog'
+import { IMedication } from '@/app/types'
 
-const resend = new Resend(process.env.RESEND_API_KEY)
-
-const sendMedicationReminder = async (medication: any, currentTime: string, req: NextRequest, ownerId: string) => {
-  const { data, error } = await resend.emails.send({
-    from: `${process.env.RESEND_FROM_EMAIL}`,
-    to: [medication.pet.owner.email],
-    subject: `🐾 Medication Reminder: ${medication.drugName} for ${medication.pet.name}`,
-    html: `
+const medicationReminderTemplate = (medication: IMedication, currentTime: string) => `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
       <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; border-radius: 10px 10px 0 0; text-align: center;">
         <h1 style="margin: 0; font-size: 24px;">🐾 Medication Reminder</h1>
@@ -76,44 +66,5 @@ const sendMedicationReminder = async (medication: any, currentTime: string, req:
       </div>
     </div>
   `
-  })
 
-  // Check for errors first
-  if (error) {
-    await createLog('error', `Fail to send medication reminder email: ${error.message}`, {
-      errorLocation: parseStack(JSON.stringify(error)),
-      errorMessage: error.message,
-      errorName: error.name || 'UnknownError',
-      timestamp: new Date().toISOString(),
-      url: req.url,
-      method: req.method,
-      ownerId
-    })
-    throw new Error(`Resend API error: ${error.message || 'Unknown error'}`)
-  }
-
-  // Check if data is null (which indicates failure)
-  if (!data) {
-    await createLog('error', `RESEND RETURNED NULL DATA`, {
-      errorLocation: parseStack(JSON.stringify(error)),
-      timestamp: new Date().toISOString(),
-      url: req.url,
-      method: req.method,
-      ownerId
-    })
-    throw new Error('Resend returned null data - email send failed')
-  }
-
-  await createLog('info', 'Medication reminder sent successfully', {
-    location: ['api route - POST /api/pet/check-med-reminders'],
-    name: 'ResendSuccess',
-    timestamp: new Date().toISOString(),
-    url: req.url,
-    method: req.method,
-    message: `Sent reminder for ${medication.drugName} to ${medication.pet.name}`,
-    ownerId
-  })
-  return data
-}
-
-export default sendMedicationReminder
+export default medicationReminderTemplate

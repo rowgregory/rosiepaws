@@ -11,6 +11,7 @@ export interface UserStatePayload {
   usersCount: number
   noUsers: boolean
   tokenTransactions: any[]
+  isWaitingForWebhook: boolean
 }
 
 const userInitialState: UserStatePayload = {
@@ -21,7 +22,8 @@ const userInitialState: UserStatePayload = {
   user: null,
   usersCount: 0,
   noUsers: false,
-  tokenTransactions: []
+  tokenTransactions: [],
+  isWaitingForWebhook: false
 }
 
 export const userSlice = createSlice({
@@ -57,6 +59,12 @@ export const userSlice = createSlice({
         state.user.tokens = payload.tokens
         state.user.tokensUsed = payload.tokensUsed
       }
+    },
+    setIsWaitingForWebhook: (state) => {
+      state.isWaitingForWebhook = true
+    },
+    setIsNotWaitingForWebhook: (state) => {
+      state.isWaitingForWebhook = false
     }
   },
   extraReducers: (builder) => {
@@ -92,5 +100,7 @@ export const {
   resetUserError,
   removeUserFromState,
   updateUserTokens,
-  setTokenTransactions
+  setTokenTransactions,
+  setIsNotWaitingForWebhook,
+  setIsWaitingForWebhook
 } = userSlice.actions
