@@ -12,6 +12,8 @@ import validateWaterForm from '@/app/validations/validateWaterForm'
 import { waterInitialState } from '@/app/lib/initial-states/water'
 import Backdrop from '@/app/components/common/Backdrop'
 import Drawer from '@/app/components/common/Drawer'
+import { setOpenSlideMessage } from '@/app/redux/features/appSlice'
+import SlideMessage from '@/app/components/auth/SlideMessage'
 
 const WaterDrawer = () => {
   const dispatch = useAppDispatch()
@@ -19,18 +21,12 @@ const WaterDrawer = () => {
   const { waterForm } = useAppSelector((state: RootState) => state.form)
 
   const { handleInput, setErrors } = createFormActions('waterForm', dispatch)
-  const [updateWater, { isLoading: isUpdating }] = useUpdateWaterMutation()
-  const [createWater, { isLoading: isCreating }] = useCreateWaterMutation()
-
-  const resetInputs = () =>
-    dispatch(setInputs({ formName: 'waterForm', data: { ...waterInitialState, isUpdating: false } }))
-  const closeDrawer = () => {
-    resetInputs()
-    dispatch(setCloseWaterDrawer())
-  }
+  const [createWater, { isLoading: isCreating, error: errorCreate }] = useCreateWaterMutation() as any
+  const [updateWater, { isLoading: isUpdating, error: errorUpdate }] = useUpdateWaterMutation() as any
 
   const isLoading = isUpdating || isCreating
   const isUpdateMode = waterForm?.inputs?.isUpdating
+  const error = errorCreate?.data?.message || errorUpdate?.data?.message
 
   const prepareWaterData = () => ({
     petId: waterForm?.inputs?.petId,
@@ -63,41 +59,53 @@ const WaterDrawer = () => {
         await createWater(waterData).unwrap()
       }
     } catch {
+      dispatch(setOpenSlideMessage())
     } finally {
       resetInputs()
     }
   }
 
+  const resetInputs = () =>
+    dispatch(setInputs({ formName: 'waterForm', data: { ...waterInitialState, isUpdating: false } }))
+
+  const closeDrawer = () => {
+    resetInputs()
+    dispatch(setCloseWaterDrawer())
+  }
+
   return (
-    <AnimatePresence>
-      {waterDrawer && (
-        <>
-          <Backdrop close={closeDrawer} />
-          <Drawer>
-            <AnimatedDrawerHeader
-              title={isUpdateMode ? 'Edit Water' : 'Add Water'}
-              subtitle="Track your pet’s daily hydration"
-              Icon={Droplets}
-              closeDrawer={closeDrawer}
-              color="text-blue-500"
-              iconGradient="from-blue-500 to-cyan-500"
-            />
-            <div className="flex flex-col lg:flex-row">
-              <WaterForm
-                inputs={waterForm?.inputs}
-                errors={waterForm?.errors}
-                handleInput={handleInput}
-                close={closeDrawer}
-                handleSubmit={handleSubmit}
-                loading={isLoading}
-                isUpdating={isUpdateMode}
+    <>
+      <SlideMessage message={error} type="Error" />
+      <AnimatePresence>
+        {waterDrawer && (
+          <>
+            <Backdrop close={closeDrawer} />
+            <Drawer>
+              <AnimatedDrawerHeader
+                title={isUpdateMode ? 'Edit Water' : 'Add Water'}
+                subtitle="Track your pet’s daily hydration"
+                Icon={Droplets}
+                closeDrawer={closeDrawer}
+                color="text-blue-500"
+                iconGradient="from-blue-500 to-cyan-500"
               />
-              <WaterGuide />
-            </div>
-          </Drawer>
-        </>
-      )}
-    </AnimatePresence>
+              <div className="flex flex-col lg:flex-row">
+                <WaterForm
+                  inputs={waterForm?.inputs}
+                  errors={waterForm?.errors}
+                  handleInput={handleInput}
+                  close={closeDrawer}
+                  handleSubmit={handleSubmit}
+                  loading={isLoading}
+                  isUpdating={isUpdateMode}
+                />
+                <WaterGuide />
+              </div>
+            </Drawer>
+          </>
+        )}
+      </AnimatePresence>
+    </>
   )
 }
 

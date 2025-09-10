@@ -12,17 +12,20 @@ import { setCloseAppointmentDrawer } from '@/app/redux/features/appointmentSlice
 import { appointmentInitialState } from '@/app/lib/initial-states/appointment'
 import Backdrop from '@/app/components/common/Backdrop'
 import Drawer from '@/app/components/common/Drawer'
+import SlideMessage from '@/app/components/auth/SlideMessage'
+import { setOpenSlideMessage } from '@/app/redux/features/appSlice'
 
 const AppointmentDrawer = () => {
   const dispatch = useAppDispatch()
   const { appointmentDrawer } = useAppSelector((state: RootState) => state.appointment)
   const { appointmentForm } = useAppSelector((state: RootState) => state.form)
   const { handleInput, setErrors } = createFormActions('appointmentForm', dispatch)
-  const [updateAppointment, { isLoading: isUpdating }] = useUpdateAppointmentMutation()
-  const [createAppointment, { isLoading: isCreating }] = useCreateAppointmentMutation()
+  const [createAppointment, { isLoading: isCreating, error: errorCreate }] = useCreateAppointmentMutation() as any
+  const [updateAppointment, { isLoading: isUpdating, error: errorUpdate }] = useUpdateAppointmentMutation() as any
 
   const isLoading = isUpdating || isCreating
   const isUpdateMode = appointmentForm?.inputs?.isUpdating
+  const error = errorCreate?.data?.message || errorUpdate?.data?.message
 
   const prepareAppointmentData = () => ({
     petId: appointmentForm?.inputs?.petId,
@@ -56,6 +59,7 @@ const AppointmentDrawer = () => {
         await createAppointment(appointmentData).unwrap()
       }
     } catch {
+      dispatch(setOpenSlideMessage())
     } finally {
       resetInputs()
     }
@@ -70,35 +74,38 @@ const AppointmentDrawer = () => {
   }
 
   return (
-    <AnimatePresence>
-      {appointmentDrawer && (
-        <>
-          <Backdrop close={closeDrawer} />
-          <Drawer>
-            <AnimatedDrawerHeader
-              title={isUpdateMode ? 'Edit Appointment' : 'Add Appointment'}
-              subtitle="Track your pet's appointments"
-              Icon={Calendar}
-              closeDrawer={closeDrawer}
-              color="text-red-500"
-              iconGradient="from-red-500 to-orange-500"
-            />
-            <div className="flex flex-col lg:flex-row">
-              <AppointmentForm
-                inputs={appointmentForm?.inputs}
-                errors={appointmentForm?.errors}
-                handleInput={handleInput}
-                close={closeDrawer}
-                handleSubmit={handleSubmit}
-                loading={isLoading}
-                isUpdating={isUpdateMode}
+    <>
+      <SlideMessage message={error} type="Error" />
+      <AnimatePresence>
+        {appointmentDrawer && (
+          <>
+            <Backdrop close={closeDrawer} />
+            <Drawer>
+              <AnimatedDrawerHeader
+                title={isUpdateMode ? 'Edit Appointment' : 'Add Appointment'}
+                subtitle="Track your pet's appointments"
+                Icon={Calendar}
+                closeDrawer={closeDrawer}
+                color="text-red-500"
+                iconGradient="from-red-500 to-orange-500"
               />
-              <AppointmentGuide />
-            </div>
-          </Drawer>
-        </>
-      )}
-    </AnimatePresence>
+              <div className="flex flex-col lg:flex-row">
+                <AppointmentForm
+                  inputs={appointmentForm?.inputs}
+                  errors={appointmentForm?.errors}
+                  handleInput={handleInput}
+                  close={closeDrawer}
+                  handleSubmit={handleSubmit}
+                  loading={isLoading}
+                  isUpdating={isUpdateMode}
+                />
+                <AppointmentGuide />
+              </div>
+            </Drawer>
+          </>
+        )}
+      </AnimatePresence>{' '}
+    </>
   )
 }
 

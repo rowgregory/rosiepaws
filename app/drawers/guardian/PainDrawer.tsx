@@ -12,17 +12,20 @@ import { useCreatePainScoreMutation, useUpdatePainScoreMutation } from '@/app/re
 import { painScoreInitialState } from '@/app/lib/initial-states/pain-score'
 import Backdrop from '@/app/components/common/Backdrop'
 import Drawer from '@/app/components/common/Drawer'
+import SlideMessage from '@/app/components/auth/SlideMessage'
+import { setOpenSlideMessage } from '@/app/redux/features/appSlice'
 
 const PainDrawer = () => {
   const dispatch = useAppDispatch()
   const { painDrawer } = useAppSelector((state: RootState) => state.painScore)
   const { painForm } = useAppSelector((state: RootState) => state.form)
   const { handleInput, setErrors } = createFormActions('painForm', dispatch)
-  const [updatePain, { isLoading: isUpdating }] = useUpdatePainScoreMutation()
-  const [createPain, { isLoading: isCreating }] = useCreatePainScoreMutation()
+  const [createPain, { isLoading: isCreating, error: errorCreate }] = useCreatePainScoreMutation() as any
+  const [updatePain, { isLoading: isUpdating, error: errorUpdate }] = useUpdatePainScoreMutation() as any
 
   const isLoading = isUpdating || isCreating
   const isUpdateMode = painForm?.inputs?.isUpdating
+  const error = errorCreate?.data?.message || errorUpdate?.data?.message
 
   const preparePainData = () => ({
     petId: painForm.inputs.petId,
@@ -54,6 +57,7 @@ const PainDrawer = () => {
         await createPain(painData).unwrap()
       }
     } catch {
+      dispatch(setOpenSlideMessage())
     } finally {
       resetInputs()
     }
@@ -68,35 +72,38 @@ const PainDrawer = () => {
   }
 
   return (
-    <AnimatePresence>
-      {painDrawer && (
-        <>
-          <Backdrop close={closeDrawer} />
-          <Drawer>
-            <AnimatedDrawerHeader
-              title={isUpdateMode ? 'Edit Pain' : 'Add Pain'}
-              subtitle="Asses your pet's pain level"
-              Icon={Activity}
-              closeDrawer={closeDrawer}
-              color="text-red-500"
-              iconGradient="from-red-500 to-orange-500"
-            />
-            <div className="flex flex-col lg:flex-row">
-              <PainScoreForm
-                inputs={painForm?.inputs}
-                errors={painForm?.errors}
-                handleInput={handleInput}
-                close={closeDrawer}
-                handleSubmit={handleSubmit}
-                loading={isLoading}
-                isUpdating={isUpdateMode}
+    <>
+      <SlideMessage message={error} type="Error" />
+      <AnimatePresence>
+        {painDrawer && (
+          <>
+            <Backdrop close={closeDrawer} />
+            <Drawer>
+              <AnimatedDrawerHeader
+                title={isUpdateMode ? 'Edit Pain' : 'Add Pain'}
+                subtitle="Asses your pet's pain level"
+                Icon={Activity}
+                closeDrawer={closeDrawer}
+                color="text-red-500"
+                iconGradient="from-red-500 to-orange-500"
               />
-              <GuardianPainAssessmentChart />
-            </div>
-          </Drawer>
-        </>
-      )}
-    </AnimatePresence>
+              <div className="flex flex-col lg:flex-row">
+                <PainScoreForm
+                  inputs={painForm?.inputs}
+                  errors={painForm?.errors}
+                  handleInput={handleInput}
+                  close={closeDrawer}
+                  handleSubmit={handleSubmit}
+                  loading={isLoading}
+                  isUpdating={isUpdateMode}
+                />
+                <GuardianPainAssessmentChart />
+              </div>
+            </Drawer>
+          </>
+        )}
+      </AnimatePresence>
+    </>
   )
 }
 

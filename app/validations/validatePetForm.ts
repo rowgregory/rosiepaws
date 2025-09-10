@@ -2,7 +2,8 @@ interface ValidationErrors {
   name: string
   type: string
   breed: string
-  age: string
+  ageYears: string
+  ageMonths: string
   gender: string
   weight: string
   spayedNeutered: string
@@ -20,8 +21,11 @@ export const validatePetForm = (inputs: ValidationErrors, setErrors: any) => {
   if (!inputs?.breed?.trim()) {
     newErrors.breed = 'Breed is required'
   }
-  if (!inputs?.age?.trim()) {
-    newErrors.age = 'Age is required'
+  if (!inputs?.ageYears?.trim()) {
+    newErrors.ageYears = 'Years is required'
+  }
+  if (!inputs?.ageMonths?.trim()) {
+    newErrors.ageMonths = 'Months is required'
   }
   if (!inputs?.gender?.trim()) {
     newErrors.gender = 'Gender is required'
@@ -44,7 +48,8 @@ export const isPetFormValid = (inputs: ValidationErrors) => {
     !!inputs.name?.trim() &&
     !!inputs.type?.trim() &&
     !!inputs.breed?.trim() &&
-    !!inputs.age?.trim() &&
+    !!inputs.ageYears?.trim() &&
+    !!inputs.ageMonths?.trim() &&
     !!inputs.gender?.trim() &&
     !!inputs.weight?.trim() &&
     !!inputs.spayedNeutered?.trim()

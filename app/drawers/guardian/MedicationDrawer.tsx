@@ -14,6 +14,8 @@ import { Pill } from 'lucide-react'
 import { medicationInitialState } from '@/app/lib/initial-states/medication'
 import Backdrop from '@/app/components/common/Backdrop'
 import Drawer from '@/app/components/common/Drawer'
+import { setOpenSlideMessage } from '@/app/redux/features/appSlice'
+import SlideMessage from '@/app/components/auth/SlideMessage'
 
 const MedicationDrawer = () => {
   const dispatch = useAppDispatch()
@@ -21,18 +23,12 @@ const MedicationDrawer = () => {
   const { medicationForm } = useAppSelector((state: RootState) => state.form)
 
   const { handleInput, setErrors } = createFormActions('medicationForm', dispatch)
-  const [updateMedication, { isLoading: isUpdating }] = useUpdateMedicationMutation()
-  const [createMedication, { isLoading: isCreating }] = useCreateMedicationMutation()
-
-  const resetInputs = () =>
-    dispatch(setInputs({ formName: 'medicationForm', data: { ...medicationInitialState, isUpdating: false } }))
-  const closeDrawer = () => {
-    resetInputs()
-    dispatch(setCloseMedicationDrawer())
-  }
+  const [createMedication, { isLoading: isCreating, error: errorCreate }] = useCreateMedicationMutation() as any
+  const [updateMedication, { isLoading: isUpdating, error: errorUpdate }] = useUpdateMedicationMutation() as any
 
   const isLoading = isUpdating || isCreating
   const isUpdateMode = medicationForm?.inputs?.isUpdating
+  const error = errorCreate?.data?.message || errorUpdate?.data?.message
 
   const prepareMedicationData = () => ({
     petId: medicationForm?.inputs.petId,
@@ -69,41 +65,53 @@ const MedicationDrawer = () => {
         await createMedication(medicationData).unwrap()
       }
     } catch {
+      dispatch(setOpenSlideMessage())
     } finally {
       resetInputs()
     }
   }
 
+  const resetInputs = () =>
+    dispatch(setInputs({ formName: 'medicationForm', data: { ...medicationInitialState, isUpdating: false } }))
+
+  const closeDrawer = () => {
+    resetInputs()
+    dispatch(setCloseMedicationDrawer())
+  }
+
   return (
-    <AnimatePresence>
-      {medicationDrawer && (
-        <>
-          <Backdrop close={closeDrawer} />
-          <Drawer>
-            <AnimatedDrawerHeader
-              title={isUpdateMode ? 'Edit Medication' : 'Add Medication'}
-              subtitle="Asses your pet's pain level"
-              Icon={Pill}
-              closeDrawer={closeDrawer}
-              color="text-indigo-500"
-              iconGradient="from-indigo-500 to-purple-500"
-            />
-            <div className="flex flex-col lg:flex-row">
-              <MedicationForm
-                inputs={medicationForm?.inputs}
-                errors={medicationForm?.errors}
-                handleInput={handleInput}
-                close={closeDrawer}
-                handleSubmit={handleSubmit}
-                loading={isLoading}
-                isUpdating={isUpdateMode}
+    <>
+      <SlideMessage message={error} type="Error" />
+      <AnimatePresence>
+        {medicationDrawer && (
+          <>
+            <Backdrop close={closeDrawer} />
+            <Drawer>
+              <AnimatedDrawerHeader
+                title={isUpdateMode ? 'Edit Medication' : 'Add Medication'}
+                subtitle="Asses your pet's pain level"
+                Icon={Pill}
+                closeDrawer={closeDrawer}
+                color="text-indigo-500"
+                iconGradient="from-indigo-500 to-purple-500"
               />
-              <MedicationGuide />
-            </div>
-          </Drawer>
-        </>
-      )}
-    </AnimatePresence>
+              <div className="flex flex-col lg:flex-row">
+                <MedicationForm
+                  inputs={medicationForm?.inputs}
+                  errors={medicationForm?.errors}
+                  handleInput={handleInput}
+                  close={closeDrawer}
+                  handleSubmit={handleSubmit}
+                  loading={isLoading}
+                  isUpdating={isUpdateMode}
+                />
+                <MedicationGuide />
+              </div>
+            </Drawer>
+          </>
+        )}
+      </AnimatePresence>
+    </>
   )
 }
 

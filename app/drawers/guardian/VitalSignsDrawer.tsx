@@ -12,17 +12,20 @@ import VitalSignsForm from '@/app/forms/VitalSignsForm'
 import { vitalSignsInitialState } from '@/app/lib/initial-states/vital-signs'
 import Backdrop from '@/app/components/common/Backdrop'
 import Drawer from '@/app/components/common/Drawer'
+import { setOpenSlideMessage } from '@/app/redux/features/appSlice'
+import SlideMessage from '@/app/components/auth/SlideMessage'
 
 const VitalSignsDrawer = () => {
   const dispatch = useAppDispatch()
   const { vitalSignsDrawer } = useAppSelector((state: RootState) => state.vitalSigns)
   const { vitalSignsForm } = useAppSelector((state: RootState) => state.form)
   const { handleInput, setErrors } = createFormActions('vitalSignsForm', dispatch)
-  const [updateVitalSigns, { isLoading: isUpdating }] = useUpdateVitalSignsMutation()
-  const [createVitalSigns, { isLoading: isCreating }] = useCreateVitalSignsMutation()
+  const [createVitalSigns, { isLoading: isCreating, error: errorCreate }] = useCreateVitalSignsMutation() as any
+  const [updateVitalSigns, { isLoading: isUpdating, error: errorUpdate }] = useUpdateVitalSignsMutation() as any
 
   const isLoading = isUpdating || isCreating
   const isUpdateMode = vitalSignsForm?.inputs?.isUpdating
+  const error = errorCreate?.data?.message || errorUpdate?.data?.message
 
   const prepareVitalSignsData = () => ({
     petId: vitalSignsForm?.inputs?.petId,
@@ -61,6 +64,7 @@ const VitalSignsDrawer = () => {
         await createVitalSigns(vitalSignsData).unwrap()
       }
     } catch {
+      dispatch(setOpenSlideMessage())
     } finally {
       resetInputs()
     }
@@ -75,35 +79,38 @@ const VitalSignsDrawer = () => {
   }
 
   return (
-    <AnimatePresence>
-      {vitalSignsDrawer && (
-        <>
-          <Backdrop close={closeDrawer} />
-          <Drawer>
-            <AnimatedDrawerHeader
-              title="Log Vital Signs"
-              subtitle="Track your pet's vital signs"
-              Icon={TreePine}
-              closeDrawer={closeDrawer}
-              color="text-lime-500"
-              iconGradient="from-lime-500 to-yellow-500"
-            />
-            <div className="flex flex-col lg:flex-row">
-              <VitalSignsForm
-                inputs={vitalSignsForm?.inputs}
-                errors={vitalSignsForm?.errors}
-                handleInput={handleInput}
-                close={closeDrawer}
-                handleSubmit={handleSubmit}
-                loading={isLoading}
-                isUpdating={isUpdateMode}
+    <>
+      <SlideMessage message={error} type="Error" />
+      <AnimatePresence>
+        {vitalSignsDrawer && (
+          <>
+            <Backdrop close={closeDrawer} />
+            <Drawer>
+              <AnimatedDrawerHeader
+                title="Log Vital Signs"
+                subtitle="Track your pet's vital signs"
+                Icon={TreePine}
+                closeDrawer={closeDrawer}
+                color="text-lime-500"
+                iconGradient="from-lime-500 to-yellow-500"
               />
-              <VitalSignsGuide />
-            </div>
-          </Drawer>
-        </>
-      )}
-    </AnimatePresence>
+              <div className="flex flex-col lg:flex-row">
+                <VitalSignsForm
+                  inputs={vitalSignsForm?.inputs}
+                  errors={vitalSignsForm?.errors}
+                  handleInput={handleInput}
+                  close={closeDrawer}
+                  handleSubmit={handleSubmit}
+                  loading={isLoading}
+                  isUpdating={isUpdateMode}
+                />
+                <VitalSignsGuide />
+              </div>
+            </Drawer>
+          </>
+        )}
+      </AnimatePresence>{' '}
+    </>
   )
 }
 

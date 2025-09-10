@@ -58,7 +58,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Check if user has enough tokens
-    if (!owner.isLegacyUser && owner.tokens < petCreateTokenCost) {
+    if (!owner?.isLegacyUser && owner?.tokens < petCreateTokenCost) {
       await createLog('warning', 'Insufficient tokens for pet creation', {
         location: ['api route - POST /api/pet/create'],
         name: 'InsufficientTokens',
@@ -67,11 +67,11 @@ export async function POST(req: NextRequest) {
         method: req.method,
         userId: userAuth.userId,
         requiredTokens: petCreateTokenCost,
-        availableTokens: owner.tokens
+        availableTokens: owner?.tokens
       })
       return NextResponse.json(
         {
-          message: `Insufficient tokens. Required: ${petCreateTokenCost}, Available: ${owner.tokens}`,
+          message: `Insufficient tokens. Required: ${petCreateTokenCost}, Available: ${owner?.tokens}`,
           sliceName: slicePet
         },
         { status: 400 }
@@ -107,7 +107,7 @@ export async function POST(req: NextRequest) {
         const updatedUser = await tx.user.update({
           where: { id: userAuth.userId },
           data: {
-            ...(!owner.isLegacyUser && { tokens: { decrement: petCreateTokenCost } }),
+            ...(!owner?.isLegacyUser && { tokens: { decrement: petCreateTokenCost } }),
             tokensUsed: { increment: petCreateTokenCost }
           }
         })
@@ -117,8 +117,8 @@ export async function POST(req: NextRequest) {
           data: {
             userId: userAuth.userId!,
             amount: -petCreateTokenCost, // Negative for debit
-            type: owner.isLegacyUser ? 'PET_CREATION_LEGACY' : 'PET_CREATION',
-            description: `Pet creation${owner.isLegacyUser ? ' (Usage Tracking Only)' : ''}`,
+            type: owner?.isLegacyUser ? 'PET_CREATION_LEGACY' : 'PET_CREATION',
+            description: `Pet creation${owner?.isLegacyUser ? ' (Usage Tracking Only)' : ''}`,
             metadata: {
               petId: newPet.id,
               petName: name,

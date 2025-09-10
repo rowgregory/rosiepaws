@@ -17,26 +17,7 @@ import { MotionLink } from '../../common/MotionLink'
 import exportUserPetsData from '@/app/lib/utils/exports/exportUserPetsData'
 import Picture from '../../common/Picture'
 import { formatDateShort } from '@/app/lib/utils'
-
-const parseAgeString = (ageString: string): { ageYears: string; ageMonths: string } => {
-  // Return empty values if no string provided
-  if (!ageString || typeof ageString !== 'string') {
-    return { ageYears: '', ageMonths: '' }
-  }
-
-  // Clean the string - remove extra spaces and make lowercase
-  const cleanString = ageString.trim().toLowerCase()
-
-  // Extract years (always present)
-  const yearMatch = cleanString.match(/(\d+)\s*(?:years?|yrs?)/)
-  const ageYears = yearMatch ? yearMatch[1] : ''
-
-  // Extract months (always present, even if 0)
-  const monthMatch = cleanString.match(/(\d+)\s*(?:months?|mos?)/)
-  const ageMonths = monthMatch ? monthMatch[1] : '0'
-
-  return { ageYears, ageMonths }
-}
+import parseAgeString from '@/app/lib/utils/public/my-pets/pets/parseAgeString'
 
 const PetCard: FC<{ pet: Pet; index: number }> = ({ pet, index }) => {
   const dispatch = useAppDispatch()
@@ -183,9 +164,9 @@ const PetCard: FC<{ pet: Pet; index: number }> = ({ pet, index }) => {
 
           <div className="flex justify-between text-sm">
             <span className="text-gray-500">Next Appointment</span>
-            {pet.appointments[0]?.date ? (
+            {pet?.appointments?.[0]?.date ? (
               <span className="font-medium text-gray-900">
-                {formatDateShort(pet.appointments[0]?.date)} at {pet.appointments[0]?.time}
+                {formatDateShort(pet?.appointments?.[0]?.date)} at {pet?.appointments[0]?.time}
               </span>
             ) : (
               <button

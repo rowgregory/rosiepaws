@@ -15,6 +15,7 @@ import { setOpenFirstPetModal, setOpenSlideMessage } from '@/app/redux/features/
 import { deleteFileFromFirebase, uploadFileToFirebase } from '@/app/utils/firebase-helpers'
 import Backdrop from '@/app/components/common/Backdrop'
 import Drawer from '@/app/components/common/Drawer'
+import SlideMessage from '@/app/components/auth/SlideMessage'
 
 const getFormattedAge = (inputs: { ageYears: string; ageMonths: string }) => {
   const years = inputs.ageYears ? `${inputs.ageYears} ${inputs.ageYears === '1' ? 'year' : 'years'}` : ''
@@ -32,13 +33,14 @@ const PetDrawer = () => {
   const { user } = useAppSelector((state: RootState) => state.user)
   const dispatch = useAppDispatch()
   const { handleInput, setErrors, handleUploadProgress } = createFormActions('petForm', dispatch)
-  const [createPet, { isLoading: isCreating }] = useCreatePetMutation()
-  const [updatePet, { isLoading: isUpdating }] = useUpdatePetMutation()
+  const [createPet, { isLoading: isCreating, error: errorCreate }] = useCreatePetMutation() as any
+  const [updatePet, { isLoading: isUpdating, error: errorUpdate }] = useUpdatePetMutation() as any
   const [submitting, setSubmitting] = useState(false)
   const closeDrawer = () => dispatch(setClosePetDrawer())
 
   const isLoading = isUpdating || isCreating || submitting
   const isUpdateMode = petForm?.inputs?.isUpdating
+  const error = errorCreate?.data?.message || errorUpdate?.data?.message
 
   const preparePetData = () => ({
     name: petForm.inputs.name,
@@ -127,37 +129,40 @@ const PetDrawer = () => {
   }
 
   return (
-    <AnimatePresence>
-      {petDrawer && (
-        <>
-          <Backdrop close={closeDrawer} />
-          <Drawer>
-            <AnimatedDrawerHeader
-              title={isUpdateMode ? 'Edit Pet' : 'Add Pet'}
-              subtitle="Let's get to know your furry friend!"
-              Icon={Heart}
-              closeDrawer={closeDrawer}
-              color="text-pink-500"
-              iconGradient="from-purple-500 to-pink-500"
-            />
-
-            {/* Content */}
-            <div className="flex flex-col lg:flex-row">
-              <PetForm
-                inputs={petForm.inputs}
-                errors={petForm.errors}
-                handleInput={handleInput}
-                close={closeDrawer}
-                handleSubmit={handleSubmit}
-                loading={isLoading}
-                isUpdating={isUpdateMode}
+    <>
+      <SlideMessage message={error} type="Error" />
+      <AnimatePresence>
+        {petDrawer && (
+          <>
+            <Backdrop close={closeDrawer} />
+            <Drawer>
+              <AnimatedDrawerHeader
+                title={isUpdateMode ? 'Edit Pet' : 'Add Pet'}
+                subtitle="Let's get to know your furry friend!"
+                Icon={Heart}
+                closeDrawer={closeDrawer}
+                color="text-pink-500"
+                iconGradient="from-purple-500 to-pink-500"
               />
-              <GuardianPetGuide />
-            </div>
-          </Drawer>
-        </>
-      )}
-    </AnimatePresence>
+
+              {/* Content */}
+              <div className="flex flex-col lg:flex-row">
+                <PetForm
+                  inputs={petForm.inputs}
+                  errors={petForm.errors}
+                  handleInput={handleInput}
+                  close={closeDrawer}
+                  handleSubmit={handleSubmit}
+                  loading={isLoading}
+                  isUpdating={isUpdateMode}
+                />
+                <GuardianPetGuide />
+              </div>
+            </Drawer>
+          </>
+        )}
+      </AnimatePresence>
+    </>
   )
 }
 

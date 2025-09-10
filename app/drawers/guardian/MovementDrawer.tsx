@@ -12,17 +12,20 @@ import { useCreateMovementMutation, useUpdateMovementMutation } from '@/app/redu
 import { movementInitialState } from '@/app/lib/initial-states/movement'
 import Backdrop from '@/app/components/common/Backdrop'
 import Drawer from '@/app/components/common/Drawer'
+import { setOpenSlideMessage } from '@/app/redux/features/appSlice'
+import SlideMessage from '@/app/components/auth/SlideMessage'
 
 const MovementDrawer = () => {
   const dispatch = useAppDispatch()
   const { movementDrawer } = useAppSelector((state: RootState) => state.movement)
   const { movementForm } = useAppSelector((state: RootState) => state.form)
   const { handleInput, setErrors, handleToggle } = createFormActions('movementForm', dispatch)
-  const [updateMovement, { isLoading: isUpdating }] = useUpdateMovementMutation()
-  const [createMovement, { isLoading: isCreating }] = useCreateMovementMutation()
+  const [createMovement, { isLoading: isCreating, error: errorCreate }] = useCreateMovementMutation() as any
+  const [updateMovement, { isLoading: isUpdating, error: errorUpdate }] = useUpdateMovementMutation() as any
 
   const isLoading = isUpdating || isCreating
   const isUpdateMode = movementForm?.inputs?.isUpdating
+  const error = errorCreate?.data?.message || errorUpdate?.data?.message
 
   const prepareMovementData = () => ({
     petId: movementForm.inputs.petId,
@@ -71,6 +74,7 @@ const MovementDrawer = () => {
         await createMovement(movementData).unwrap()
       }
     } catch {
+      dispatch(setOpenSlideMessage())
     } finally {
       resetInputs()
     }
@@ -85,36 +89,39 @@ const MovementDrawer = () => {
   }
 
   return (
-    <AnimatePresence>
-      {movementDrawer && (
-        <>
-          <Backdrop close={closeDrawer} />
-          <Drawer>
-            <AnimatedDrawerHeader
-              title="Movement Assesment"
-              subtitle="Asses your pet's movement"
-              Icon={Activity}
-              closeDrawer={closeDrawer}
-              color="text-red-500"
-              iconGradient="from-red-500 to-orange-500"
-            />
-            <div className="flex flex-col lg:flex-row">
-              <MovementForm
-                inputs={movementForm?.inputs}
-                errors={movementForm?.errors}
-                handleInput={handleInput}
-                close={closeDrawer}
-                handleSubmit={handleAddMovement}
-                loading={isLoading}
-                handleToggle={handleToggle}
-                isUpdating={isUpdateMode}
+    <>
+      <SlideMessage message={error} type="Error" />
+      <AnimatePresence>
+        {movementDrawer && (
+          <>
+            <Backdrop close={closeDrawer} />
+            <Drawer>
+              <AnimatedDrawerHeader
+                title="Movement Assesment"
+                subtitle="Asses your pet's movement"
+                Icon={Activity}
+                closeDrawer={closeDrawer}
+                color="text-red-500"
+                iconGradient="from-red-500 to-orange-500"
               />
-              <MovementAssessmentGuide />
-            </div>
-          </Drawer>
-        </>
-      )}
-    </AnimatePresence>
+              <div className="flex flex-col lg:flex-row">
+                <MovementForm
+                  inputs={movementForm?.inputs}
+                  errors={movementForm?.errors}
+                  handleInput={handleInput}
+                  close={closeDrawer}
+                  handleSubmit={handleAddMovement}
+                  loading={isLoading}
+                  handleToggle={handleToggle}
+                  isUpdating={isUpdateMode}
+                />
+                <MovementAssessmentGuide />
+              </div>
+            </Drawer>
+          </>
+        )}
+      </AnimatePresence>
+    </>
   )
 }
 

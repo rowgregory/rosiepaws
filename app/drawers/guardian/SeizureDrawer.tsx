@@ -13,18 +13,21 @@ import { setCloseSeizureDrawer } from '@/app/redux/features/seizureSlice'
 import { seizureInitialState } from '@/app/lib/initial-states/seizure'
 import Backdrop from '@/app/components/common/Backdrop'
 import Drawer from '@/app/components/common/Drawer'
+import SlideMessage from '@/app/components/auth/SlideMessage'
+import { setOpenSlideMessage } from '@/app/redux/features/appSlice'
 
 const SeizureDrawer = () => {
   const dispatch = useAppDispatch()
   const { seizureDrawer } = useAppSelector((state: RootState) => state.seizure)
   const { seizureForm } = useAppSelector((state: RootState) => state.form)
   const { handleInput, setErrors, handleUploadProgress } = createFormActions('seizureForm', dispatch)
-  const [updateSeizure, { isLoading: isUpdating }] = useUpdateSeizureMutation()
-  const [createSeizure, { isLoading: isCreating }] = useCreateSeizureMutation()
+  const [createSeizure, { isLoading: isCreating, error: errorCreate }] = useCreateSeizureMutation() as any
+  const [updateSeizure, { isLoading: isUpdating, error: errorUpdate }] = useUpdateSeizureMutation() as any
   const [loading, setLoading] = useState(false)
 
   const isLoading = isUpdating || isCreating || loading
   const isUpdateMode = seizureForm?.inputs?.isUpdating
+  const error = errorCreate?.data?.message || errorUpdate?.data?.message
 
   const prepareSeizuretData = (videoUrl: string, videoFilename: string) => ({
     petId: seizureForm.inputs.petId,
@@ -71,6 +74,7 @@ const SeizureDrawer = () => {
         await createSeizure(seizureData).unwrap()
       }
     } catch {
+      dispatch(setOpenSlideMessage())
     } finally {
       setLoading(false)
       resetInputs()
@@ -86,35 +90,38 @@ const SeizureDrawer = () => {
   }
 
   return (
-    <AnimatePresence>
-      {seizureDrawer && (
-        <>
-          <Backdrop close={closeDrawer} />
-          <Drawer>
-            <AnimatedDrawerHeader
-              title={isUpdateMode ? 'Edit Seizure' : 'Add Seizure'}
-              subtitle="Track your pet's appointments"
-              Icon={AlertTriangle}
-              closeDrawer={closeDrawer}
-              color="text-yellow-500"
-              iconGradient="from-yellow-500 to-orange-500"
-            />
-            <div className="flex flex-col lg:flex-row">
-              <SeizureForm
-                inputs={seizureForm.inputs}
-                errors={seizureForm.errors}
-                handleInput={handleInput}
-                close={closeDrawer}
-                handleSubmit={handleSubmit}
-                loading={isLoading}
-                isUpdating={isUpdateMode}
+    <>
+      <SlideMessage message={error} type="Error" />
+      <AnimatePresence>
+        {seizureDrawer && (
+          <>
+            <Backdrop close={closeDrawer} />
+            <Drawer>
+              <AnimatedDrawerHeader
+                title={isUpdateMode ? 'Edit Seizure' : 'Add Seizure'}
+                subtitle="Track your pet's appointments"
+                Icon={AlertTriangle}
+                closeDrawer={closeDrawer}
+                color="text-yellow-500"
+                iconGradient="from-yellow-500 to-orange-500"
               />
-              <GuardianSeizureGuide />
-            </div>
-          </Drawer>
-        </>
-      )}
-    </AnimatePresence>
+              <div className="flex flex-col lg:flex-row">
+                <SeizureForm
+                  inputs={seizureForm.inputs}
+                  errors={seizureForm.errors}
+                  handleInput={handleInput}
+                  close={closeDrawer}
+                  handleSubmit={handleSubmit}
+                  loading={isLoading}
+                  isUpdating={isUpdateMode}
+                />
+                <GuardianSeizureGuide />
+              </div>
+            </Drawer>
+          </>
+        )}
+      </AnimatePresence>
+    </>
   )
 }
 

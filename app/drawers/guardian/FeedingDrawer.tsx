@@ -12,6 +12,8 @@ import { useCreateFeedingMutation, useUpdateFeedingMutation } from '@/app/redux/
 import { feedingInitialState } from '@/app/lib/initial-states/feeding'
 import Backdrop from '@/app/components/common/Backdrop'
 import Drawer from '@/app/components/common/Drawer'
+import { setOpenSlideMessage } from '@/app/redux/features/appSlice'
+import SlideMessage from '@/app/components/auth/SlideMessage'
 
 const FeedingDrawer = () => {
   const dispatch = useAppDispatch()
@@ -19,18 +21,12 @@ const FeedingDrawer = () => {
   const { feedingForm } = useAppSelector((state: RootState) => state.form)
 
   const { handleInput, setErrors } = createFormActions('feedingForm', dispatch)
-  const [updateFeeding, { isLoading: isUpdating }] = useUpdateFeedingMutation()
-  const [createFeeding, { isLoading: isCreating }] = useCreateFeedingMutation()
-
-  const resetInputs = () =>
-    dispatch(setInputs({ formName: 'feedingForm', data: { ...feedingInitialState, isUpdating: false } }))
-  const closeDrawer = () => {
-    resetInputs()
-    dispatch(setCloseFeedingDrawer())
-  }
+  const [createFeeding, { isLoading: isCreating, error: errorCreate }] = useCreateFeedingMutation() as any
+  const [updateFeeding, { isLoading: isUpdating, error: errorUpdate }] = useUpdateFeedingMutation() as any
 
   const isLoading = isUpdating || isCreating
   const isUpdateMode = feedingForm?.inputs?.isUpdating
+  const error = errorCreate?.data?.message || errorUpdate?.data?.message
 
   const prepareFeedingData = () => ({
     petId: feedingForm.inputs.petId,
@@ -62,42 +58,55 @@ const FeedingDrawer = () => {
         await createFeeding(feedingData).unwrap()
       }
     } catch {
+      dispatch(setOpenSlideMessage())
     } finally {
       resetInputs()
     }
   }
 
-  return (
-    <AnimatePresence>
-      {feedingDrawer && (
-        <>
-          <Backdrop close={closeDrawer} />
-          <Drawer>
-            <AnimatedDrawerHeader
-              title={isUpdateMode ? 'Edit Feeding' : 'Add Feeding'}
-              subtitle="Track your pets diet"
-              Icon={Utensils}
-              closeDrawer={closeDrawer}
-              color="text-green-500"
-              iconGradient="from-green-500 to-emerald-500"
-            />
-            <div className="flex flex-col lg:flex-row">
-              <FeedingForm
-                inputs={feedingForm.inputs}
-                errors={feedingForm.errors}
-                handleInput={handleInput}
-                close={closeDrawer}
-                handleSubmit={handleAddFeeding}
-                loading={isLoading}
-                isUpdating={isUpdateMode}
-              />
+  const resetInputs = () =>
+    dispatch(setInputs({ formName: 'feedingForm', data: { ...feedingInitialState, isUpdating: false } }))
 
-              <FeedingGuide />
-            </div>
-          </Drawer>
-        </>
-      )}
-    </AnimatePresence>
+  const closeDrawer = () => {
+    resetInputs()
+    dispatch(setCloseFeedingDrawer())
+  }
+
+  return (
+    <>
+      <SlideMessage message={error} type="Error" />
+
+      <AnimatePresence>
+        {feedingDrawer && (
+          <>
+            <Backdrop close={closeDrawer} />
+            <Drawer>
+              <AnimatedDrawerHeader
+                title={isUpdateMode ? 'Edit Feeding' : 'Add Feeding'}
+                subtitle="Track your pets diet"
+                Icon={Utensils}
+                closeDrawer={closeDrawer}
+                color="text-green-500"
+                iconGradient="from-green-500 to-emerald-500"
+              />
+              <div className="flex flex-col lg:flex-row">
+                <FeedingForm
+                  inputs={feedingForm.inputs}
+                  errors={feedingForm.errors}
+                  handleInput={handleInput}
+                  close={closeDrawer}
+                  handleSubmit={handleAddFeeding}
+                  loading={isLoading}
+                  isUpdating={isUpdateMode}
+                />
+
+                <FeedingGuide />
+              </div>
+            </Drawer>
+          </>
+        )}
+      </AnimatePresence>
+    </>
   )
 }
 
