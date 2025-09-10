@@ -18,5 +18,6 @@ export const guardianSettingsAccountManagementLink = '/guardian/settings/account
 export const guardianSettingsVetLink = '/guardian/settings/vet'
 export const guardianInfoLink = '/guardian/info'
 export const guardianResourcesLink = '/guardian/resources'
+export const guardianExportsLink = '/guardian/exports'
 
 export const authLoginLink = '/auth/login'

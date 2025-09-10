@@ -1,19 +1,7 @@
 import React, { FC, useMemo, useState } from 'react'
 import { GENDER_OPTIONS, PET_TYPES, SPAY_NEUTER_OPTIONS } from '../lib/constants/public/pet'
 import { AnimatePresence, motion } from 'framer-motion'
-import {
-  Activity,
-  Calendar,
-  Camera,
-  FileText,
-  ImageIcon,
-  Phone,
-  Shield,
-  Stethoscope,
-  Trash2,
-  User,
-  Weight
-} from 'lucide-react'
+import { Activity, Camera, FileText, ImageIcon, Phone, Shield, Stethoscope, Trash2, User, Weight } from 'lucide-react'
 import { petCreateTokenCost, petUpdateTokenCost } from '../lib/constants/public/token'
 import FixedFooter from '../components/common/forms/FixedFooter'
 import { IForm } from '../types'
@@ -354,25 +342,64 @@ const PetForm: FC<IForm> = ({ inputs, errors, handleInput, close, handleSubmit, 
               </div>
             </div>
             <div className="bg-white p-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="flex flex-col gap-y-6">
                 {/* Age */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Age * <span className="text-gray-400 font-normal ml-1">(i.e. 4 yrs 5 months)</span>
-                  </label>
-                  <div className="relative">
-                    <input
-                      type="text"
-                      name="age"
-                      value={inputs?.age || ''}
-                      onChange={handleInput}
-                      placeholder="e.g., 2 years, 6 months"
-                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 pr-12"
-                    />
-                    <Calendar className="w-5 h-5 absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Age *</label>
+                  <div className="flex flex-col gap-3">
+                    {/* Years Dropdown */}
+                    <div className="flex-1">
+                      <div className="relative">
+                        <select
+                          name="ageYears"
+                          value={inputs?.ageYears || ''}
+                          onChange={handleInput}
+                          className="w-full px-4 py-3 border border-gray-300 rounded-xl appearance-none bg-white pr-10"
+                        >
+                          <option value="" disabled>
+                            Years
+                          </option>
+                          {Array.from({ length: 21 }, (_, i) => (
+                            <option key={i} value={i}>
+                              {i} {i === 1 ? 'year' : 'years'}
+                            </option>
+                          ))}
+                        </select>
+                        <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+                          <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                          </svg>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Months Dropdown */}
+                    <div className="flex-1">
+                      <div className="relative">
+                        <select
+                          name="ageMonths"
+                          value={inputs?.ageMonths || ''}
+                          onChange={handleInput}
+                          className="w-full px-4 py-3 border border-gray-300 rounded-xl appearance-none bg-white pr-10"
+                        >
+                          <option value="" disabled>
+                            Months
+                          </option>
+                          {Array.from({ length: 12 }, (_, i) => (
+                            <option key={i} value={i}>
+                              {i} {i === 1 ? 'month' : 'months'}
+                            </option>
+                          ))}
+                        </select>
+                        <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+                          <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                          </svg>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
-
                 {/* Weight */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">

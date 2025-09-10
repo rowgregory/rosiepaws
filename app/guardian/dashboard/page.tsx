@@ -4,7 +4,7 @@ import React, { useState } from 'react'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { RootState, useAppDispatch, useAppSelector } from '@/app/redux/store'
+import { useAppDispatch, usePetSelector, useUserSelector } from '@/app/redux/store'
 import MetricCard from '@/app/components/guardian/dashboard/MetricCard'
 import LargeFeedingGraph from '@/app/components/guardian/dashboard/graphs/large/LargeFeedingGraph'
 import LargePainScoreGraph from '@/app/components/guardian/dashboard/graphs/large/LargePainScoreGraph'
@@ -24,7 +24,7 @@ import MiniFeedingGraph from '@/app/components/guardian/dashboard/graphs/mini/Mi
 import MiniAppointmentGraph from '@/app/components/guardian/dashboard/graphs/mini/MiniAppointmentGraph'
 import MiniMovementsGraph from '@/app/components/guardian/dashboard/graphs/mini/MiniMovementGraph'
 import MiniVitalSignsGraph from '@/app/components/guardian/dashboard/graphs/mini/MiniVitalSignsGraph'
-import { Activity, ArrowDown, ArrowLeftIcon, ArrowRightIcon, Droplets, Heart, Plus, Utensils } from 'lucide-react'
+import { ArrowLeftIcon, ArrowRightIcon } from 'lucide-react'
 import { metricsConfigCards } from '@/app/lib/constants/public/dashboard/displayConstants'
 import { setOpenPainDrawer } from '@/app/redux/features/painSlice'
 import { setOpenFeedingDrawer } from '@/app/redux/features/feedingSlice'
@@ -38,13 +38,94 @@ import { setOpenVitalSignsDrawer } from '@/app/redux/features/vitalSignsSlice'
 import { setOpenNeedToUpgradeDrawer } from '@/app/redux/features/dashboardSlice'
 import { setOpenNotEnoughTokensModal } from '@/app/redux/features/appSlice'
 import GuardianActionMenuButton from '@/app/components/guardian/GuardianActionMenuButton'
+import OnboardingBanner from '@/app/components/guardian/dashboard/OnboardingBanner'
+
+interface MetricConfig {
+  title: string
+  urlPath: string
+  buttonLabel: string
+}
+
+const METRIC_CONFIG: Record<string, MetricConfig> = {
+  'blood-sugar': {
+    title: 'Blood Sugar Monitoring',
+    urlPath: 'blood-sugar',
+    buttonLabel: 'Blood Sugars'
+  },
+  'pain-score': {
+    title: 'Pain Score Tracking',
+    urlPath: 'pain',
+    buttonLabel: 'Pain Scores'
+  },
+  feedings: {
+    title: 'Feeding History',
+    urlPath: 'feedings',
+    buttonLabel: 'Feedings'
+  },
+  water: {
+    title: 'Water Intake Logs',
+    urlPath: 'water',
+    buttonLabel: 'Waters'
+  },
+  medications: {
+    title: 'Medication Schedule',
+    urlPath: 'medication',
+    buttonLabel: 'Medications'
+  },
+  seizures: {
+    title: 'Seizure Events',
+    urlPath: 'seizures',
+    buttonLabel: 'Seizures'
+  },
+  movements: {
+    title: 'Movement Tracking',
+    urlPath: 'movements',
+    buttonLabel: 'Movements'
+  },
+  'vital-signs': {
+    title: 'Vital Signs Monitoring',
+    urlPath: 'vital-signs',
+    buttonLabel: 'Vital Signs'
+  },
+  appointments: {
+    title: 'Appointment History',
+    urlPath: 'appointments',
+    buttonLabel: 'Appointments'
+  },
+  overview: {
+    title: 'Health Overview',
+    urlPath: '',
+    buttonLabel: 'Overview'
+  }
+}
+
+// Helper functions
+const getMetricTitle = (metric: string): string => {
+  return METRIC_CONFIG[metric]?.title || 'Health Overview'
+}
+
+const getMetricDescription = (metric: string): string => {
+  if (metric === 'overview') {
+    return 'Quick overview of all health metrics'
+  }
+  return `Detailed ${metric.replace('-', ' ')} data and trends`
+}
+
+const getMetricUrl = (metric: string): string => {
+  const config = METRIC_CONFIG[metric]
+  return config?.urlPath ? `/guardian/pets/${config.urlPath}` : '/guardian/pets'
+}
+
+const getMetricButtonLabel = (metric: string): string => {
+  return METRIC_CONFIG[metric]?.buttonLabel || 'Data'
+}
 
 const GuardianDashboard = () => {
   const dispatch = useAppDispatch()
   const { push } = useRouter()
   const [selectedMetric, setSelectedMetric] = useState('overview')
-  const { pet, loading, chartData, stats, onboardingBanner, noLogs } = useAppSelector((state: RootState) => state.pet)
-  const { user } = useAppSelector((state: RootState) => state.user)
+  const { pet, loading, chartData, stats, onboardingBanner, noLogs } = usePetSelector()
+  const { user } = useUserSelector()
 
   const renderChart = () => {
     switch (selectedMetric) {
@@ -183,64 +264,7 @@ const GuardianDashboard = () => {
         <span className="text-xl lg:text-2xl font-semibold">{pet?.name}&apos;s Dashboard</span>
       </div>
       <div className="min-h-[calc(100dvh-64px)] mx-auto py-6 lg:p-6 space-y-8 bg-gray-50">
-        {onboardingBanner && (
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-4 lg:p-6 mb-6"
-          >
-            <div className="flex justify-between items-start">
-              <div className="flex-1">
-                <div className="flex items-center space-x-2 mb-2">
-                  <div className="bg-blue-500 rounded-full p-1">
-                    <Heart className="w-4 h-4 text-white" />
-                  </div>
-                  <h3 className="text-lg font-semibold text-gray-900">
-                    Welcome to {pet.name}&apos;s Health Dashboard!
-                  </h3>
-                </div>
-
-                <p className="text-gray-600 mb-4">
-                  Start tracking {pet.name}&apos;s health by clicking on any of the metric cards below to add your first
-                  data entry.
-                </p>
-
-                <div className="flex flex-wrap gap-2">
-                  <div className="flex items-center space-x-1 bg-white px-3 py-1 rounded-full border border-blue-200">
-                    <Activity className="w-4 h-4 text-red-500" />
-                    <span className="text-sm text-gray-700">Pain Scores</span>
-                  </div>
-                  <div className="flex items-center space-x-1 bg-white px-3 py-1 rounded-full border border-blue-200">
-                    <Utensils className="w-4 h-4 text-green-500" />
-                    <span className="text-sm text-gray-700">Feedings</span>
-                  </div>
-                  <div className="flex items-center space-x-1 bg-white px-3 py-1 rounded-full border border-blue-200">
-                    <Droplets className="w-4 h-4 text-cyan-500" />
-                    <span className="text-sm text-gray-700">Water Intakes</span>
-                  </div>
-                  <div className="flex items-center space-x-1 bg-white px-3 py-1 rounded-full border border-blue-200">
-                    <Plus className="w-4 h-4 text-purple-500" />
-                    <span className="text-sm text-gray-700">And more...</span>
-                  </div>
-                </div>
-
-                <div className="mt-4 flex items-center space-x-2">
-                  <motion.div
-                    animate={{ x: [0, 4, 0] }}
-                    transition={{ duration: 1.5, repeat: Infinity }}
-                    className="text-blue-500"
-                  >
-                    <ArrowDown className="w-5 h-5" />
-                  </motion.div>
-                  <span className="text-sm font-medium text-blue-600">
-                    Click any grayed-out card below to get started
-                  </span>
-                </div>
-              </div>
-            </div>
-          </motion.div>
-        )}
+        {onboardingBanner && <OnboardingBanner pet={pet} />}
         <>
           <div className="flex gap-3.5 lg:w-[calc(100vw-304px)] overflow-x-auto py-2 scrollbar-hide">
             {metricsConfigCards(stats).map((metric, index) => {
@@ -279,26 +303,8 @@ const GuardianDashboard = () => {
             >
               <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-6">
                 <div className="px-3 lg:px-0">
-                  <h2 className="text-2xl font-bold text-gray-900">
-                    {selectedMetric === 'blood-sugar'
-                      ? 'Blood Sugar Monitoring'
-                      : selectedMetric === 'pain-score'
-                        ? 'Pain Score Tracking'
-                        : selectedMetric === 'feedings'
-                          ? 'Feeding History'
-                          : selectedMetric === 'water'
-                            ? 'Water Intake Logs'
-                            : selectedMetric === 'medications'
-                              ? 'Medication Schedule'
-                              : selectedMetric === 'seizures'
-                                ? 'Seizure Events'
-                                : 'Health Overview'}
-                  </h2>
-                  <p className="text-gray-600 mt-1">
-                    {selectedMetric === 'overview'
-                      ? 'Quick overview of all health metrics'
-                      : `Detailed ${selectedMetric.replace('-', ' ')} data and trends`}
-                  </p>
+                  <h2 className="text-2xl font-bold text-gray-900">{getMetricTitle(selectedMetric)}</h2>
+                  <p className="text-gray-600 mt-1">{getMetricDescription(selectedMetric)}</p>
                 </div>
                 <div className="flex items-center gap-x-3 mt-4 lg:mt-0 px-3">
                   {selectedMetric !== 'overview' && (
@@ -310,45 +316,11 @@ const GuardianDashboard = () => {
                         <ArrowLeftIcon size={16} /> Overview
                       </button>
                       <Link
-                        href={
-                          selectedMetric === 'blood-sugars'
-                            ? '/guardian/pets/blood-sugar'
-                            : selectedMetric === 'pain-scores'
-                              ? '/guardian/pets/pain'
-                              : selectedMetric === 'feedings'
-                                ? '/guardian/pets/feedings'
-                                : selectedMetric === 'waters'
-                                  ? '/guardian/pets/water'
-                                  : selectedMetric === 'medications'
-                                    ? '/guardian/pets/medication'
-                                    : selectedMetric === 'seizures'
-                                      ? '/guardian/pets/seizures'
-                                      : selectedMetric === 'movements'
-                                        ? '/guardian/pets/movements'
-                                        : selectedMetric === 'vital-signs'
-                                          ? '/guardian/pets/vital-signs'
-                                          : '/guardian/pets/appointments'
-                        }
+                        href={getMetricUrl(selectedMetric)}
                         className={`flex-1  whitespace-nowrap px-4 py-2 rounded-full font-medium text-sm transition-colors flex items-center gap-x-1.5 bg-gray-100 text-gray-600 hover:bg-gray-200`}
                       >
                         <span className="hidden lg:block">View All</span>
-                        {selectedMetric === 'blood-sugars'
-                          ? 'Blood Sugars'
-                          : selectedMetric === 'pain-scores'
-                            ? 'Pain Scores'
-                            : selectedMetric === 'feedings'
-                              ? 'Feedings'
-                              : selectedMetric === 'waters'
-                                ? 'Waters'
-                                : selectedMetric === 'medications'
-                                  ? 'Medications'
-                                  : selectedMetric === 'seizures'
-                                    ? 'Seizures'
-                                    : selectedMetric === 'movements'
-                                      ? 'Movements'
-                                      : selectedMetric === 'vital-signs'
-                                        ? 'Vital Signs'
-                                        : 'Appointments'}{' '}
+                        {getMetricButtonLabel(selectedMetric)}
                         <ArrowRightIcon size={16} />
                       </Link>
                     </>

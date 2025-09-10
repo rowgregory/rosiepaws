@@ -1,7 +1,7 @@
 import { setOpenPetDrawer, setSelectedPetWithChartData } from '@/app/redux/features/petSlice'
 import { useAppDispatch, useUserSelector } from '@/app/redux/store'
 import { Pet } from '@/app/types/entities'
-import { Activity, ArrowRight, Edit, Heart, MoreVertical, Shield, Trash2 } from 'lucide-react'
+import { Activity, ArrowRight, Download, Edit, Heart, MoreVertical, Shield, Trash2 } from 'lucide-react'
 import React, { FC, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { setInputs } from '@/app/redux/features/formSlice'
@@ -14,6 +14,29 @@ import { useRouter } from 'next/navigation'
 import { setOpenNeedToUpgradeDrawer } from '@/app/redux/features/dashboardSlice'
 import { setOpenNotEnoughTokensModal } from '@/app/redux/features/appSlice'
 import { MotionLink } from '../../common/MotionLink'
+import exportUserPetsData from '@/app/lib/utils/exports/exportUserPetsData'
+import Picture from '../../common/Picture'
+import { formatDateShort } from '@/app/lib/utils'
+
+const parseAgeString = (ageString: string): { ageYears: string; ageMonths: string } => {
+  // Return empty values if no string provided
+  if (!ageString || typeof ageString !== 'string') {
+    return { ageYears: '', ageMonths: '' }
+  }
+
+  // Clean the string - remove extra spaces and make lowercase
+  const cleanString = ageString.trim().toLowerCase()
+
+  // Extract years (always present)
+  const yearMatch = cleanString.match(/(\d+)\s*(?:years?|yrs?)/)
+  const ageYears = yearMatch ? yearMatch[1] : ''
+
+  // Extract months (always present, even if 0)
+  const monthMatch = cleanString.match(/(\d+)\s*(?:months?|mos?)/)
+  const ageMonths = monthMatch ? monthMatch[1] : '0'
+
+  return { ageYears, ageMonths }
+}
 
 const PetCard: FC<{ pet: Pet; index: number }> = ({ pet, index }) => {
   const dispatch = useAppDispatch()
@@ -28,8 +51,14 @@ const PetCard: FC<{ pet: Pet; index: number }> = ({ pet, index }) => {
       dispatch(setOpenNotEnoughTokensModal(petUpdateTokenCost))
       return
     }
+    const { ageYears, ageMonths } = parseAgeString(pet.age)
     dispatch(setOpenPetDrawer())
-    dispatch(setInputs({ formName: 'petForm', data: { ...pet, type: pet.type.toLowerCase(), isUpdating: true } }))
+    dispatch(
+      setInputs({
+        formName: 'petForm',
+        data: { ...pet, type: pet.type.toLowerCase(), ageYears, ageMonths, isUpdating: true }
+      })
+    )
     setIsOpen(false)
   }
 
@@ -57,6 +86,10 @@ const PetCard: FC<{ pet: Pet; index: number }> = ({ pet, index }) => {
     )
   }
 
+  const handleExport = () => {
+    exportUserPetsData([pet])
+  }
+
   return (
     <motion.div
       className="bg-white rounded-lg border border-gray-200 p-6 cursor-pointer hover:border-gray-300 transition-colors"
@@ -72,10 +105,17 @@ const PetCard: FC<{ pet: Pet; index: number }> = ({ pet, index }) => {
           animate={{ x: 0, opacity: 1 }}
           transition={{ delay: index * 0.1 + 0.1, duration: 0.3 }}
         >
-          <div className="p-2 bg-gray-100 rounded-lg">
-            <Heart className="w-5 h-5 text-gray-700" />
+          {pet?.filePath ? (
+            <Picture src={pet?.filePath} priority={false} className="rounded-lg w-20 h-20 object-cover" />
+          ) : (
+            <div className="p-2 bg-gray-100 rounded-lg">
+              <Heart className="w-5 h-5 text-gray-700" />
+            </div>
+          )}
+          <div>
+            <p className="text-2xl font-bold text-gray-900">{pet.name}</p>
+            <p className="text-sm text-gray-500">{pet.breed}</p>
           </div>
-          <h3 className="text-sm font-medium text-gray-600 uppercase tracking-wide">Pet Profile</h3>
         </motion.div>
 
         <div className="relative" ref={menuRef}>
@@ -95,7 +135,7 @@ const PetCard: FC<{ pet: Pet; index: number }> = ({ pet, index }) => {
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.95, y: -5 }}
                 transition={{ duration: 0.15 }}
-                className="absolute right-0 top-8 z-40 w-32 bg-white rounded-lg shadow-lg border border-gray-200 py-1"
+                className="absolute right-0 top-8 z-40 w-fit bg-white rounded-lg shadow-lg border border-gray-200 py-1"
               >
                 <button
                   onClick={handleEdit}
@@ -103,6 +143,13 @@ const PetCard: FC<{ pet: Pet; index: number }> = ({ pet, index }) => {
                 >
                   <Edit className="w-3 h-3 mr-2" />
                   Edit
+                </button>
+                <button
+                  onClick={handleExport}
+                  className="flex items-center w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 whitespace-nowrap"
+                >
+                  <Download className="w-3 h-3 mr-2" />
+                  Export {pet.name}&apos;s Profile
                 </button>
                 <button
                   onClick={handleDelete}
@@ -124,21 +171,22 @@ const PetCard: FC<{ pet: Pet; index: number }> = ({ pet, index }) => {
         animate={{ opacity: 1 }}
         transition={{ delay: index * 0.1 + 0.2, duration: 0.3 }}
       >
-        <p className="text-2xl font-bold text-gray-900">{pet.name}</p>
-        <p className="text-sm text-gray-500">
-          {pet.breed} • {pet.age}
-        </p>
-
         <div className="space-y-2">
+          <div className="flex justify-between text-sm">
+            <span className="text-gray-500">Age</span>
+            <span className="font-medium text-gray-900">{pet.age}</span>
+          </div>
           <div className="flex justify-between text-sm">
             <span className="text-gray-500">Weight</span>
             <span className="font-medium text-gray-900">{pet.weight}lbs</span>
           </div>
 
           <div className="flex justify-between text-sm">
-            <span className="text-gray-500">Last Visit</span>
-            {pet.lastVisit ? (
-              <span className="font-medium text-gray-900">{pet.lastVisit?.toLocaleDateString()}</span>
+            <span className="text-gray-500">Next Appointment</span>
+            {pet.appointments[0]?.date ? (
+              <span className="font-medium text-gray-900">
+                {formatDateShort(pet.appointments[0]?.date)} at {pet.appointments[0]?.time}
+              </span>
             ) : (
               <button
                 onClick={() =>

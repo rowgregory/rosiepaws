@@ -16,6 +16,16 @@ import { deleteFileFromFirebase, uploadFileToFirebase } from '@/app/utils/fireba
 import Backdrop from '@/app/components/common/Backdrop'
 import Drawer from '@/app/components/common/Drawer'
 
+const getFormattedAge = (inputs: { ageYears: string; ageMonths: string }) => {
+  const years = inputs.ageYears ? `${inputs.ageYears} ${inputs.ageYears === '1' ? 'year' : 'years'}` : ''
+  const months = inputs.ageMonths ? `${inputs.ageMonths} ${inputs.ageMonths === '1' ? 'month' : 'months'}` : ''
+
+  if (years && months) return `${years}, ${months}`
+  if (years) return years
+  if (months) return months
+  return ''
+}
+
 const PetDrawer = () => {
   const { petDrawer } = useAppSelector((state: RootState) => state.pet)
   const { petForm } = useAppSelector((state: RootState) => state.form)
@@ -34,7 +44,7 @@ const PetDrawer = () => {
     name: petForm.inputs.name,
     type: petForm.inputs.type.toUpperCase(),
     breed: petForm.inputs.breed,
-    age: petForm.inputs.age,
+    age: getFormattedAge(petForm.inputs),
     gender: petForm.inputs.gender,
     weight: String(petForm.inputs.weight),
     notes: petForm.inputs.notes,
