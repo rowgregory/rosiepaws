@@ -82,7 +82,7 @@ const getTierBg = (tier: string) => {
 const GuardianPetsLayout: FC<ChildrenProps> = ({ children }) => {
   const path = useCustomPathname()
   const dispatch = useAppDispatch()
-  const { user } = useAppSelector((state: RootState) => state.user)
+  const { user, loading } = useAppSelector((state: RootState) => state.user)
 
   // Determine user tier and access
   const getUserTier = () => {
@@ -101,7 +101,11 @@ const GuardianPetsLayout: FC<ChildrenProps> = ({ children }) => {
   // Get links with tier information
   const linksWithTiers = linkData(path, userTier)
 
-  return (
+  return loading ? (
+    <div className="flex items-center justify-center py-8 bg-white">
+      <div className="border-2 border-orange-500 border-t-0 rounded-full animate-spin w-8 h-8" />
+    </div>
+  ) : (
     <>
       <div className="sticky top-0 h-[64px] px-3 sm:px-6 border-b border-gray-100 z-30 bg-white flex items-center">
         <GuardianActionMenuButton />

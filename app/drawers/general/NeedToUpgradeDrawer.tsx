@@ -12,7 +12,6 @@ const NeedToUpgradeDrawer = () => {
   const [selectedPlan, setSelectedPlan] = useState(null) as any
   const { needToUpgradeDrawer } = useAppSelector((state: RootState) => state.dashboard)
   const { user } = useUserSelector()
-  console.log('USER: ', user?.stripeSubscription?.plan)
   const onClose = () => dispatch(setCloseNeedToUpgradeDrawer())
   const { push } = useRouter()
 

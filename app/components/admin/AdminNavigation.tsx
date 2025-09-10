@@ -12,7 +12,7 @@ import NavigationLinks from '../navigation/NavigationLinks'
 const AdminNavigation = () => {
   const { navigation } = useAppSelector((state: RootState) => state.app)
   const path = useCustomPathname()
-  const { user } = useUserSelector()
+  const { user, loading } = useUserSelector()
   const isSuperUser = user?.isSuperUser ?? false
   const linkData = adminNavigationLinks(path, isSuperUser)
 
@@ -24,7 +24,7 @@ const AdminNavigation = () => {
     >
       {/* Header Section */}
       <div className="mb-7">
-        <HeaderSection toggleSidebar={navigation} user={user} title="Admin" />
+        <HeaderSection toggleSidebar={navigation} user={user} title="Admin" loading={loading} />
       </div>
 
       {/* Toggle Button */}

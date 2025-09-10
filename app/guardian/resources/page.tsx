@@ -20,7 +20,7 @@ const UserMediaLibrary = () => {
   const [sortBy, setSortBy] = useState('newest')
   const [selectedItem, setSelectedItem] = useState(null)
   const [favorites, setFavorites] = useState([]) as any
-  const { data } = useGetAllMediaQuery(undefined) as any
+  const { data, isLoading: loading } = useGetAllMediaQuery(undefined) as any
   const media = data?.media
   const [updateAnalytics] = useUpdateAnalyticsMutation()
   const [activeTab, setActiveTab] = useState('available')
@@ -143,108 +143,114 @@ const UserMediaLibrary = () => {
         locked={filteredLockedItems}
       />
 
-      <div className="w-full min-h-[calc(100dvh-64px)] mx-auto p-6 bg-gray-50">
-        {/* Filters */}
-        <Filters
-          searchQuery={searchQuery}
-          selectedCategory={selectedCategory}
-          setSearchQuery={setSearchQuery}
-          setSelectedCategory={setSelectedCategory}
-          setSortBy={setSortBy}
-          setViewMode={setViewMode}
-          sortBy={sortBy}
-          viewMode={viewMode}
-        />
-
-        {/* Media Grid */}
-        <div
-          className={`grid gap-6 ${
-            viewMode === 'grid' ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4' : 'grid-cols-1'
-          }`}
-        >
-          <AnimatePresence>
-            {/* Show items if they exist */}
-            {((activeTab === 'available' && filteredItems?.length > 0) ||
-              (activeTab === 'locked' && filteredLockedItems?.length > 0)) &&
-              (activeTab === 'locked' ? filteredLockedItems : filteredItems)?.map(
-                (item: IMedia & { isLocked: boolean }, index: number) => (
-                  <motion.div
-                    key={item.id}
-                    layout
-                    className={viewMode === 'grid' ? 'min-h-[280px]' : 'min-h-fit'}
-                    initial={{
-                      opacity: 0,
-                      y: 30,
-                      scale: 0.9
-                    }}
-                    animate={{
-                      opacity: 1,
-                      y: 0,
-                      scale: 1
-                    }}
-                    exit={{
-                      opacity: 0,
-                      scale: 0.8,
-                      y: -20
-                    }}
-                    transition={{
-                      duration: 0.4,
-                      delay: index * 0.05,
-                      ease: [0.25, 0.4, 0.25, 1],
-                      type: 'spring',
-                      damping: 25,
-                      stiffness: 400
-                    }}
-                  >
-                    <div className="relative h-full">
-                      {item.isLocked && (
-                        <div
-                          className="absolute inset-0 z-10 bg-black/20 backdrop-blur-md cursor-pointer flex items-center justify-center group transition-all duration-200 hover:bg-black/30 rounded-xl"
-                          onClick={() => dispatch(setOpenNeedToUpgradeDrawer())}
-                        >
-                          <div className="bg-white/10 backdrop-blur-sm rounded-full p-4 border border-white/20 shadow-lg group-hover:scale-110 transition-transform duration-200">
-                            <Lock className="w-6 h-6 text-white drop-shadow-sm" />
-                          </div>
-                        </div>
-                      )}
-                      <MediaCard
-                        key={item.id}
-                        item={item}
-                        favorites={favorites}
-                        handleView={handleView}
-                        setFavorites={setFavorites}
-                        toggleFavorite={toggleFavorite}
-                        handleDownload={handleDownload}
-                        viewMode={viewMode}
-                      />
-                    </div>
-                  </motion.div>
-                )
-              )}
-
-            {/* Show empty state if no items */}
-            {((activeTab === 'available' && filteredItems?.length === 0) ||
-              (activeTab === 'locked' && filteredLockedItems?.length === 0)) && (
-              <motion.div
-                key="empty-state"
-                className="col-span-full flex justify-center items-center min-h-[400px]"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.3 }}
-              >
-                <div className="text-center py-20">
-                  <div className="w-32 h-32 mx-auto mb-8 bg-slate-100 rounded-3xl flex items-center justify-center">
-                    <File className="w-16 h-16 text-slate-300" />
-                  </div>
-                  <h3 className="text-2xl font-light text-slate-600 mb-3">No resources found</h3>
-                  <p className="text-slate-500">No resources available at the moment</p>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
+      {loading ? (
+        <div className="flex items-center justify-center py-8">
+          <div className="border-2 border-orange-500 border-t-0 rounded-full animate-spin w-8 h-8" />
         </div>
-      </div>
+      ) : (
+        <div className="w-full min-h-[calc(100dvh-64px)] mx-auto p-6 bg-gray-50">
+          {/* Filters */}
+          <Filters
+            searchQuery={searchQuery}
+            selectedCategory={selectedCategory}
+            setSearchQuery={setSearchQuery}
+            setSelectedCategory={setSelectedCategory}
+            setSortBy={setSortBy}
+            setViewMode={setViewMode}
+            sortBy={sortBy}
+            viewMode={viewMode}
+          />
+
+          {/* Media Grid */}
+          <div
+            className={`grid gap-6 ${
+              viewMode === 'grid' ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4' : 'grid-cols-1'
+            }`}
+          >
+            <AnimatePresence>
+              {/* Show items if they exist */}
+              {((activeTab === 'available' && filteredItems?.length > 0) ||
+                (activeTab === 'locked' && filteredLockedItems?.length > 0)) &&
+                (activeTab === 'locked' ? filteredLockedItems : filteredItems)?.map(
+                  (item: IMedia & { isLocked: boolean }, index: number) => (
+                    <motion.div
+                      key={item.id}
+                      layout
+                      className={viewMode === 'grid' ? 'min-h-[280px]' : 'min-h-fit'}
+                      initial={{
+                        opacity: 0,
+                        y: 30,
+                        scale: 0.9
+                      }}
+                      animate={{
+                        opacity: 1,
+                        y: 0,
+                        scale: 1
+                      }}
+                      exit={{
+                        opacity: 0,
+                        scale: 0.8,
+                        y: -20
+                      }}
+                      transition={{
+                        duration: 0.4,
+                        delay: index * 0.05,
+                        ease: [0.25, 0.4, 0.25, 1],
+                        type: 'spring',
+                        damping: 25,
+                        stiffness: 400
+                      }}
+                    >
+                      <div className="relative h-full">
+                        {item.isLocked && (
+                          <div
+                            className="absolute inset-0 z-10 bg-black/20 backdrop-blur-md cursor-pointer flex items-center justify-center group transition-all duration-200 hover:bg-black/30 rounded-xl"
+                            onClick={() => dispatch(setOpenNeedToUpgradeDrawer())}
+                          >
+                            <div className="bg-white/10 backdrop-blur-sm rounded-full p-4 border border-white/20 shadow-lg group-hover:scale-110 transition-transform duration-200">
+                              <Lock className="w-6 h-6 text-white drop-shadow-sm" />
+                            </div>
+                          </div>
+                        )}
+                        <MediaCard
+                          key={item.id}
+                          item={item}
+                          favorites={favorites}
+                          handleView={handleView}
+                          setFavorites={setFavorites}
+                          toggleFavorite={toggleFavorite}
+                          handleDownload={handleDownload}
+                          viewMode={viewMode}
+                        />
+                      </div>
+                    </motion.div>
+                  )
+                )}
+
+              {/* Show empty state if no items */}
+              {((activeTab === 'available' && filteredItems?.length === 0) ||
+                (activeTab === 'locked' && filteredLockedItems?.length === 0)) && (
+                <motion.div
+                  key="empty-state"
+                  className="col-span-full flex justify-center items-center min-h-[400px]"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <div className="text-center py-20">
+                    <div className="w-32 h-32 mx-auto mb-8 bg-slate-100 rounded-3xl flex items-center justify-center">
+                      <File className="w-16 h-16 text-slate-300" />
+                    </div>
+                    <h3 className="text-2xl font-light text-slate-600 mb-3">No resources found</h3>
+                    <p className="text-slate-500">No resources available at the moment</p>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        </div>
+      )}
 
       {/* Modal */}
       <AnimatePresence>

@@ -7,9 +7,10 @@ interface IHeaderSection {
   toggleSidebar: boolean
   user: IUser | null
   title: string
+  loading: boolean
 }
 
-const HeaderSection: FC<IHeaderSection> = ({ toggleSidebar, user, title }) => {
+const HeaderSection: FC<IHeaderSection> = ({ toggleSidebar, user, title, loading }) => {
   return (
     <Link
       href="/"
@@ -28,7 +29,11 @@ const HeaderSection: FC<IHeaderSection> = ({ toggleSidebar, user, title }) => {
             className="flex items-center gap-3"
           >
             <div className="w-8 h-8 bg-gray-900 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-sm uppercase">{user?.email?.charAt(0)}</span>
+              {loading ? (
+                <div className="border-2 border-pink-500 border-t-0 rounded-full animate-spin w-4 h-4" />
+              ) : (
+                <span className="text-white font-bold text-sm uppercase">{user?.email?.charAt(0)}</span>
+              )}
             </div>
             <div>
               <h2 className="text-sm font-semibold text-gray-900">{title} Panel</h2>
@@ -45,7 +50,11 @@ const HeaderSection: FC<IHeaderSection> = ({ toggleSidebar, user, title }) => {
             className="w-10 h-10 bg-gray-900 rounded-lg flex items-center justify-center"
           >
             <div className="w-8 h-8 bg-gray-900 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold uppercase">{user?.email?.charAt(0)}</span>
+              {loading ? (
+                <div className="border-2 border-pink-500 border-t-0 rounded-full animate-spin w-4 h-4" />
+              ) : (
+                <span className="text-white font-bold uppercase">{user?.email?.charAt(0)}</span>
+              )}
             </div>
           </motion.div>
         )}

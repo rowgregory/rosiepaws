@@ -261,77 +261,83 @@ const GuardianDashboard = () => {
     <div>
       <div className="sticky top-0 flex items-center gap-x-4 pl-6 border-b-1 border-b-gray-100 z-30 bg-white h-[64px]">
         <GuardianActionMenuButton />
-        <span className="text-xl lg:text-2xl font-semibold">{pet?.name}&apos;s Dashboard</span>
+        <span className="text-xl lg:text-2xl font-semibold">{loading ? 'Loading' : `${pet?.name}'s`} Dashboard</span>
       </div>
-      <div className="min-h-[calc(100dvh-64px)] mx-auto py-6 lg:p-6 space-y-8 bg-gray-50">
-        {onboardingBanner && <OnboardingBanner pet={pet} />}
-        <>
-          <div className="flex gap-3.5 lg:w-[calc(100vw-304px)] overflow-x-auto py-2 scrollbar-hide">
-            {metricsConfigCards(stats).map((metric, index) => {
-              return (
-                <motion.div
-                  key={metric.id}
-                  className="flex-shrink-0 w-[133px] h-[158px]"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{
-                    duration: 0.4,
-                    delay: index * 0.05,
-                    ease: 'easeOut'
-                  }}
-                >
-                  <MetricCard
+      {loading ? (
+        <div className="flex items-center justify-center py-8">
+          <div className="border-2 border-orange-500 border-t-0 rounded-full animate-spin w-8 h-8" />
+        </div>
+      ) : (
+        <div className="min-h-[calc(100dvh-64px)] mx-auto py-6 lg:p-6 space-y-8 bg-gray-50">
+          {onboardingBanner && <OnboardingBanner pet={pet} />}
+          <>
+            <div className="flex gap-3.5 lg:w-[calc(100vw-304px)] overflow-x-auto py-2 scrollbar-hide">
+              {metricsConfigCards(stats).map((metric, index) => {
+                return (
+                  <motion.div
                     key={metric.id}
-                    title={metric.title}
-                    value={metric.value}
-                    subtitle={metric.subtitle}
-                    icon={metric.icon}
-                    color={metric.color}
-                    trend={metric.trend}
-                    onClick={() => handleMetricClick(metric)}
-                    isActive={selectedMetric === metric.id}
-                    id={metric.id}
-                    hasLogs={metric.hasLogs}
-                  />
-                </motion.div>
-              )
-            })}
-          </div>
-          {!noLogs && (
-            <div
-              className={`${!loading ? 'border-gray-100 bg-white' : 'border-gray-200 bg-gray-50 opacity-60'} lg:rounded-2xl lg:px-6 py-4 lg:p-8 shadow-md border`}
-            >
-              <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-6">
-                <div className="px-3 lg:px-0">
-                  <h2 className="text-2xl font-bold text-gray-900">{getMetricTitle(selectedMetric)}</h2>
-                  <p className="text-gray-600 mt-1">{getMetricDescription(selectedMetric)}</p>
-                </div>
-                <div className="flex items-center gap-x-3 mt-4 lg:mt-0 px-3">
-                  {selectedMetric !== 'overview' && (
-                    <>
-                      <button
-                        onClick={() => setSelectedMetric('overview')}
-                        className={`flex-1 px-4 py-2 rounded-full font-medium text-sm transition-colors flex items-center gap-x-1.5 bg-gray-100 text-gray-600 hover:bg-gray-200`}
-                      >
-                        <ArrowLeftIcon size={16} /> Overview
-                      </button>
-                      <Link
-                        href={getMetricUrl(selectedMetric)}
-                        className={`flex-1  whitespace-nowrap px-4 py-2 rounded-full font-medium text-sm transition-colors flex items-center gap-x-1.5 bg-gray-100 text-gray-600 hover:bg-gray-200`}
-                      >
-                        <span className="hidden lg:block">View All</span>
-                        {getMetricButtonLabel(selectedMetric)}
-                        <ArrowRightIcon size={16} />
-                      </Link>
-                    </>
-                  )}
-                </div>
-              </div>
-              {renderChart()}
+                    className="flex-shrink-0 w-[133px] h-[158px]"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{
+                      duration: 0.4,
+                      delay: index * 0.05,
+                      ease: 'easeOut'
+                    }}
+                  >
+                    <MetricCard
+                      key={metric.id}
+                      title={metric.title}
+                      value={metric.value}
+                      subtitle={metric.subtitle}
+                      icon={metric.icon}
+                      color={metric.color}
+                      trend={metric.trend}
+                      onClick={() => handleMetricClick(metric)}
+                      isActive={selectedMetric === metric.id}
+                      id={metric.id}
+                      hasLogs={metric.hasLogs}
+                    />
+                  </motion.div>
+                )
+              })}
             </div>
-          )}
-        </>
-      </div>
+            {!noLogs && (
+              <div
+                className={`${!loading ? 'border-gray-100 bg-white' : 'border-gray-200 bg-gray-50 opacity-60'} lg:rounded-2xl lg:px-6 py-4 lg:p-8 shadow-md border`}
+              >
+                <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-6">
+                  <div className="px-3 lg:px-0">
+                    <h2 className="text-2xl font-bold text-gray-900">{getMetricTitle(selectedMetric)}</h2>
+                    <p className="text-gray-600 mt-1">{getMetricDescription(selectedMetric)}</p>
+                  </div>
+                  <div className="flex items-center gap-x-3 mt-4 lg:mt-0 px-3">
+                    {selectedMetric !== 'overview' && (
+                      <>
+                        <button
+                          onClick={() => setSelectedMetric('overview')}
+                          className={`flex-1 px-4 py-2 rounded-full font-medium text-sm transition-colors flex items-center gap-x-1.5 bg-gray-100 text-gray-600 hover:bg-gray-200`}
+                        >
+                          <ArrowLeftIcon size={16} /> Overview
+                        </button>
+                        <Link
+                          href={getMetricUrl(selectedMetric)}
+                          className={`flex-1  whitespace-nowrap px-4 py-2 rounded-full font-medium text-sm transition-colors flex items-center gap-x-1.5 bg-gray-100 text-gray-600 hover:bg-gray-200`}
+                        >
+                          <span className="hidden lg:block">View All</span>
+                          {getMetricButtonLabel(selectedMetric)}
+                          <ArrowRightIcon size={16} />
+                        </Link>
+                      </>
+                    )}
+                  </div>
+                </div>
+                {renderChart()}
+              </div>
+            )}
+          </>
+        </div>
+      )}
     </div>
   )
 }

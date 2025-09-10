@@ -6,9 +6,10 @@ interface IBottomProfileSection {
   toggleSidebar: boolean
   setPetDropdownOpen: (petDropdown: boolean) => void
   user: IUser | null
+  loading: boolean
 }
 
-const BottomProfileSection: FC<IBottomProfileSection> = ({ toggleSidebar, setPetDropdownOpen, user }) => {
+const BottomProfileSection: FC<IBottomProfileSection> = ({ toggleSidebar, setPetDropdownOpen, user, loading }) => {
   return (
     <AnimatePresence>
       {!toggleSidebar && (
@@ -26,7 +27,11 @@ const BottomProfileSection: FC<IBottomProfileSection> = ({ toggleSidebar, setPet
             className="flex items-center gap-x-3 p-3 rounded-lg border border-gray-200"
           >
             <div className="w-8 h-8 rounded-lg bg-gray-900 flex items-center justify-center">
-              <span className="text-sm font-semibold text-white capitalize">{user?.email?.charAt(0)}</span>
+              {loading ? (
+                <div className="border-2 border-pink-500 border-t-0 rounded-full animate-spin w-2.5 h-2.5" />
+              ) : (
+                <span className="text-sm font-semibold text-white capitalize">{user?.email?.charAt(0)}</span>
+              )}
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-semibold text-gray-900 truncate capitalize">{user?.email?.split('@')[0]}</p>

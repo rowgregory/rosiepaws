@@ -22,7 +22,7 @@ import GuardianActionMenuButton from '@/app/components/guardian/GuardianActionMe
 const Home = () => {
   const [currentTime] = useState(new Date())
   const { user, tokenTransactions } = useUserSelector()
-  const { zeroPets, pet, pets } = usePetSelector()
+  const { zeroPets, pet, pets, loading } = usePetSelector()
 
   const getTimeOfDay = () => {
     const hour = currentTime.getHours()
@@ -39,7 +39,11 @@ const Home = () => {
       <DisabilityEndOfLifeCareDrawer />
       <CreateSupportDrawer />
       <div className="min-h-dvh bg-gray-50">
-        {zeroPets ? (
+        {loading ? (
+          <div className="w-full flex items-center justify-center py-8">
+            <div className="border-2 border-pink-500 border-t-0 rounded-full animate-spin w-8 h-8" />
+          </div>
+        ) : zeroPets ? (
           <div className="px-6 py-5 max-w-7xl mx-auto min-h-dvh">
             <MainActionCard />
           </div>
