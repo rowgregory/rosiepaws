@@ -4,7 +4,7 @@ import React, { FC } from 'react'
 import { IChildren } from '@/app/types/common'
 import Link from 'next/link'
 import useCustomPathname from '@/app/hooks/useCustomPathname'
-import { Shield, StethoscopeIcon } from 'lucide-react'
+import { StethoscopeIcon } from 'lucide-react'
 import GuardianActionMenuButton from '@/app/components/guardian/GuardianActionMenuButton'
 
 interface PetLink {
@@ -23,13 +23,6 @@ const settingsLinks = (path: string): PetLink[] => [
     isActive: path === '/guardian/settings/vet',
     icon: <StethoscopeIcon className="w-3 h-3 lg:w-4 lg:h-4" />,
     gradient: 'from-purple-500 to-pink-500'
-  },
-  {
-    linkKey: '/guardian/settings/account-management',
-    textKey: 'Account Management',
-    isActive: path === '/guardian/settings/account-management',
-    icon: <Shield className="w-3 h-3 lg:w-4 lg:h-4" />,
-    gradient: 'from-red-500 to-orange-500'
   }
 ]
 

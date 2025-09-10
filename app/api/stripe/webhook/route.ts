@@ -50,7 +50,6 @@ export async function POST(request: NextRequest) {
         break
 
       case 'customer.subscription.updated':
-        console.log('CUSTOMER SUBSCRIPTION UPDATED')
         await handleCustomerSubscriptionUpdated(event.data.object as Stripe.Subscription)
         break
       case 'customer.subscription.deleted':

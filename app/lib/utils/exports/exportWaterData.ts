@@ -38,10 +38,7 @@ const exportWaterData = (waters: any[], petId?: string) => {
     // Cleanup
     window.URL.revokeObjectURL(url)
     document.body.removeChild(a)
-
-    console.log(`Exported ${filteredWaters.length} water records for pet ${petId || 'all pets'}`)
-  } catch (error) {
-    console.error('Export failed:', error)
+  } catch {
     alert('Failed to export water data')
   }
 }

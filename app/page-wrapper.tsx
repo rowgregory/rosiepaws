@@ -79,8 +79,6 @@ const PageWrapper: FC<{ children: ReactNode }> = ({ children }) => {
 
     // Listen for plan purchase success
     channel.bind('plan-purchased', (data: { success: any }) => {
-      console.log('Plan purchase successful:', data)
-
       if (data.success) {
         dispatch(setOpenChangePlanModal())
         dispatch(api.util.invalidateTags(['User']))

@@ -9,7 +9,6 @@ async function handleActiveSubscription(subscription: Stripe.Subscription, strip
   const cancelAtPeriodEnd = subscription.cancel_at_period_end
   const currentPeriodEnd = (subscription as any).current_period_end
   const newPlan = determinePlanFromSubscription(subscription)
-  //   console.log('stripeSubscription: ', stripeSubscription)
 
   // Determine if this is a reactivation/upgrade from a cancelled state
   const wasInCancelledState = stripeSubscription.cancelAtPeriodEnd === true

@@ -79,6 +79,7 @@ const Home = () => {
                 className="lg:col-span-5"
               >
                 <TodaysProgressSection
+                  movements={pet?.movements}
                   waters={pet?.waters}
                   feedings={pet?.feedings}
                   painScores={pet?.painScores}

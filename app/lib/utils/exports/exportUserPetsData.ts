@@ -63,10 +63,7 @@ const exportUserPetsData = (pets: any[]) => {
     // Cleanup
     window.URL.revokeObjectURL(url)
     document.body.removeChild(a)
-
-    console.log(`Exported ${pets.length} pets successfully`)
-  } catch (error) {
-    console.error('Export failed:', error)
+  } catch {
     alert('Failed to export pets data')
   }
 }

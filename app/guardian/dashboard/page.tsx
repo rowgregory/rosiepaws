@@ -52,7 +52,7 @@ const METRIC_CONFIG: Record<string, MetricConfig> = {
     urlPath: 'blood-sugar',
     buttonLabel: 'Blood Sugars'
   },
-  'pain-score': {
+  'pain-scores': {
     title: 'Pain Score Tracking',
     urlPath: 'pain',
     buttonLabel: 'Pain Scores'
@@ -62,7 +62,7 @@ const METRIC_CONFIG: Record<string, MetricConfig> = {
     urlPath: 'feedings',
     buttonLabel: 'Feedings'
   },
-  water: {
+  waters: {
     title: 'Water Intake Logs',
     urlPath: 'water',
     buttonLabel: 'Waters'
@@ -117,7 +117,7 @@ const getMetricUrl = (metric: string): string => {
 }
 
 const getMetricButtonLabel = (metric: string): string => {
-  return METRIC_CONFIG[metric]?.buttonLabel || 'Data'
+  return METRIC_CONFIG[metric]?.buttonLabel
 }
 
 const GuardianDashboard = () => {

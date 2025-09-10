@@ -162,14 +162,15 @@ export const SeizureCard: FC<ISeizureCard> = ({ index, seizure, setSelectedVideo
               <button className="text-xs text-blue-600 hover:text-blue-700 transition-colors">Edit</button>
               {seizure.videoUrl && (
                 <button
-                  onClick={() =>
+                  onClick={(e) => {
+                    e.stopPropagation()
                     setSelectedVideo({
                       url: seizure.videoUrl,
                       fileName: seizure.videoFilename,
                       petName: seizure.pet.name,
                       date: seizure.timeRecorded
                     })
-                  }
+                  }}
                   className="text-xs text-green-600 hover:text-green-700 transition-colors"
                 >
                   View Video

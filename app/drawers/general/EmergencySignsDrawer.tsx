@@ -4,7 +4,6 @@ import {
   X,
   AlertTriangle,
   Clock,
-  Phone,
   Heart,
   Thermometer,
   Zap,
@@ -381,19 +380,6 @@ const EmergencySignsDrawer = () => {
                       professional veterinary diagnosis and treatment.
                     </p>
                   </div>
-
-                  <div className="bg-red-600 border border-red-500 p-4 rounded-xl">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center">
-                        <Phone className="w-5 h-5 mr-3" />
-                        <div>
-                          <span className="font-medium block">24/7 Emergency Line</span>
-                          <span className="text-sm text-red-100">(555) 123-4567</span>
-                        </div>
-                      </div>
-                      <div className="text-xs bg-red-500 px-2 py-1 rounded-md">URGENT</div>
-                    </div>
-                  </div>
                 </div>
               </div>
 
@@ -410,7 +396,7 @@ const EmergencySignsDrawer = () => {
                       }`}
                     >
                       <span className="flex items-center">
-                        🐕 <span className="ml-2">Canine</span>
+                        <span className="ml-2">Canine</span>
                       </span>
                     </button>
                     <button
@@ -422,7 +408,7 @@ const EmergencySignsDrawer = () => {
                       }`}
                     >
                       <span className="flex items-center">
-                        🐱 <span className="ml-2">Feline</span>
+                        <span className="ml-2">Feline</span>
                       </span>
                     </button>
                   </div>

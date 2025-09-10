@@ -84,17 +84,13 @@ export const exportAllPetsData = (pets: any[]) => {
     // Cleanup
     window.URL.revokeObjectURL(url)
     document.body.removeChild(a)
-
-    console.log(`Exported ${pets.length} pets successfully`)
-  } catch (error) {
-    console.error('Export failed:', error)
+  } catch {
     alert('Failed to export pets data')
   }
 }
 
 // Alternative version with detailed health records export
 export const exportPetsWithDetailedHealthData = (pets: any[]) => {
-  console.log(pets)
   try {
     // Main pet data
     const petHeaders = [

@@ -28,10 +28,7 @@ const exportUsersData = (users: any[]) => {
     // Cleanup
     window.URL.revokeObjectURL(url)
     document.body.removeChild(a)
-
-    console.log(`Exported ${users.length} users successfully`)
-  } catch (error) {
-    console.error('Export failed:', error)
+  } catch {
     alert('Failed to export users data')
   }
 }

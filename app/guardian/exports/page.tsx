@@ -37,9 +37,6 @@ const Exports = () => {
 
     if (exportHandlers[type]) {
       exportHandlers[type]()
-      console.log(`Exported ${type} for pet ${petId || 'all pets'}`)
-    } else {
-      console.warn(`No export handler for type: ${type}`)
     }
   }
 

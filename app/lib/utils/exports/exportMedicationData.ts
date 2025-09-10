@@ -66,10 +66,7 @@ const exportMedicationsData = (medications: any[], petId?: string) => {
     // Cleanup
     window.URL.revokeObjectURL(url)
     document.body.removeChild(a)
-
-    console.log(`Exported ${filteredMeds.length} medication records for pet ${petId || 'all pets'}`)
-  } catch (error) {
-    console.error('Export failed:', error)
+  } catch {
     alert('Failed to export medication data')
   }
 }

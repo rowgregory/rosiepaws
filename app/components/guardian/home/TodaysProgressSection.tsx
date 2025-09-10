@@ -61,11 +61,14 @@ const calculateTodaysProgress = ({ movements = [], waters = [], feedings = [], p
       return total + Number(water.milliliters || 0)
     }, 0)
 
-    // Daily water goal based on pet weight (rough estimate: 60ml per kg for dogs, 50ml per kg for cats)
     const getHydrationGoal = () => {
-      const weight = Number(pet?.weight) || 20 // Default 20kg
-      const multiplier = pet?.type === 'cat' ? 50 : 60
-      return weight * multiplier
+      const weight = Number(pet?.weight) || 10
+
+      if (pet?.type === 'cat') {
+        return Math.round(weight * 25)
+      } else {
+        return Math.round(weight * 27)
+      }
     }
 
     const hydrationGoal = getHydrationGoal()
@@ -105,8 +108,9 @@ const calculateTodaysProgress = ({ movements = [], waters = [], feedings = [], p
 }
 
 // Updated Progress Component
-const TodaysProgressSection = ({ waters, feedings, painScores, pets }: any) => {
+const TodaysProgressSection = ({ movements, waters, feedings, painScores, pets }: any) => {
   const progress = calculateTodaysProgress({
+    movements,
     waters,
     feedings,
     painScores,
@@ -195,8 +199,8 @@ const TodaysProgressSection = ({ waters, feedings, painScores, pets }: any) => {
                 15 min/day for cats. Younger pets need 60 min/day (dogs) or 30 min/day (cats).
               </div>
               <div className="p-2 bg-gray-50 rounded border-l-2 border-cyan-300">
-                <strong className="text-cyan-700">Hydration Target:</strong> Calculated as 60ml per kg body weight for
-                dogs, 50ml per kg for cats (veterinary standard).
+                <strong className="text-cyan-700">Hydration Target:</strong> Calculated based on body weight using
+                veterinary standards (approximately 50-60ml per kg or 25-27ml per lb).
               </div>
               <div className="p-2 bg-gray-50 rounded border-l-2 border-orange-300">
                 <strong className="text-orange-700">Feeding Schedule:</strong> Based on 3 meals per day for optimal

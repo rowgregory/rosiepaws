@@ -53,10 +53,7 @@ const exportPainScoresData = (painScores: any[], petId?: string) => {
     // Cleanup
     window.URL.revokeObjectURL(url)
     document.body.removeChild(a)
-
-    console.log(`Exported ${painScores.length} pain scores successfully`)
-  } catch (error) {
-    console.error('Export failed:', error)
+  } catch {
     alert('Failed to export pain scores data')
   }
 }
