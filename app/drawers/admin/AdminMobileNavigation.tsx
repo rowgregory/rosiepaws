@@ -7,7 +7,6 @@ import { adminNavigationLinks } from '@/app/lib/utils'
 import useCustomPathname from '@/app/hooks/useCustomPathname'
 import Link from 'next/link'
 import { signOut } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
 
 const AdminMobileNavigation = () => {
   const { adminMobileNavigation } = useAdminSelector()
@@ -18,24 +17,12 @@ const AdminMobileNavigation = () => {
   const isSuperUser = user?.isSuperUser ?? false
   const linkData = adminNavigationLinks(path, isSuperUser)
   const [isLoading, setIsLoading] = useState(false)
-  const { push } = useRouter()
 
   const handleLogout = async (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
     e.preventDefault()
 
-    try {
-      setIsLoading(true)
-      await signOut({
-        redirect: false,
-        callbackUrl: '/auth/login'
-      })
-
-      push('/auth/login')
-      setIsLoading(false)
-      onClose()
-    } catch {
-      setIsLoading(false)
-    }
+    setIsLoading(true)
+    await signOut({ callbackUrl: '/auth/login' })
   }
 
   const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>, link: any) => {
