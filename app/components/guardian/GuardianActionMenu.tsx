@@ -8,15 +8,23 @@ import { Menu } from 'lucide-react'
 import { publicDashboardLinks } from '@/app/lib/utils'
 
 import useCustomPathname from '@/app/hooks/useCustomPathname'
+import { useState } from 'react'
+import { signOut } from 'next-auth/react'
 
 const GuardianActionMenu = () => {
   const { guardianActionMenu, zeroPets } = usePetSelector()
   const dispatch = useAppDispatch()
   const path = useCustomPathname()
-
+  const [isLoading, setIsLoading] = useState(false)
   const onClose = () => dispatch(setCloseGuardianActionMenu())
 
   const linkData = publicDashboardLinks(path, zeroPets)
+
+  const handleLogout = async () => {
+    setIsLoading(true)
+
+    await signOut({ callbackUrl: '/auth/login' })
+  }
 
   return (
     <AnimatePresence>
@@ -66,39 +74,79 @@ const GuardianActionMenu = () => {
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: index * 0.05 }}
                 >
-                  <Link
-                    href={link.linkKey}
-                    onClick={onClose}
-                    className={`group relative w-full flex items-center justify-between space-x-4 p-4 rounded-xl transition-all duration-200 hover:shadow-md hover:scale-[1.02] border hover:border-gray-200 ${link.isActive ? 'border border-gray-200 shadow-md' : 'border-transparent'}`}
-                  >
-                    <div className="flex items-center gap-x-3">
-                      {/* Icon */}
-                      <div className={`relative p-3 rounded-xl shadow-lg group-hover:shadow-xl transition-shadow`}>
-                        <link.icon className={`w-5 h-5 transition-colors duration-200 `} />
+                  {link.textKey === 'Logout' ? (
+                    <button
+                      type="button"
+                      disabled={isLoading}
+                      onClick={() => {
+                        handleLogout()
+                        onClose()
+                      }}
+                      className={`group relative w-full flex items-center justify-between space-x-4 p-4 rounded-xl transition-all duration-200 hover:shadow-md hover:scale-[1.02] border hover:border-gray-200 text-left ${link.isActive ? 'border border-gray-200 shadow-md' : 'border-transparent'}`}
+                    >
+                      <div className="flex items-center gap-x-3">
+                        {/* Icon */}
+                        <div className={`relative p-3 rounded-xl shadow-lg group-hover:shadow-xl transition-shadow`}>
+                          <link.icon className={`w-5 h-5 transition-colors duration-200 `} />
+                        </div>
+
+                        <AnimatePresence>
+                          <motion.span
+                            initial={{ opacity: 0, width: 0 }}
+                            animate={{ opacity: 1, width: 'auto' }}
+                            exit={{ opacity: 0, width: 0 }}
+                            transition={{ duration: 0.2 }}
+                            className={`text-sm font-medium whitespace-nowrap`}
+                          >
+                            {link.textKey}
+                          </motion.span>
+                        </AnimatePresence>
+                      </div>
+                      {/* Arrow indicator */}
+                      <div className="text-gray-400 group-hover:text-gray-600 group-hover:translate-x-1 transition-all">
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                        </svg>
                       </div>
 
-                      <AnimatePresence>
-                        <motion.span
-                          initial={{ opacity: 0, width: 0 }}
-                          animate={{ opacity: 1, width: 'auto' }}
-                          exit={{ opacity: 0, width: 0 }}
-                          transition={{ duration: 0.2 }}
-                          className={`text-sm font-medium whitespace-nowrap`}
-                        >
-                          {link.textKey}
-                        </motion.span>
-                      </AnimatePresence>
-                    </div>
-                    {/* Arrow indicator */}
-                    <div className="text-gray-400 group-hover:text-gray-600 group-hover:translate-x-1 transition-all">
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                      </svg>
-                    </div>
+                      {/* Hover effect overlay */}
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity rounded-xl" />
+                    </button>
+                  ) : (
+                    <Link
+                      href={link.linkKey}
+                      onClick={onClose}
+                      className={`group relative w-full flex items-center justify-between space-x-4 p-4 rounded-xl transition-all duration-200 hover:shadow-md hover:scale-[1.02] border hover:border-gray-200 ${link.isActive ? 'border border-gray-200 shadow-md' : 'border-transparent'}`}
+                    >
+                      <div className="flex items-center gap-x-3">
+                        {/* Icon */}
+                        <div className={`relative p-3 rounded-xl shadow-lg group-hover:shadow-xl transition-shadow`}>
+                          <link.icon className={`w-5 h-5 transition-colors duration-200 `} />
+                        </div>
 
-                    {/* Hover effect overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity rounded-xl" />
-                  </Link>
+                        <AnimatePresence>
+                          <motion.span
+                            initial={{ opacity: 0, width: 0 }}
+                            animate={{ opacity: 1, width: 'auto' }}
+                            exit={{ opacity: 0, width: 0 }}
+                            transition={{ duration: 0.2 }}
+                            className={`text-sm font-medium whitespace-nowrap`}
+                          >
+                            {link.textKey}
+                          </motion.span>
+                        </AnimatePresence>
+                      </div>
+                      {/* Arrow indicator */}
+                      <div className="text-gray-400 group-hover:text-gray-600 group-hover:translate-x-1 transition-all">
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                        </svg>
+                      </div>
+
+                      {/* Hover effect overlay */}
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity rounded-xl" />
+                    </Link>
+                  )}
                 </motion.div>
               ))}
             </div>
