@@ -48,6 +48,8 @@ const formInitialState = {
       type: '' as PetType,
       breed: '',
       age: '',
+      ageYears: '',
+      ageMonths: '',
       gender: '',
       weight: '',
       notes: '',

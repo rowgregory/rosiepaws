@@ -5,9 +5,11 @@ import { formatDate } from '@/app/lib/utils'
 import { useAppDispatch } from '@/app/redux/store'
 import { setOpenPetDrawer } from '@/app/redux/features/petSlice'
 import { setInputs } from '@/app/redux/features/formSlice'
+import parseAgeString from '@/app/lib/utils/public/my-pets/pets/parseAgeString'
 
 const PetProfileSection = ({ pet }: any) => {
   const dispatch = useAppDispatch()
+  const { ageYears, ageMonths } = parseAgeString(pet.age)
   return (
     <div
       onClick={() => {
@@ -15,7 +17,7 @@ const PetProfileSection = ({ pet }: any) => {
         dispatch(
           setInputs({
             formName: 'petForm',
-            data: { ...pet, type: pet.type, isUpdating: true }
+            data: { ...pet, type: pet.type, ageYears, ageMonths, isUpdating: true }
           })
         )
       }}
