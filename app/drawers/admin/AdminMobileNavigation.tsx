@@ -23,6 +23,8 @@ const AdminMobileNavigation = () => {
 
     setIsLoading(true)
     await signOut({ callbackUrl: '/auth/login' })
+
+    window.location.href = '/auth/login'
   }
 
   const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>, link: any) => {
