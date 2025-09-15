@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ChevronDown, ChevronRight, CheckCircle } from 'lucide-react'
+import { ChevronDown, ChevronRight } from 'lucide-react'
 import { sections } from '@/app/lib/constants'
 
 const MovementAssessmentGuide = () => {
@@ -13,18 +13,16 @@ const MovementAssessmentGuide = () => {
   }
 
   return (
-    <div className="max-w-md bg-white shadow-sm border border-gray-100 overflow-hidden">
-      <div className="p-4 bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-gray-100">
-        <h3 className="text-lg font-semibold text-gray-800 flex items-center">
-          <CheckCircle className="w-5 h-5 mr-2 text-blue-600" />
-          Movement Assessment Guide
-        </h3>
-        <p className="text-sm text-gray-600 mt-1">
+    <div className="w-full overflow-y-auto h-[calc(100dvh-65px)] mx-auto px-5 pb-5 max-w-md flex-1 border-l-1 border-l-gray-100">
+      {/* Header */}
+      <div className="sticky top-0 bg-white pt-4 pb-1 z-10 border-b border-gray-200">
+        <h3 className="text-lg font-semibold text-gray-800">Movement Assessment Guide</h3>
+        <p className="text-sm text-gray-600">
           Essential guidelines for documenting your pet&apos;s movement and mobility
         </p>
       </div>
 
-      <div className="max-h-[calc(100vh-200px)] overflow-y-auto">
+      <div className="space-y-3">
         {sections.map((section) => {
           const isExpanded = expandedSections.includes(section.id)
           const SectionIcon = section.icon

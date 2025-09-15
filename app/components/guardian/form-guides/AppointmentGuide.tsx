@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Calendar, Clock, Shield, AlertTriangle, ChevronDown, Info } from 'lucide-react'
+import { Shield, ChevronDown } from 'lucide-react'
 import { quickFacts, tips } from '@/app/lib/constants/public/appointment'
 
 const AppointmentGuide = () => {
@@ -11,22 +11,16 @@ const AppointmentGuide = () => {
   }
 
   return (
-    <div className="bg-white max-w-md rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+    <div className="w-full overflow-y-auto h-[calc(100dvh-65px)] mx-auto px-5 pb-5 max-w-md flex-1 border-l-1 border-l-gray-100">
       {/* Header */}
-      <div className="p-6 border-b border-gray-100 bg-gradient-to-r from-indigo-50 to-blue-50">
-        <div className="flex items-center space-x-3">
-          <div className="p-2 bg-indigo-100 rounded-lg">
-            <Info className="w-5 h-5 text-indigo-600" />
-          </div>
-          <div>
-            <h3 className="text-lg font-semibold text-gray-900">Appointment Guide</h3>
-            <p className="text-sm text-gray-600">Tips for a successful vet visit</p>
-          </div>
-        </div>
+
+      <div className="sticky top-0 bg-white pt-4 pb-1 z-10 border-b border-gray-200">
+        <h3 className="text-lg font-semibold text-gray-800">Appointment Guidelines</h3>
+        <p className="text-sm text-gray-600">Tips for a successful vet visit</p>
       </div>
 
       {/* Quick Facts Section */}
-      <div className="p-6 border-b border-gray-100">
+      <div className="pt-4 border-b border-gray-100">
         <h4 className="text-sm font-semibold text-gray-700 mb-4 flex items-center gap-2">
           <Shield className="w-4 h-4 text-indigo-500" />
           Quick Facts
@@ -119,39 +113,6 @@ const AppointmentGuide = () => {
           )
         })}
       </div>
-
-      {/* Contact Info Footer */}
-      <div className="p-4 bg-gray-50 border-t border-gray-100">
-        <div className="text-center space-y-2">
-          <p className="text-xs font-medium text-gray-700">Need help scheduling?</p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-2 text-xs text-gray-600">
-            <div className="flex items-center gap-1">
-              <Calendar className="w-3 h-3" />
-              <span>Call: (555) 123-PETS</span>
-            </div>
-            <span className="hidden sm:block">•</span>
-            <div className="flex items-center gap-1">
-              <Clock className="w-3 h-3" />
-              <span>Hours: 8AM - 6PM</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Emergency Banner */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.5 }}
-        className="bg-red-50 border-t border-red-200 p-4"
-      >
-        <div className="flex items-center space-x-2">
-          <AlertTriangle className="w-4 h-4 text-red-600 flex-shrink-0" />
-          <p className="text-xs text-red-700">
-            <span className="font-semibold">Emergency?</span> Call our 24/7 hotline: (555) 911-PETS
-          </p>
-        </div>
-      </motion.div>
     </div>
   )
 }

@@ -15,7 +15,7 @@ const BloodSugarForm: FC<IForm> = ({ inputs, handleInput, close, handleSubmit, l
 
   return (
     <form onSubmit={handleSubmit} className="flex-1 flex flex-col min-h-full">
-      <div className="overflow-y-auto px-5 pt-9 pb-12 h-[calc(100dvh-200px)]">
+      <div className="overflow-y-auto px-5 pt-9 pb-12 h-[calc(100dvh-132px)]">
         <div className="space-y-6">
           {/* Pet Selection */}
           <PetSelection handleInput={handleInput} inputs={inputs} errors={errors} formName="bloodSugarForm" />

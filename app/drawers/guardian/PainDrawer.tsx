@@ -3,7 +3,7 @@ import { RootState, useAppDispatch, useAppSelector } from '@/app/redux/store'
 import { createFormActions, setInputs } from '@/app/redux/features/formSlice'
 import { validatePainScoreForm } from '@/app/validations/validatePainScoreForm'
 import PainScoreForm from '@/app/forms/PainScoreForm'
-import GuardianPainAssessmentChart from '@/app/components/guardian/form-guides/PainAssessmentChart'
+import GuardianPainAssessmentGuide from '@/app/components/guardian/form-guides/PainAssessmentGuide'
 import { AnimatePresence } from 'framer-motion'
 import { Activity } from 'lucide-react'
 import AnimatedDrawerHeader from '@/app/components/guardian/AnimatedDrawerHeader'
@@ -97,7 +97,7 @@ const PainDrawer = () => {
                   loading={isLoading}
                   isUpdating={isUpdateMode}
                 />
-                <GuardianPainAssessmentChart />
+                <GuardianPainAssessmentGuide />
               </div>
             </Drawer>
           </>

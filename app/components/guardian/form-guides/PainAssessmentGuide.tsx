@@ -4,7 +4,7 @@ import { painAssessmentData } from '@/public/data/guardian.data'
 import { ChevronDown, ChevronUp } from 'lucide-react'
 import { useState } from 'react'
 
-const PainAssessmentChart = () => {
+const PainAssessmentGuide = () => {
   const [openItems, setOpenItems] = useState(new Set([0])) // First item open by default
 
   const toggleItem = (index: number) => {
@@ -27,17 +27,13 @@ const PainAssessmentChart = () => {
   return (
     <div className="w-full overflow-y-auto h-[calc(100dvh-65px)] mx-auto px-5 pb-5 max-w-md flex-1 border-l-1 border-l-gray-100">
       {/* Header */}
-      <div className="sticky top-0 bg-white pt-4 z-10">
-        <div className="text-center">
-          <div className="flex items-center justify-center gap-2 mb-2">
-            <h3 className="text-lg font-semibold text-gray-900">Pain Assessment Chart</h3>
-          </div>
+      <div className="sticky top-0 bg-white pt-4 pb-1 z-10 border-b border-gray-200">
+        <h3 className="text-lg font-semibold text-gray-800">Pain Assessment Chart</h3>
 
-          {/* Toggle All Button */}
-          <button onClick={toggleAll} className="text-sm text-blue-600 hover:text-blue-800 mb-3 underline">
-            {openItems.size === painAssessmentData.length ? 'Collapse All' : 'Expand All'}
-          </button>
-        </div>
+        {/* Toggle All Button */}
+        <button onClick={toggleAll} className="text-sm text-blue-600 hover:text-blue-800 mb-3 underline">
+          {openItems.size === painAssessmentData.length ? 'Collapse All' : 'Expand All'}
+        </button>
 
         <div className="grid grid-cols-3 gap-4 my-4 font-bold text-center border-b-2 pb-2 text-sm">
           <div>Psychological & Behavioral</div>
@@ -112,4 +108,4 @@ const PainAssessmentChart = () => {
   )
 }
 
-export default PainAssessmentChart
+export default PainAssessmentGuide

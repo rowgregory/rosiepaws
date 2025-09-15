@@ -48,14 +48,12 @@ export const BLOOD_SUGAR_RANGES = [
 export const normalRanges = [
   {
     pet: 'Dogs',
-    icon: '🐕',
     normal: '80-120 mg/dL',
     fasting: '70-100 mg/dL',
     color: 'text-blue-600'
   },
   {
     pet: 'Cats',
-    icon: '🐱',
     normal: '80-120 mg/dL',
     fasting: '70-100 mg/dL',
     color: 'text-purple-600'

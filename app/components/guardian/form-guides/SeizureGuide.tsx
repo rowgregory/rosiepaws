@@ -4,18 +4,15 @@ import { emergencySteps, safetyTips } from '@/app/lib/constants/public/seizure'
 
 const SeizureGuide: FC = () => {
   return (
-    <div className="max-w-md w-full bg-gradient-to-br from-red-50 to-orange-50 rounded-lg p-6 space-y-6">
+    <div className="w-full overflow-y-auto h-[calc(100dvh-65px)] mx-auto px-5 pb-5 max-w-md flex-1 border-l-1 border-l-gray-100">
       {/* Header */}
-      <div className="text-center">
-        <div className="flex items-center justify-center gap-2 mb-2">
-          <AlertTriangle className="w-6 h-6 text-red-500" />
-          <h3 className="text-lg font-semibold text-gray-900">Seizure Response Guide</h3>
-        </div>
+      <div className="sticky top-0 bg-white pt-4 pb-1 z-10 border-b border-gray-200">
+        <h3 className="text-lg font-semibold text-gray-800">Seizure Response Guide</h3>
         <p className="text-sm text-gray-600">Know what to do when your pet has a seizure</p>
       </div>
 
       {/* Emergency Steps */}
-      <div className="space-y-4">
+      <div className="space-y-4 mt-4">
         <h4 className="font-medium text-gray-900 text-sm flex items-center gap-2">
           <Heart className="w-4 h-4 text-red-500" />
           During a Seizure
@@ -53,7 +50,7 @@ const SeizureGuide: FC = () => {
       </div>
 
       {/* Emergency Alert */}
-      <div className="bg-red-100 border border-red-300 rounded-lg p-4">
+      <div className="bg-red-100 border border-red-300 rounded-lg p-4 mb-4">
         <div className="flex items-start gap-3">
           <AlertTriangle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
           <div>

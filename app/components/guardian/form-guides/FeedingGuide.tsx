@@ -11,10 +11,10 @@ const FeedingGuide = () => {
   }
 
   return (
-    <div className="w-full max-w-md bg-white border-l border-gray-200 h-full overflow-y-auto">
+    <div className="w-full overflow-y-auto h-[calc(100dvh-65px)] mx-auto px-5 pb-5 max-w-md flex-1 border-l-1 border-l-gray-100">
       {/* Header */}
-      <div className="p-4 border-b border-gray-200">
-        <h3 className="text-lg font-semibold text-gray-900">Feeding Guidelines</h3>
+      <div className="sticky top-0 bg-white pt-4 pb-1 z-10 border-b border-gray-200">
+        <h3 className="text-lg font-semibold text-gray-800">Feeding Guidelines</h3>
         <p className="text-sm text-gray-600">Quick reference for healthy feeding</p>
       </div>
 

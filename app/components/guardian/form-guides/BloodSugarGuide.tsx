@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { motion } from 'framer-motion'
-import { Info, AlertTriangle, CheckCircle, TrendingUp, Eye, Droplets, ChevronDown, ChevronUp } from 'lucide-react'
+import { AlertTriangle, CheckCircle, TrendingUp, Eye, Droplets, ChevronDown, ChevronUp } from 'lucide-react'
 import { normalRanges, symptoms, tips, warningLevels } from '@/app/lib/constants'
 
 const BloodSugarGuide = () => {
@@ -11,19 +11,14 @@ const BloodSugarGuide = () => {
   }
 
   return (
-    <div className="w-full max-w-md bg-white border-l border-gray-200 h-full overflow-y-auto">
-      <div className="p-6 space-y-6">
-        {/* Header */}
-        <div className="flex items-center space-x-3">
-          <div className="p-2 bg-blue-100 rounded-lg">
-            <Info className="w-5 h-5 text-blue-600" />
-          </div>
-          <div>
-            <h2 className="text-lg font-semibold text-gray-900">Blood Sugar Guide</h2>
-            <p className="text-sm text-gray-500">Essential information for pet owners</p>
-          </div>
-        </div>
+    <div className="w-full overflow-y-auto h-[calc(100dvh-65px)] mx-auto px-5 pb-5 max-w-md flex-1 border-l-1 border-l-gray-100">
+      {/* Header */}
+      <div className="sticky top-0 bg-white pt-4 pb-1 z-10 border-b border-gray-200">
+        <h3 className="text-lg font-semibold text-gray-800">Blood Sugar Guidelines</h3>
+        <p className="text-sm text-gray-600">Essential information for pet owners</p>
+      </div>
 
+      <div className="py-4 space-y-3">
         {/* Normal Ranges */}
         <div className="space-y-3">
           <button
@@ -52,7 +47,6 @@ const BloodSugarGuide = () => {
                 <div key={index} className="p-3 bg-gray-50 rounded-lg border">
                   <div className="flex items-center justify-between mb-2">
                     <span className="font-medium text-gray-900">{range.pet}</span>
-                    <span className="text-2xl">{range.icon}</span>
                   </div>
                   <div className="space-y-1 text-sm">
                     <div className="flex justify-between">
