@@ -15,6 +15,7 @@ import { Beaker, ChevronRight, Heart, Hospital, MapPin, Utensils, Zap } from 'lu
 import { setOpenNotEnoughTokensModal } from '@/app/redux/features/appSlice'
 import { IUser } from '@/app/types'
 import { setOpenSeizureDrawer } from '@/app/redux/features/seizureSlice'
+import { setOpenBloodSugarDrawer } from '@/app/redux/features/bloodSugarSlice'
 
 const quickActionsData = [
   {
@@ -48,8 +49,8 @@ const quickActionsData = [
   {
     label: 'Blood Sugar',
     icon: <Beaker className="w-5 h-5" />,
-    func: setOpenMovementDrawer,
-    tokenCost: movementCreateTokenCost,
+    func: setOpenBloodSugarDrawer,
+    tokenCost: 0,
     isFree: false
   },
   {
