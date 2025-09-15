@@ -4,7 +4,7 @@ import { setOpenSeizureCalendarDrawer } from '@/app/redux/features/dashboardSlic
 import { generateSeizurePDFReport } from '@/app/lib/utils/reports/seizure-pdf-report-generator'
 import { setInputs } from '@/app/redux/features/formSlice'
 import { AlertTriangle, FileText, Calendar } from 'lucide-react'
-import { useAppDispatch } from '@/app/redux/store'
+import { useAppDispatch, useUserSelector } from '@/app/redux/store'
 import { ISeizure } from '@/app/types'
 import { getLocalISOString } from '@/app/lib/utils'
 import { setOpenSeizureDrawer } from '@/app/redux/features/seizureSlice'
@@ -16,6 +16,7 @@ interface IQuickActions {
 const QuickActions: FC<IQuickActions> = ({ seizures }) => {
   const dispatch = useAppDispatch()
   const [isGenerating, setIsGenerating] = useState(false)
+  const { user } = useUserSelector()
 
   const handleDownload = async () => {
     try {
@@ -24,7 +25,7 @@ const QuickActions: FC<IQuickActions> = ({ seizures }) => {
       const doc = await generateSeizurePDFReport(seizures, {
         includeCharts: true,
         includeFullLog: true,
-        ownerName: 'John Doe'
+        ownerName: user?.name
       })
 
       // Generate filename with date

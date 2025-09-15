@@ -329,8 +329,8 @@ const MedicationForm = ({ inputs, handleSubmit, close, errors, loading, isUpdati
                     </p>
                     <p className="text-sm text-gray-500">
                       {medicationForm?.inputs?.reminderEnabled
-                        ? "You'll receive a reminder on the day of your appointment"
-                        : 'Click to enable appointment reminders'}
+                        ? "You'll receive a reminder on the day of your medication"
+                        : 'Click to enable medication reminders'}
                     </p>
                   </div>
                 </div>
