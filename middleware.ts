@@ -3,7 +3,12 @@ import { auth } from './app/lib/auth'
 
 // Routes that bypass authentication
 const publicRoutes = ['/auth/login', '/auth/custom-callback']
-const cronRoutes = ['/api/pet/check-med-reminders']
+const cronRoutes = [
+  '/api/pet/check-med-reminders',
+  '/api/cron/reset-free-user-tokens',
+  '/api/cron/backup',
+  '/api/cron/reset-comfort-tokens'
+]
 const webhookRoutes = ['/api/stripe/webhook']
 
 export async function middleware(req: NextRequest) {
