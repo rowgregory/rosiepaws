@@ -16,7 +16,7 @@ export async function GET(req: NextRequest) {
     })
 
     await createLog('info', `Reset tokens for ${result.count} free users`, {
-      location: ['api route - POST /api/cron/reset-free-user-tokens'],
+      location: ['api route - GET /api/cron/reset-free-user-tokens'],
       name: 'ResetTokensForFreeUsers',
       timestamp: new Date().toISOString(),
       url: req.url,

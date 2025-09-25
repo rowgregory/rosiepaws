@@ -76,6 +76,14 @@ export async function GET(req: NextRequest) {
       await markReminderSent(medication.id, today, currentTime)
     }
 
+    await createLog('info', `Check med reminders`, {
+      location: ['api route - GET /api/cron/check-med-reminders'],
+      name: 'CheckMedReminders',
+      timestamp: new Date().toISOString(),
+      url: req.url,
+      method: req.method
+    })
+
     return NextResponse.json({ success: true })
   } catch (error: any) {
     await createLog('error', `Fail to send medication reminder email: ${error.message}`, {

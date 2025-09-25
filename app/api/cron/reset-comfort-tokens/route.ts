@@ -1,4 +1,5 @@
 // api/cron/reset-tokens.js
+import { createLog } from '@/app/lib/api/createLog'
 import { handleApiError } from '@/app/lib/api/handleApiError'
 import prisma from '@/prisma/client'
 import { NextRequest, NextResponse } from 'next/server'
@@ -60,8 +61,6 @@ export async function GET(req: NextRequest) {
       return true
     })
 
-    console.log(`${eligibleUsers.length} users are eligible for token reset`)
-
     if (eligibleUsers.length === 0) {
       return NextResponse.json({
         success: true,
@@ -87,7 +86,13 @@ export async function GET(req: NextRequest) {
       }
     })
 
-    console.log(`Successfully updated ${updateResult.count} users`)
+    await createLog('info', `Reset tokens for ${updateResult.count} COMFORT users`, {
+      location: ['api route - GET /api/cron/reset-comfort-tokens'],
+      name: 'ResetTokensForComfortUsers',
+      timestamp: new Date().toISOString(),
+      url: req.url,
+      method: req.method
+    })
 
     // Log the update for monitoring
     const updatedUsers = eligibleUsers.map((user) => ({

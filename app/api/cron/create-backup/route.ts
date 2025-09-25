@@ -1,3 +1,4 @@
+import { createLog } from '@/app/lib/api/createLog'
 import { getUserFromHeader } from '@/app/lib/api/getUserFromheader'
 import { handleApiError } from '@/app/lib/api/handleApiError'
 import { sendBackupDataEmail } from '@/app/lib/resend/sendBackupDataEmail'
@@ -86,6 +87,14 @@ export async function GET(req: NextRequest) {
 
     // Email the backup file
     await sendBackupDataEmail(backupData, adminEmails, req, userAuth?.userId)
+
+    await createLog('info', `Create backed up successfully created`, {
+      location: ['api route - GET /api/cron/create-backup'],
+      name: 'CreateBackup',
+      timestamp: new Date().toISOString(),
+      url: req.url,
+      method: req.method
+    })
 
     return NextResponse.json(
       {
