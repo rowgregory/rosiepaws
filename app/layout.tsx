@@ -18,7 +18,7 @@ export const viewport: Viewport = {
 }
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://rosiepawsapp.com'),
+  metadataBase: new URL('https://www.rosiepawsapp.com'),
   title: 'Rosie Paws',
   description:
     'Rosie Paws is a compassionate app that helps disabled and end-of-life dog and cat owners track essential health stats like pain, water, movement, blood sugar, seizures, and more.',
@@ -52,7 +52,7 @@ export const metadata: Metadata = {
     title: 'Rosie Paws',
     description:
       'Rosie Paws helps disabled and end-of-life dog and cat owners track vital health stats — from pain and movement to blood sugar and seizures — with care and compassion.',
-    url: 'https://rosiepawsapp.com',
+    url: 'https://www.rosiepawsapp.com',
     siteName: 'Rosie Paws',
     images: [
       {
@@ -80,7 +80,7 @@ export const metadata: Metadata = {
     capable: true
   },
   alternates: {
-    canonical: 'https://rosiepawsapp.com'
+    canonical: 'https://www.rosiepawsapp.com'
   },
   other: {
     'apple-mobile-web-app-capable': 'yes',
