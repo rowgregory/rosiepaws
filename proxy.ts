@@ -11,7 +11,7 @@ const cronRoutes = [
 ]
 const webhookRoutes = ['/api/stripe/webhook']
 
-export async function middleware(req: NextRequest) {
+export async function proxy(req: NextRequest) {
   const { nextUrl } = req
 
   // Allow cron jobs to pass through
