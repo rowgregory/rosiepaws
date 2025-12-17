@@ -7,9 +7,21 @@ import {
   logsLink,
   usersLink,
   ticketsLink,
-  mediaLibraryLink
+  mediaLibraryLink,
+  changelogLink
 } from '@/public/data/admin.data'
-import { LayoutDashboard, CreditCard, LogOut, Settings, Dog, Logs, Users, Tickets, Library } from 'lucide-react'
+import {
+  LayoutDashboard,
+  CreditCard,
+  LogOut,
+  Settings,
+  Dog,
+  Logs,
+  Users,
+  Tickets,
+  Library,
+  GitBranch
+} from 'lucide-react'
 
 export const adminNavigationLinks = (path: string, isSuperUser: boolean) => [
   {
@@ -47,6 +59,12 @@ export const adminNavigationLinks = (path: string, isSuperUser: boolean) => [
     textKey: 'Settings',
     linkKey: settingsLink,
     isActive: path === settingsLink
+  },
+  {
+    icon: GitBranch,
+    textKey: 'Changelog',
+    linkKey: changelogLink,
+    isActive: path === changelogLink
   },
   ...(isSuperUser
     ? [

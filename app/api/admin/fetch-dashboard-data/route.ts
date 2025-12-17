@@ -1,12 +1,12 @@
 import { handleApiError } from '@/app/lib/api/handleApiError'
-import { requireAdmin } from '@/app/lib/auth/getServerSession';
+import { requireAdmin } from '@/app/lib/auth/getServerSession'
 import prisma from '@/prisma/client'
 import { sliceAdmin } from '@/public/data/api.data'
 import { NextRequest, NextResponse } from 'next/server'
 
 export async function GET(req: NextRequest) {
   try {
-    await requireAdmin();
+    await requireAdmin()
 
     // Fetch all data
     const subscriptions = await prisma.stripeSubscription.findMany({
@@ -298,7 +298,7 @@ export async function GET(req: NextRequest) {
       totalUsers: users.length,
       freeUsers: users.filter((u) => u.isFreeUser).length,
       comfortUsers: users.filter((u) => u.isComfortUser).length,
-      lecacyUsers: users.filter((u) => u.isLegacyUser).length,
+      legacyUsers: users.filter((u) => u.isLegacyUser).length,
       totalPets: pets.length,
       totalSubscriptions: subscriptions.length,
       activeSubscriptions: subscriptions.filter((s) => s.status === 'active').length,

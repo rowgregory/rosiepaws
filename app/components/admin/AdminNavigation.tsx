@@ -1,4 +1,3 @@
-import React from 'react'
 import useCustomPathname from '@/app/hooks/useCustomPathname'
 import { motion } from 'framer-motion'
 import { RootState, useAppSelector, useUserSelector } from '@/app/redux/store'

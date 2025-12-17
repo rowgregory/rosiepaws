@@ -1,13 +1,5 @@
-import Pusher from 'pusher'
+import { pusher } from '../../pusher/pusher'
 import { createLog } from '../createLog'
-
-const pusher = new Pusher({
-  appId: process.env.PUSHER_APP_ID!,
-  key: process.env.PUSHER_KEY!,
-  secret: process.env.PUSHER_SECRET!,
-  cluster: process.env.PUSHER_CLUSTER!,
-  useTLS: true
-})
 
 async function sendPusherNotification(userId: string, data: any) {
   try {

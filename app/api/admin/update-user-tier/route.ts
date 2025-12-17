@@ -1,13 +1,14 @@
 import { createLog } from '@/app/lib/api/createLog'
 import { handleApiError } from '@/app/lib/api/handleApiError'
 import { requireAdmin } from '@/app/lib/auth/getServerSession'
+import { pusher } from '@/app/lib/pusher/pusher'
 import prisma from '@/prisma/client'
 import { sliceAdmin } from '@/public/data/api.data'
 import { NextRequest, NextResponse } from 'next/server'
 
 export async function PATCH(req: NextRequest) {
   try {
-    const session = await requireAdmin();
+    const session = await requireAdmin()
 
     const { userId, tier } = await req.json()
 
@@ -32,6 +33,13 @@ export async function PATCH(req: NextRequest) {
       }
     })
 
+    await pusher.trigger(`user-${userId}`, 'tier-updated', {
+      tier,
+      isFreeUser,
+      isComfortUser,
+      isLegacyUser
+    })
+
     await createLog('info', 'User tier updated successfully', {
       location: ['api route - PATCH /api/admin/update-user-tier'],
       name: 'UserTierUpdated',
@@ -39,7 +47,7 @@ export async function PATCH(req: NextRequest) {
       url: req.url,
       method: req.method,
       adminUserId: userId,
-      adminEmail: session.user.email,
+      adminEmail: session.user.email
     })
 
     return NextResponse.json({ user }, { status: 200 })

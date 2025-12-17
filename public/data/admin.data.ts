@@ -8,6 +8,7 @@ export const settingsLink = '/admin/settings'
 export const logsLink = '/admin/logs'
 export const ticketsLink = '/admin/tickets'
 export const mediaLibraryLink = '/admin/media-library'
+export const changelogLink = '/admin/changelog'
 
 export const guardianPetsLink = '/guardian/pets/my-pets'
 export const guardianDashboardLink = '/guardian/dashboard'

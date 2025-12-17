@@ -85,3 +85,4 @@ export const useBloodSugarSelector = () => useAppSelector((state) => state.blood
 export const useSeizureSelector = () => useAppSelector((state) => state.seizure)
 export const useAdminSelector = () => useAppSelector((state) => state.admin)
 export const useToastSelector = () => useAppSelector((state) => state.toast)
+export const useApplicationSelecetor = () => useAppSelector((state) => state.app)
