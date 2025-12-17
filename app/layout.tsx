@@ -161,6 +161,7 @@ export default async function RootLayout({
     <html lang="en">
       <head>
         <meta property="fb:app_id" content="710396524777703" />
+        <meta name="google-site-verification" content="q2armsY2LxpjTDARnN0pd15N-qNcnfzJQFHYd2WUf70" />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       </head>
       <body className={`${inter.variable} antialiased`}>
