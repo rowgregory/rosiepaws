@@ -3,7 +3,7 @@ import { setOpenMedicationDrawer } from '@/app/redux/features/medicationSlice'
 import { useAppDispatch } from '@/app/redux/store'
 import { IMedication } from '@/app/types'
 import { BellOff } from 'lucide-react'
-import React, { FC } from 'react'
+import { FC } from 'react'
 
 const InactiveMedicationCard: FC<{ inactiveMedications: IMedication[] }> = ({ inactiveMedications }) => {
   const dispatch = useAppDispatch()

@@ -1,4 +1,4 @@
-// api/cron/reset-tokens.js
+
 import { createLog } from '@/app/lib/api/createLog'
 import { handleApiError } from '@/app/lib/api/handleApiError'
 import prisma from '@/prisma/client'
@@ -6,7 +6,6 @@ import { NextRequest, NextResponse } from 'next/server'
 
 export async function GET(req: NextRequest) {
   try {
-    console.log('Starting daily token reset for comfort users...')
 
     const now = new Date()
 
@@ -20,8 +19,6 @@ export async function GET(req: NextRequest) {
         stripeSubscription: true // Include subscription data
       }
     })
-
-    console.log(`Found ${comfortUsers.length} potential comfort users to check`)
 
     // Filter users who should get token reset based on subscription status
     const eligibleUsers = comfortUsers.filter((user) => {
@@ -120,7 +117,5 @@ export async function GET(req: NextRequest) {
       action: 'Reset comfort tokens',
       sliceName: 'cronApi'
     })
-  } finally {
-    await prisma.$disconnect()
   }
 }

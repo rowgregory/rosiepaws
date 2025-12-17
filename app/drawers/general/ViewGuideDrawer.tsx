@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import { createElement, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   X,
@@ -251,7 +251,7 @@ const ViewGuideDrawer = () => {
                       transition={{ delay: 0.2, type: 'spring', stiffness: 200 }}
                       className={`w-16 h-16 ${steps[currentStep].color} rounded-2xl flex items-center justify-center mx-auto mb-4`}
                     >
-                      {React.createElement(steps[currentStep].icon, { className: 'w-8 h-8 text-white' })}
+                      {createElement(steps[currentStep].icon, { className: 'w-8 h-8 text-white' })}
                     </motion.div>
                     <h3 className="text-2xl font-bold text-gray-900 mb-2">{steps[currentStep].title}</h3>
                     <p className="text-gray-600">{steps[currentStep].description}</p>
@@ -406,7 +406,7 @@ const ViewGuideDrawer = () => {
                 <div className="grid grid-cols-2 gap-3 text-sm">
                   {benefits.map((benefit, index) => (
                     <div key={index} className="flex items-center gap-2">
-                      {React.createElement(benefit.icon, { className: 'w-4 h-4 text-green-600 flex-shrink-0' })}
+                      {createElement(benefit.icon, { className: 'w-4 h-4 text-green-600 flex-shrink-0' })}
                       <span className="text-gray-700">{benefit.title}</span>
                     </div>
                   ))}

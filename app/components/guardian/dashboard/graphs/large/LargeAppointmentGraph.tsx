@@ -1,4 +1,4 @@
-import React, { useState, useMemo, FC } from 'react'
+import { useState, useMemo, FC, ComponentType } from 'react'
 import { Calendar, Clock, User, MapPin, ChevronRight, AlertCircle } from 'lucide-react'
 import {
   LineChart,
@@ -61,7 +61,7 @@ interface VeterinarianData {
 interface ChartType {
   id: string
   name: string
-  icon: React.ComponentType<{ className?: string }>
+  icon: ComponentType<{ className?: string }>
 }
 
 interface LargeAppointmentGraphProps {

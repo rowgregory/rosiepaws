@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react'
+import { FC, useMemo } from 'react'
 import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts'
 import { Pill, Bell, TrendingUp, Calendar, AlertTriangle, Activity } from 'lucide-react'
 
@@ -6,7 +6,7 @@ interface LargeMedicationGraphProps {
   medicationData?: any[]
 }
 
-const LargeMedicationGraph: React.FC<LargeMedicationGraphProps> = ({ medicationData = [] }) => {
+const LargeMedicationGraph: FC<LargeMedicationGraphProps> = ({ medicationData = [] }) => {
   const chartData = useMemo(() => {
     if (!medicationData.length)
       return {

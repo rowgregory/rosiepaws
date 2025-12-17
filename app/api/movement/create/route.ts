@@ -1,4 +1,4 @@
-import { getUserFromHeader } from '@/app/lib/api/getUserFromheader'
+
 import { validateMovementRequiredFields } from '@/app/lib/api/validateMovementRequiredFields'
 import { movementCreateTokenCost } from '@/app/lib/constants/public/token'
 import prisma from '@/prisma/client'
@@ -7,16 +7,11 @@ import { NextRequest, NextResponse } from 'next/server'
 import { handleApiError } from '@/app/lib/api/handleApiError'
 import { createLog } from '@/app/lib/api/createLog'
 import { validateTokensAndPet } from '@/app/lib/api/validateTokensAndPet'
+import { requireAuth } from '@/app/lib/auth/getServerSession'
 
 export async function POST(req: NextRequest) {
   try {
-    const userAuth = getUserFromHeader({
-      req
-    })
-
-    if (!userAuth.success) {
-      return userAuth.response!
-    }
+    const {user} = await requireAuth();
 
     const {
       petId,
@@ -48,7 +43,7 @@ export async function POST(req: NextRequest) {
 
     const validatedFields = validateMovementRequiredFields({
       petId,
-      userId: userAuth.userId,
+      userId: user.id,
       timeRecorded,
       movementType,
       activityLevel,
@@ -62,12 +57,12 @@ export async function POST(req: NextRequest) {
     }
 
     const validation = await validateTokensAndPet({
-      userId: userAuth.userId!,
+      userId: user.id!,
       petId,
       tokenCost: movementCreateTokenCost,
       actionName: 'create movement',
       req,
-      user: userAuth?.user
+      user
     })
 
     if (!validation.success) {
@@ -91,7 +86,7 @@ export async function POST(req: NextRequest) {
       const newMovement = await tx.movement.create({
         data: {
           petId: petId as string,
-          userId: userAuth.userId as string,
+          userId: user.id as string,
           movementType: movementType as any,
           durationMinutes: numericFields.durationMinutes || null,
           distanceMeters: numericFields.distanceMeters || null,
@@ -130,9 +125,9 @@ export async function POST(req: NextRequest) {
 
       // Deduct tokens from user
       const updatedUser = await tx.user.update({
-        where: { id: userAuth.userId },
+        where: { id: user.id },
         data: {
-          ...(!userAuth.user.isLegacyUser && { tokens: { decrement: movementCreateTokenCost } }),
+          ...(!user.isLegacyUser && { tokens: { decrement: movementCreateTokenCost } }),
           tokensUsed: { increment: movementCreateTokenCost }
         }
       })
@@ -140,10 +135,10 @@ export async function POST(req: NextRequest) {
       // Create token transaction record
       await tx.tokenTransaction.create({
         data: {
-          userId: userAuth.userId!,
+          userId: user.id!,
           amount: -movementCreateTokenCost, // Negative for debit
-          type: userAuth.user.isLegacyUser ? 'MOVEMENT_CREATION_LEGACY' : 'MOVEMENT_CREATION',
-          description: `Movement creation${userAuth.user.isLegacyUser ? ' (Usage Tracking Only)' : ''}`,
+          type: user.isLegacyUser ? 'MOVEMENT_CREATION_LEGACY' : 'MOVEMENT_CREATION',
+          description: `Movement creation${user.isLegacyUser ? ' (Usage Tracking Only)' : ''}`,
           metadata: {
             movementId: newMovement.id,
             feature: 'movement_creation'
@@ -162,7 +157,7 @@ export async function POST(req: NextRequest) {
       method: req.method,
       petId,
       movementId: result.newMovement.id,
-      userId: userAuth.userId
+      userId: user.id
     })
 
     return NextResponse.json(
@@ -183,7 +178,5 @@ export async function POST(req: NextRequest) {
       action: 'Movement creation',
       sliceName: sliceMovement
     })
-  } finally {
-    await prisma.$disconnect()
   }
 }

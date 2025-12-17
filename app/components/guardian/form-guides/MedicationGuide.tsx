@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { ChevronDown, ChevronRight, Pill, Scale, AlertTriangle, Lightbulb, Shield } from 'lucide-react'
 import { medicationGuidanceData, medicationTipsData } from '@/app/lib/constants'
 

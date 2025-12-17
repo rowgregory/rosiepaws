@@ -1,5 +1,5 @@
 import { formatForDateTimeLocal } from '@/app/lib/utils'
-import React, { FC, useState } from 'react'
+import { FC, useState } from 'react'
 
 const getQuickTimes = () => [
   { label: 'Just now', value: new Date().toISOString() },

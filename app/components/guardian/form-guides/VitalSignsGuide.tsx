@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { AlertTriangle, Info, ChevronDown, ChevronRight, Video } from 'lucide-react'
 import { vitalSignsGuide } from '@/app/lib/constants'

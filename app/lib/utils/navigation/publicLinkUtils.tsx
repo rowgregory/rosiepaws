@@ -30,12 +30,13 @@ import {
   LogOut,
   Download
 } from 'lucide-react'
+import { ReactNode } from 'react'
 
 interface PetLink {
   linkKey?: string
   textKey?: string
   isActive?: boolean
-  icon?: React.ReactNode
+  icon?: ReactNode
   gradient?: string
   isPremium?: boolean
 }

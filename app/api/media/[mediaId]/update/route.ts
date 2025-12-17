@@ -1,14 +1,16 @@
 import { handleApiError } from '@/app/lib/api/handleApiError'
+import { requireAuth } from '@/app/lib/auth/getServerSession';
 import prisma from '@/prisma/client'
 import { sliceMedia } from '@/public/data/api.data'
 import { NextRequest, NextResponse } from 'next/server'
 
 export async function PATCH(req: NextRequest, { params }: any) {
-  const parameters = await params
-  const mediaId = parameters.mediaId
-  const body = await req.json()
-
   try {
+    await requireAuth();
+    const parameters = await params
+    const mediaId = parameters.mediaId
+    const body = await req.json()
+    
     // Use transaction to ensure atomicity
     const result = await prisma.$transaction(async (tx) => {
       const media = await tx.media.findFirst({
@@ -49,7 +51,5 @@ export async function PATCH(req: NextRequest, { params }: any) {
       action: 'Upload media',
       sliceName: sliceMedia
     })
-  } finally {
-    await prisma.$disconnect()
-  }
+  } 
 }

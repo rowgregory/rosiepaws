@@ -1,6 +1,6 @@
 import { IUser } from '@/app/types'
 import TokensSVG from '@/public/svg/TokensSVG'
-import React, { FC } from 'react'
+import { FC } from 'react'
 import { MotionLink } from '../../common/MotionLink'
 
 interface IToken {

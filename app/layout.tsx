@@ -4,6 +4,7 @@ import './globals.css'
 import ReduxWrapper from './redux-wrapper'
 import { auth } from './lib/auth'
 import { SessionProvider } from 'next-auth/react'
+import { ReactNode } from 'react'
 
 const inter = Inter({
   variable: '--font-inter',
@@ -23,30 +24,70 @@ export const metadata: Metadata = {
   description:
     'Rosie Paws is a compassionate app that helps disabled and end-of-life dog and cat owners track essential health stats like pain, water, movement, blood sugar, seizures, and more.',
   keywords: [
-    'Rosie Paws',
-    'pet health tracking',
+    // Primary keywords
+    'dog app',
+    'pet app',
+    'animal care app',
     'dog health app',
     'cat health app',
-    'pain scoring for pets',
-    'pet seizure tracking',
-    'pet blood sugar tracking',
-    'end-of-life pet care',
-    'disabled pet care',
-    'pet wellness monitoring',
     'pet care app',
-    'track pet health stats',
-    'pet comfort app',
-    'compassionate pet care',
+    'pet health tracker',
+    'veterinary app',
+
+    // Feature-based keywords
+    'track pet health',
+    'pet medication tracker',
+    'dog medication reminder',
+    'pet symptom tracker',
+    'pet health journal',
+    'pet medical records app',
+    'pet health log',
+    'dog health monitor',
+    'cat health monitor',
+
+    // Condition-specific
+    'dog seizure tracker',
+    'cat seizure tracker',
+    'pet diabetes tracker',
+    'dog blood sugar monitor',
+    'pet pain management app',
+    'arthritis in dogs app',
+    'senior dog care app',
+    'elderly cat care',
+
+    // Care-focused
+    'end-of-life pet care',
+    'hospice care for pets',
+    'palliative care for dogs',
     'quality of life tracking',
-    'pet health management',
-    'dog seizure log',
-    'cat seizure log',
-    'pet movement tracking',
+    'disabled pet care',
+    'special needs pets',
+    'chronic illness pets',
+
+    // Monitoring keywords
+    'pet vital signs',
+    'pet wellness app',
+    'dog health records',
+    'cat health records',
+    'pet care management',
+    'animal health tracking',
+    'pet monitoring app',
+
+    // User-focused
+    'pet owner app',
+    'dog owner app',
+    'cat owner app',
+    'pet parent app',
+    'veterinary recommended app',
+
+    // Original keywords
+    'Rosie Paws',
+    'pain scoring for pets',
     'pet water intake monitoring',
-    'pet pain management',
-    'support for senior pets',
-    'disabled pet support',
-    'end-of-life care for pets'
+    'pet movement tracking',
+    'compassionate pet care',
+    'pet health management',
+    'support for senior pets'
   ],
   openGraph: {
     title: 'Rosie Paws',
@@ -84,20 +125,43 @@ export const metadata: Metadata = {
   },
   other: {
     'apple-mobile-web-app-capable': 'yes',
-    'mobile-web-app-capable': 'yes'
+    'mobile-web-app-capable': 'yes',
+    'application-name': 'Rosie Paws Pet Health Tracker'
   }
 }
 
 export default async function RootLayout({
   children
 }: Readonly<{
-  children: React.ReactNode
+  children: ReactNode
 }>) {
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'MobileApplication',
+    name: 'Rosie Paws',
+    applicationCategory: 'HealthApplication',
+    operatingSystem: 'Web, iOS, Android',
+    offers: {
+      '@type': 'Offer',
+      price: '0',
+      priceCurrency: 'USD'
+    },
+    aggregateRating: {
+      '@type': 'AggregateRating',
+      ratingValue: '4.8',
+      ratingCount: '500'
+    },
+    description: 'Pet health tracking app for dogs and cats. Monitor medications, pain, seizures, and vital signs.',
+    image:
+      'https://firebasestorage.googleapis.com/v0/b/rosie-paws.firebasestorage.app/o/images%2Frosie-rich-preview.png',
+    url: 'https://www.rosiepawsapp.com'
+  }
   const session = await auth()
   return (
     <html lang="en">
       <head>
         <meta property="fb:app_id" content="710396524777703" />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       </head>
       <body className={`${inter.variable} antialiased`}>
         <SessionProvider session={session}>

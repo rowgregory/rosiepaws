@@ -1,5 +1,5 @@
 import { useAppDispatch, usePetSelector, useUserSelector } from '@/app/redux/store'
-import React, { FC } from 'react'
+import { FC } from 'react'
 import { ActionCreatorWithoutPayload } from '@reduxjs/toolkit'
 import { setInputs } from '@/app/redux/features/formSlice'
 import { setOpenNotEnoughTokensModal } from '@/app/redux/features/appSlice'

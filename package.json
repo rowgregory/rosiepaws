@@ -1,6 +1,6 @@
 {
   "name": "rosiepaws",
-  "version": "0.13.31",
+  "version": "0.14.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -10,7 +10,8 @@
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "generate": "prisma generate",
     "data:import": "node seeder.ts",
-    "data:destroy": "node seeder.ts -d"
+    "data:destroy": "node seeder.ts -d",
+    "postbuild": "next-sitemap"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.10.0",

@@ -1,10 +1,11 @@
 import { Crown, TrendingUp, TrendingDown, Star, Heart } from 'lucide-react'
+import { ComponentType } from 'react'
 
 interface MetricCardProps {
   title: string
   value: string | number
   subtitle?: string
-  icon: React.ComponentType<{ className?: string }>
+  icon: ComponentType<{ className?: string }>
   color: string
   trend?: 'up' | 'down' | 'stable'
   onClick?: () => void

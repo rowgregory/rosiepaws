@@ -25,6 +25,7 @@ import { mediaReducer } from './features/mediaSlice'
 import { vitalSignsReducer } from './features/vitalSignsSlice'
 import { vetReducer } from './features/vetSlice'
 import { galleryItemReducer } from './features/galleryItemSlice'
+import { toastReduer } from './features/toastSlice'
 
 const rootReducer = combineReducers({
   app: appReducer,
@@ -48,6 +49,7 @@ const rootReducer = combineReducers({
   media: mediaReducer,
   vet: vetReducer,
   galleryItem: galleryItemReducer,
+  toast: toastReduer,
   [api.reducerPath]: api.reducer
 })
 
@@ -82,3 +84,4 @@ export const useMedicationSelector = () => useAppSelector((state) => state.medic
 export const useBloodSugarSelector = () => useAppSelector((state) => state.bloodSugar)
 export const useSeizureSelector = () => useAppSelector((state) => state.seizure)
 export const useAdminSelector = () => useAppSelector((state) => state.admin)
+export const useToastSelector = () => useAppSelector((state) => state.toast)

@@ -1,4 +1,4 @@
-import React, { FC } from 'react'
+import { FC } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useAppDispatch } from '@/app/redux/store'
 import { setInputs } from '@/app/redux/features/formSlice'

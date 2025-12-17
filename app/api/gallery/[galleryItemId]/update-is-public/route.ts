@@ -1,6 +1,7 @@
-import { getUserFromHeader } from '@/app/lib/api/getUserFromheader'
+
 import { handleApiError } from '@/app/lib/api/handleApiError'
 import { validateTokensAndPet } from '@/app/lib/api/validateTokensAndPet'
+import { requireAuth } from '@/app/lib/auth/getServerSession'
 import prisma from '@/prisma/client'
 import { sliceGallery } from '@/public/data/api.data'
 import { NextRequest, NextResponse } from 'next/server'
@@ -10,13 +11,7 @@ const togglePublicTokenCost = 1
 
 export async function PATCH(req: NextRequest, { params }: any) {
   try {
-    const userAuth = getUserFromHeader({
-      req
-    })
-
-    if (!userAuth.success) {
-      return userAuth.response!
-    }
+    const {user} = await requireAuth();
 
     const parameters = await params
     const galleryItemId = parameters.galleryItemId
@@ -40,7 +35,7 @@ export async function PATCH(req: NextRequest, { params }: any) {
     }
 
     // Check if user owns this gallery item
-    if (existingGalleryItem.userId !== userAuth.userId) {
+    if (existingGalleryItem.userId !== user.id) {
       return NextResponse.json(
         { message: 'Forbidden: You do not own this gallery item', sliceName: 'galleryApi' },
         { status: 403 }
@@ -49,12 +44,12 @@ export async function PATCH(req: NextRequest, { params }: any) {
 
     // Validate user has enough tokens and pet exists
     const validation = await validateTokensAndPet({
-      userId: userAuth.userId,
+      userId: user.id,
       petId: existingGalleryItem.petId,
       tokenCost: togglePublicTokenCost,
       actionName: 'gallery item public toggle',
       req,
-      user: userAuth.user
+      user
     })
 
     if (!validation.success) {
@@ -105,7 +100,7 @@ export async function PATCH(req: NextRequest, { params }: any) {
 
       // Deduct tokens from user
       const updatedUser = await tx.user.update({
-        where: { id: userAuth.userId },
+        where: { id: user.id },
         data: {
           tokens: { decrement: togglePublicTokenCost },
           tokensUsed: { increment: togglePublicTokenCost }
@@ -115,7 +110,7 @@ export async function PATCH(req: NextRequest, { params }: any) {
       // Create token transaction record
       await tx.tokenTransaction.create({
         data: {
-          userId: userAuth.userId!,
+          userId: user.id!,
           amount: -togglePublicTokenCost,
           type: 'GALLERY_ITEM_UPDATE',
           description: `Gallery item visibility changed to ${isPublic ? 'public' : 'private'}`,

@@ -1,12 +1,12 @@
 import prisma from '@/prisma/client'
 import { slicePet, sliceVitalSigns } from '@/public/data/api.data'
 import { NextRequest, NextResponse } from 'next/server'
-import { getUserFromHeader } from '@/app/lib/api/getUserFromheader'
 import { validateTokensAndPet } from '@/app/lib/api/validateTokensAndPet'
 import { handleApiError } from '@/app/lib/api/handleApiError'
 import { createLog } from '@/app/lib/api/createLog'
 import { CapillaryRefillTime, HydrationStatus, MucousMembraneColor } from '@/app/types'
 import { vitalSignsCreateTokenCost } from '@/app/lib/constants/public/token'
+import { requireAuth } from '@/app/lib/auth/getServerSession'
 
 interface CreateVitalSignRequest {
   petId: string
@@ -24,13 +24,7 @@ interface CreateVitalSignRequest {
 
 export async function POST(req: NextRequest) {
   try {
-    const userAuth = getUserFromHeader({
-      req
-    })
-
-    if (!userAuth.success) {
-      return userAuth.response!
-    }
+  const { user } = await requireAuth();
 
     const {
       petId,
@@ -56,12 +50,12 @@ export async function POST(req: NextRequest) {
       )
     }
     const validation = await validateTokensAndPet({
-      userId: userAuth.userId!,
+      userId: user.id!,
       petId,
       tokenCost: vitalSignsCreateTokenCost,
       actionName: 'vital-signs',
       req,
-      user: userAuth?.user
+      user
     })
 
     if (!validation.success) {
@@ -88,9 +82,9 @@ export async function POST(req: NextRequest) {
       })
 
       const updatedUser = await tx.user.update({
-        where: { id: userAuth.userId },
+        where: { id: user.id },
         data: {
-          ...(!userAuth.user.isLegacyUser && { tokens: { decrement: vitalSignsCreateTokenCost } }),
+          ...(!user.isLegacyUser && { tokens: { decrement: vitalSignsCreateTokenCost } }),
           tokensUsed: { increment: vitalSignsCreateTokenCost }
         }
       })
@@ -98,10 +92,10 @@ export async function POST(req: NextRequest) {
       // Create token transaction record (simplified metadata)
       await tx.tokenTransaction.create({
         data: {
-          userId: userAuth.userId!,
+          userId: user.id!,
           amount: -vitalSignsCreateTokenCost,
-          type: userAuth.user.isLegacyUser ? 'VITAL_SIGNS_CREATION_LEGACY' : 'VITAL_SIGNS_CREATION',
-          description: `Vital signs creation${userAuth.user.isLegacyUser ? ' (Usage Tracking Only)' : ''}`,
+          type: user.isLegacyUser ? 'VITAL_SIGNS_CREATION_LEGACY' : 'VITAL_SIGNS_CREATION',
+          description: `Vital signs creation${user.isLegacyUser ? ' (Usage Tracking Only)' : ''}`,
           metadata: {
             walkId: newVitalSign.id,
             feature: 'vital_signs_creation',
@@ -138,7 +132,7 @@ export async function POST(req: NextRequest) {
       url: req.url,
       method: req.method,
       walkId: result.walkId,
-      userId: userAuth.userId
+      userId: user.id
     })
 
     return NextResponse.json(
@@ -158,7 +152,5 @@ export async function POST(req: NextRequest) {
       action: 'Vital Signs creation',
       sliceName: slicePet
     })
-  } finally {
-    await prisma.$disconnect()
-  }
+  } 
 }

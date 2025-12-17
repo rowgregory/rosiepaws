@@ -1,9 +1,9 @@
 import prisma from '@/prisma/client'
 import { NextRequest, NextResponse } from 'next/server'
-import { getUserFromHeader } from '@/app/lib/api/getUserFromheader'
 import { handleApiError } from '@/app/lib/api/handleApiError'
 import { createLog } from '@/app/lib/api/createLog'
 import sendTicketConfirmation from '@/app/lib/resend/sendTicketConfirmation'
+import { requireAuth } from '@/app/lib/auth/getServerSession'
 
 // Validation function for required ticket fields
 const validateTicketRequiredFields = ({
@@ -78,13 +78,7 @@ const validateTicketRequiredFields = ({
 
 export async function POST(req: NextRequest) {
   try {
-    const userAuth = getUserFromHeader({
-      req
-    })
-
-    if (!userAuth.success) {
-      return userAuth.response!
-    }
+    const {user} = await requireAuth();
 
     const { category, priority, subject, description, email, deviceInfo, attachments } = await req.json()
 
@@ -111,7 +105,7 @@ export async function POST(req: NextRequest) {
         email: email.toLowerCase().trim(),
         deviceInfo: deviceInfo ? JSON.stringify(deviceInfo) : '',
         attachments: attachments || [],
-        userId: userAuth.userId!
+        userId: user.id!
       },
       include: {
         user: {
@@ -124,7 +118,7 @@ export async function POST(req: NextRequest) {
       }
     })
 
-    await sendTicketConfirmation(newTicket, req, userAuth.userId!)
+    await sendTicketConfirmation(newTicket, req, user.id!)
 
     await createLog('info', 'Ticket created successfully', {
       location: ['api route - POST /api/support/create-ticket'],
@@ -133,7 +127,7 @@ export async function POST(req: NextRequest) {
       url: req.url,
       method: req.method,
       ticketId: newTicket.id,
-      userId: userAuth.userId,
+      userId: user.id,
       category: newTicket.category,
       priority: newTicket.priority
     })

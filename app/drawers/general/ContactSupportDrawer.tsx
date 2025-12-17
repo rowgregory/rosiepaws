@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import { ChangeEvent, createElement, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   X,
@@ -130,7 +130,7 @@ const ContactSupportDrawer = () => {
     setStep('form')
   }
 
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = (e: ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files
     if (!files) return
 
@@ -302,7 +302,7 @@ const ContactSupportDrawer = () => {
                               <div
                                 className={`w-12 h-12 ${category.color} rounded-xl flex items-center justify-center flex-shrink-0`}
                               >
-                                {React.createElement(category.icon, { className: 'w-6 h-6 text-white' })}
+                                {createElement(category.icon, { className: 'w-6 h-6 text-white' })}
                               </div>
                               <div className="flex-1">
                                 <h4 className="font-semibold text-gray-900 mb-2">{category.title}</h4>
@@ -370,7 +370,7 @@ const ContactSupportDrawer = () => {
                             <div
                               className={`w-8 h-8 ${selectedCategory.color} rounded-lg flex items-center justify-center`}
                             >
-                              {React.createElement(selectedCategory.icon, { className: 'w-4 h-4 text-white' })}
+                              {createElement(selectedCategory.icon, { className: 'w-4 h-4 text-white' })}
                             </div>
                             <div>
                               <h4 className="font-medium text-gray-900">{selectedCategory.title}</h4>

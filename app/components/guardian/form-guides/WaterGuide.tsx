@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { ChevronDown, ChevronRight, Droplets, Scale, AlertTriangle, Lightbulb, TrendingUp } from 'lucide-react'
 import { waterGuidanceData, waterTipsData } from '@/app/lib/constants'
 

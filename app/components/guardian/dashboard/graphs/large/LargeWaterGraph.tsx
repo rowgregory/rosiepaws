@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react'
+import { FC, useMemo } from 'react'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine } from 'recharts'
 import { Droplets, TrendingUp, Calendar, Smile, Target, Award } from 'lucide-react'
 
@@ -7,7 +7,7 @@ interface LargeWaterGraphProps {
   petWeight?: any
 }
 
-const LargeWaterGraph: React.FC<LargeWaterGraphProps> = ({ waterData = [], petWeight = 20 }) => {
+const LargeWaterGraph: FC<LargeWaterGraphProps> = ({ waterData = [], petWeight = 20 }) => {
   // Process data for chart and calculate stats in one go
   const { chartData, stats } = useMemo(() => {
     if (!waterData.length)

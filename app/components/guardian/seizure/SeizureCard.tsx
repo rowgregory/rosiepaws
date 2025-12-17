@@ -1,4 +1,4 @@
-import React, { FC } from 'react'
+import { FC } from 'react'
 import { motion } from 'framer-motion'
 import { Zap, Video, FileText, Trash2 } from 'lucide-react'
 import { formatDuration, getEmergencyLevel, getSeizureSeverity, getTimeInfo, getTimeOfDay } from '@/app/lib/utils'

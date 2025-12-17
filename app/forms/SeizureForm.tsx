@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react'
+import { ChangeEvent, FC, useState } from 'react'
 import { AlertTriangle, Clock, Video, Upload, X, Brain, Activity, Zap, Timer } from 'lucide-react'
 import PetSelection from '../components/common/forms/PetSelection'
 import { isSeizureFormValid } from '../validations/validateSeizureForm'
@@ -25,7 +25,7 @@ const SeizureForm: FC<IForm> = ({
   const duration = parseFloat(inputs?.duration) || 0
   const showEmergencyAlert = duration === 5
 
-  const handleVideoSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleVideoSelect = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
     if (file && file.type.startsWith('video/')) {
       setSelectedVideo(file)

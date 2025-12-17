@@ -1,4 +1,4 @@
-import React, { FC } from 'react'
+import { FC } from 'react'
 import { motion } from 'framer-motion'
 import { useAppDispatch, usePetSelector } from '@/app/redux/store'
 import TokenCounter from './TokenCounter'

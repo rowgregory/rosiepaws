@@ -3,7 +3,7 @@ import { Pet } from '@/app/types/entities'
 import { motion, AnimatePresence } from 'framer-motion'
 import { PawPrint, Plus } from 'lucide-react'
 import Link from 'next/link'
-import React, { FC } from 'react'
+import { FC } from 'react'
 import TokenCounter from '../TokenCounter'
 import { petCreateTokenCost } from '@/app/lib/constants/public/token'
 

@@ -1,4 +1,5 @@
 import { handleApiError } from '@/app/lib/api/handleApiError'
+import { requireAuth } from '@/app/lib/auth/getServerSession'
 import { deleteFileFromFirebase } from '@/app/utils/firebase-helpers'
 import prisma from '@/prisma/client'
 import { sliceMedia } from '@/public/data/api.data'
@@ -14,11 +15,11 @@ const getFirebaseType = (fileName: string) => {
 }
 
 export async function DELETE(req: NextRequest, { params }: any) {
-  const parameters = await params
-  const mediaId = parameters.mediaId
-  const body = await req.json()
-
   try {
+    await requireAuth();
+    const parameters = await params
+    const mediaId = parameters.mediaId
+    const body = await req.json()
     // Use transaction to ensure atomicity
     await prisma.$transaction(async (tx) => {
       const media = await tx.media.findFirst({
@@ -51,7 +52,5 @@ export async function DELETE(req: NextRequest, { params }: any) {
       action: 'Delete media',
       sliceName: sliceMedia
     })
-  } finally {
-    await prisma.$disconnect()
   }
 }

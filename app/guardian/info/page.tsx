@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { tabs } from '@/app/lib/constants'
 import FAQ from '@/app/components/guardian/info/FAQ'
 import TokenActions from '@/app/components/guardian/info/TokenActions'

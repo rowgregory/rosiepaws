@@ -1,23 +1,17 @@
-import { getUserFromHeader } from '@/app/lib/api/getUserFromheader'
 import { handleApiError } from '@/app/lib/api/handleApiError'
+import { requireAuth } from '@/app/lib/auth/getServerSession'
 import prisma from '@/prisma/client'
 import { sliceWalk } from '@/public/data/api.data'
 import { NextRequest, NextResponse } from 'next/server'
 
 export async function GET(req: NextRequest) {
   try {
-    const userAuth = getUserFromHeader({
-      req
-    })
-
-    if (!userAuth.success) {
-      return userAuth.response!
-    }
+    const { user } = await requireAuth()
 
     const vitalSigns = await prisma.vitalSigns.findMany({
       where: {
         pet: {
-          ownerId: userAuth?.userId
+          ownerId: user.id
         }
       },
       include: {
@@ -41,7 +35,5 @@ export async function GET(req: NextRequest) {
       action: 'List all vital signs by user',
       sliceName: sliceWalk
     })
-  } finally {
-    await prisma.$disconnect()
   }
 }

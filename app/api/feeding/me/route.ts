@@ -1,23 +1,17 @@
-import { getUserFromHeader } from '@/app/lib/api/getUserFromheader'
 import { handleApiError } from '@/app/lib/api/handleApiError'
+import { requireAuth } from '@/app/lib/auth/getServerSession'
 import prisma from '@/prisma/client'
 import { sliceFeeding } from '@/public/data/api.data'
 import { NextRequest, NextResponse } from 'next/server'
 
 export async function GET(req: NextRequest) {
   try {
-    const userAuth = getUserFromHeader({
-      req
-    })
-
-    if (!userAuth.success) {
-      return userAuth.response!
-    }
+    const { user } = await requireAuth()
 
     const feedings = await prisma.feeding.findMany({
       where: {
         pet: {
-          ownerId: userAuth?.userId
+          ownerId: user.id
         }
       },
       include: {
@@ -41,7 +35,5 @@ export async function GET(req: NextRequest) {
       action: 'List all feedings by user',
       sliceName: sliceFeeding
     })
-  } finally {
-    await prisma.$disconnect()
   }
 }

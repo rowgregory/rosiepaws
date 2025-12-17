@@ -1,17 +1,12 @@
-import { getUserFromHeader } from '@/app/lib/api/getUserFromheader'
+
+import { requireAuth } from '@/app/lib/auth/getServerSession';
 import { createStripeInstance, getStripeProductIds } from '@/app/lib/utils/common/stripe'
 import prisma from '@/prisma/client'
 import { NextRequest, NextResponse } from 'next/server'
 
 export async function POST(req: NextRequest) {
   try {
-    const userAuth = getUserFromHeader({
-      req
-    })
-
-    if (!userAuth.success) {
-      return userAuth.response!
-    }
+await requireAuth();
 
     const body = await req.json()
     const { planId, userId } = body

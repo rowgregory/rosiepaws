@@ -1,4 +1,4 @@
-import React, { FC } from 'react'
+import { FC } from 'react'
 
 import { IUser } from '@/app/types'
 import { formatDate } from '@/app/lib/utils'

@@ -1,20 +1,14 @@
 import { createLog } from '@/app/lib/api/createLog'
-import { getUserFromHeader } from '@/app/lib/api/getUserFromheader'
 import { handleApiError } from '@/app/lib/api/handleApiError'
 import { validateTokensAndPet } from '@/app/lib/api/validateTokensAndPet'
+import { requireAuth } from '@/app/lib/auth/getServerSession'
 import prisma from '@/prisma/client'
 import { sliceMedication, slicePet } from '@/public/data/api.data'
 import { NextRequest, NextResponse } from 'next/server'
 
 export async function POST(req: NextRequest) {
   try {
-    const userAuth = getUserFromHeader({
-      req
-    })
-
-    if (!userAuth.success) {
-      return userAuth.response!
-    }
+    const {user} = await requireAuth();
 
     const body = await req.json()
 
@@ -39,12 +33,12 @@ export async function POST(req: NextRequest) {
     }
 
     const validation = await validateTokensAndPet({
-      userId: userAuth.userId!,
+      userId: user.id!,
       petId,
       tokenCost: 0,
       actionName: 'medication create',
       req,
-      user: userAuth?.user
+      user
     })
 
     if (!validation.success) {
@@ -78,9 +72,9 @@ export async function POST(req: NextRequest) {
 
         // Deduct tokens from user
         const updatedUser = await tx.user.update({
-          where: { id: userAuth.userId },
+          where: { id: user.id },
           data: {
-            ...(!userAuth.user.isLegacyUser && { tokens: { decrement: 0 } }),
+            ...(!user.isLegacyUser && { tokens: { decrement: 0 } }),
             tokensUsed: { increment: 0 }
           }
         })
@@ -88,10 +82,10 @@ export async function POST(req: NextRequest) {
         // Create token transaction record
         await tx.tokenTransaction.create({
           data: {
-            userId: userAuth.userId!,
+            userId: user.id!,
             amount: 0, // Negative for debit
-            type: userAuth.user.isLegacyUser ? 'MEDICATION_CREATION_LEGACY' : 'MEDICATION_CREATION',
-            description: `Medication creation${userAuth.user.isLegacyUser ? ' (Usage Tracking Only)' : ''}`,
+            type: user.isLegacyUser ? 'MEDICATION_CREATION_LEGACY' : 'MEDICATION_CREATION',
+            description: `Medication creation${user.isLegacyUser ? ' (Usage Tracking Only)' : ''}`,
             metadata: {
               medicationId: newMedication.id,
               feature: 'medication_creation',
@@ -118,7 +112,7 @@ export async function POST(req: NextRequest) {
       method: req.method,
       petId,
       painScoreId: result.newMedication.id,
-      userId: userAuth.userId
+      userId: user.id
     })
 
     return NextResponse.json({
@@ -136,7 +130,5 @@ export async function POST(req: NextRequest) {
       action: 'Medication created',
       sliceName: sliceMedication
     })
-  } finally {
-    await prisma.$disconnect()
   }
 }

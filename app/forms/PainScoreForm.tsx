@@ -1,6 +1,6 @@
 'use client'
 
-import React, { FC } from 'react'
+import { FC } from 'react'
 import { CheckCircle2 } from 'lucide-react'
 import { PAIN_LEVELS } from '../lib/constants/public/pain'
 import PetSelection from '../components/common/forms/PetSelection'

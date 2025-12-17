@@ -35,7 +35,5 @@ export async function GET(req: NextRequest) {
       action: 'Reset tokens for free user',
       sliceName: sliceUser
     })
-  } finally {
-    await prisma.$disconnect()
   }
 }

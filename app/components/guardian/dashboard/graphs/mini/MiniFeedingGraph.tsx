@@ -1,6 +1,6 @@
 import { parseFraction } from '@/app/lib/utils'
 import { Utensils } from 'lucide-react'
-import React, { FC } from 'react'
+import { FC } from 'react'
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts'
 
 const MiniFeedingGraph: FC<{ feedings: any }> = ({ feedings }) => {

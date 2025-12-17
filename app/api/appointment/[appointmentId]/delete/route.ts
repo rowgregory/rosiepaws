@@ -1,6 +1,6 @@
 import { createLog } from '@/app/lib/api/createLog'
-import { getUserFromHeader } from '@/app/lib/api/getUserFromheader'
 import { handleApiError } from '@/app/lib/api/handleApiError'
+import { requireAuth } from '@/app/lib/auth/getServerSession'
 import { appointmentDeleteTokenCost } from '@/app/lib/constants/public/token'
 import prisma from '@/prisma/client'
 import { sliceAppointment } from '@/public/data/api.data'
@@ -8,13 +8,9 @@ import { NextRequest, NextResponse } from 'next/server'
 
 export async function DELETE(req: NextRequest, { params }: any) {
   try {
-    const userAuth = getUserFromHeader({
-      req
-    })
-
-    if (!userAuth.success) {
-      return userAuth.response!
-    }
+    const session = await requireAuth();
+    const user = session.user;
+    const id = user?.id
 
     const parameters = await params
     const appointmentId = parameters.appointmentId
@@ -54,9 +50,9 @@ export async function DELETE(req: NextRequest, { params }: any) {
 
         // Deduct tokens from user
         const updatedUser = await tx.user.update({
-          where: { id: userAuth.userId },
+          where: { id },
           data: {
-            ...(!userAuth.user.isLegacyUser && { tokens: { decrement: appointmentDeleteTokenCost } }),
+            ...(!user.isLegacyUser && { tokens: { decrement: appointmentDeleteTokenCost } }),
             tokensUsed: { increment: appointmentDeleteTokenCost }
           }
         })
@@ -64,10 +60,10 @@ export async function DELETE(req: NextRequest, { params }: any) {
         // Create token transaction record
         await tx.tokenTransaction.create({
           data: {
-            userId: userAuth.userId!,
+            userId: id!,
             amount: -appointmentDeleteTokenCost, // Negative for debit
-            type: userAuth.user.isLegacyUser ? 'APPOINTMENT_DELETE_LEGACY' : 'APPOINTMENT_DELETE',
-            description: `Appointment delete${userAuth.user.isLegacyUser ? ' (Usage Tracking Only)' : ''}`,
+            type: user.isLegacyUser ? 'APPOINTMENT_DELETE_LEGACY' : 'APPOINTMENT_DELETE',
+            description: `Appointment delete${user.isLegacyUser ? ' (Usage Tracking Only)' : ''}`,
             metadata: {
               petId: deletedAppointment.id,
               feature: 'appointment_delete',
@@ -94,7 +90,7 @@ export async function DELETE(req: NextRequest, { params }: any) {
       method: req.method,
       petId: result.deletedAppointment.pet.id,
       appointmentId: result.deletedAppointment.id,
-      userId: userAuth.userId
+      userId: id
     })
 
     return NextResponse.json({

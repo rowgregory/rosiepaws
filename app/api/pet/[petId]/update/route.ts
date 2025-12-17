@@ -2,20 +2,14 @@ import prisma from '@/prisma/client'
 import { NextRequest, NextResponse } from 'next/server'
 import { slicePet } from '@/public/data/api.data'
 import { createLog } from '@/app/lib/api/createLog'
-import { getUserFromHeader } from '@/app/lib/api/getUserFromheader'
 import { validateTokensAndPet } from '@/app/lib/api/validateTokensAndPet'
 import { petUpdateTokenCost } from '@/app/lib/constants/public/token'
 import { handleApiError } from '@/app/lib/api/handleApiError'
+import { requireAuth } from '@/app/lib/auth/getServerSession'
 
 export async function PATCH(req: NextRequest, { params }: any) {
   try {
-    const userAuth = getUserFromHeader({
-      req
-    })
-
-    if (!userAuth.success) {
-      return userAuth.response!
-    }
+    const {user} = await requireAuth();
 
     const parameters = await params
     const petId = parameters.petId
@@ -48,12 +42,12 @@ export async function PATCH(req: NextRequest, { params }: any) {
     }
 
     const validation = await validateTokensAndPet({
-      userId: userAuth.userId!,
+      userId: user.id!,
       petId,
       tokenCost: petUpdateTokenCost,
       actionName: 'update pet',
       req,
-      user: userAuth?.user
+      user
     })
 
     if (!validation.success) {
@@ -85,9 +79,9 @@ export async function PATCH(req: NextRequest, { params }: any) {
 
         // Deduct tokens from user
         const updatedUser = await tx.user.update({
-          where: { id: userAuth.userId },
+          where: { id: user.id },
           data: {
-            ...(!userAuth.user.isLegacyUser && { tokens: { decrement: petUpdateTokenCost } }),
+            ...(!user.isLegacyUser && { tokens: { decrement: petUpdateTokenCost } }),
             tokensUsed: { increment: petUpdateTokenCost }
           }
         })
@@ -95,10 +89,10 @@ export async function PATCH(req: NextRequest, { params }: any) {
         // Create token transaction record
         await tx.tokenTransaction.create({
           data: {
-            userId: userAuth.userId!,
+            userId: user.id!,
             amount: -petUpdateTokenCost, // Negative for debit
-            type: userAuth.user.isLegacyUser ? 'PET_UPDATE_LEGACY' : 'PET_UPDATE',
-            description: `Pet update${userAuth.user.isLegacyUser ? ' (Usage Tracking Only)' : ''}`,
+            type: user.isLegacyUser ? 'PET_UPDATE_LEGACY' : 'PET_UPDATE',
+            description: `Pet update${user.isLegacyUser ? ' (Usage Tracking Only)' : ''}`,
             metadata: {
               petId: updatedPet.id,
               feature: 'pet_update',
@@ -123,7 +117,7 @@ export async function PATCH(req: NextRequest, { params }: any) {
       method: req.method,
       petId: result.updatedPet.id,
       petName: result.updatedPet.name,
-      userId: userAuth.userId
+      userId: user.id
     })
 
     return NextResponse.json(
@@ -144,7 +138,5 @@ export async function PATCH(req: NextRequest, { params }: any) {
       action: 'Pet update',
       sliceName: slicePet
     })
-  } finally {
-    await prisma.$disconnect()
   }
 }

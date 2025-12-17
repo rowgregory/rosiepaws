@@ -1,19 +1,13 @@
 import { createLog } from '@/app/lib/api/createLog'
-import { getUserFromHeader } from '@/app/lib/api/getUserFromheader'
 import { handleApiError } from '@/app/lib/api/handleApiError'
+import { requireAuth } from '@/app/lib/auth/getServerSession'
 import prisma from '@/prisma/client'
 import { sliceMedication } from '@/public/data/api.data'
 import { NextRequest, NextResponse } from 'next/server'
 
 export async function DELETE(req: NextRequest, { params }: any) {
   try {
-    const userAuth = getUserFromHeader({
-      req
-    })
-
-    if (!userAuth.success) {
-      return userAuth.response!
-    }
+   const {user} = await requireAuth();
 
     const parameters = await params
     const medicationId = parameters.medicationId
@@ -27,7 +21,7 @@ export async function DELETE(req: NextRequest, { params }: any) {
       where: {
         id: medicationId,
         pet: {
-          ownerId: userAuth?.userId
+          ownerId: user.id
         }
       },
       include: {
@@ -67,9 +61,9 @@ export async function DELETE(req: NextRequest, { params }: any) {
 
       // Deduct tokens from user
       const updatedUser = await tx.user.update({
-        where: { id: userAuth.userId },
+        where: { id: user.id },
         data: {
-          ...(!userAuth.user.isLegacyUser && { tokens: { decrement: 0 } }),
+          ...(!user.isLegacyUser && { tokens: { decrement: 0 } }),
           tokensUsed: { increment: 0 }
         }
       })
@@ -77,10 +71,10 @@ export async function DELETE(req: NextRequest, { params }: any) {
       // Create token transaction record
       await tx.tokenTransaction.create({
         data: {
-          userId: userAuth.userId!,
+          userId: user.id!,
           amount: 0, // Negative for debit
-          type: userAuth.user.isLegacyUser ? 'MEDICATION_DELETE_LEGACY' : 'MEDICATION_DELETE',
-          description: `Medication delete${userAuth.user.isLegacyUser ? ' (Usage Tracking Only)' : ''}`,
+          type: user.isLegacyUser ? 'MEDICATION_DELETE_LEGACY' : 'MEDICATION_DELETE',
+          description: `Medication delete${user.isLegacyUser ? ' (Usage Tracking Only)' : ''}`,
           metadata: {
             medicationId: deleletedMedication.id,
             feature: 'medication_deleted'
@@ -101,7 +95,7 @@ export async function DELETE(req: NextRequest, { params }: any) {
       drugName: medicationInfo.drugName,
       petId: medicationInfo.petId,
       petName: medicationInfo.petName,
-      ownerId: userAuth?.userId
+      ownerId: user.id
     })
 
     return NextResponse.json({
@@ -119,7 +113,5 @@ export async function DELETE(req: NextRequest, { params }: any) {
       action: 'Medication deleted',
       sliceName: sliceMedication
     })
-  } finally {
-    await prisma.$disconnect()
   }
 }

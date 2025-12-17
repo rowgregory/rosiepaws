@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react'
+import { FC, useState } from 'react'
 import { motion } from 'framer-motion'
 import { setOpenSeizureCalendarDrawer } from '@/app/redux/features/dashboardSlice'
 import { generateSeizurePDFReport } from '@/app/lib/utils/reports/seizure-pdf-report-generator'

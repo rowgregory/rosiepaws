@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Play, Trash2, Image as ImageIcon, Eye, Heart, MessageCircle, Share2 } from 'lucide-react'
 import Picture from '@/app/components/common/Picture'

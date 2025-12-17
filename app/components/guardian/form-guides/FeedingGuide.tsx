@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { ChevronDown, ChevronRight, Clock, Scale, AlertTriangle, Lightbulb, RefreshCw } from 'lucide-react'
 import { feedingGuidanceData, feedingTipsData } from '@/public/data/guardian.data'
 

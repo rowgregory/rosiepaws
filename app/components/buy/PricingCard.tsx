@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react'
+import { FC, useState } from 'react'
 import { setOpenSubscriptionModal } from '@/app/redux/features/appSlice'
 import { useAppDispatch } from '@/app/redux/store'
 import { useCancelSubscriptionMutation, useCreateCheckoutSessionMutation } from '@/app/redux/services/stripeApi'

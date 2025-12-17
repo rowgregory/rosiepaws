@@ -1,6 +1,6 @@
-import React, { useState, useRef, useCallback, useEffect } from 'react'
+import { useState, useRef, useCallback, useEffect, FC } from 'react'
 
-const ArcadeLightButton: React.FC = () => {
+const ArcadeLightButton: FC = () => {
   const [isActive, setIsActive] = useState<boolean>(false)
   const [lightPosition, setLightPosition] = useState<number>(() => Math.floor(Math.random() * 14))
   const animationFrameRef = useRef<number | null>(null)

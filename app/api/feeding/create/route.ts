@@ -1,22 +1,16 @@
 import prisma from '@/prisma/client'
 import { NextRequest, NextResponse } from 'next/server'
 import { sliceFeeding } from '@/public/data/api.data'
-import { getUserFromHeader } from '@/app/lib/api/getUserFromheader'
 import { validateFeedingRequiredFields } from '@/app/lib/api/validateFeedingRequiredFields'
 import { validateTokensAndPet } from '@/app/lib/api/validateTokensAndPet'
 import { handleApiError } from '@/app/lib/api/handleApiError'
 import { feedingCreateTokenCost } from '@/app/lib/constants/public/token'
 import { createLog } from '@/app/lib/api/createLog'
+import { requireAuth } from '@/app/lib/auth/getServerSession'
 
 export async function POST(req: NextRequest) {
   try {
-    const userAuth = getUserFromHeader({
-      req
-    })
-
-    if (!userAuth.success) {
-      return userAuth.response!
-    }
+    const { user } = await requireAuth();
 
     const { petId, foodAmount, foodType, notes, timeRecorded, moodRating, brand, ingredients } = await req.json()
 
@@ -34,12 +28,12 @@ export async function POST(req: NextRequest) {
     }
 
     const validation = await validateTokensAndPet({
-      userId: userAuth.userId!,
+      userId: user.id!,
       petId,
       tokenCost: feedingCreateTokenCost,
       actionName: 'feeding',
       req,
-      user: userAuth?.user
+      user
     })
 
     if (!validation.success) {
@@ -67,9 +61,9 @@ export async function POST(req: NextRequest) {
 
       // Deduct tokens from user
       const updatedUser = await tx.user.update({
-        where: { id: userAuth.userId },
+        where: { id: user.id },
         data: {
-          ...(!userAuth.user.isLegacyUser && { tokens: { decrement: feedingCreateTokenCost } }),
+          ...(!user.isLegacyUser && { tokens: { decrement: feedingCreateTokenCost } }),
           tokensUsed: { increment: feedingCreateTokenCost }
         }
       })
@@ -77,10 +71,10 @@ export async function POST(req: NextRequest) {
       // Create token transaction record
       await tx.tokenTransaction.create({
         data: {
-          userId: userAuth.userId!,
+          userId: user.id!,
           amount: -feedingCreateTokenCost, // Negative for debit
-          type: userAuth.user.isLegacyUser ? 'FEEDING_CREATION_LEGACY' : 'FEEDING_CREATION',
-          description: `Feeding creation${userAuth.user.isLegacyUser ? ' (Usage Tracking Only)' : ''}`,
+          type: user.isLegacyUser ? 'FEEDING_CREATION_LEGACY' : 'FEEDING_CREATION',
+          description: `Feeding creation${user.isLegacyUser ? ' (Usage Tracking Only)' : ''}`,
           metadata: {
             feedingId: newFeeding.id,
             foodAmount: newFeeding.foodAmount,
@@ -101,7 +95,7 @@ export async function POST(req: NextRequest) {
       method: req.method,
       petId,
       feedingId: result.newFeeding.id,
-      userId: userAuth.userId
+      userId: user.id
     })
 
     return NextResponse.json(
@@ -122,7 +116,5 @@ export async function POST(req: NextRequest) {
       action: 'Feeding creation',
       sliceName: sliceFeeding
     })
-  } finally {
-    await prisma.$disconnect()
   }
 }

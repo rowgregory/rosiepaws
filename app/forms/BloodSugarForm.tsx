@@ -1,4 +1,4 @@
-import React, { FC } from 'react'
+import { FC } from 'react'
 import { motion } from 'framer-motion'
 import NumberWheel from '@/app/components/guardian/blood-sugar/NumberWheel'
 import { IForm } from '../types'

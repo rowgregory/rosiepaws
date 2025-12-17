@@ -1,4 +1,4 @@
-import React, { FC } from 'react'
+import { FC } from 'react'
 import { motion } from 'framer-motion'
 import { ISeizure } from '@/app/types'
 import { formatDuration, getRecentSeizures, getTimeInfo } from '@/app/lib/utils'

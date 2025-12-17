@@ -8,6 +8,7 @@ import { useAppDispatch } from '@/app/redux/store'
 import { IMedication } from '@/app/types'
 import { motion } from 'framer-motion'
 import { Pill, Trash2 } from 'lucide-react'
+import { FC } from 'react'
 
 interface MedicationCardProps {
   medication: IMedication
@@ -17,7 +18,7 @@ interface MedicationCardProps {
   shouldAnimate: boolean
 }
 
-export const MedicationCard: React.FC<MedicationCardProps> = ({
+export const MedicationCard: FC<MedicationCardProps> = ({
   medication,
   index,
   status,

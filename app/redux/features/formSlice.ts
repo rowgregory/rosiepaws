@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { ChangeEvent } from 'react'
+import { ChangeEvent, DragEvent } from 'react'
 import { petInitialState } from '@/app/lib/initial-states/pet'
 import { painScoreInitialErrorState, painScoreInitialState } from '@/app/lib/initial-states/pain-score'
 import { feedingInitialState } from '@/app/lib/initial-states/feeding'
@@ -271,7 +271,7 @@ export const createFormActions = (formName: string, dispatch: any) => ({
       reader.readAsDataURL(files[0])
     }
   },
-  handleFileDrop: (event: React.DragEvent<HTMLDivElement>) => {
+  handleFileDrop: (event: DragEvent<HTMLDivElement>) => {
     const files = event.dataTransfer.files
     if (files && files[0] && files[0].type.startsWith('image/') && !files[0].type.startsWith('image/heic')) {
       const reader = new FileReader()
@@ -282,7 +282,7 @@ export const createFormActions = (formName: string, dispatch: any) => ({
     }
   },
 
-  handleVideoDrop: (event: React.DragEvent<HTMLDivElement>) => {
+  handleVideoDrop: (event: DragEvent<HTMLDivElement>) => {
     const files = event.dataTransfer.files
     if (files && files[0] && files[0].type.startsWith('video/')) {
       const reader = new FileReader()

@@ -1,4 +1,4 @@
-import React, { FC } from 'react'
+import { FC } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Activity, Clock, Eye, Heart, Stethoscope, Thermometer, Weight } from 'lucide-react'
 import PetSelection from '../components/common/forms/PetSelection'

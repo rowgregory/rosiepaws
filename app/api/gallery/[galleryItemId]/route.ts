@@ -1,5 +1,6 @@
-import { getUserFromHeader } from '@/app/lib/api/getUserFromheader'
+
 import { handleApiError } from '@/app/lib/api/handleApiError'
+import { requireAuth } from '@/app/lib/auth/getServerSession'
 import { galleryDeleteTokenCost } from '@/app/lib/constants/public/token' // Adjust import path as needed
 import { deleteFileFromFirebase, getFirebaseTypeFromMediaType } from '@/app/utils/firebase-helpers'
 import prisma from '@/prisma/client'
@@ -8,13 +9,7 @@ import { NextRequest, NextResponse } from 'next/server'
 
 export async function DELETE(req: NextRequest, { params }: any) {
   try {
-    const userAuth = getUserFromHeader({
-      req
-    })
-
-    if (!userAuth.success) {
-      return userAuth.response!
-    }
+    const {user} = await requireAuth();
 
     const parameters = await params
     const galleryItemId = parameters.galleryItemId
@@ -47,7 +42,7 @@ export async function DELETE(req: NextRequest, { params }: any) {
 
         // Deduct tokens from user
         await tx.user.update({
-          where: { id: userAuth.userId },
+          where: { id: user.id },
           data: {
             tokens: { decrement: galleryDeleteTokenCost },
             tokensUsed: { increment: galleryDeleteTokenCost }
@@ -57,7 +52,7 @@ export async function DELETE(req: NextRequest, { params }: any) {
         // Create token transaction record
         await tx.tokenTransaction.create({
           data: {
-            userId: userAuth.userId!,
+            userId: user.id!,
             amount: -galleryDeleteTokenCost, // Negative for debit
             type: 'GALLERY_ITEM_DELETE',
             description: 'Gallery item delete'

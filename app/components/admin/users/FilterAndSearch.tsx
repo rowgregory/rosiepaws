@@ -1,4 +1,4 @@
-import React, { FC } from 'react'
+import { FC } from 'react'
 import FilterSearch from '@/app/components/admin/form-elements/FilterSearch'
 import { comfortTierName, freeTierName, legacyTierName } from '@/app/lib/constants/public/token'
 

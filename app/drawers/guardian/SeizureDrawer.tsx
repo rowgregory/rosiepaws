@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { RootState, useAppDispatch, useAppSelector } from '@/app/redux/store'
 import { createFormActions, setInputs } from '@/app/redux/features/formSlice'
 import { AlertTriangle } from 'lucide-react'

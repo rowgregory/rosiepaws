@@ -1,21 +1,16 @@
 import prisma from '@/prisma/client'
 import { NextRequest, NextResponse } from 'next/server'
 import { sliceWater } from '@/public/data/api.data'
-import { getUserFromHeader } from '@/app/lib/api/getUserFromheader'
 import { validateTokensAndPet } from '@/app/lib/api/validateTokensAndPet'
 import { waterUpdateTokenCost } from '@/app/lib/constants/public/token'
 import { handleApiError } from '@/app/lib/api/handleApiError'
 import { createLog } from '@/app/lib/api/createLog'
+import { requireAuth } from '@/app/lib/auth/getServerSession'
 
 export async function PATCH(req: NextRequest, { params }: any) {
   try {
-    const userAuth = getUserFromHeader({
-      req
-    })
+  const { user } = await requireAuth();
 
-    if (!userAuth.success) {
-      return userAuth.response!
-    }
     const parameters = await params
     const waterId = parameters.waterId
     // Validate the water ID
@@ -27,12 +22,12 @@ export async function PATCH(req: NextRequest, { params }: any) {
     const { petId, milliliters, timeRecorded, moodRating, notes } = await req.json()
 
     const validation = await validateTokensAndPet({
-      userId: userAuth.userId!,
+      userId: user.id!,
       petId,
       tokenCost: waterUpdateTokenCost,
       actionName: 'update water',
       req,
-      user: userAuth?.user
+      user
     })
 
     if (!validation.success) {
@@ -77,9 +72,9 @@ export async function PATCH(req: NextRequest, { params }: any) {
 
       // Deduct tokens from user
       const updatedUser = await tx.user.update({
-        where: { id: userAuth.userId },
+        where: { id: user.id },
         data: {
-          ...(!userAuth.user.isLegacyUser && { tokens: { decrement: waterUpdateTokenCost } }),
+          ...(!user.isLegacyUser && { tokens: { decrement: waterUpdateTokenCost } }),
           tokensUsed: { increment: waterUpdateTokenCost }
         }
       })
@@ -87,10 +82,10 @@ export async function PATCH(req: NextRequest, { params }: any) {
       // Create token transaction record
       await tx.tokenTransaction.create({
         data: {
-          userId: userAuth.userId!,
+          userId: user.id!,
           amount: -waterUpdateTokenCost, // Negative for debit
-          type: userAuth.user.isLegacyUser ? 'WATER_UPDATE_LEGACY' : 'WATER_UPDATE',
-          description: `Water update${userAuth.user.isLegacyUser ? ' (Usage Tracking Only)' : ''}`,
+          type: user.isLegacyUser ? 'WATER_UPDATE_LEGACY' : 'WATER_UPDATE',
+          description: `Water update${user.isLegacyUser ? ' (Usage Tracking Only)' : ''}`,
           metadata: {
             feature: 'water_update',
             ...Object.keys(updateData)
@@ -108,7 +103,7 @@ export async function PATCH(req: NextRequest, { params }: any) {
       url: req.url,
       method: req.method,
       id: waterId,
-      ownerId: userAuth.userId,
+      ownerId: user.id,
       updatedFields: Object.keys(updateData)
     })
 
@@ -126,7 +121,5 @@ export async function PATCH(req: NextRequest, { params }: any) {
       action: 'Water update',
       sliceName: sliceWater
     })
-  } finally {
-    await prisma.$disconnect()
-  }
+  } 
 }

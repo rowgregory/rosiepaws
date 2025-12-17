@@ -1,5 +1,5 @@
 import { AlertCircle, Calendar, Clock, Pill } from 'lucide-react'
-import React, { FC } from 'react'
+import { FC } from 'react'
 import { motion } from 'framer-motion'
 import { IMedication } from '@/app/types'
 import { getTimeUntilNext } from '@/app/lib/utils'

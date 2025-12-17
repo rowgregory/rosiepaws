@@ -1,6 +1,6 @@
 'use client'
 
-import React, { FC } from 'react'
+import { FC } from 'react'
 import { ScatterChart, Scatter, XAxis, YAxis, ZAxis, ResponsiveContainer, Tooltip, CartesianGrid } from 'recharts'
 import { AlertTriangle, TrendingUp, Calendar } from 'lucide-react'
 import { processedSeizureData } from '@/app/lib/utils'

@@ -1,6 +1,6 @@
 import { createLog } from '@/app/lib/api/createLog'
-import { getUserFromHeader } from '@/app/lib/api/getUserFromheader'
 import { handleApiError } from '@/app/lib/api/handleApiError'
+import { requireAuth } from '@/app/lib/auth/getServerSession'
 import { waterDeleteTokenCost } from '@/app/lib/constants/public/token'
 import prisma from '@/prisma/client'
 import { sliceWater } from '@/public/data/api.data'
@@ -8,13 +8,7 @@ import { NextRequest, NextResponse } from 'next/server'
 
 export async function DELETE(req: NextRequest, { params }: any) {
   try {
-    const userAuth = getUserFromHeader({
-      req
-    })
-
-    if (!userAuth.success) {
-      return userAuth.response!
-    }
+  const { user } = await requireAuth();
 
     const parameters = await params
     const waterId = parameters.waterId
@@ -42,9 +36,9 @@ export async function DELETE(req: NextRequest, { params }: any) {
 
       // Deduct tokens from user
       const updatedUser = await tx.user.update({
-        where: { id: userAuth.userId },
+        where: { id: user.id },
         data: {
-          ...(!userAuth.user.isLegacyUser && { tokens: { decrement: waterDeleteTokenCost } }),
+          ...(!user.isLegacyUser && { tokens: { decrement: waterDeleteTokenCost } }),
           tokensUsed: { increment: waterDeleteTokenCost }
         }
       })
@@ -52,10 +46,10 @@ export async function DELETE(req: NextRequest, { params }: any) {
       // Create token transaction record
       await tx.tokenTransaction.create({
         data: {
-          userId: userAuth.userId!,
+          userId: user.id!,
           amount: -waterDeleteTokenCost, // Negative for debit
-          type: userAuth.user.isLegacyUser ? 'WATER_DELETE_LEGACY' : 'WATER_DELETE',
-          description: `Water delete${userAuth.user.isLegacyUser ? ' (Usage Tracking Only)' : ''}`,
+          type: user.isLegacyUser ? 'WATER_DELETE_LEGACY' : 'WATER_DELETE',
+          description: `Water delete${user.isLegacyUser ? ' (Usage Tracking Only)' : ''}`,
           metadata: {
             petId: deletedWater.pet.id,
             waterId: deletedWater.id,
@@ -77,7 +71,7 @@ export async function DELETE(req: NextRequest, { params }: any) {
       method: req.method,
       petId: result.deletedWater.pet.id,
       waterId: result.deletedWater.id,
-      userId: userAuth.userId
+      userId: user.id
     })
 
     return NextResponse.json({
@@ -95,7 +89,5 @@ export async function DELETE(req: NextRequest, { params }: any) {
       action: 'Water delete',
       sliceName: sliceWater
     })
-  } finally {
-    await prisma.$disconnect()
-  }
+  } 
 }

@@ -1,4 +1,4 @@
-import React, { FC } from 'react'
+import { FC } from 'react'
 import { Clock, Trash2 } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { PainScore } from '@/app/types/entities'

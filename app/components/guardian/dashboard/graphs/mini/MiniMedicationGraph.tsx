@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react'
+import { FC, useMemo } from 'react'
 import { Pill, Calendar, Stethoscope } from 'lucide-react'
 
 interface MedicationData {
@@ -13,7 +13,7 @@ interface MiniMedicationGraphProps {
   medications?: MedicationData[]
 }
 
-const MiniMedicationGraph: React.FC<MiniMedicationGraphProps> = ({ medications = [] }) => {
+const MiniMedicationGraph: FC<MiniMedicationGraphProps> = ({ medications = [] }) => {
   const uniqueMedications = useMemo(() => {
     const medicationMap = new Map()
 

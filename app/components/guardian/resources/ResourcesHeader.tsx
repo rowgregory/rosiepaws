@@ -1,5 +1,5 @@
 import { Lock, Users } from 'lucide-react'
-import React, { FC } from 'react'
+import { FC } from 'react'
 import GuardianActionMenuButton from '../GuardianActionMenuButton'
 
 interface IResourcesHeader {

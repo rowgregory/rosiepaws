@@ -1,4 +1,4 @@
-import React from 'react'
+import { FC } from 'react'
 import { Settings } from 'lucide-react'
 
 interface AdminActionMenuButtonProps {
@@ -6,7 +6,7 @@ interface AdminActionMenuButtonProps {
   className?: string
 }
 
-const AdminActionMenuButton: React.FC<AdminActionMenuButtonProps> = ({ onClick, className = '' }) => {
+const AdminActionMenuButton: FC<AdminActionMenuButtonProps> = ({ onClick, className = '' }) => {
   return (
     <button
       onClick={onClick}

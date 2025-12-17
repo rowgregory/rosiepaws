@@ -1,6 +1,6 @@
 'use client'
 
-import React, { FC } from 'react'
+import { FC } from 'react'
 import { IChildren } from '../types/common'
 import GuardianNavigation from '../components/guardian/GuardianNavigation'
 import GuardianActionMenu from '../components/guardian/GuardianActionMenu'

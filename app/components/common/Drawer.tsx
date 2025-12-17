@@ -1,4 +1,4 @@
-import React, { FC, ReactNode } from 'react'
+import { FC, ReactNode } from 'react'
 import { motion } from 'framer-motion'
 import { drawerVariants } from '@/app/lib/constants'
 

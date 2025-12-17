@@ -1,4 +1,4 @@
-import React, { FC } from 'react'
+import { FC } from 'react'
 
 const Textarea: FC<{ name: string; handleInput: any; value: any; error?: string }> = ({
   name,

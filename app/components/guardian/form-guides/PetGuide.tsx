@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react'
+import { FC, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { User, Camera, Activity, HelpCircle, CheckCircle, AlertTriangle, Lightbulb } from 'lucide-react'
 

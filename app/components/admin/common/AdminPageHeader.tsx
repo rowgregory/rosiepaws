@@ -1,5 +1,5 @@
 import { Download, RefreshCcw } from 'lucide-react'
-import React, { FC } from 'react'
+import { FC } from 'react'
 import { motion } from 'framer-motion'
 
 const AdminPageHeader: FC<{ title: string; subtitle: string; onExport?: any; isLoading?: boolean }> = ({

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useEffect, useRef, useCallback, FC } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { RootState, useAppDispatch, useAppSelector } from '../../redux/store'
 import { setCloseAccessibilityDrawer } from '../../redux/features/appSlice'
@@ -13,7 +13,7 @@ interface StepIndicatorProps {
   currentStep: number // This will track the current step index
 }
 
-const StepIndicator: React.FC<StepIndicatorProps> = ({ currentStep }) => {
+const StepIndicator: FC<StepIndicatorProps> = ({ currentStep }) => {
   return (
     <div className="flex justify-center gap-2 mt-4">
       {Array.from({ length: 5 }, (_, index) => (

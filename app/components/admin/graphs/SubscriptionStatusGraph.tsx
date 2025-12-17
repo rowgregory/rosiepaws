@@ -1,4 +1,4 @@
-import React, { FC } from 'react'
+import { FC } from 'react'
 import { XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts'
 
 const SubscriptionStatusGraph: FC<{ data: { statusDistribution: any[] | undefined } }> = ({ data }) => {

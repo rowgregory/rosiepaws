@@ -1,3 +1,5 @@
+import { ReactNode } from 'react'
+
 export const SettingCard = ({
   title,
   description,
@@ -6,7 +8,7 @@ export const SettingCard = ({
 }: {
   title: string
   description: string
-  children: React.ReactNode
+  children: ReactNode
   icon: any
 }) => (
   <div className="bg-white rounded-lg border border-gray-200 p-6">

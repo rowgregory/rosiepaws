@@ -8,13 +8,13 @@ import { useAppDispatch } from '@/app/redux/store'
 import { IBloodSugar } from '@/app/types'
 import { motion } from 'framer-motion'
 import { Activity, Trash2 } from 'lucide-react'
-import { FC } from 'react'
+import { ComponentType, FC } from 'react'
 
 interface BloodSugarCardProps {
   reading: IBloodSugar
   index: number
   status: ReturnType<typeof getBloodSugarStatus>
-  StatusIcon: React.ComponentType<any>
+  StatusIcon: ComponentType<any>
   shouldAnimate: boolean
 }
 

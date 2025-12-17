@@ -1,4 +1,4 @@
-import React, { FC } from 'react'
+import { FC } from 'react'
 import { AMOUNTS, FOOD_TYPES, POPULAR_BRANDS } from '@/app/lib/constants/public/feeding'
 import { MOOD_EMOJIS } from '@/app/lib/constants'
 import { IForm } from '../types'

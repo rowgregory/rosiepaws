@@ -1,16 +1,16 @@
 'use client'
 
-import React, { useState } from 'react'
+import { CSSProperties, FC, ReactNode, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { RootState, useAppSelector } from '@/app/redux/store'
 
 type TooltipProps = {
   text: string
   position?: 'left' | 'right' | 'top' | 'bottom'
-  children: React.ReactNode
+  children: ReactNode
 }
 
-const Tooltip: React.FC<TooltipProps> = ({ text, position = 'top', children }) => {
+const Tooltip: FC<TooltipProps> = ({ text, position = 'top', children }) => {
   const [visible, setVisible] = useState(false)
   const { guardianActionMenu } = useAppSelector((state: RootState) => state.pet)
 
@@ -48,7 +48,7 @@ const Tooltip: React.FC<TooltipProps> = ({ text, position = 'top', children }) =
   )
 }
 
-function getPositionStyles(position: string): React.CSSProperties {
+function getPositionStyles(position: string): CSSProperties {
   switch (position) {
     case 'top':
       return {

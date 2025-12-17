@@ -1,7 +1,7 @@
 import { serviceTypeConfig, statusConfig } from '@/app/lib/constants/public/appointment'
 import { isAppointmentToday, isPastAppointment } from '@/app/lib/utils/public/my-pets/appointments/dateUtils'
 import { IAppointment } from '@/app/types'
-import React, { FC } from 'react'
+import { FC } from 'react'
 import { motion } from 'framer-motion'
 import { Calendar, Stethoscope, Trash2 } from 'lucide-react'
 import { getTimeInfo } from '@/app/lib/utils'

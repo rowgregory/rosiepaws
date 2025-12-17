@@ -1,4 +1,4 @@
-import React, { FC } from 'react'
+import { FC } from 'react'
 import { motion } from 'framer-motion'
 import { Clock, MapPin, AlertTriangle, Trash2 } from 'lucide-react'
 import { IMovement } from '@/app/types'

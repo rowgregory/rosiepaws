@@ -2,20 +2,14 @@ import prisma from '@/prisma/client'
 import { NextRequest, NextResponse } from 'next/server'
 import { slicePet } from '@/public/data/api.data'
 import { createLog } from '@/app/lib/api/createLog'
-import { getUserFromHeader } from '@/app/lib/api/getUserFromheader'
 import { validateTokensAndPet } from '@/app/lib/api/validateTokensAndPet'
 import { petDeleteTokenCost } from '@/app/lib/constants/public/token'
 import { handleApiError } from '@/app/lib/api/handleApiError'
+import { requireAuth } from '@/app/lib/auth/getServerSession'
 
 export async function DELETE(req: NextRequest, { params }: any) {
   try {
-    const userAuth = getUserFromHeader({
-      req
-    })
-
-    if (!userAuth.success) {
-      return userAuth.response!
-    }
+    const {user} = await requireAuth();
 
     const parameters = await params
     const petId = parameters.petId
@@ -28,12 +22,12 @@ export async function DELETE(req: NextRequest, { params }: any) {
     }
 
     const validation = await validateTokensAndPet({
-      userId: userAuth.userId!,
+      userId: user.id!,
       petId,
       tokenCost: petDeleteTokenCost,
       actionName: 'delete pet',
       req,
-      user: userAuth?.user
+      user
     })
 
     if (!validation.success) {
@@ -71,9 +65,9 @@ export async function DELETE(req: NextRequest, { params }: any) {
       })
 
       const updatedUser = await tx.user.update({
-        where: { id: userAuth.userId },
+        where: { id: user.id },
         data: {
-          ...(!userAuth.user.isLegacyUser && { tokens: { decrement: petDeleteTokenCost } }),
+          ...(!user.isLegacyUser && { tokens: { decrement: petDeleteTokenCost } }),
           tokensUsed: { increment: petDeleteTokenCost }
         }
       })
@@ -81,10 +75,10 @@ export async function DELETE(req: NextRequest, { params }: any) {
       // Create token transaction record
       await tx.tokenTransaction.create({
         data: {
-          userId: userAuth.userId!,
+          userId: user.id!,
           amount: -petDeleteTokenCost, // Negative for debit
-          type: userAuth.user.isLegacyUser ? 'PET_DELETE_LEGACY' : 'PET_DELETE',
-          description: `Pet delete${userAuth.user.isLegacyUser ? ' (Usage Tracking Only)' : ''}`,
+          type: user.isLegacyUser ? 'PET_DELETE_LEGACY' : 'PET_DELETE',
+          description: `Pet delete${user.isLegacyUser ? ' (Usage Tracking Only)' : ''}`,
           metadata: {
             petId: deletedPet.id,
             petName: deletedPet.name,
@@ -106,7 +100,7 @@ export async function DELETE(req: NextRequest, { params }: any) {
       petId: result.deletedPet.id,
       petName: result.deletedPet.name,
       petType: result.deletedPet.type,
-      userId: userAuth.userId,
+      userId: user.id,
       relatedRecordsDeleted: {
         painScores: petToDelete?._count.painScores || 0,
         feedings: petToDelete?._count.feedings || 0,

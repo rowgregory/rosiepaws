@@ -1,6 +1,7 @@
-import { getUserFromHeader } from '@/app/lib/api/getUserFromheader'
+
 import { handleApiError } from '@/app/lib/api/handleApiError'
 import { validateTokensAndPet } from '@/app/lib/api/validateTokensAndPet'
+import { requireAuth } from '@/app/lib/auth/getServerSession'
 import { galleryUploadTokenCost } from '@/app/lib/constants/public/token'
 import prisma from '@/prisma/client'
 import { sliceGallery } from '@/public/data/api.data'
@@ -8,13 +9,7 @@ import { NextRequest, NextResponse } from 'next/server'
 
 export async function POST(req: NextRequest) {
   try {
-    const userAuth = getUserFromHeader({
-      req
-    })
-
-    if (!userAuth.success) {
-      return userAuth.response!
-    }
+    const { user } = await requireAuth();
 
     const { url, type, name, size, mimeType, thumbnail, description, tags, petId, isPublic } = await req.json()
 
@@ -36,12 +31,12 @@ export async function POST(req: NextRequest) {
     }
 
     const validation = await validateTokensAndPet({
-      userId: userAuth.userId!,
+      userId: user.id!,
       petId,
       tokenCost: galleryUploadTokenCost,
       actionName: 'gallery item',
       req,
-      user: userAuth.user
+      user
     })
 
     if (!validation.success) {
@@ -64,14 +59,14 @@ export async function POST(req: NextRequest) {
           description: description || null,
           tags: tags || [],
           petId,
-          userId: userAuth.userId!,
+          userId: user.id!,
           isPublic: isPublicValue
         }
       })
 
       // Deduct tokens from user
       const updatedUser = await tx.user.update({
-        where: { id: userAuth.userId },
+        where: { id: user.id },
         data: {
           tokens: { decrement: galleryUploadTokenCost },
           tokensUsed: { increment: galleryUploadTokenCost }
@@ -81,7 +76,7 @@ export async function POST(req: NextRequest) {
       // Create token transaction record
       await tx.tokenTransaction.create({
         data: {
-          userId: userAuth.userId!,
+          userId: user.id!,
           amount: -galleryUploadTokenCost,
           type: 'GALLERY_ITEM_CREATION',
           description: `Gallery item creation`,
@@ -111,7 +106,5 @@ export async function POST(req: NextRequest) {
       action: 'Gallery item creation',
       sliceName: sliceGallery
     })
-  } finally {
-    await prisma.$disconnect()
   }
 }

@@ -1,5 +1,5 @@
 import { Pet } from '@/app/types'
-import React, { FC } from 'react'
+import { FC } from 'react'
 import { Users, Heart, Activity, AlertCircle } from 'lucide-react'
 import AdminStatCard from '../common/AdminStatCard'
 

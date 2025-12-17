@@ -1,4 +1,4 @@
-import React, { FC } from 'react'
+import { FC } from 'react'
 
 const Input: FC<{ name: string; handleInput: any; value: any; type?: string; step?: string; error?: string }> = ({
   name,

@@ -1,4 +1,4 @@
-import React, { FC } from 'react'
+import { FC } from 'react'
 import { MOOD_EMOJIS } from '@/app/lib/constants'
 import { IForm } from '../types'
 import PetSelection from '../components/common/forms/PetSelection'

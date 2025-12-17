@@ -1,6 +1,6 @@
 import { RootState, useAppSelector } from '@/app/redux/store'
 import TokensSVG from '@/public/svg/TokensSVG'
-import React, { FC } from 'react'
+import { FC } from 'react'
 
 const TokenCounter: FC<{ color1?: string; color2?: string; id?: string; tokens: number | any }> = ({
   color1 = '#fff',

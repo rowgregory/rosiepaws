@@ -1,18 +1,12 @@
 import prisma from '@/prisma/client'
 import { NextRequest, NextResponse } from 'next/server'
-import { getUserFromHeader } from '@/app/lib/api/getUserFromheader'
 import { handleApiError } from '@/app/lib/api/handleApiError'
 import { createLog } from '@/app/lib/api/createLog'
+import { requireAuth } from '@/app/lib/auth/getServerSession'
 
 export async function GET(req: NextRequest, { params }: { params: any }) {
   try {
-    const userAuth = getUserFromHeader({
-      req
-    })
-
-    if (!userAuth.success) {
-      return userAuth.response!
-    }
+    const {user} = await requireAuth();
 
     const { ticketId } = params
 
@@ -66,7 +60,7 @@ export async function GET(req: NextRequest, { params }: { params: any }) {
         url: req.url,
         method: req.method,
         ticketId,
-        userId: userAuth.userId
+        userId: user.id
       })
 
       return NextResponse.json(
@@ -80,7 +74,7 @@ export async function GET(req: NextRequest, { params }: { params: any }) {
     }
 
     // Check if user owns the ticket or is admin (add admin check if needed)
-    if (ticket.userId !== userAuth.userId) {
+    if (ticket.userId !== user.id) {
       await createLog('warn', 'Unauthorized ticket access attempt', {
         location: ['api route - GET /api/support/ticket/[ticketId]'],
         name: 'UnauthorizedTicketAccess',
@@ -88,7 +82,7 @@ export async function GET(req: NextRequest, { params }: { params: any }) {
         url: req.url,
         method: req.method,
         ticketId,
-        userId: userAuth.userId,
+        userId: user.id,
         ticketOwnerId: ticket.userId
       })
 

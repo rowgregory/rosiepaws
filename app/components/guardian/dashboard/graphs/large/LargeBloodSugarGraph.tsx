@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react'
+import { FC, useMemo } from 'react'
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ReferenceLine } from 'recharts'
 import { Heart, Clock, Calendar, Utensils, Pill, TrendingUp, AlertTriangle, FileText } from 'lucide-react'
 import { motion } from 'framer-motion'
@@ -40,7 +40,7 @@ const CustomDot = (props: any) => {
   )
 }
 
-const LargeBloodSugarGraph: React.FC<LargeBloodSugarGraphProps> = ({ bloodSugarData }) => {
+const LargeBloodSugarGraph: FC<LargeBloodSugarGraphProps> = ({ bloodSugarData }) => {
   const stats = useMemo(() => getBloodSugarStats(bloodSugarData), [bloodSugarData])
 
   const chartData = useMemo(() => {

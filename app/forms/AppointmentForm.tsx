@@ -1,4 +1,4 @@
-import React, { FC } from 'react'
+import { FC } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { CheckCircle2, Calendar, Clock, Stethoscope, FileText, User, Bell, BellOff } from 'lucide-react'
 import { containerVariants, itemVariants, serviceTypes, timeSlots } from '../lib/constants/public/appointment'

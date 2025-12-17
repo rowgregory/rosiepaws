@@ -1,4 +1,4 @@
-import React, { FC } from 'react'
+import { FC } from 'react'
 import { Users, Star, Shield } from 'lucide-react'
 import AdminStatCard from '../common/AdminStatCard'
 import { DashboardSummaryData } from '@/app/redux/features/adminSlice'

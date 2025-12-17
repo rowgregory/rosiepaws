@@ -1,5 +1,5 @@
 import { Heart } from 'lucide-react'
-import React, { FC } from 'react'
+import { FC } from 'react'
 import { Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 
 const MiniBloodSugarGraph: FC<{ bloodSugars: any }> = ({ bloodSugars }) => {

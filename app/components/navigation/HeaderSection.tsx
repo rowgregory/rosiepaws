@@ -1,7 +1,7 @@
 import { IUser } from '@/app/types'
 import { AnimatePresence, motion } from 'framer-motion'
 import Link from 'next/link'
-import React, { FC } from 'react'
+import { FC } from 'react'
 
 interface IHeaderSection {
   toggleSidebar: boolean

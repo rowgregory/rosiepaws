@@ -1,19 +1,12 @@
 import { handleApiError } from '@/app/lib/api/handleApiError'
+import { requireAdmin } from '@/app/lib/auth/getServerSession';
 import prisma from '@/prisma/client'
 import { sliceAdmin } from '@/public/data/api.data'
 import { NextRequest, NextResponse } from 'next/server'
 
 export async function GET(req: NextRequest) {
   try {
-    const userHeader = req.headers.get('x-user')
-    if (!userHeader) {
-      return NextResponse.json({ message: 'Unauthorized: Missing user header', sliceName: sliceAdmin }, { status: 401 })
-    }
-    const parsedUser = JSON.parse(userHeader)
-
-    if (!parsedUser.isAdmin) {
-      return NextResponse.json({ message: 'Forbidden: Admins only', sliceName: sliceAdmin }, { status: 403 })
-    }
+    await requireAdmin();
 
     // Fetch all data
     const subscriptions = await prisma.stripeSubscription.findMany({

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import { FC, useEffect, useRef, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X } from 'lucide-react'
 
@@ -11,7 +11,7 @@ interface VideoModalProps {
   seizureDate?: string
 }
 
-const VideoModal: React.FC<VideoModalProps> = ({ isOpen, onClose, videoUrl, petName, seizureDate }) => {
+const VideoModal: FC<VideoModalProps> = ({ isOpen, onClose, videoUrl, petName, seizureDate }) => {
   const videoRef = useRef<HTMLVideoElement>(null)
   const [isPlaying, setIsPlaying] = useState(false)
   const [isFullscreen, setIsFullscreen] = useState(false)

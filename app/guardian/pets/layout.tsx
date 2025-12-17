@@ -1,6 +1,6 @@
 'use client'
 
-import React, { FC } from 'react'
+import { FC, ReactNode } from 'react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { Lock, Crown, Star, Heart } from 'lucide-react'
@@ -11,7 +11,7 @@ import { setOpenNeedToUpgradeDrawer } from '@/app/redux/features/dashboardSlice'
 import GuardianActionMenuButton from '@/app/components/guardian/GuardianActionMenuButton'
 
 interface ChildrenProps {
-  children: React.ReactNode
+  children: ReactNode
 }
 
 const linkData = (path: string, userTier: string) =>

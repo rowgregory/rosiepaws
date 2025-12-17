@@ -1,4 +1,4 @@
-import React, { FC } from 'react'
+import { FC } from 'react'
 import { motion } from 'framer-motion'
 import { Filter, Grid3X3, List, Search } from 'lucide-react'
 

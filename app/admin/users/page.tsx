@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { Users } from 'lucide-react'
 import { RootState, useAppSelector } from '@/app/redux/store'
 import ManageTokensDrawer from '@/app/drawers/admin/ManageTokensDrawer'

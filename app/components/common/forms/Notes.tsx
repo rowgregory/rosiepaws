@@ -1,4 +1,4 @@
-import React, { FC } from 'react'
+import { FC } from 'react'
 
 const Notes: FC<{ inputs: any; handleInput: any }> = ({ inputs, handleInput }) => {
   return (

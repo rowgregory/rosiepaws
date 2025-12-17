@@ -1,4 +1,4 @@
-import React, { FC, MouseEvent, useState } from 'react'
+import { FC, MouseEvent, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { signOut } from 'next-auth/react'
 import Link from 'next/link'

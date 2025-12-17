@@ -1,4 +1,4 @@
-import React, { FC } from 'react'
+import { FC } from 'react'
 import { setOpenPainDrawer } from '@/app/redux/features/painSlice'
 import { setOpenFeedingDrawer } from '@/app/redux/features/feedingSlice'
 import { setOpenMovementDrawer } from '@/app/redux/features/movementSlice'

@@ -42,9 +42,21 @@ export const adminApi = api.injectEndpoints({
         dispatch(updateUserInUsers(user))
         dispatch(addTokenTransactionToUser({ userId: user.id, transaction: tokenTransaction }))
       }
+    }),
+    updateUserTier: build.mutation({
+      query: ({ userId, tier }) => ({
+        url: `${BASE_URL}/update-user-tier`,
+        method: 'PATCH',
+        body: { userId, tier }
+      }),
+      invalidatesTags: ['Admin', 'User']
     })
   })
 })
 
-export const { useFetchAdminDashboardDataQuery, useUpdateBackupFrequencyMutation, useUpdateUserTokensMutation } =
-  adminApi
+export const {
+  useFetchAdminDashboardDataQuery,
+  useUpdateBackupFrequencyMutation,
+  useUpdateUserTokensMutation,
+  useUpdateUserTierMutation
+} = adminApi

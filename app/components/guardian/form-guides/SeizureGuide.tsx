@@ -1,4 +1,4 @@
-import React, { FC } from 'react'
+import { FC } from 'react'
 import { AlertTriangle, Video, Shield, Info, Heart } from 'lucide-react'
 import { emergencySteps, safetyTips } from '@/app/lib/constants/public/seizure'
 

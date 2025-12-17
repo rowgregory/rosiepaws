@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from 'framer-motion'
-import React, { FC } from 'react'
+import { FC } from 'react'
 import { formatDateShort } from '../lib/utils'
 import { Heart, MessageCircle, Share2, X } from 'lucide-react'
 import Picture from '../components/common/Picture'

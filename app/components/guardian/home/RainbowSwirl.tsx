@@ -1,9 +1,9 @@
 'use client'
 
-import React from 'react'
+import { ReactNode } from 'react'
 import { motion } from 'framer-motion'
 
-const RainbowSwirl = ({ children }: { children?: React.ReactNode }) => {
+const RainbowSwirl = ({ children }: { children?: ReactNode }) => {
   return (
     <div className="w-full h-screen bg-black overflow-hidden relative">
       {/* Main morphing gradient blob */}

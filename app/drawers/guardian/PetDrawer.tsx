@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { AnimatePresence } from 'framer-motion'
 import { RootState, useAppDispatch, useAppSelector } from '@/app/redux/store'
 import { setClosePetDrawer } from '@/app/redux/features/petSlice'

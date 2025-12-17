@@ -1,6 +1,6 @@
 'use client'
 
-import React, { FC } from 'react'
+import { FC, ReactNode } from 'react'
 import { IChildren } from '@/app/types/common'
 import Link from 'next/link'
 import useCustomPathname from '@/app/hooks/useCustomPathname'
@@ -11,7 +11,7 @@ interface PetLink {
   linkKey?: string
   textKey?: string
   isActive?: boolean
-  icon?: React.ReactNode
+  icon?: ReactNode
   gradient?: string
   isPremium?: boolean
 }

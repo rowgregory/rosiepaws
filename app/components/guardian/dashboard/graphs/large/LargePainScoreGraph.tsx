@@ -1,6 +1,6 @@
 'use client'
 
-import React, { FC } from 'react'
+import { FC } from 'react'
 import { ResponsiveContainer, XAxis, YAxis, Line, Tooltip, CartesianGrid, Area, AreaChart } from 'recharts'
 import { Activity } from 'lucide-react'
 

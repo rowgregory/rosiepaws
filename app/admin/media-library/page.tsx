@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { FileText, Image, BookOpen, Search, Grid3X3, List } from 'lucide-react'
 import { createFormActions } from '@/app/redux/features/formSlice'

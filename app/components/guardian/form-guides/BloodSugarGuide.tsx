@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { AlertTriangle, CheckCircle, TrendingUp, Eye, Droplets, ChevronDown, ChevronUp } from 'lucide-react'
 import { normalRanges, symptoms, tips, warningLevels } from '@/app/lib/constants'

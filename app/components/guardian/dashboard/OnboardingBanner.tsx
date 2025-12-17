@@ -1,4 +1,4 @@
-import React, { FC } from 'react'
+import { FC } from 'react'
 import { motion } from 'framer-motion'
 import { Activity, ArrowDown, Droplets, Heart, Plus, Utensils } from 'lucide-react'
 import { Pet } from '@/app/types'

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, CreditCard, AlertTriangle, ExternalLink } from 'lucide-react'
 import { RootState, useAppDispatch, useAppSelector } from '../../redux/store'

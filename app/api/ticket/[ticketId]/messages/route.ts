@@ -1,8 +1,8 @@
 import prisma from '@/prisma/client'
 import { NextRequest, NextResponse } from 'next/server'
-import { getUserFromHeader } from '@/app/lib/api/getUserFromheader'
 import { handleApiError } from '@/app/lib/api/handleApiError'
 import { createLog } from '@/app/lib/api/createLog'
+import { requireAuth } from '@/app/lib/auth/getServerSession'
 
 // Validation function for required message fields
 const validateMessageRequiredFields = ({ content }: { content: string }) => {
@@ -39,13 +39,7 @@ const validateMessageRequiredFields = ({ content }: { content: string }) => {
 
 export async function POST(req: NextRequest, { params }: { params: any }) {
   try {
-    const userAuth = getUserFromHeader({
-      req
-    })
-
-    if (!userAuth.success) {
-      return userAuth.response!
-    }
+    const {user: { id }} = await requireAuth();
 
     const { ticketId } = await params
     const { content, attachments = [], authorEmail, authorName } = await req.json()
@@ -72,7 +66,7 @@ export async function POST(req: NextRequest, { params }: { params: any }) {
 
     // Get user details to determine if they are staff
     const user = await prisma.user.findUnique({
-      where: { id: userAuth.userId },
+      where: { id },
       select: {
         id: true,
         email: true,
@@ -125,7 +119,7 @@ export async function POST(req: NextRequest, { params }: { params: any }) {
     }
 
     // Check if user owns the ticket (or is staff - add staff check if needed)
-    if (existingTicket.userId !== userAuth.userId && !isSuperUser) {
+    if (existingTicket.userId !== id && !isSuperUser) {
       await createLog('warn', 'Unauthorized ticket message creation attempt', {
         location: ['api route - POST /api/support/tickets/[ticketId]/messages'],
         name: 'UnauthorizedMessageCreation',
@@ -133,7 +127,7 @@ export async function POST(req: NextRequest, { params }: { params: any }) {
         url: req.url,
         method: req.method,
         ticketId,
-        userId: userAuth.userId,
+        userId: id,
         ticketOwnerId: existingTicket.userId
       })
 
@@ -205,7 +199,7 @@ export async function POST(req: NextRequest, { params }: { params: any }) {
       method: req.method,
       ticketId,
       messageId: result.newMessage.id,
-      userId: userAuth.userId,
+      userId: id,
       isStaff: isSuperUser,
       contentLength: content.trim().length
     })

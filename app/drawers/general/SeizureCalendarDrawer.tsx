@@ -4,9 +4,9 @@ import { setCloseSeizureCalendarDrawer } from '@/app/redux/features/dashboardSli
 import { RootState, useAppDispatch, useAppSelector } from '@/app/redux/store'
 import { ISeizure } from '@/app/types'
 import { AnimatePresence, motion } from 'framer-motion'
-import React, { useState } from 'react'
+import { FC, useState } from 'react'
 
-const SeizureCalendarDrawer: React.FC = () => {
+const SeizureCalendarDrawer: FC = () => {
   const [currentDate, setCurrentDate] = useState(new Date())
   const { seizures } = useAppSelector((state: RootState) => state.seizure)
   const { seizureCalendarDrawer } = useAppSelector((state: RootState) => state.dashboard)

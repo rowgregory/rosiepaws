@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { RootState, useAppSelector } from '@/app/redux/store'
 import VideoModal from '@/app/modals/VideoModal'
 import CleanHeader from '@/app/components/guardian/CleanHeader'

@@ -1,4 +1,4 @@
-import React, { FC, useMemo } from 'react'
+import { FC, useMemo } from 'react'
 import { XAxis, YAxis, ResponsiveContainer, Tooltip, ScatterChart, CartesianGrid, Scatter } from 'recharts'
 import { Thermometer, Heart, Activity, TrendingUp, AlertTriangle, CheckCircle, Stethoscope } from 'lucide-react'
 import { NORMAL_RANGES } from '@/app/lib/constants'

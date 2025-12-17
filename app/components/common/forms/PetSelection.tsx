@@ -1,4 +1,4 @@
-import React, { FC, useEffect } from 'react'
+import { FC, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { itemVariants } from '@/app/lib/constants/public/appointment'
 import { CheckCircle2, PawPrint } from 'lucide-react'

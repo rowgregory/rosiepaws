@@ -1,5 +1,5 @@
 import { COLORS } from '@/app/lib/constants'
-import React, { FC } from 'react'
+import { FC } from 'react'
 import { Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts'
 
 const TokenUsageGraph: FC<{ data: { tokenUsage: any[] | undefined } }> = ({ data }) => {

@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { TrendingUp, DollarSign, Users, CreditCard, PawPrint, Coins, Activity } from 'lucide-react'
 import { RootState, useAppSelector } from '@/app/redux/store'

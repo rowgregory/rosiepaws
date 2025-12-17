@@ -1,3 +1,5 @@
+import { ChangeEvent } from 'react'
+
 export interface IForm {
   inputs: any
   errors: any
@@ -5,7 +7,7 @@ export interface IForm {
   close: () => void
   handleSubmit: any
   loading: boolean
-  handleToggle?: (e: React.ChangeEvent<HTMLInputElement>) => void
+  handleToggle?: (e: ChangeEvent<HTMLInputElement>) => void
   uploadingVideo?: boolean
   isUpdating?: boolean
 }

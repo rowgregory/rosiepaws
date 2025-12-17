@@ -1,22 +1,16 @@
 import prisma from '@/prisma/client'
 import { NextRequest, NextResponse } from 'next/server'
 import { slicePainScore } from '@/public/data/api.data'
-import { getUserFromHeader } from '@/app/lib/api/getUserFromheader'
 import { validatePainScoreRequiredFields } from '@/app/lib/api/validatePainScoreRequiredFields'
 import { painScoreCreateTokenCost } from '@/app/lib/constants/public/token'
 import { createLog } from '@/app/lib/api/createLog'
 import { handleApiError } from '@/app/lib/api/handleApiError'
 import { validateTokensAndPet } from '@/app/lib/api/validateTokensAndPet'
+import { requireAuth } from '@/app/lib/auth/getServerSession'
 
 export async function POST(req: NextRequest) {
   try {
-    const userAuth = getUserFromHeader({
-      req
-    })
-
-    if (!userAuth.success) {
-      return userAuth.response!
-    }
+    const {user} = await requireAuth();
 
     const { petId, score, timeRecorded, symptoms, location, triggers, relief, notes } = await req.json()
 
@@ -31,12 +25,12 @@ export async function POST(req: NextRequest) {
     }
 
     const validation = await validateTokensAndPet({
-      userId: userAuth.userId!,
+      userId: user.id!,
       petId,
       tokenCost: painScoreCreateTokenCost,
       actionName: 'pain score',
       req,
-      user: userAuth?.user
+      user
     })
 
     if (!validation.success) {
@@ -64,9 +58,9 @@ export async function POST(req: NextRequest) {
 
       // Deduct tokens from user
       const updatedUser = await tx.user.update({
-        where: { id: userAuth.userId },
+        where: { id: user.id },
         data: {
-          ...(!userAuth.user.isLegacyUser && { tokens: { decrement: painScoreCreateTokenCost } }),
+          ...(!user.isLegacyUser && { tokens: { decrement: painScoreCreateTokenCost } }),
           tokensUsed: { increment: painScoreCreateTokenCost }
         }
       })
@@ -74,10 +68,10 @@ export async function POST(req: NextRequest) {
       // Create token transaction record
       await tx.tokenTransaction.create({
         data: {
-          userId: userAuth.userId!,
+          userId: user.id!,
           amount: -painScoreCreateTokenCost,
-          type: userAuth.user.isLegacyUser ? 'PAIN_SCORE_CREATION_LEGACY' : 'PAIN_SCORE_CREATION',
-          description: `Pet score creation${userAuth.user.isLegacyUser ? ' (Usage Tracking Only)' : ''}`,
+          type: user.isLegacyUser ? 'PAIN_SCORE_CREATION_LEGACY' : 'PAIN_SCORE_CREATION',
+          description: `Pet score creation${user.isLegacyUser ? ' (Usage Tracking Only)' : ''}`,
           metadata: {
             painScoreId: newPainScore.id,
             painScore: newPainScore.score,
@@ -97,7 +91,7 @@ export async function POST(req: NextRequest) {
       method: req.method,
       petId,
       painScoreId: result.newPainScore.id,
-      userId: userAuth.userId
+      userId: user.id
     })
 
     return NextResponse.json(
@@ -118,7 +112,5 @@ export async function POST(req: NextRequest) {
       action: 'Pain score creation',
       sliceName: slicePainScore
     })
-  } finally {
-    await prisma.$disconnect()
   }
 }

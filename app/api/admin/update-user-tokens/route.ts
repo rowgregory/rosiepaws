@@ -1,20 +1,14 @@
 import prisma from '@/prisma/client'
 import { NextRequest, NextResponse } from 'next/server'
-import { getUserFromHeader } from '@/app/lib/api/getUserFromheader'
 import { handleApiError } from '@/app/lib/api/handleApiError'
 import { createLog } from '@/app/lib/api/createLog'
 import { sliceAdmin } from '@/public/data/api.data'
+import { requireAdmin } from '@/app/lib/auth/getServerSession'
 
 export async function PATCH(req: NextRequest) {
   try {
-    const userAuth = getUserFromHeader({
-      req
-    })
-
-    if (!userAuth.success) {
-      return userAuth.response!
-    }
-
+    const session = await requireAdmin();
+    const id = session.user.id;
     const { userId, amount, reason } = await req.json()
 
     // Validate userId
@@ -51,7 +45,7 @@ export async function PATCH(req: NextRequest) {
 
     // Get admin user details
     const adminUser = await prisma.user.findUnique({
-      where: { id: userAuth.userId },
+      where: { id },
       select: {
         id: true,
         email: true,
@@ -79,7 +73,7 @@ export async function PATCH(req: NextRequest) {
         timestamp: new Date().toISOString(),
         url: req.url,
         method: req.method,
-        adminUserId: userAuth.userId,
+        adminUserId: id,
         adminEmail: adminUser.email,
         targetUserId: userId,
         attemptedAmount: amount
@@ -176,12 +170,12 @@ export async function PATCH(req: NextRequest) {
     })
 
     await createLog('info', 'User tokens updated successfully', {
-      location: ['api route - PATCH /api/admin/users/[userId]/tokens'],
+      location: ['api route - PATCH /api/admin/update-user-tokens'],
       name: 'UserTokensUpdated',
       timestamp: new Date().toISOString(),
       url: req.url,
       method: req.method,
-      adminUserId: userAuth.userId,
+      adminUserId: id,
       adminEmail: adminUser.email,
       targetUserId: userId,
       targetUserEmail: targetUser.email,

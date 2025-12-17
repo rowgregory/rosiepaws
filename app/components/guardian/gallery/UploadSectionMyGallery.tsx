@@ -1,4 +1,4 @@
-import React, { ChangeEvent, FC, useRef, useState } from 'react'
+import { ChangeEvent, DragEvent, FC, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
 import { useCreateGalleryItemMutation } from '@/app/redux/services/galleryItemApi'
 import { createFormActions } from '@/app/redux/features/formSlice'
@@ -47,17 +47,17 @@ const UploadSectionMyGallery: FC<IUploadSectionMyGallery> = ({
     }
   }
 
-  const handleDragOver = (e: React.DragEvent) => {
+  const handleDragOver = (e: DragEvent) => {
     e.preventDefault()
     setDragOver(true)
   }
 
-  const handleDragLeave = (e: React.DragEvent) => {
+  const handleDragLeave = (e: DragEvent) => {
     e.preventDefault()
     setDragOver(false)
   }
 
-  const handleDrop = (e: React.DragEvent) => {
+  const handleDrop = (e: DragEvent) => {
     e.preventDefault()
 
     setDragOver(false)

@@ -1,4 +1,4 @@
-import React, { FC, useMemo, useState } from 'react'
+import { FC, useMemo, useState } from 'react'
 import { GENDER_OPTIONS, PET_TYPES, SPAY_NEUTER_OPTIONS } from '../lib/constants/public/pet'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Activity, Camera, FileText, ImageIcon, Phone, Shield, Stethoscope, Trash2, User, Weight } from 'lucide-react'

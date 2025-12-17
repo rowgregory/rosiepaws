@@ -1,6 +1,6 @@
 'use client'
 
-import React, { FC, ReactNode, useEffect, useMemo } from 'react'
+import { FC, ReactNode, useEffect, useMemo } from 'react'
 import Header from './components/header/Header'
 import useCustomPathname from './hooks/useCustomPathname'
 import Footer from './components/footer/Footer'
@@ -18,6 +18,7 @@ import Pusher from 'pusher-js'
 import { api } from './redux/services/api'
 import { setIsNotWaitingForWebhook } from './redux/features/userSlice'
 import { useRouter } from 'next/navigation'
+import Toast from './components/common/Toast'
 
 let pusherInstance: Pusher | null = null
 
@@ -65,6 +66,7 @@ const PageWrapper: FC<{ children: ReactNode }> = ({ children }) => {
         <AdminConfirmModal />
         <NotEnoughTokensModal />
         <ChangePlanModal />
+        <Toast />
       </>
     ),
     []

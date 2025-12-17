@@ -1,21 +1,15 @@
 import prisma from '@/prisma/client'
 import { NextRequest, NextResponse } from 'next/server'
 import { sliceAppointment } from '@/public/data/api.data'
-import { getUserFromHeader } from '@/app/lib/api/getUserFromheader'
 import { validateTokensAndPet } from '@/app/lib/api/validateTokensAndPet'
 import { appointmentCreateTokenCost } from '@/app/lib/constants/public/token'
 import { createLog } from '@/app/lib/api/createLog'
 import { handleApiError } from '@/app/lib/api/handleApiError'
+import { requireAuth } from '@/app/lib/auth/getServerSession'
 
 export async function POST(req: NextRequest) {
   try {
-    const userAuth = getUserFromHeader({
-      req
-    })
-
-    if (!userAuth.success) {
-      return userAuth.response!
-    }
+    const { user } = await requireAuth();
 
     const { petId, date, time, serviceType, description, veterinarian, reminderTime, reminderEnabled, notes } =
       await req.json()
@@ -31,12 +25,12 @@ export async function POST(req: NextRequest) {
     }
 
     const validation = await validateTokensAndPet({
-      userId: userAuth.userId!,
+      userId: user.id!,
       petId,
       tokenCost: appointmentCreateTokenCost,
       actionName: 'appointment',
       req,
-      user: userAuth?.user
+      user
     })
 
     if (!validation.success) {
@@ -66,19 +60,19 @@ export async function POST(req: NextRequest) {
 
         // Deduct tokens from user
         const updatedUser = await tx.user.update({
-          where: { id: userAuth.userId },
+          where: { id:user.id },
           data: {
-            ...(!userAuth.user.isLegacyUser && { tokens: { decrement: appointmentCreateTokenCost } }),
+            ...(!user.isLegacyUser && { tokens: { decrement: appointmentCreateTokenCost } }),
             tokensUsed: { increment: appointmentCreateTokenCost }
           }
         })
 
         await tx.tokenTransaction.create({
           data: {
-            userId: userAuth.userId!,
+            userId:user.id!,
             amount: -appointmentCreateTokenCost,
-            type: userAuth.user.isLegacyUser ? 'APPOINTMENT_CREATION_LEGACY' : 'APPOINTMENT_CREATION',
-            description: `Appointment creation${userAuth.user.isLegacyUser ? ' (Usage Tracking Only)' : ''}`,
+            type: user.isLegacyUser ? 'APPOINTMENT_CREATION_LEGACY' : 'APPOINTMENT_CREATION',
+            description: `Appointment creation${user.isLegacyUser ? ' (Usage Tracking Only)' : ''}`,
             metadata: {
               appointmentId: newAppointment?.id,
               appointmentServiceType: newAppointment?.serviceType,
@@ -103,7 +97,7 @@ export async function POST(req: NextRequest) {
       method: req.method,
       petId,
       appointmentId: result.newAppointment.id,
-      userId: userAuth.userId
+      userId: user.id
     })
 
     return NextResponse.json(
@@ -124,7 +118,5 @@ export async function POST(req: NextRequest) {
       action: 'Appointment creation',
       sliceName: sliceAppointment
     })
-  } finally {
-    await prisma.$disconnect()
   }
 }

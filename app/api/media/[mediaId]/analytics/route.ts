@@ -62,7 +62,5 @@ export async function PUT(req: NextRequest, { params }: any) {
       action: 'Update media analytics',
       sliceName: sliceMedia
     })
-  } finally {
-    await prisma.$disconnect()
   }
 }

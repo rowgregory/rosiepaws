@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, Zap, Plus, Minus, History, User, Mail, AlertTriangle, CheckCircle, Loader2 } from 'lucide-react'
 import { RootState, useAppDispatch, useAppSelector } from '@/app/redux/store'

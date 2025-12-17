@@ -1,6 +1,6 @@
 import { createLog } from '@/app/lib/api/createLog'
-import { getUserFromHeader } from '@/app/lib/api/getUserFromheader'
 import { handleApiError } from '@/app/lib/api/handleApiError'
+import { requireAuth } from '@/app/lib/auth/getServerSession'
 import { feedingDeleteTokenCost } from '@/app/lib/constants/public/token'
 import prisma from '@/prisma/client'
 import { sliceFeeding } from '@/public/data/api.data'
@@ -8,13 +8,7 @@ import { NextRequest, NextResponse } from 'next/server'
 
 export async function DELETE(req: NextRequest, { params }: any) {
   try {
-    const userAuth = getUserFromHeader({
-      req
-    })
-
-    if (!userAuth.success) {
-      return userAuth.response!
-    }
+    const {user} = await requireAuth();
 
     const parameters = await params
     const feedingId = parameters.feedingId
@@ -52,9 +46,9 @@ export async function DELETE(req: NextRequest, { params }: any) {
 
       // Deduct tokens from user
       const updatedUser = await tx.user.update({
-        where: { id: userAuth.userId },
+        where: { id: user.id },
         data: {
-          ...(!userAuth.user.isLegacyUser && { tokens: { decrement: feedingDeleteTokenCost } }),
+          ...(!user.isLegacyUser && { tokens: { decrement: feedingDeleteTokenCost } }),
           tokensUsed: { increment: feedingDeleteTokenCost }
         }
       })
@@ -62,10 +56,10 @@ export async function DELETE(req: NextRequest, { params }: any) {
       // Create token transaction record
       await tx.tokenTransaction.create({
         data: {
-          userId: userAuth.userId!,
+          userId: user.id!,
           amount: -feedingDeleteTokenCost, // Negative for debit
-          type: userAuth.user.isLegacyUser ? 'FEEDING_DELETE_LEGACY' : 'FEEDING_CREATION',
-          description: `Feeding delete${userAuth.user.isLegacyUser ? ' (Usage Tracking Only)' : ''}`,
+          type: user.isLegacyUser ? 'FEEDING_DELETE_LEGACY' : 'FEEDING_CREATION',
+          description: `Feeding delete${user.isLegacyUser ? ' (Usage Tracking Only)' : ''}`,
           metadata: {
             petId: deletedFeeding.id,
             feature: 'delete',
@@ -87,7 +81,7 @@ export async function DELETE(req: NextRequest, { params }: any) {
       method: req.method,
       petId: result.deletedFeeding.pet.id,
       feedingId: result.deletedFeeding.id,
-      userId: userAuth.userId
+      userId: user.id
     })
 
     return NextResponse.json({

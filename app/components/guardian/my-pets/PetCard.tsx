@@ -2,7 +2,7 @@ import { setOpenPetDrawer, setSelectedPetWithChartData } from '@/app/redux/featu
 import { useAppDispatch, useUserSelector } from '@/app/redux/store'
 import { Pet } from '@/app/types/entities'
 import { Activity, ArrowRight, Download, Edit, Heart, MoreVertical, Shield, Trash2 } from 'lucide-react'
-import React, { FC, useRef, useState } from 'react'
+import { FC, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { setInputs } from '@/app/redux/features/formSlice'
 import { setCloseAdminConfirmModal, setOpenAdminConfirmModal } from '@/app/redux/features/adminSlice'

@@ -1,21 +1,15 @@
 import prisma from '@/prisma/client'
 import { NextRequest, NextResponse } from 'next/server'
 import { sliceVitalSigns } from '@/public/data/api.data'
-import { getUserFromHeader } from '@/app/lib/api/getUserFromheader'
 import { validateTokensAndPet } from '@/app/lib/api/validateTokensAndPet'
 import { handleApiError } from '@/app/lib/api/handleApiError'
 import { createLog } from '@/app/lib/api/createLog'
 import { vitalSignsUpdateTokenCost } from '@/app/lib/constants/public/token'
+import { requireAuth } from '@/app/lib/auth/getServerSession'
 
 export async function PATCH(req: NextRequest, { params }: any) {
   try {
-    const userAuth = getUserFromHeader({
-      req
-    })
-
-    if (!userAuth.success) {
-      return userAuth.response!
-    }
+  const { user } = await requireAuth();
 
     const parameters = await params
     const vitalSignsId = parameters.vitalSignsId
@@ -39,12 +33,12 @@ export async function PATCH(req: NextRequest, { params }: any) {
     } = await req.json()
 
     const validation = await validateTokensAndPet({
-      userId: userAuth.userId!,
+      userId: user.id!,
       petId,
       tokenCost: vitalSignsUpdateTokenCost,
       actionName: 'update vital signs',
       req,
-      user: userAuth?.user
+      user
     })
 
     if (!validation.success) {
@@ -91,9 +85,9 @@ export async function PATCH(req: NextRequest, { params }: any) {
       })
 
       const updatedUser = await tx.user.update({
-        where: { id: userAuth.userId },
+        where: { id: user.id },
         data: {
-          ...(!userAuth.user.isLegacyUser && { tokens: { decrement: vitalSignsUpdateTokenCost } }),
+          ...(!user.isLegacyUser && { tokens: { decrement: vitalSignsUpdateTokenCost } }),
           tokensUsed: { increment: vitalSignsUpdateTokenCost }
         }
       })
@@ -101,10 +95,10 @@ export async function PATCH(req: NextRequest, { params }: any) {
       // Create token transaction record
       await tx.tokenTransaction.create({
         data: {
-          userId: userAuth.userId!,
+          userId: user.id!,
           amount: -vitalSignsUpdateTokenCost,
-          type: userAuth.user.isLegacyUser ? 'VITAL_SIGNS_UPDATE_LEGACY' : 'VITAL_SIGNS_UPDATE',
-          description: `Vital signs update${userAuth.user.isLegacyUser ? ' (Usage Tracking Only)' : ''}`,
+          type: user.isLegacyUser ? 'VITAL_SIGNS_UPDATE_LEGACY' : 'VITAL_SIGNS_UPDATE',
+          description: `Vital signs update${user.isLegacyUser ? ' (Usage Tracking Only)' : ''}`,
           metadata: {
             ...updateData,
             feature: 'vital_signs_update'
@@ -123,7 +117,7 @@ export async function PATCH(req: NextRequest, { params }: any) {
       method: req.method,
       petId,
       vitalSignsId: result.newVitalSigns.id,
-      userId: userAuth.userId
+      userId: user.id
     })
 
     return NextResponse.json(

@@ -1,5 +1,5 @@
 import { Search } from 'lucide-react'
-import React, { FC } from 'react'
+import { FC } from 'react'
 
 const FilterSearch: FC<{ searchTerm: any; setSearchTerm: any; placeholder: string }> = ({
   searchTerm,

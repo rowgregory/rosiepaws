@@ -1,5 +1,5 @@
 import { IMovement } from '@/app/types'
-import React, { FC } from 'react'
+import { FC } from 'react'
 import { motion } from 'framer-motion'
 import { getTimeInfo } from '@/app/lib/utils'
 import { Footprints } from 'lucide-react'

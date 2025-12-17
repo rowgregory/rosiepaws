@@ -1,4 +1,4 @@
-import React, { FC } from 'react'
+import { FC, MouseEvent } from 'react'
 import { motion } from 'framer-motion'
 import { IVitalSigns } from '@/app/types'
 
@@ -50,7 +50,7 @@ const VitalSignsCard: FC<{ vitalSigns: IVitalSigns; index: number; shouldAnimate
   const statusColor = hasAbnormalVitals ? 'text-yellow-600 bg-yellow-50' : 'text-green-600 bg-green-50'
   const statusIcon = hasAbnormalVitals ? AlertTriangle : Heart
 
-  const handleDelete = (e: React.MouseEvent) => {
+  const handleDelete = (e: MouseEvent) => {
     e.stopPropagation()
 
     dispatch(

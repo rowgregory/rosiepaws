@@ -1,5 +1,6 @@
-import { getUserFromHeader } from '@/app/lib/api/getUserFromheader'
+
 import { handleApiError } from '@/app/lib/api/handleApiError'
+import { requireAuth } from '@/app/lib/auth/getServerSession'
 import { calculatePetStats } from '@/app/lib/utils/public/dashboard/calculatePetStats'
 import { processChartDataForPet } from '@/app/lib/utils/public/dashboard/processChartData'
 import prisma from '@/prisma/client'
@@ -8,17 +9,11 @@ import { NextRequest, NextResponse } from 'next/server'
 
 export async function GET(req: NextRequest) {
   try {
-    const userAuth = getUserFromHeader({
-      req
-    })
-
-    if (!userAuth.success) {
-      return userAuth.response!
-    }
+    const { user: { id } } = await requireAuth();
 
     const user = await prisma.user.findUnique({
       where: {
-        id: userAuth.userId
+        id
       },
       select: {
         id: true,
@@ -51,7 +46,7 @@ export async function GET(req: NextRequest) {
     })
 
     const tokenTransactions = await prisma.tokenTransaction.findMany({
-      where: { userId: userAuth.userId }
+      where: { userId: id }
     })
 
     const now = new Date()
@@ -89,7 +84,7 @@ export async function GET(req: NextRequest) {
     })
 
     const pets = await prisma.pet.findMany({
-      where: { ownerId: userAuth.userId },
+      where: { ownerId: id },
       include: {
         painScores: createRelationConfig(),
         feedings: createRelationConfig(),

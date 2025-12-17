@@ -1,6 +1,6 @@
 'use client'
 
-import React, { FC } from 'react'
+import { FC } from 'react'
 import AdminNavigation from '../components/admin/AdminNavigation'
 import { useFetchAdminDashboardDataQuery } from '../redux/services/adminApi'
 import { IChildren } from '../types'

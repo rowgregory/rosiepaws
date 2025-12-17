@@ -9,6 +9,7 @@ import { useAppDispatch } from '@/app/redux/store'
 import { IWater } from '@/app/types'
 import { motion } from 'framer-motion'
 import { Droplets, Trash2 } from 'lucide-react'
+import { FC } from 'react'
 
 interface WaterLogCardProps {
   water: IWater
@@ -16,7 +17,7 @@ interface WaterLogCardProps {
   shouldAnimate: boolean
 }
 
-const WaterCard: React.FC<WaterLogCardProps> = ({ water, index, shouldAnimate }) => {
+const WaterCard: FC<WaterLogCardProps> = ({ water, index, shouldAnimate }) => {
   const dispatch = useAppDispatch()
   const [deleteWater] = useDeleteWaterMutation()
   const onCloseConfirmModal = () => dispatch(setCloseAdminConfirmModal())

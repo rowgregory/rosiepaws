@@ -36,7 +36,5 @@ export async function GET(req: NextRequest) {
       action: 'Get all media',
       sliceName: sliceMedia
     })
-  } finally {
-    await prisma.$disconnect()
-  }
+  } 
 }

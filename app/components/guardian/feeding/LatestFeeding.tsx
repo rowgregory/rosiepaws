@@ -1,4 +1,4 @@
-import React, { FC } from 'react'
+import { FC } from 'react'
 import { UtensilsCrossed } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { IFeeding } from '@/app/types'

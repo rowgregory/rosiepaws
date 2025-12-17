@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { RootState, useAppDispatch, useAppSelector, useUserSelector } from '@/app/redux/store'
 import PetDropdownMenu from './navigation/PetDropdownMenu'
 import { setOpenPetDrawer, setSelectedPetWithChartData } from '@/app/redux/features/petSlice'

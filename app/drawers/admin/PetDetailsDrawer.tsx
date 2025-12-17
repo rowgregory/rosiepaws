@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { FC, useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   X,
@@ -27,9 +27,9 @@ interface ImageLightboxProps {
   imageAlt?: string
 }
 
-const ImageLightbox: React.FC<ImageLightboxProps> = ({ isOpen, onClose, imageSrc }) => {
+const ImageLightbox: FC<ImageLightboxProps> = ({ isOpen, onClose, imageSrc }) => {
   // Handle escape key
-  React.useEffect(() => {
+  useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose()
     }

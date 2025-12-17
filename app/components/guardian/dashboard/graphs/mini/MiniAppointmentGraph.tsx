@@ -1,4 +1,4 @@
-import React, { FC } from 'react'
+import { FC } from 'react'
 import { Calendar, Clock, User, FileText } from 'lucide-react'
 
 const MiniAppointmentGraph: FC<{ appointments: any }> = ({ appointments }) => {

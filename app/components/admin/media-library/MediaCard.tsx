@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { setInputs } from '@/app/redux/features/formSlice'
 import { useDeleteMediaMutation, useUpdateMediaMutation } from '@/app/redux/services/mediaApi'

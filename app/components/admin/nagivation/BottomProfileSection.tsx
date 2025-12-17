@@ -1,6 +1,6 @@
 import { IUser } from '@/app/types'
 import { AnimatePresence, motion } from 'framer-motion'
-import React, { FC } from 'react'
+import { FC } from 'react'
 
 const BottomProfileSection: FC<{ navigation: boolean; user: IUser | null }> = ({ navigation, user }) => {
   return (

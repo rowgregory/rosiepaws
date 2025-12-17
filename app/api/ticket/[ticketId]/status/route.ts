@@ -1,8 +1,8 @@
 import prisma from '@/prisma/client'
 import { NextRequest, NextResponse } from 'next/server'
-import { getUserFromHeader } from '@/app/lib/api/getUserFromheader'
 import { handleApiError } from '@/app/lib/api/handleApiError'
 import { createLog } from '@/app/lib/api/createLog'
+import { requireAdmin } from '@/app/lib/auth/getServerSession'
 
 // Validation function for ticket status
 const validateTicketStatus = ({ status }: { status: string }) => {
@@ -36,13 +36,7 @@ const validateTicketStatus = ({ status }: { status: string }) => {
 
 export async function PATCH(req: NextRequest, { params }: { params: any }) {
   try {
-    const userAuth = getUserFromHeader({
-      req
-    })
-
-    if (!userAuth.success) {
-      return userAuth.response!
-    }
+     const {user: userInfo} = await requireAdmin();
 
     const { ticketId } = await params
     const { status, notes } = await req.json()
@@ -66,7 +60,7 @@ export async function PATCH(req: NextRequest, { params }: { params: any }) {
 
     // Get user details to check if they are staff (super user)
     const user = await prisma.user.findUnique({
-      where: { id: userAuth.userId },
+      where: { id: userInfo.id },
       select: {
         id: true,
         email: true,
@@ -95,7 +89,7 @@ export async function PATCH(req: NextRequest, { params }: { params: any }) {
         url: req.url,
         method: req.method,
         ticketId,
-        userId: userAuth.userId,
+        userId: userInfo.id,
         userEmail: user.email,
         attemptedStatus: status
       })
@@ -208,7 +202,7 @@ export async function PATCH(req: NextRequest, { params }: { params: any }) {
       url: req.url,
       method: req.method,
       ticketId,
-      userId: userAuth.userId,
+      userId: userInfo.id,
       userEmail: user.email,
       previousStatus,
       newStatus: normalizedStatus,

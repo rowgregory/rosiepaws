@@ -1,6 +1,6 @@
 'use clent'
 
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { AlertTriangle, Database, Download, FileText, Info, Shield, X } from 'lucide-react'
 import { RootState, useAppSelector } from '../redux/store'

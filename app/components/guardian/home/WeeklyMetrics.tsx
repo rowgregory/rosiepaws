@@ -1,6 +1,6 @@
 import { Pet } from '@/app/types'
 import { Activity, Calendar, Droplets, Heart, TrendingUp, Utensils } from 'lucide-react'
-import React, { FC } from 'react'
+import { FC } from 'react'
 
 const WeeklyMetrics: FC<{ pet: Pet }> = ({ pet }) => {
   const thisWeeksPainScoring = pet?.painScores?.filter(

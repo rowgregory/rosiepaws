@@ -1,4 +1,4 @@
-import React, { FC } from 'react'
+import { FC } from 'react'
 import { formatDateShort, formatTimeAgo, getFoodTypeConfig } from '@/app/lib/utils'
 import { setOpenFeedingDrawer } from '@/app/redux/features/feedingSlice'
 import { setInputs } from '@/app/redux/features/formSlice'

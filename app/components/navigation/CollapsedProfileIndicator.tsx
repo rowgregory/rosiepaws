@@ -1,4 +1,4 @@
-import React, { FC } from 'react'
+import { FC } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 
 const CollapsedProfileIndicator: FC<{ toggleSidebar: boolean; setPetDropdownOpen: any; initial: string }> = ({

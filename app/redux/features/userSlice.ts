@@ -1,5 +1,4 @@
 import { Reducer, createSlice } from '@reduxjs/toolkit'
-import { userApi } from '../services/userApi'
 import { IUser } from '@/app/types'
 
 export interface UserStatePayload {
@@ -66,28 +65,6 @@ export const userSlice = createSlice({
     setIsNotWaitingForWebhook: (state) => {
       state.isWaitingForWebhook = false
     }
-  },
-  extraReducers: (builder) => {
-    builder
-      .addMatcher(userApi.endpoints.fetchUsers.matchFulfilled, (state, { payload }: any) => {
-        state.users = payload.users
-        state.loading = false
-      })
-      .addMatcher(userApi.endpoints.fetchMe.matchFulfilled, (state) => {
-        state.success = true
-        state.loading = false
-      })
-      .addMatcher(userApi.endpoints.deleteUser.matchFulfilled, (state) => {
-        state.success = true
-        state.loading = false
-      })
-      .addMatcher(
-        (action) => action.type.endsWith('rejected') && action.payload?.data?.sliceName === 'userApi',
-        (state, { payload }: any) => {
-          state.loading = false
-          state.error = payload?.data?.message
-        }
-      )
   }
 })
 

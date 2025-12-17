@@ -3,18 +3,12 @@ import { NextRequest, NextResponse } from 'next/server'
 import { slicePet } from '@/public/data/api.data'
 import { createLog } from '@/app/lib/api/createLog'
 import { petCreateTokenCost } from '@/app/lib/constants/public/token'
-import { getUserFromHeader } from '@/app/lib/api/getUserFromheader'
 import { handleApiError } from '@/app/lib/api/handleApiError'
+import { requireAuth } from '@/app/lib/auth/getServerSession'
 
 export async function POST(req: NextRequest) {
   try {
-    const userAuth = getUserFromHeader({
-      req
-    })
-
-    if (!userAuth.success) {
-      return userAuth.response!
-    }
+    const {user} = await requireAuth();
 
     const {
       name,
@@ -44,7 +38,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Confirm owner exists (optional since user is logged in, but good safety)
-    const owner = await prisma.user.findUnique({ where: { id: userAuth.userId } })
+    const owner = await prisma.user.findUnique({ where: { id: user.id } })
     if (!owner) {
       await createLog('warning', 'Owner user not found when creating pet', {
         location: ['api route - POST /api/pet/create'],
@@ -52,7 +46,7 @@ export async function POST(req: NextRequest) {
         timestamp: new Date().toISOString(),
         url: req.url,
         method: req.method,
-        userId: userAuth.userId
+        userId: user.id
       })
       return NextResponse.json({ message: 'Owner not found', sliceName: slicePet }, { status: 404 })
     }
@@ -65,7 +59,7 @@ export async function POST(req: NextRequest) {
         timestamp: new Date().toISOString(),
         url: req.url,
         method: req.method,
-        userId: userAuth.userId,
+        userId: user.id,
         requiredTokens: petCreateTokenCost,
         availableTokens: owner?.tokens
       })
@@ -95,7 +89,7 @@ export async function POST(req: NextRequest) {
           emergencyContactName,
           emergencyContactPhone,
           notes,
-          ownerId: userAuth.userId!,
+          ownerId: user.id!,
           ...(fileName && filePath && { filePath, fileName })
         }
 
@@ -105,7 +99,7 @@ export async function POST(req: NextRequest) {
 
         // Deduct tokens from user
         const updatedUser = await tx.user.update({
-          where: { id: userAuth.userId },
+          where: { id: user.id },
           data: {
             ...(!owner?.isLegacyUser && { tokens: { decrement: petCreateTokenCost } }),
             tokensUsed: { increment: petCreateTokenCost }
@@ -115,7 +109,7 @@ export async function POST(req: NextRequest) {
         // Create token transaction record
         await tx.tokenTransaction.create({
           data: {
-            userId: userAuth.userId!,
+            userId: user.id!,
             amount: -petCreateTokenCost, // Negative for debit
             type: owner?.isLegacyUser ? 'PET_CREATION_LEGACY' : 'PET_CREATION',
             description: `Pet creation${owner?.isLegacyUser ? ' (Usage Tracking Only)' : ''}`,
@@ -142,7 +136,7 @@ export async function POST(req: NextRequest) {
       url: req.url,
       method: req.method,
       petId: result.newPet.id,
-      ownerId: userAuth.userId,
+      ownerId: user.id,
       tokensDeducted: petCreateTokenCost,
       remainingTokens: result.updatedUser.tokens
     })
@@ -165,7 +159,5 @@ export async function POST(req: NextRequest) {
       action: 'Pet creation',
       sliceName: slicePet
     })
-  } finally {
-    await prisma.$disconnect()
   }
 }

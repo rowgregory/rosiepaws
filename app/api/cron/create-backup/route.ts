@@ -1,6 +1,6 @@
 import { createLog } from '@/app/lib/api/createLog'
-import { getUserFromHeader } from '@/app/lib/api/getUserFromheader'
 import { handleApiError } from '@/app/lib/api/handleApiError'
+import { requireAdmin } from '@/app/lib/auth/getServerSession'
 import { sendBackupDataEmail } from '@/app/lib/resend/sendBackupDataEmail'
 import prisma from '@/prisma/client'
 import { sliceAdmin } from '@/public/data/api.data'
@@ -71,13 +71,7 @@ async function generateBackupData() {
 
 export async function GET(req: NextRequest) {
   try {
-    const userAuth = getUserFromHeader({
-      req
-    })
-
-    if (!userAuth.success) {
-      return userAuth.response!
-    }
+    const { user } = await requireAdmin();
 
     const backupData = await generateBackupData()
 
@@ -86,7 +80,7 @@ export async function GET(req: NextRequest) {
     )
 
     // Email the backup file
-    await sendBackupDataEmail(backupData, adminEmails, req, userAuth?.userId)
+    await sendBackupDataEmail(backupData, adminEmails, req, user.id)
 
     await createLog('info', `Create backed up successfully created`, {
       location: ['api route - GET /api/cron/create-backup'],
@@ -109,7 +103,5 @@ export async function GET(req: NextRequest) {
       action: 'Send backup data',
       sliceName: sliceAdmin
     })
-  } finally {
-    await prisma.$disconnect()
   }
 }

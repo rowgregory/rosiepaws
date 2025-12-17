@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { motion } from 'framer-motion'
 import MainActionCard from '@/app/components/guardian/home/MainActionCard'
 import CareResourcesAndInfo from '@/app/components/guardian/home/CareResourcesAndInfo'
